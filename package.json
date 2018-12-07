@@ -1,0 +1,21 @@
+{
+  "name": "ejv",
+  "version": "0.0.1",
+  "description": "Easy JSON Validator",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/han41858/ejv.git"
+  },
+  "keywords": [
+    "json",
+    "validator"
+  ],
+  "author": "Janghyun Han <han41858@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/han41858/ejv/issues"
+  },
+  "homepage": "https://github.com/han41858/ejv#readme"
+}
