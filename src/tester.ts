@@ -11,13 +11,12 @@ export const numberTester : Function = (value : any) : boolean => {
 };
 
 export const integerTester : Function = (value : any) : boolean => {
-	return typeof value === 'number'
+	return numberTester(value)
 		&& +value.toFixed(0) === value;
 };
 
 export const indexTester : Function = (value : any) : boolean => {
-	return typeof value === 'number'
-		&& +value.toFixed(0) === value
+	return integerTester(value)
 		&& value >= 0;
 };
 
