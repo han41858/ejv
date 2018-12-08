@@ -8,6 +8,7 @@ import {
 	emailTester,
 	indexTester,
 	integerTester,
+	ipv4Tester,
 	numberTester,
 	stringTester,
 	urlTester
@@ -212,6 +213,33 @@ describe('testers', function () {
 			expect(urlTester('http://hello.com/child/grand')).to.be.true;
 			expect(urlTester('http://hello.com/child/grand?query=some')).to.be.true;
 			expect(urlTester('http://hello.com/child/grand(some:angular)')).to.be.true;
+		});
+	});
+
+	describe('ipv4Tester()', () => {
+		it('common test', () => {
+			expect(testRunner(
+				ipv4Tester,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('additional test', () => {
+			expect(ipv4Tester('')).to.be.false;
+			expect(ipv4Tester(' ')).to.be.false;
+			expect(ipv4Tester('127.0.0')).to.be.false;
+			expect(ipv4Tester('127.0.0.1')).to.be.true;
+			expect(ipv4Tester('256.0.0.1')).to.be.false;
+			expect(ipv4Tester('255.-1.0.1')).to.be.false;
+			expect(ipv4Tester('255.256.267.1')).to.be.false;
+			expect(ipv4Tester('255.255.255.0')).to.be.true;
+			expect(ipv4Tester('255.255.255.0.5')).to.be.false;
 		});
 	});
 });
