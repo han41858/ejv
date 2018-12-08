@@ -6,7 +6,6 @@ export interface Options {
 
 }
 
-
-export class EjvError {
+export interface EjvError {
 
 }

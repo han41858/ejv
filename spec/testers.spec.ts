@@ -1,26 +1,29 @@
 import { expect } from 'chai';
 
-import { EjvError } from '../src/interfaces';
-
 import { definedTester } from '../src/tester';
 
 
 describe('testers', function () {
+	// name of spec, value
+	// result is in each describe()
+	const commonTestTable : [string, any][] = [
+		['null', null],
+		['undefined', undefined],
+		['boolean - true', true],
+		['number - 8', 8],
+		['string - \'hello\'', 'hello'],
+		['array - [1, 2, 3]', [1, 2, 3]],
+		['object', { a : 1 }]
+	];
+
 	describe('definedTester()', () => {
-		it('null', () => {
-			expect(definedTester(null)).to.be.null;
-		});
+		const resultTable : boolean[] = commonTestTable.map(() => true);
+		resultTable[1] = false; // undefined case
 
-		it('undefined', () => {
-			expect(definedTester(undefined)).to.be.instanceof(EjvError);
-		});
-
-		it('boolean - true', () => {
-			expect(definedTester(true)).to.be.null;
-		});
-
-		it('boolean - false', () => {
-			expect(definedTester(false)).to.be.null;
+		commonTestTable.forEach((obj, i) => {
+			it(obj[0], () => {
+				expect(definedTester(obj[1])).to.be.eql(resultTable[i]);
+			});
 		});
 	});
 });
