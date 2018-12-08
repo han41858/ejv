@@ -9,6 +9,7 @@ import {
 	indexTester,
 	integerTester,
 	ipv4Tester,
+	ipv6Tester,
 	numberTester,
 	stringTester,
 	urlTester
@@ -240,6 +241,30 @@ describe('testers', function () {
 			expect(ipv4Tester('255.256.267.1')).to.be.false;
 			expect(ipv4Tester('255.255.255.0')).to.be.true;
 			expect(ipv4Tester('255.255.255.0.5')).to.be.false;
+		});
+	});
+
+	describe('ipv6Tester()', () => {
+		it('common test', () => {
+			expect(testRunner(
+				ipv6Tester,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('additional test', () => {
+			expect(ipv6Tester('')).to.be.false;
+			expect(ipv6Tester(' ')).to.be.false;
+			expect(ipv6Tester('127.0.0')).to.be.false;
+			// expect(ipv6Tester('1762:0:0:0:0:B03:1:AF18')).to.be.true;
+			// expect(ipv6Tester('fe80:0000:0000:0000:0204:61ff:fe9d:f156/1')).to.be.true;
+			expect(ipv6Tester('1200:0000:AB00:1234:O000:2552:7777:1313')).to.be.false; // has invalid character
 		});
 	});
 });
