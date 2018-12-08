@@ -9,7 +9,8 @@ import {
 	indexTester,
 	integerTester,
 	numberTester,
-	stringTester
+	stringTester,
+	urlTester
 } from '../src/tester';
 
 
@@ -181,6 +182,36 @@ describe('testers', function () {
 			expect(emailTester('hello@domain.com')).to.be.true;
 			expect(emailTester('hello@domain.com.')).to.be.false;
 			expect(emailTester('hello@domain.com.another')).to.be.true;
+		});
+	});
+
+	describe('urlTester()', () => {
+		it('common test', () => {
+			expect(testRunner(
+				urlTester,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('additional test', () => {
+			expect(urlTester('')).to.be.false;
+			expect(urlTester(' ')).to.be.false;
+			expect(urlTester('hello')).to.be.false;
+			expect(urlTester('http://hello')).to.be.false;
+			expect(urlTester('https://hello')).to.be.false;
+			expect(urlTester('http://hello.com')).to.be.true;
+			expect(urlTester('http://hello.com/')).to.be.true;
+			expect(urlTester('http://hello.com/#1')).to.be.true;
+			expect(urlTester('http://hello.com/child')).to.be.true;
+			expect(urlTester('http://hello.com/child/grand')).to.be.true;
+			expect(urlTester('http://hello.com/child/grand?query=some')).to.be.true;
+			expect(urlTester('http://hello.com/child/grand(some:angular)')).to.be.true;
 		});
 	});
 });
