@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "Easy JSON Validator",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build": "rm -rf ./build&&tsc"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/han41858/ejv.git"
@@ -17,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/han41858/ejv/issues"
   },
-  "homepage": "https://github.com/han41858/ejv#readme"
+  "homepage": "https://github.com/han41858/ejv#readme",
+  "devDependencies": {
+    "typescript": "^3.2.2"
+  }
 }
