@@ -2,7 +2,15 @@ import { expect } from 'chai';
 
 import { testRunner } from './test-runner';
 
-import { booleanTester, definedTester, indexTester, integerTester, numberTester, stringTester } from '../src/tester';
+import {
+	booleanTester,
+	definedTester,
+	emailTester,
+	indexTester,
+	integerTester,
+	numberTester,
+	stringTester
+} from '../src/tester';
 
 
 describe('testers', function () {
@@ -146,6 +154,33 @@ describe('testers', function () {
 			expect(stringTester('')).to.be.true;
 			expect(stringTester(' ')).to.be.true;
 			expect(stringTester('hello')).to.be.true;
+		});
+	});
+
+	describe('emailTester()', () => {
+		it('common test', () => {
+			expect(testRunner(
+				emailTester,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('additional test', () => {
+			expect(emailTester('')).to.be.false;
+			expect(emailTester(' ')).to.be.false;
+			expect(emailTester('hello')).to.be.false;
+			expect(emailTester('hello@')).to.be.false;
+			expect(emailTester('hello@domain')).to.be.false;
+			expect(emailTester('hello@domain.')).to.be.false;
+			expect(emailTester('hello@domain.com')).to.be.true;
+			expect(emailTester('hello@domain.com.')).to.be.false;
+			expect(emailTester('hello@domain.com.another')).to.be.true;
 		});
 	});
 });

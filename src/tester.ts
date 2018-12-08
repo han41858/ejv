@@ -23,3 +23,9 @@ export const indexTester : Function = (value : any) : boolean => {
 export const stringTester : Function = (value : any) : boolean => {
 	return typeof value === 'string';
 };
+
+export const emailTester : Function = (value : any) : boolean => {
+	return stringTester(value)
+		// RFC 5322, 3.4.1. spec
+		&& /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value);
+};
