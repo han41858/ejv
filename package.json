@@ -4,7 +4,10 @@
   "description": "Easy JSON Validator",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf ./build&&tsc"
+    "build": "rm -rf ./build&&tsc",
+    "build:test": "rm -rf ./build&&tsc -p tsconfig.spec.json",
+    "pretest": "yarn build:test",
+    "test": "mocha ./build/**/*.spec.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +24,10 @@
   },
   "homepage": "https://github.com/han41858/ejv#readme",
   "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
     "typescript": "^3.2.2"
   }
 }
