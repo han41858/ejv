@@ -1,11 +1,17 @@
-export interface Scheme {
-
+interface ObjectScheme {
+	properties : {
+		[key : string] : any;
+	}
 }
+
+export type Scheme = ObjectScheme;
 
 export interface Options {
-
 }
 
-export interface EjvError {
-
+export class EjvError {
+	constructor (private keyword : string,
+	             private path : string,
+	             private data : any) {
+	}
 }
