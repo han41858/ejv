@@ -89,8 +89,14 @@ export const typeTester : Function = (type : DataType, value : any) : boolean =>
 			break;
 
 		default:
-			throw new Error('not defined type'); // TODO: dev
+			throw new Error(`not defined type [${type}]`); // TODO: dev
 	}
 
 	return result;
+};
+
+export const typeArrayTester : Function = (types : DataType[], value : any) : boolean => {
+	return types.some((type : DataType) => {
+		return typeTester(type, value);
+	});
 };

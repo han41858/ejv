@@ -39,6 +39,26 @@ describe.only('ejv', () => {
 	describe('operators', () => {
 		describe('properties & type', () => {
 			describe('error', () => {
+				it('no scheme', () => {
+					expect(() => ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : undefined
+						}
+					})).to.throw(ErrorMsg.NO_SCHEME_FOR.replace(ErrorMsgCursor, 'a'));
+				});
+
+				it('null scheme', () => {
+					expect(() => ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : null
+						}
+					})).to.throw(ErrorMsg.NO_SCHEME_FOR.replace(ErrorMsgCursor, 'a'));
+				});
+
 				it('no type', () => {
 					expect(() => ejv({
 						a : 'hello'
@@ -126,7 +146,7 @@ describe.only('ejv', () => {
 				});
 			});
 
-			describe.only('normal - multiple types', () => {
+			describe('normal - multiple types', () => {
 				it('no type', () => {
 					expect(() => ejv({
 						a : 'hello'
@@ -198,24 +218,48 @@ describe.only('ejv', () => {
 				});
 			});
 
-			xit('simple', () => {
-				expect(ejv({
-					a : 'hello'
-				}, {
-					properties : {
-						a : 'string'
-					}
-				})).to.be.null;
+			describe('short syntax - single type', () => {
+				it('ok', () => {
+					expect(ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : 'string'
+						}
+					})).to.be.null;
+				});
 			});
 
-			xit('simple - by array', () => {
-				expect(ejv({
-					a : 'hello'
-				}, {
-					properties : {
-						a : ['string']
-					}
-				})).to.be.null;
+			describe('short syntax - multiple types', () => {
+				it('ok', () => {
+					expect(ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : ['string']
+						}
+					})).to.be.null;
+				});
+
+				it('ok - with others', () => {
+					expect(ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : ['string', 'number']
+						}
+					})).to.be.null;
+				});
+
+				it('ok - with others', () => {
+					expect(ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : ['number', 'string']
+						}
+					})).to.be.null;
+				});
 			});
 		});
 	});

@@ -1,7 +1,7 @@
 import { EjvError, Options, Scheme } from './interfaces';
 import { DataType, ErrorMsg, ErrorMsgCursor } from './constants';
 
-import { arrayTester, definedTester, objectTester, typeTester } from './tester';
+import { arrayTester, definedTester, objectTester, stringTester, typeArrayTester } from './tester';
 
 export const ejv : Function = (data : object, scheme : Scheme, options : Options) : null | EjvError => {
 	console.log('ejv() %o', { data, scheme });
@@ -33,7 +33,6 @@ export const ejv : Function = (data : object, scheme : Scheme, options : Options
 	let result : EjvError = null;
 
 	const keyArr : string[] = Object.keys(scheme.properties);
-	console.log(keyArr);
 
 	// use for() instead of forEach() to use break
 	const keyArrLength : number = keyArr.length;
@@ -53,39 +52,45 @@ export const ejv : Function = (data : object, scheme : Scheme, options : Options
 
 		if (!result) {
 			// check type
-			const type : DataType | DataType[] = scheme.properties[key].type;
-			console.log('type :', type);
+			const schemeAsAny : any = scheme.properties[key];
 
-			if (!definedTester(type)) {
+			if (!definedTester(schemeAsAny) || schemeAsAny === null) {
+				throw new Error(ErrorMsg.NO_SCHEME_FOR.replace(ErrorMsgCursor, path));
+			}
+
+			let types : DataType[];
+
+			if (stringTester(schemeAsAny)) {
+				// short syntax - single type
+				types = [schemeAsAny];
+			} else if (arrayTester(schemeAsAny)) {
+				// short syntax - multiple types
+				types = schemeAsAny;
+			} else {
+				// normal syntax
+				const typeOrTypes : DataType | DataType[] = schemeAsAny.type;
+
+				if (arrayTester(typeOrTypes)) {
+					types = typeOrTypes as DataType[];
+				} else {
+					types = [typeOrTypes as DataType];
+				}
+			}
+
+			// TODO: use ejv() to filter invalid type
+			if (!definedTester(types) || types.filter(type => !!type).length === 0) {
 				throw new Error(ErrorMsg.NO_TYPE_FOR.replace(ErrorMsgCursor, path));
 			}
 
-			if (arrayTester(type)) {
-				const typeAsArray : DataType[] = type as DataType[];
+			// TODO: use ejv() string enum
+			if (!types.every(type => {
+				return Object.values(DataType).includes(type);
+			})) {
+				throw new Error(ErrorMsg.INVALID_TYPE_FOR.replace(ErrorMsgCursor, key));
+			}
 
-				// TODO: use ejv() array empty
-				if (typeAsArray.length === 0) {
-					throw new Error(ErrorMsg.NO_TYPE_FOR.replace(ErrorMsgCursor, key));
-				}
-
-				// TODO: use ejv() string enum
-				if (!typeAsArray.every(type => {
-					return Object.values(DataType).includes(type);
-				})) {
-					throw new Error(ErrorMsg.INVALID_TYPE_FOR.replace(ErrorMsgCursor, key));
-				}
-
-				if (!typeAsArray.some((type : DataType) => {
-					return typeTester(type, value);
-				})) {
-					result = new EjvError(ErrorMsg.DIFFERENT_TYPE, key, value);
-				}
-			} else {
-				const typeAsString : DataType = type as DataType;
-
-				if (!typeTester(typeAsString, value)) {
-					result = new EjvError(ErrorMsg.DIFFERENT_TYPE, key, value);
-				}
+			if (!typeArrayTester(types, value)) {
+				result = new EjvError(ErrorMsg.DIFFERENT_TYPE, key, value);
 			}
 		}
 

@@ -30,6 +30,7 @@ export enum ErrorMsg {
 	NO_DATA = 'no data to validate',
 	NO_JSON_DATA = 'no JSON data to validate',
 	NO_SCHEME = 'no scheme',
+	NO_SCHEME_FOR = 'no scheme for [###]',
 	NO_JSON_SCHEME = 'no JSON scheme',
 	NO_ROOT_PROPERTIES = 'no root properties',
 
