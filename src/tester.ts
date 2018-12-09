@@ -52,3 +52,7 @@ export const ipv6Tester : TypeTester = (value : any) : boolean => {
 export const ipTester : TypeTester = (value : any) : boolean => {
 	return ipv4Tester(value) || ipv6Tester(value);
 };
+
+export const objectTester : TypeTester = (value : any) : boolean => {
+	return typeof value === 'object';
+};

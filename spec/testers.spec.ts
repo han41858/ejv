@@ -11,6 +11,7 @@ import {
 	ipv4Tester,
 	ipv6Tester,
 	numberTester,
+	objectTester,
 	stringTester,
 	urlTester
 } from '../src/tester';
@@ -265,6 +266,27 @@ describe('testers', function () {
 			// expect(ipv6Tester('1762:0:0:0:0:B03:1:AF18')).to.be.true;
 			// expect(ipv6Tester('fe80:0000:0000:0000:0204:61ff:fe9d:f156/1')).to.be.true;
 			expect(ipv6Tester('1200:0000:AB00:1234:O000:2552:7777:1313')).to.be.false; // has invalid character
+		});
+	});
+
+	describe('objectTester()', () => {
+		it('common test', () => {
+			expect(testRunner(
+				objectTester,
+				true, // null is object
+				false,
+				false,
+				false,
+				false,
+				true, // array is object
+				true
+			)).to.be.true;
+		});
+
+		it('additional test', () => {
+			expect(objectTester(null)).to.be.true;
+			expect(objectTester({})).to.be.true;
+			expect(objectTester({ a : 1 })).to.be.true;
 		});
 	});
 });

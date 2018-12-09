@@ -14,11 +14,11 @@ export enum DataType {
 	ipv4 = 'ipv4',
 	ipv6 = 'ipv6',
 
+	object = 'object',
+
 	date = 'date',
 
 	regexp = 'regexp',
 
-	array = 'array',
-
-	object = 'object'
+	array = 'array'
 }
