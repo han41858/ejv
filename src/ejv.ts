@@ -60,7 +60,7 @@ export const ejv : Function = (data : object, scheme : Scheme, options : Options
 				throw new Error(ErrorMsg.NO_TYPE_FOR.replace(ErrorMsgCursor, path));
 			}
 
-			if (!arrayTester(type)) {
+			if (arrayTester(type)) {
 				const typeAsArray : DataType[] = type as DataType[];
 
 				// TODO: use ejv() array empty
