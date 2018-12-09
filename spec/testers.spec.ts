@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { testRunner } from './test-runner';
 
 import {
+	arrayTester,
 	booleanTester,
 	dateTester,
 	definedTester,
@@ -16,7 +17,6 @@ import {
 	stringTester,
 	urlTester
 } from '../src/tester';
-
 
 describe('testers', function () {
 	describe('definedTester()', () => {
@@ -308,6 +308,26 @@ describe('testers', function () {
 		it('additional test', () => {
 			expect(dateTester(new Date)).to.be.true;
 			expect(dateTester((new Date).toISOString())).to.be.false;
+		});
+	});
+
+	describe('arrayTester()', () => {
+		it('common test', () => {
+			expect(testRunner(
+				arrayTester,
+				false,
+				false,
+				false,
+				false,
+				false,
+				true,
+				false
+			)).to.be.true;
+		});
+
+		it('additional test', () => {
+			expect(arrayTester([])).to.be.true;
+			expect(arrayTester('not_array')).to.be.false;
 		});
 	});
 });

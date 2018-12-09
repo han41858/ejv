@@ -1,6 +1,6 @@
 type TypeTester = (value : any) => boolean;
 
-export const definedTester : TypeTester = (value : any,) : boolean => {
+export const definedTester : TypeTester = (value : any) : boolean => {
 	return value !== undefined;
 };
 
@@ -61,4 +61,11 @@ export const dateTester : TypeTester = (value : any) : boolean => {
 	return objectTester(value)
 		&& value !== null
 		&& value.getFullYear !== undefined;
+};
+
+export const arrayTester : TypeTester = (value : any) : boolean => {
+	return objectTester(value)
+		&& value !== null
+		&& value.length !== undefined
+		&& value.push !== undefined;
 };
