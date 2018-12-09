@@ -56,3 +56,9 @@ export const ipTester : TypeTester = (value : any) : boolean => {
 export const objectTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'object';
 };
+
+export const dateTester : TypeTester = (value : any) : boolean => {
+	return objectTester(value)
+		&& value !== null
+		&& value.getFullYear !== undefined;
+};

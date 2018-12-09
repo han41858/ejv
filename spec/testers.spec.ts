@@ -4,6 +4,7 @@ import { testRunner } from './test-runner';
 
 import {
 	booleanTester,
+	dateTester,
 	definedTester,
 	emailTester,
 	indexTester,
@@ -287,6 +288,26 @@ describe('testers', function () {
 			expect(objectTester(null)).to.be.true;
 			expect(objectTester({})).to.be.true;
 			expect(objectTester({ a : 1 })).to.be.true;
+		});
+	});
+
+	describe('dateTester()', () => {
+		it('common test', () => {
+			expect(testRunner(
+				dateTester,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('additional test', () => {
+			expect(dateTester(new Date)).to.be.true;
+			expect(dateTester((new Date).toISOString())).to.be.false;
 		});
 	});
 });
