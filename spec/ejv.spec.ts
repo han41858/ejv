@@ -126,16 +126,76 @@ describe.only('ejv', () => {
 				});
 			});
 
-			xit('normal - with array', () => {
-				expect(ejv({
-					a : 'hello'
-				}, {
-					properties : {
-						a : {
-							type : ['string']
+			describe.only('normal - multiple types', () => {
+				it('no type', () => {
+					expect(() => ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : {}
 						}
-					}
-				})).to.be.null;
+					})).to.throw(ErrorMsg.NO_TYPE_FOR.replace(ErrorMsgCursor, 'a'));
+				});
+
+				it('empty types', () => {
+					expect(() => ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : {
+								type : []
+							}
+						}
+					})).to.throw(ErrorMsg.NO_TYPE_FOR.replace(ErrorMsgCursor, 'a'));
+				});
+
+				it('invalid type enum', () => {
+					expect(() => ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : {
+								type : ['string', 'invalid_type']
+							}
+						}
+					})).to.throw(ErrorMsg.INVALID_TYPE_FOR.replace(ErrorMsgCursor, 'a'));
+				});
+
+				it('ok', () => {
+					expect(ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : {
+								type : ['string']
+							}
+						}
+					})).to.be.null;
+				});
+
+				it('ok - with others', () => {
+					expect(ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : {
+								type : ['string', 'number']
+							}
+						}
+					})).to.be.null;
+				});
+
+				it('ok - with others', () => {
+					expect(ejv({
+						a : 'hello'
+					}, {
+						properties : {
+							a : {
+								type : ['boolean', 'string', 'number']
+							}
+						}
+					})).to.be.null;
+				});
 			});
 
 			xit('simple', () => {

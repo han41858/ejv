@@ -3,7 +3,11 @@
     "module": "commonjs",
     "target": "es5",
     "sourceMap": true,
-    "outDir": "./build"
+    "outDir": "./build",
+    "lib": [
+      "es2018",
+      "dom"
+    ]
   },
   "include": [
     "src",

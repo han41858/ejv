@@ -1,6 +1,8 @@
+import { DataType } from './constants';
+
 interface ObjectScheme {
 	properties : {
-		[key : string] : any;
+		type : DataType | DataType[];
 	}
 }
 

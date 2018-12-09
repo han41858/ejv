@@ -1,7 +1,7 @@
 import { EjvError, Options, Scheme } from './interfaces';
 import { DataType, ErrorMsg, ErrorMsgCursor } from './constants';
 
-import { definedTester, objectTester, stringTester } from './tester';
+import { arrayTester, definedTester, objectTester, typeTester } from './tester';
 
 export const ejv : Function = (data : object, scheme : Scheme, options : Options) : null | EjvError => {
 	console.log('ejv() %o', { data, scheme });
@@ -44,34 +44,48 @@ export const ejv : Function = (data : object, scheme : Scheme, options : Options
 	for (let i = 0; i < keyArrLength; i++) {
 		key = keyArr[i];
 		value = data[key];
+		path = `${key}`;
 
 		// check defined
 		if (!definedTester(data[key])) {
 			result = new EjvError(ErrorMsg.REQUIRED, key, value);
 		}
 
-		// check DIFFERENT_TYPE
-		const type : DataType = scheme.properties[key].type;
-		console.log('type :', type);
-
 		if (!result) {
-			switch (type) {
-				case DataType.string:
-					if (!stringTester(value)) {
-						result = new EjvError(ErrorMsg.DIFFERENT_TYPE, key, value);
-						path = `${key}`;
-					}
-					break;
+			// check type
+			const type : DataType | DataType[] = scheme.properties[key].type;
+			console.log('type :', type);
 
-				default:
-					path = `${key}`;
+			if (!definedTester(type)) {
+				throw new Error(ErrorMsg.NO_TYPE_FOR.replace(ErrorMsgCursor, path));
+			}
 
-					if (type === undefined) {
-						throw new Error(ErrorMsg.NO_TYPE_FOR.replace(ErrorMsgCursor, path));
-					} else {
-						throw new Error(ErrorMsg.INVALID_TYPE_FOR.replace(ErrorMsgCursor, path));
-					}
+			if (!arrayTester(type)) {
+				const typeAsArray : DataType[] = type as DataType[];
 
+				// TODO: use ejv() array empty
+				if (typeAsArray.length === 0) {
+					throw new Error(ErrorMsg.NO_TYPE_FOR.replace(ErrorMsgCursor, key));
+				}
+
+				// TODO: use ejv() string enum
+				if (!typeAsArray.every(type => {
+					return Object.values(DataType).includes(type);
+				})) {
+					throw new Error(ErrorMsg.INVALID_TYPE_FOR.replace(ErrorMsgCursor, key));
+				}
+
+				if (!typeAsArray.some((type : DataType) => {
+					return typeTester(type, value);
+				})) {
+					result = new EjvError(ErrorMsg.DIFFERENT_TYPE, key, value);
+				}
+			} else {
+				const typeAsString : DataType = type as DataType;
+
+				if (!typeTester(typeAsString, value)) {
+					result = new EjvError(ErrorMsg.DIFFERENT_TYPE, key, value);
+				}
 			}
 		}
 

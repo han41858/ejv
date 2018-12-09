@@ -1,3 +1,5 @@
+import { DataType } from './constants';
+
 type TypeTester = (value : any) => boolean;
 
 export const definedTester : TypeTester = (value : any) : boolean => {
@@ -68,4 +70,27 @@ export const arrayTester : TypeTester = (value : any) : boolean => {
 		&& value !== null
 		&& value.length !== undefined
 		&& value.push !== undefined;
+};
+
+export const typeTester : Function = (type : DataType, value : any) : boolean => {
+	let result : boolean = false;
+
+	switch (type) {
+		case DataType.BOOLEAN:
+			result = booleanTester(value);
+			break;
+
+		case DataType.NUMBER:
+			result = numberTester(value);
+			break;
+
+		case DataType.STRING:
+			result = stringTester(value);
+			break;
+
+		default:
+			throw new Error('not defined type'); // TODO: dev
+	}
+
+	return result;
 };

@@ -1,26 +1,26 @@
 export enum DataType {
-	undefined = 'undefined',
-	null = 'null',
+	UNDEFINED = 'undefined',
+	NULL = 'null',
 
-	boolean = 'boolean',
+	BOOLEAN = 'boolean',
 
-	number = 'number',
-	integer = 'integer',
-	index = 'index',
+	NUMBER = 'number',
+	INTEGER = 'integer',
+	INDEX = 'index',
 
-	string = 'string',
-	email = 'email',
-	url = 'url',
-	ipv4 = 'ipv4',
-	ipv6 = 'ipv6',
+	STRING = 'string',
+	EMAIL = 'email',
+	URL = 'url',
+	IPV4 = 'ipv4',
+	IPV6 = 'ipv6',
 
-	object = 'object',
+	OBJECT = 'object',
 
-	date = 'date',
+	DATE = 'date',
 
-	regexp = 'regexp',
+	REGEXP = 'regexp',
 
-	array = 'array'
+	ARRAY = 'array'
 }
 
 export const ErrorMsgCursor : string = '###';
