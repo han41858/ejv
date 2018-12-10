@@ -43,7 +43,7 @@ interface ObjectScheme extends CommonScheme {
 	}
 }
 
-interface RootObjectScheme {
+export interface RootObjectScheme {
 	properties : {
 		type : DataType | DataType[];
 	}

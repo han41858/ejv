@@ -1,9 +1,9 @@
-import { EjvError, Options, Scheme } from './interfaces';
+import { EjvError, Options, RootObjectScheme } from './interfaces';
 import { DataType, ErrorMsg, ErrorMsgCursor } from './constants';
 
 import { arrayTester, definedTester, objectTester, stringTester, typeArrayTester } from './tester';
 
-export const ejv : Function = (data : object, scheme : Scheme, options : Options) : null | EjvError => {
+export const ejv : Function = (data : object, scheme : RootObjectScheme, options : Options) : null | EjvError => {
 	console.log('ejv() %o', { data, scheme });
 
 	// check data itself
