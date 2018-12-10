@@ -5,14 +5,8 @@ export enum DataType {
 	BOOLEAN = 'boolean',
 
 	NUMBER = 'number',
-	INTEGER = 'integer',
-	INDEX = 'index',
 
 	STRING = 'string',
-	EMAIL = 'email',
-	URL = 'url',
-	IPV4 = 'ipv4',
-	IPV6 = 'ipv6',
 
 	OBJECT = 'object',
 
@@ -21,6 +15,19 @@ export enum DataType {
 	REGEXP = 'regexp',
 
 	ARRAY = 'array'
+}
+
+export enum NumberFormat {
+	INTEGER = 'integer',
+	INDEX = 'index'
+}
+
+export enum StringFormat {
+	EMAIL = 'email',
+	URL = 'url',
+	IP = 'ip', // ipv4 || ipv6
+	IPV4 = 'ipv4',
+	IPV6 = 'ipv6'
 }
 
 export const ErrorMsgCursor : string = '###';

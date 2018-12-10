@@ -7,15 +7,9 @@ import {
 	booleanTester,
 	dateTester,
 	definedTester,
-	emailTester,
-	indexTester,
-	integerTester,
-	ipv4Tester,
-	ipv6Tester,
 	numberTester,
 	objectTester,
-	stringTester,
-	urlTester
+	stringTester
 } from '../src/tester';
 
 describe('testers', function () {
@@ -89,57 +83,57 @@ describe('testers', function () {
 		});
 	});
 
-	describe('integerTester()', () => {
-		it('common test', () => {
-			expect(testRunner(
-				integerTester,
-				false,
-				false,
-				false,
-				true,
-				false,
-				false,
-				false
-			)).to.be.true;
-		});
-
-		it('additional test', () => {
-			expect(integerTester(-10.6)).to.be.false;
-			expect(integerTester(-1)).to.be.true;
-			expect(integerTester(0)).to.be.true;
-			expect(integerTester(5)).to.be.true;
-			expect(integerTester(5.5)).to.be.false;
-
-			expect(integerTester('8')).to.be.false;
-			expect(integerTester('8.5')).to.be.false;
-		});
-	});
-
-	describe('indexTester()', () => {
-		it('common test', () => {
-			expect(testRunner(
-				indexTester,
-				false,
-				false,
-				false,
-				true,
-				false,
-				false,
-				false
-			)).to.be.true;
-		});
-
-		it('additional test', () => {
-			expect(indexTester(-10.6)).to.be.false;
-			expect(indexTester(-1)).to.be.false;
-			expect(indexTester(0)).to.be.true;
-			expect(indexTester(5)).to.be.true;
-			expect(indexTester(5.5)).to.be.false;
-
-			expect(indexTester('8')).to.be.false;
-			expect(indexTester('8.5')).to.be.false;
-		});
-	});
+	// describe('integerTester()', () => {
+	// 	it('common test', () => {
+	// 		expect(testRunner(
+	// 			integerTester,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			true,
+	// 			false,
+	// 			false,
+	// 			false
+	// 		)).to.be.true;
+	// 	});
+	//
+	// 	it('additional test', () => {
+	// 		expect(integerTester(-10.6)).to.be.false;
+	// 		expect(integerTester(-1)).to.be.true;
+	// 		expect(integerTester(0)).to.be.true;
+	// 		expect(integerTester(5)).to.be.true;
+	// 		expect(integerTester(5.5)).to.be.false;
+	//
+	// 		expect(integerTester('8')).to.be.false;
+	// 		expect(integerTester('8.5')).to.be.false;
+	// 	});
+	// });
+	//
+	// describe('indexTester()', () => {
+	// 	it('common test', () => {
+	// 		expect(testRunner(
+	// 			indexTester,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			true,
+	// 			false,
+	// 			false,
+	// 			false
+	// 		)).to.be.true;
+	// 	});
+	//
+	// 	it('additional test', () => {
+	// 		expect(indexTester(-10.6)).to.be.false;
+	// 		expect(indexTester(-1)).to.be.false;
+	// 		expect(indexTester(0)).to.be.true;
+	// 		expect(indexTester(5)).to.be.true;
+	// 		expect(indexTester(5.5)).to.be.false;
+	//
+	// 		expect(indexTester('8')).to.be.false;
+	// 		expect(indexTester('8.5')).to.be.false;
+	// 	});
+	// });
 
 	describe('stringTester()', () => {
 		it('common test', () => {
@@ -162,113 +156,113 @@ describe('testers', function () {
 		});
 	});
 
-	describe('emailTester()', () => {
-		it('common test', () => {
-			expect(testRunner(
-				emailTester,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false
-			)).to.be.true;
-		});
-
-		it('additional test', () => {
-			expect(emailTester('')).to.be.false;
-			expect(emailTester(' ')).to.be.false;
-			expect(emailTester('hello')).to.be.false;
-			expect(emailTester('hello@')).to.be.false;
-			expect(emailTester('hello@domain')).to.be.false;
-			expect(emailTester('hello@domain.')).to.be.false;
-			expect(emailTester('hello@domain.com')).to.be.true;
-			expect(emailTester('hello@domain.com.')).to.be.false;
-			expect(emailTester('hello@domain.com.another')).to.be.true;
-		});
-	});
-
-	describe('urlTester()', () => {
-		it('common test', () => {
-			expect(testRunner(
-				urlTester,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false
-			)).to.be.true;
-		});
-
-		it('additional test', () => {
-			expect(urlTester('')).to.be.false;
-			expect(urlTester(' ')).to.be.false;
-			expect(urlTester('hello')).to.be.false;
-			expect(urlTester('http://hello')).to.be.false;
-			expect(urlTester('https://hello')).to.be.false;
-			expect(urlTester('http://hello.com')).to.be.true;
-			expect(urlTester('http://hello.com/')).to.be.true;
-			expect(urlTester('http://hello.com/#1')).to.be.true;
-			expect(urlTester('http://hello.com/child')).to.be.true;
-			expect(urlTester('http://hello.com/child/grand')).to.be.true;
-			expect(urlTester('http://hello.com/child/grand?query=some')).to.be.true;
-			expect(urlTester('http://hello.com/child/grand(some:angular)')).to.be.true;
-		});
-	});
-
-	describe('ipv4Tester()', () => {
-		it('common test', () => {
-			expect(testRunner(
-				ipv4Tester,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false
-			)).to.be.true;
-		});
-
-		it('additional test', () => {
-			expect(ipv4Tester('')).to.be.false;
-			expect(ipv4Tester(' ')).to.be.false;
-			expect(ipv4Tester('127.0.0')).to.be.false;
-			expect(ipv4Tester('127.0.0.1')).to.be.true;
-			expect(ipv4Tester('256.0.0.1')).to.be.false;
-			expect(ipv4Tester('255.-1.0.1')).to.be.false;
-			expect(ipv4Tester('255.256.267.1')).to.be.false;
-			expect(ipv4Tester('255.255.255.0')).to.be.true;
-			expect(ipv4Tester('255.255.255.0.5')).to.be.false;
-		});
-	});
-
-	describe('ipv6Tester()', () => {
-		it('common test', () => {
-			expect(testRunner(
-				ipv6Tester,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false
-			)).to.be.true;
-		});
-
-		it('additional test', () => {
-			expect(ipv6Tester('')).to.be.false;
-			expect(ipv6Tester(' ')).to.be.false;
-			expect(ipv6Tester('127.0.0')).to.be.false;
-			// expect(ipv6Tester('1762:0:0:0:0:B03:1:AF18')).to.be.true;
-			// expect(ipv6Tester('fe80:0000:0000:0000:0204:61ff:fe9d:f156/1')).to.be.true;
-			expect(ipv6Tester('1200:0000:AB00:1234:O000:2552:7777:1313')).to.be.false; // has invalid character
-		});
-	});
+	// describe('emailTester()', () => {
+	// 	it('common test', () => {
+	// 		expect(testRunner(
+	// 			emailTester,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false
+	// 		)).to.be.true;
+	// 	});
+	//
+	// 	it('additional test', () => {
+	// 		expect(emailTester('')).to.be.false;
+	// 		expect(emailTester(' ')).to.be.false;
+	// 		expect(emailTester('hello')).to.be.false;
+	// 		expect(emailTester('hello@')).to.be.false;
+	// 		expect(emailTester('hello@domain')).to.be.false;
+	// 		expect(emailTester('hello@domain.')).to.be.false;
+	// 		expect(emailTester('hello@domain.com')).to.be.true;
+	// 		expect(emailTester('hello@domain.com.')).to.be.false;
+	// 		expect(emailTester('hello@domain.com.another')).to.be.true;
+	// 	});
+	// });
+	//
+	// describe('urlTester()', () => {
+	// 	it('common test', () => {
+	// 		expect(testRunner(
+	// 			urlTester,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false
+	// 		)).to.be.true;
+	// 	});
+	//
+	// 	it('additional test', () => {
+	// 		expect(urlTester('')).to.be.false;
+	// 		expect(urlTester(' ')).to.be.false;
+	// 		expect(urlTester('hello')).to.be.false;
+	// 		expect(urlTester('http://hello')).to.be.false;
+	// 		expect(urlTester('https://hello')).to.be.false;
+	// 		expect(urlTester('http://hello.com')).to.be.true;
+	// 		expect(urlTester('http://hello.com/')).to.be.true;
+	// 		expect(urlTester('http://hello.com/#1')).to.be.true;
+	// 		expect(urlTester('http://hello.com/child')).to.be.true;
+	// 		expect(urlTester('http://hello.com/child/grand')).to.be.true;
+	// 		expect(urlTester('http://hello.com/child/grand?query=some')).to.be.true;
+	// 		expect(urlTester('http://hello.com/child/grand(some:angular)')).to.be.true;
+	// 	});
+	// });
+	//
+	// describe('ipv4Tester()', () => {
+	// 	it('common test', () => {
+	// 		expect(testRunner(
+	// 			ipv4Tester,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false
+	// 		)).to.be.true;
+	// 	});
+	//
+	// 	it('additional test', () => {
+	// 		expect(ipv4Tester('')).to.be.false;
+	// 		expect(ipv4Tester(' ')).to.be.false;
+	// 		expect(ipv4Tester('127.0.0')).to.be.false;
+	// 		expect(ipv4Tester('127.0.0.1')).to.be.true;
+	// 		expect(ipv4Tester('256.0.0.1')).to.be.false;
+	// 		expect(ipv4Tester('255.-1.0.1')).to.be.false;
+	// 		expect(ipv4Tester('255.256.267.1')).to.be.false;
+	// 		expect(ipv4Tester('255.255.255.0')).to.be.true;
+	// 		expect(ipv4Tester('255.255.255.0.5')).to.be.false;
+	// 	});
+	// });
+	//
+	// describe('ipv6Tester()', () => {
+	// 	it('common test', () => {
+	// 		expect(testRunner(
+	// 			ipv6Tester,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false,
+	// 			false
+	// 		)).to.be.true;
+	// 	});
+	//
+	// 	it('additional test', () => {
+	// 		expect(ipv6Tester('')).to.be.false;
+	// 		expect(ipv6Tester(' ')).to.be.false;
+	// 		expect(ipv6Tester('127.0.0')).to.be.false;
+	// 		// expect(ipv6Tester('1762:0:0:0:0:B03:1:AF18')).to.be.true;
+	// 		// expect(ipv6Tester('fe80:0000:0000:0000:0204:61ff:fe9d:f156/1')).to.be.true;
+	// 		expect(ipv6Tester('1200:0000:AB00:1234:O000:2552:7777:1313')).to.be.false; // has invalid character
+	// 	});
+	// });
 
 	describe('objectTester()', () => {
 		it('common test', () => {
