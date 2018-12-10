@@ -24,7 +24,13 @@ export enum NumberFormat {
 
 export enum StringFormat {
 	EMAIL = 'email',
+
+	DATE = 'date',
+	DATE_TILE = 'date-time',
+	TIME = 'time',
+
 	URL = 'url',
+
 	IP = 'ip', // ipv4 || ipv6
 	IPV4 = 'ipv4',
 	IPV6 = 'ipv6'
