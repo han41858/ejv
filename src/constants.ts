@@ -1,19 +1,11 @@
 export enum DataType {
-	UNDEFINED = 'undefined',
 	NULL = 'null',
-
 	BOOLEAN = 'boolean',
-
 	NUMBER = 'number',
-
 	STRING = 'string',
-
 	OBJECT = 'object',
-
 	DATE = 'date',
-
 	REGEXP = 'regexp',
-
 	ARRAY = 'array'
 }
 
@@ -36,21 +28,18 @@ export enum StringFormat {
 	IPV6 = 'ipv6'
 }
 
-export const ErrorMsgCursor : string = '###';
-
 export enum ErrorMsg {
 	// about Error
 	NO_DATA = 'no data to validate',
 	NO_JSON_DATA = 'no JSON data to validate',
-	NO_SCHEME = 'no scheme',
-	NO_SCHEME_FOR = 'no scheme for [###]',
-	NO_JSON_SCHEME = 'no JSON scheme',
-	NO_ROOT_PROPERTIES = 'no root properties',
 
-	NO_TYPE_FOR = 'no type for [###]',
-	INVALID_TYPE_FOR = 'invalid type enum for [###]',
+	NO_SCHEME = 'no scheme',
+	NO_ARRAY_SCHEME = 'scheme should be array',
+
+	EMPTY_ROOT_SCHEME = 'root scheme should not be empty',
+	INVALID_TYPE = 'scheme has invalid type enum',
 
 	// about EjvError
 	REQUIRED = 'required',
-	DIFFERENT_TYPE = 'type'
+	TYPE_MISMATCH = 'type mismatch'
 }
