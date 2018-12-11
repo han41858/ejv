@@ -23,6 +23,22 @@ export const indexTester : OptionalTester = (value : number) : boolean => {
 	return integerTester(value) && value >= 0;
 };
 
+export const minNumberTester : OptionalTester = (value : number, min : number) : boolean => {
+	return value >= min;
+};
+
+export const exclusiveMinNumberTester : OptionalTester = (value : number, min : number) : boolean => {
+	return value > min;
+};
+
+export const maxNumberTester : OptionalTester = (value : number, max : number) : boolean => {
+	return value <= max;
+};
+
+export const exclusiveMaxNumberTester : OptionalTester = (value : number, max : number) : boolean => {
+	return value < max;
+};
+
 export const stringTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'string';
 };
