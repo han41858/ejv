@@ -78,14 +78,10 @@ const _ejv : Function = (data : object, scheme : Scheme, options : Options) : nu
 			break;
 	}
 
-	console.log('result : %o', result);
-
 	return result;
 };
 
 export const ejv : Function = (data : object, scheme : RootObjectScheme, options : Options) : null | EjvError => {
-	console.log('ejv() %o', { data, scheme });
-
 	// check data itself
 	if (!definedTester(data)) {
 		throw new Error(ErrorMsg.NO_DATA);

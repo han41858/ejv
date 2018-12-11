@@ -4,7 +4,7 @@ import { ejv } from '../src/ejv';
 import { ErrorMsg, ErrorMsgCursor } from '../src/constants';
 
 describe('ejv', () => {
-	describe('error', () => {
+	describe('ejv() itself', () => {
 		describe('data', () => {
 			it('no data', () => {
 				expect(ejv).to.throw(Error, ErrorMsg.NO_DATA);
@@ -34,10 +34,8 @@ describe('ejv', () => {
 				}, {})).to.throw(ErrorMsg.NO_ROOT_PROPERTIES);
 			});
 		});
-	});
 
-	describe('operators', () => {
-		describe('properties & type', () => {
+		describe('root scheme', () => {
 			describe('error', () => {
 				it('no scheme', () => {
 					expect(() => ejv({
@@ -82,7 +80,7 @@ describe('ejv', () => {
 				});
 			});
 
-			describe('normal', () => {
+			describe('normal syntax', () => {
 				describe('error', () => {
 					it('no field', () => {
 						const result = ejv({
@@ -146,7 +144,7 @@ describe('ejv', () => {
 				});
 			});
 
-			describe('normal - multiple types', () => {
+			describe('normal syntax - multiple types', () => {
 				it('no type', () => {
 					expect(() => ejv({
 						a : 'hello'
