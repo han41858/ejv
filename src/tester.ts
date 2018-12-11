@@ -1,6 +1,7 @@
 import { DataType } from './constants';
 
 type TypeTester = (value : any) => boolean;
+type OptionalTester = (value : any, args? : any) => boolean; // skip type test
 
 export const definedTester : TypeTester = (value : any) : boolean => {
 	return value !== undefined;
@@ -14,15 +15,13 @@ export const numberTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'number';
 };
 
-// export const integerTester : TypeTester = (value : any) : boolean => {
-// 	return numberTester(value)
-// 		&& +value.toFixed(0) === value;
-// };
-//
-// export const indexTester : TypeTester = (value : any) : boolean => {
-// 	return integerTester(value)
-// 		&& value >= 0;
-// };
+export const integerTester : OptionalTester = (value : number) : boolean => {
+	return +value.toFixed(0) === value;
+};
+
+export const indexTester : OptionalTester = (value : number) : boolean => {
+	return integerTester(value) && value >= 0;
+};
 
 export const stringTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'string';
