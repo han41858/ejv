@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { testRunner } from './test-runner';
+import { commonTestRunner } from './common-test-runner';
 
 import {
 	arrayTester,
@@ -15,7 +15,7 @@ import {
 describe('testers', function () {
 	describe('definedTester()', () => {
 		it('common test', () => {
-			expect(testRunner(
+			expect(commonTestRunner(
 				definedTester,
 				true,
 				false,
@@ -30,7 +30,7 @@ describe('testers', function () {
 
 	describe('booleanTester()', () => {
 		it('common test', () => {
-			expect(testRunner(
+			expect(commonTestRunner(
 				booleanTester,
 				false,
 				false,
@@ -56,7 +56,7 @@ describe('testers', function () {
 
 	describe('numberTester()', () => {
 		it('common test', () => {
-			expect(testRunner(
+			expect(commonTestRunner(
 				numberTester,
 				false,
 				false,
@@ -85,7 +85,7 @@ describe('testers', function () {
 
 	// describe('integerTester()', () => {
 	// 	it('common test', () => {
-	// 		expect(testRunner(
+	// 		expect(commonTestRunner(
 	// 			integerTester,
 	// 			false,
 	// 			false,
@@ -111,7 +111,7 @@ describe('testers', function () {
 	//
 	// describe('indexTester()', () => {
 	// 	it('common test', () => {
-	// 		expect(testRunner(
+	// 		expect(commonTestRunner(
 	// 			indexTester,
 	// 			false,
 	// 			false,
@@ -137,7 +137,7 @@ describe('testers', function () {
 
 	describe('stringTester()', () => {
 		it('common test', () => {
-			expect(testRunner(
+			expect(commonTestRunner(
 				stringTester,
 				false,
 				false,
@@ -158,7 +158,7 @@ describe('testers', function () {
 
 	// describe('emailTester()', () => {
 	// 	it('common test', () => {
-	// 		expect(testRunner(
+	// 		expect(commonTestRunner(
 	// 			emailTester,
 	// 			false,
 	// 			false,
@@ -185,7 +185,7 @@ describe('testers', function () {
 	//
 	// describe('urlTester()', () => {
 	// 	it('common test', () => {
-	// 		expect(testRunner(
+	// 		expect(commonTestRunner(
 	// 			urlTester,
 	// 			false,
 	// 			false,
@@ -215,7 +215,7 @@ describe('testers', function () {
 	//
 	// describe('ipv4Tester()', () => {
 	// 	it('common test', () => {
-	// 		expect(testRunner(
+	// 		expect(commonTestRunner(
 	// 			ipv4Tester,
 	// 			false,
 	// 			false,
@@ -242,7 +242,7 @@ describe('testers', function () {
 	//
 	// describe('ipv6Tester()', () => {
 	// 	it('common test', () => {
-	// 		expect(testRunner(
+	// 		expect(commonTestRunner(
 	// 			ipv6Tester,
 	// 			false,
 	// 			false,
@@ -266,7 +266,7 @@ describe('testers', function () {
 
 	describe('objectTester()', () => {
 		it('common test', () => {
-			expect(testRunner(
+			expect(commonTestRunner(
 				objectTester,
 				true, // null is object
 				false,
@@ -287,7 +287,7 @@ describe('testers', function () {
 
 	describe('dateTester()', () => {
 		it('common test', () => {
-			expect(testRunner(
+			expect(commonTestRunner(
 				dateTester,
 				false,
 				false,
@@ -307,7 +307,7 @@ describe('testers', function () {
 
 	describe('arrayTester()', () => {
 		it('common test', () => {
-			expect(testRunner(
+			expect(commonTestRunner(
 				arrayTester,
 				false,
 				false,
