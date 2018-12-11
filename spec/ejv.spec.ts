@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { ejv } from '../src/ejv';
 import { ErrorMsg, ErrorMsgCursor } from '../src/constants';
 
-describe.only('ejv', () => {
+describe('ejv', () => {
 	describe('error', () => {
 		describe('data', () => {
 			it('no data', () => {

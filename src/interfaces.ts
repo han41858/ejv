@@ -36,7 +36,7 @@ interface StringScheme extends CommonScheme {
 	format? : StringFormat;
 }
 
-interface ObjectScheme extends CommonScheme {
+export interface ObjectScheme extends CommonScheme {
 	type : DataType.OBJECT;
 	properties? : {
 		type : DataType | DataType[];
