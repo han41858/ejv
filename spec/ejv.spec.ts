@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
-import { ErrorMsg } from '../src/constants';
+import { ErrorMsg, ErrorMsgCursorA } from '../src/constants';
 import { EjvError } from '../src/interfaces';
 
 const typeTester : {
@@ -127,6 +127,40 @@ describe('ejv()', () => {
 						type : ['string', 'number']
 					}])).to.be.null;
 				});
+			});
+		});
+
+		describe('min', () => {
+			it('ok', () => {
+				const result : EjvError = ejv({
+					a : 9
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 10
+				}]);
+
+				expect(result).to.be.instanceof(EjvError);
+				expect(result.keyword).to.be.eql(
+					ErrorMsg.GREATER_THAN_OR_EQUAL
+						.replace(ErrorMsgCursorA, '10')
+				);
+
+				expect(ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 10
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 11
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 10
+				}])).to.be.null;
 			});
 		});
 	});

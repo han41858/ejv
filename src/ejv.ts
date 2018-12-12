@@ -1,40 +1,65 @@
 import { EjvError, Options, Scheme } from './interfaces';
-import { DataType, ErrorMsg } from './constants';
+import { DataType, ErrorMsg, ErrorMsgCursorA } from './constants';
 
-import { arrayTester, definedTester, numberTester, objectTester } from './tester';
+import { arrayTester, definedTester, minNumberTester, numberTester, objectTester } from './tester';
 
-const _ejv : Function = (data : object, scheme : Scheme[], options : Options) : null | EjvError => {
-	// check data by scheme
+const _ejv : Function = (data : object, schemes : Scheme[], options : Options) : null | EjvError => {
+	// check data by schemes
 	let result : EjvError = null;
 
 	// use for() instead of forEach() to stop
-	const schemeLength : number = scheme.length;
+	const schemeLength : number = schemes.length;
 
 	for (let i = 0; i < schemeLength; i++) {
-		const unitScheme : Scheme = scheme[i];
-		const key : string = unitScheme.key;
+		const scheme : Scheme = schemes[i];
+		const key : string = scheme.key;
 
-		if (!(unitScheme.optional === true && !definedTester(data[key]))) {
+		if (!(scheme.optional === true && !definedTester(data[key]))) {
 			if (!definedTester(data[key])) {
 				result = new EjvError(ErrorMsg.REQUIRED, key, data[key]);
 			} else {
 				let types : DataType[];
+				let typeResolved : DataType;
 
-				if (arrayTester(unitScheme.type)) {
-					types = unitScheme.type as DataType[];
+				if (arrayTester(scheme.type)) {
+					types = scheme.type as DataType[];
 				} else {
-					types = [unitScheme.type as DataType];
+					types = [scheme.type as DataType];
 				}
 
 				const value : any = data[key];
 
 				if (!types.some(type => {
+					let valid : boolean = false;
+
 					switch (type) {
 						case DataType.NUMBER:
-							return numberTester(value);
+							valid = numberTester(value);
+							if (valid) {
+								typeResolved = type;
+							}
+							break;
 					}
+
+					return valid;
 				})) {
 					result = new EjvError(ErrorMsg.TYPE_MISMATCH, key, value);
+				}
+
+				// additional check for type resolved
+				switch (typeResolved) {
+					case DataType.NUMBER:
+						if (definedTester(scheme.min)) {
+							if (!minNumberTester(value, scheme.min)) {
+								result = new EjvError(
+									ErrorMsg.GREATER_THAN_OR_EQUAL
+										.replace(ErrorMsgCursorA, '' + scheme.min),
+									key,
+									value
+								);
+							}
+						}
+						break;
 				}
 			}
 		}
@@ -48,7 +73,7 @@ const _ejv : Function = (data : object, scheme : Scheme[], options : Options) : 
 	return result;
 };
 
-export const ejv : Function = (data : object, scheme : Scheme[], options : Options) : null | EjvError => {
+export const ejv : Function = (data : object, schemes : Scheme[], options : Options) : null | EjvError => {
 	// check data itself
 	if (!definedTester(data)) {
 		throw new Error(ErrorMsg.NO_DATA);
@@ -58,20 +83,20 @@ export const ejv : Function = (data : object, scheme : Scheme[], options : Optio
 		throw new Error(ErrorMsg.NO_JSON_DATA);
 	}
 
-	// check scheme itself
-	if (!definedTester(scheme)) {
+	// check schemes itself
+	if (!definedTester(schemes)) {
 		throw new Error(ErrorMsg.NO_SCHEME);
 	}
 
-	if (!arrayTester(scheme) || scheme === null) {
+	if (!arrayTester(schemes) || schemes === null) {
 		throw new Error(ErrorMsg.NO_ARRAY_SCHEME);
 	}
 
-	if (scheme.length === 0) {
+	if (schemes.length === 0) {
 		throw new Error(ErrorMsg.EMPTY_ROOT_SCHEME);
 	}
 
-	// TODO: check scheme
+	// TODO: check schemes
 
-	return _ejv(data, scheme);
+	return _ejv(data, schemes);
 };

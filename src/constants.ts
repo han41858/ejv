@@ -28,6 +28,8 @@ export enum StringFormat {
 	IPV6 = 'ipv6'
 }
 
+export const ErrorMsgCursorA : string = '<<A>>';
+
 export enum ErrorMsg {
 	// about Error
 	NO_DATA = 'no data to validate',
@@ -41,5 +43,7 @@ export enum ErrorMsg {
 
 	// about EjvError
 	REQUIRED = 'required',
-	TYPE_MISMATCH = 'type mismatch'
+	TYPE_MISMATCH = 'type mismatch',
+
+	GREATER_THAN_OR_EQUAL = 'the value should be greater or equal than <<A>>' // min
 }
