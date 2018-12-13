@@ -48,6 +48,8 @@ export enum ErrorMsg {
 
 	ONE_OF = 'the value should be one of <<A>>', // enum
 
+	FORMAT = 'the value should be a form of <<A>>', // format
+
 	GREATER_THAN_OR_EQUAL = 'the value should be greater or equal than <<A>>', // min
 	GREATER_THAN = 'the value should be greater than <<A>>', // min
 

@@ -384,6 +384,310 @@ describe('ejv()', () => {
 				);
 			});
 		});
+
+		describe('format', () => {
+			describe('integer', () => {
+				it('undefined', () => {
+					expect(ejv({
+						a : 123.5
+					}, [{
+						key : 'a',
+						type : 'number'
+					}])).to.be.null;
+				});
+
+				describe('single format', () => {
+					it('fail', () => {
+						const result : EjvError = ejv({
+							a : 123.5
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : 'integer'
+						}]);
+
+						expect(result).to.be.instanceof(EjvError);
+						expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+							.replace(ErrorMsgCursorA, 'integer')
+						);
+					});
+
+					it('ok', () => {
+						expect(ejv({
+							a : 123
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : 'integer'
+						}])).to.be.null;
+					});
+				});
+
+				describe('multiple formats', () => {
+					it('fail', () => {
+						const result : EjvError = ejv({
+							a : 123.5
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['integer']
+						}]);
+
+						expect(result).to.be.instanceof(EjvError);
+						expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+							.replace(ErrorMsgCursorA, '[integer]')
+						);
+					});
+
+					it('ok', () => {
+						expect(ejv({
+							a : -7
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['integer']
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 0
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['integer']
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 123
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['integer']
+						}])).to.be.null;
+					});
+
+					it('ok - with others', () => {
+						expect(ejv({
+							a : -7
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['integer', 'index']
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 0
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['integer', 'index']
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 123
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['integer', 'index']
+						}])).to.be.null;
+					});
+
+					it('ok - with others', () => {
+						expect(ejv({
+							a : -7
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index', 'integer']
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 0
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index', 'integer']
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 123
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index', 'integer']
+						}])).to.be.null;
+					});
+				});
+			});
+
+			describe('index', () => {
+				it('undefined', () => {
+					expect(ejv({
+						a : 1.5
+					}, [{
+						key : 'a',
+						type : 'number'
+					}])).to.be.null;
+				});
+
+				describe('single format', () => {
+					it('fail', () => {
+						const result1 : EjvError = ejv({
+							a : 1.5
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : 'index'
+						}]);
+
+						expect(result1).to.be.instanceof(EjvError);
+						expect(result1.keyword).to.be.eql(ErrorMsg.FORMAT
+							.replace(ErrorMsgCursorA, 'index')
+						);
+
+						const result2 : EjvError = ejv({
+							a : -1
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : 'index'
+						}]);
+
+						expect(result2).to.be.instanceof(EjvError);
+						expect(result2.keyword).to.be.eql(ErrorMsg.FORMAT
+							.replace(ErrorMsgCursorA, 'index')
+						);
+
+						const result3 : EjvError = ejv({
+							a : -1.6
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : 'index'
+						}]);
+
+						expect(result3).to.be.instanceof(EjvError);
+						expect(result3.keyword).to.be.eql(ErrorMsg.FORMAT
+							.replace(ErrorMsgCursorA, 'index')
+						);
+					});
+
+					it('ok', () => {
+						expect(ejv({
+							a : 0
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : 'index'
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 6
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : 'index'
+						}])).to.be.null;
+					});
+				});
+
+				describe('multiple formats', () => {
+					it('fail', () => {
+						const result1 : EjvError = ejv({
+							a : 1.5
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index']
+						}]);
+
+						expect(result1).to.be.instanceof(EjvError);
+						expect(result1.keyword).to.be.eql(ErrorMsg.FORMAT
+							.replace(ErrorMsgCursorA, '[index]')
+						);
+
+						const result2 : EjvError = ejv({
+							a : -1
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index']
+						}]);
+
+						expect(result2).to.be.instanceof(EjvError);
+						expect(result2.keyword).to.be.eql(ErrorMsg.FORMAT
+							.replace(ErrorMsgCursorA, '[index]')
+						);
+
+						const result3 : EjvError = ejv({
+							a : -1.6
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index']
+						}]);
+
+						expect(result3).to.be.instanceof(EjvError);
+						expect(result3.keyword).to.be.eql(ErrorMsg.FORMAT
+							.replace(ErrorMsgCursorA, '[index]')
+						);
+					});
+
+					it('ok', () => {
+						expect(ejv({
+							a : 0
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index']
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 6
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index']
+						}])).to.be.null;
+					});
+
+					it('ok - with others', () => {
+						expect(ejv({
+							a : 0
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index', 'integer']
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 6
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['index', 'integer']
+						}])).to.be.null;
+					});
+
+					it('ok - with others', () => {
+						expect(ejv({
+							a : 0
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['integer', 'index']
+						}])).to.be.null;
+
+						expect(ejv({
+							a : 6
+						}, [{
+							key : 'a',
+							type : 'number',
+							format : ['integer', 'index']
+						}])).to.be.null;
+					});
+				});
+			});
+		});
 	});
 
 	describe('string', () => {

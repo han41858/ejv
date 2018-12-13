@@ -1,12 +1,15 @@
 import { EjvError, Options, Scheme } from './interfaces';
-import { DataType, ErrorMsg, ErrorMsgCursorA } from './constants';
+import { DataType, ErrorMsg, ErrorMsgCursorA, NumberFormat } from './constants';
 
 import {
 	arrayTester,
+	booleanTester,
 	definedTester,
 	enumTester,
 	exclusiveMaxNumberTester,
 	exclusiveMinNumberTester,
+	indexTester,
+	integerTester,
 	maxNumberTester,
 	minNumberTester,
 	numberTester,
@@ -34,10 +37,10 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 			let types : DataType[];
 			let typeResolved : DataType;
 
-			if (arrayTester(scheme.type)) {
-				types = scheme.type as DataType[];
-			} else {
+			if (!arrayTester(scheme.type)) {
 				types = [scheme.type as DataType];
+			} else {
+				types = scheme.type as DataType[];
 			}
 
 			const value : any = data[key];
@@ -46,6 +49,10 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 				let valid : boolean = false;
 
 				switch (type) {
+					case DataType.BOOLEAN:
+						valid = booleanTester(value);
+						break;
+
 					case DataType.NUMBER:
 						valid = numberTester(value);
 						break;
@@ -53,6 +60,9 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 					case DataType.STRING:
 						valid = stringTester(value);
 						break;
+
+					default:
+						throw new Error('not defined data type'); // TODO: dev
 				}
 
 				if (valid) {
@@ -132,6 +142,46 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 								);
 								break;
 							}
+						}
+					}
+
+					if (definedTester(scheme.format)) {
+						let formats : NumberFormat[];
+
+						if (!arrayTester(scheme.format)) {
+							formats = [scheme.format as NumberFormat];
+						} else {
+							formats = scheme.format as NumberFormat[];
+						}
+
+						if (!formats.some(format => {
+							let valid : boolean = false;
+
+							switch (format) {
+								case NumberFormat.INTEGER:
+									valid = integerTester(value);
+									break;
+
+								case NumberFormat.INDEX:
+									valid = indexTester(value);
+									break;
+
+								default:
+									throw new Error('not defined number format'); // TODO: dev
+							}
+
+							return valid;
+						})) {
+							if (!arrayTester(scheme.format)) {
+								result = new EjvError(ErrorMsg.FORMAT
+									.replace(ErrorMsgCursorA, scheme.format as NumberFormat)
+									, key, value);
+							} else {
+								result = new EjvError(ErrorMsg.FORMAT
+									.replace(ErrorMsgCursorA, `[${(<NumberFormat[]>scheme.format).join(', ')}]`)
+									, key, value);
+							}
+							break;
 						}
 					}
 					break;
