@@ -130,9 +130,9 @@ describe('ejv()', () => {
 			});
 		});
 
-		describe('min', () => {
-			it('ok', () => {
-				const result : EjvError = ejv({
+		describe('min & exclusiveMin', () => {
+			it('without exclusiveMin', () => {
+				const result1 : EjvError = ejv({
 					a : 9
 				}, [{
 					key : 'a',
@@ -140,8 +140,8 @@ describe('ejv()', () => {
 					min : 10
 				}]);
 
-				expect(result).to.be.instanceof(EjvError);
-				expect(result.keyword).to.be.eql(
+				expect(result1).to.be.instanceof(EjvError);
+				expect(result1.keyword).to.be.eql(
 					ErrorMsg.GREATER_THAN_OR_EQUAL
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -160,6 +160,82 @@ describe('ejv()', () => {
 					key : 'a',
 					type : 'number',
 					min : 10
+				}])).to.be.null;
+			});
+
+			it('exclusiveMin === true', () => {
+				const result1 : EjvError = ejv({
+					a : 9
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 10,
+					exclusiveMin : true
+				}]);
+
+				expect(result1).to.be.instanceof(EjvError);
+				expect(result1.keyword).to.be.eql(
+					ErrorMsg.GREATER_THAN
+						.replace(ErrorMsgCursorA, '10')
+				);
+
+				const result2 : EjvError = ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 10,
+					exclusiveMin : true
+				}]);
+
+				expect(result2).to.be.instanceof(EjvError);
+				expect(result2.keyword).to.be.eql(
+					ErrorMsg.GREATER_THAN
+						.replace(ErrorMsgCursorA, '10')
+				);
+
+				expect(ejv({
+					a : 11
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 10,
+					exclusiveMin : true
+				}])).to.be.null;
+			});
+
+			it('exclusiveMin === false', () => {
+				const result1 : EjvError = ejv({
+					a : 9
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 10,
+					exclusiveMin : false
+				}]);
+
+				expect(result1).to.be.instanceof(EjvError);
+				expect(result1.keyword).to.be.eql(
+					ErrorMsg.GREATER_THAN_OR_EQUAL
+						.replace(ErrorMsgCursorA, '10')
+				);
+
+				expect(ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 10,
+					exclusiveMin : false
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 11
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 10,
+					exclusiveMin : false
 				}])).to.be.null;
 			});
 		});

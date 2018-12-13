@@ -10,10 +10,10 @@ export interface Scheme {
 
 	// common - number & Date
 	min? : number;
-	exclusiveMin? : number;
+	exclusiveMin? : boolean; // false
 
 	max? : number;
-	exclusiveMax? : number;
+	exclusiveMax? : boolean; // false
 
 	// common - number & string & Date
 	enum? : number[] | string[] | Date[];

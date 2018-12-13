@@ -1,7 +1,14 @@
 import { EjvError, Options, Scheme } from './interfaces';
 import { DataType, ErrorMsg, ErrorMsgCursorA } from './constants';
 
-import { arrayTester, definedTester, minNumberTester, numberTester, objectTester } from './tester';
+import {
+	arrayTester,
+	definedTester,
+	exclusiveMinNumberTester,
+	minNumberTester,
+	numberTester,
+	objectTester
+} from './tester';
 
 const _ejv : Function = (data : object, schemes : Scheme[], options : Options) : null | EjvError => {
 	// check data by schemes
@@ -53,6 +60,17 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 							if (!minNumberTester(value, scheme.min)) {
 								result = new EjvError(
 									ErrorMsg.GREATER_THAN_OR_EQUAL
+										.replace(ErrorMsgCursorA, '' + scheme.min),
+									key,
+									value
+								);
+							}
+
+							if (definedTester(scheme.exclusiveMin)
+								&& scheme.exclusiveMin === true
+								&& !exclusiveMinNumberTester(value, scheme.min)) {
+								result = new EjvError(
+									ErrorMsg.GREATER_THAN
 										.replace(ErrorMsgCursorA, '' + scheme.min),
 									key,
 									value
