@@ -87,6 +87,10 @@ export const arrayTester : TypeTester = (value : any) : boolean => {
 		&& value.push !== undefined;
 };
 
+export const enumTester : Function = <T> (value : T, arr : T[]) : boolean => {
+	return arr.includes(value);
+};
+
 export const typeTester : Function = (type : DataType, value : any) : boolean => {
 	let result : boolean = false;
 

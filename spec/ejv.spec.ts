@@ -130,6 +130,37 @@ describe('ejv()', () => {
 			});
 		});
 
+		describe('enum', () => {
+			it('fail', () => {
+				const enumArr : number[] = [9, 11];
+
+				const result : EjvError = ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					enum : enumArr
+				}]);
+
+				expect(result).to.be.instanceof(EjvError);
+				expect(result.keyword).to.be.eql(ErrorMsg.ONE_OF
+					.replace(ErrorMsgCursorA, `[${enumArr.join(', ')}]`)
+				);
+				expect(result.path).to.be.eql('a');
+				expect(result.data).to.be.eql(10);
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					enum : [9, 10, 11]
+				}])).to.be.null;
+			});
+		});
+
 		describe('min & exclusiveMin', () => {
 			it('without exclusiveMin', () => {
 				const result1 : EjvError = ejv({

@@ -45,6 +45,8 @@ export enum ErrorMsg {
 	REQUIRED = 'required',
 	TYPE_MISMATCH = 'type mismatch',
 
+	ONE_OF = 'the value should be one of <<A>>', // enum
+
 	GREATER_THAN_OR_EQUAL = 'the value should be greater or equal than <<A>>', // min
 	GREATER_THAN = 'the value should be greater than <<A>>', // min
 

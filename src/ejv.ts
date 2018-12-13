@@ -4,6 +4,7 @@ import { DataType, ErrorMsg, ErrorMsgCursorA } from './constants';
 import {
 	arrayTester,
 	definedTester,
+	enumTester,
 	exclusiveMaxNumberTester,
 	exclusiveMinNumberTester,
 	maxNumberTester,
@@ -26,89 +27,99 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 		if (!(scheme.optional === true && !definedTester(data[key]))) {
 			if (!definedTester(data[key])) {
 				result = new EjvError(ErrorMsg.REQUIRED, key, data[key]);
+				break;
+			}
+			let types : DataType[];
+			let typeResolved : DataType;
+
+			if (arrayTester(scheme.type)) {
+				types = scheme.type as DataType[];
 			} else {
-				let types : DataType[];
-				let typeResolved : DataType;
+				types = [scheme.type as DataType];
+			}
 
-				if (arrayTester(scheme.type)) {
-					types = scheme.type as DataType[];
-				} else {
-					types = [scheme.type as DataType];
-				}
+			const value : any = data[key];
 
-				const value : any = data[key];
+			if (!types.some(type => {
+				let valid : boolean = false;
 
-				if (!types.some(type => {
-					let valid : boolean = false;
-
-					switch (type) {
-						case DataType.NUMBER:
-							valid = numberTester(value);
-							if (valid) {
-								typeResolved = type;
-							}
-							break;
-					}
-
-					return valid;
-				})) {
-					result = new EjvError(ErrorMsg.TYPE_MISMATCH, key, value);
-				}
-
-				// additional check for type resolved
-				switch (typeResolved) {
+				switch (type) {
 					case DataType.NUMBER:
-						if (definedTester(scheme.min)) {
-							if (!minNumberTester(value, scheme.min)) {
-								result = new EjvError(
-									ErrorMsg.GREATER_THAN_OR_EQUAL
-										.replace(ErrorMsgCursorA, '' + scheme.min),
-									key,
-									value
-								);
-							}
-
-							if (definedTester(scheme.exclusiveMin)
-								&& scheme.exclusiveMin === true
-								&& !exclusiveMinNumberTester(value, scheme.min)) {
-								result = new EjvError(
-									ErrorMsg.GREATER_THAN
-										.replace(ErrorMsgCursorA, '' + scheme.min),
-									key,
-									value
-								);
-							}
-						}
-
-						if (definedTester(scheme.max)) {
-							if (!maxNumberTester(value, scheme.max)) {
-								result = new EjvError(
-									ErrorMsg.SMALLER_THAN_OR_EQUAL
-										.replace(ErrorMsgCursorA, '' + scheme.max),
-									key,
-									value
-								);
-							}
-
-							if (definedTester(scheme.exclusiveMax)
-								&& scheme.exclusiveMax === true
-								&& !exclusiveMaxNumberTester(value, scheme.max)) {
-								result = new EjvError(
-									ErrorMsg.SMALLER_THAN
-										.replace(ErrorMsgCursorA, '' + scheme.max),
-									key,
-									value
-								);
-							}
+						valid = numberTester(value);
+						if (valid) {
+							typeResolved = type;
 						}
 						break;
 				}
-			}
-		}
-		// else optional skip
 
-		if (!!result) {
-			break;
+				return valid;
+			})) {
+				result = new EjvError(ErrorMsg.TYPE_MISMATCH, key, value);
+				break;
+			}
+
+			// additional check for type resolved
+			switch (typeResolved) {
+				case DataType.NUMBER:
+					if (definedTester(scheme.enum) && !enumTester(value, scheme.enum)) {
+						result = new EjvError(
+							ErrorMsg.ONE_OF
+								.replace(ErrorMsgCursorA, `[${scheme.enum.join(', ')}]`),
+							key,
+							value
+						);
+						break;
+					}
+
+					if (definedTester(scheme.min)) {
+						if (!minNumberTester(value, scheme.min)) {
+							result = new EjvError(
+								ErrorMsg.GREATER_THAN_OR_EQUAL
+									.replace(ErrorMsgCursorA, '' + scheme.min),
+								key,
+								value
+							);
+							break;
+						}
+
+						if (definedTester(scheme.exclusiveMin)
+							&& scheme.exclusiveMin === true
+							&& !exclusiveMinNumberTester(value, scheme.min)) {
+							result = new EjvError(
+								ErrorMsg.GREATER_THAN
+									.replace(ErrorMsgCursorA, '' + scheme.min),
+								key,
+								value
+							);
+							break;
+						}
+					}
+
+					if (definedTester(scheme.max)) {
+						if (!maxNumberTester(value, scheme.max)) {
+							result = new EjvError(
+								ErrorMsg.SMALLER_THAN_OR_EQUAL
+									.replace(ErrorMsgCursorA, '' + scheme.max),
+								key,
+								value
+							);
+							break;
+						}
+
+						if (definedTester(scheme.exclusiveMax)
+							&& scheme.exclusiveMax === true
+							&& !exclusiveMaxNumberTester(value, scheme.max)) {
+							result = new EjvError(
+								ErrorMsg.SMALLER_THAN
+									.replace(ErrorMsgCursorA, '' + scheme.max),
+								key,
+								value
+							);
+							break;
+						}
+					}
+					break;
+			}
 		}
 	}
 
