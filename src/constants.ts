@@ -43,7 +43,8 @@ export enum ErrorMsg {
 
 	// about EjvError
 	REQUIRED = 'required',
-	TYPE_MISMATCH = 'type mismatch',
+	TYPE_MISMATCH = 'the value should be a <<A>>',
+	TYPE_MISMATCH_ONE_OF = 'the value should be one of <<A>>',
 
 	ONE_OF = 'the value should be one of <<A>>', // enum
 

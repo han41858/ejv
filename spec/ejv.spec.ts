@@ -66,7 +66,9 @@ describe('ejv()', () => {
 
 							expect(result).to.be.instanceof(EjvError);
 
-							expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH);
+							expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+								.replace(ErrorMsgCursorA, 'number')
+							);
 							expect(result.path).to.be.eql('a');
 							expect(result.data).to.be.eql(obj.value);
 						});
@@ -74,17 +76,19 @@ describe('ejv()', () => {
 
 				it('multiple types', () => {
 					const value = 123;
+					const typeArr : string[] = ['boolean', 'string'];
 
 					const result : EjvError = ejv({
 						a : value
 					}, [{
 						key : 'a',
-						type : ['boolean', 'string']
+						type : typeArr
 					}]);
 
 					expect(result).to.be.instanceof(EjvError);
 
-					expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH);
+					expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+						.replace(ErrorMsgCursorA, `[${typeArr.join(', ')}]`));
 					expect(result.path).to.be.eql('a');
 					expect(result.data).to.be.eql(value);
 				});

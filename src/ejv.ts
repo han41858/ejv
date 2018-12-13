@@ -29,6 +29,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 				result = new EjvError(ErrorMsg.REQUIRED, key, data[key]);
 				break;
 			}
+
 			let types : DataType[];
 			let typeResolved : DataType;
 
@@ -54,7 +55,15 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 
 				return valid;
 			})) {
-				result = new EjvError(ErrorMsg.TYPE_MISMATCH, key, value);
+				if (!arrayTester(scheme.type)) {
+					result = new EjvError(ErrorMsg.TYPE_MISMATCH
+						.replace(ErrorMsgCursorA, scheme.type as DataType)
+						, key, value);
+				} else {
+					result = new EjvError(ErrorMsg.TYPE_MISMATCH_ONE_OF
+						.replace(ErrorMsgCursorA, `[${(<DataType[]>scheme.type).join(', ')}]`)
+						, key, value);
+				}
 				break;
 			}
 
