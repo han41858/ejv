@@ -10,7 +10,8 @@ import {
 	maxNumberTester,
 	minNumberTester,
 	numberTester,
-	objectTester
+	objectTester,
+	stringTester
 } from './tester';
 
 const _ejv : Function = (data : object, schemes : Scheme[], options : Options) : null | EjvError => {
@@ -47,10 +48,15 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 				switch (type) {
 					case DataType.NUMBER:
 						valid = numberTester(value);
-						if (valid) {
-							typeResolved = type;
-						}
 						break;
+
+					case DataType.STRING:
+						valid = stringTester(value);
+						break;
+				}
+
+				if (valid) {
+					typeResolved = type;
 				}
 
 				return valid;
