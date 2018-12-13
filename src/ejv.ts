@@ -73,19 +73,20 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 				break;
 			}
 
+			// common validation
+			if (definedTester(scheme.enum) && !enumTester(value, scheme.enum)) {
+				result = new EjvError(
+					ErrorMsg.ONE_OF
+						.replace(ErrorMsgCursorA, `[${scheme.enum.join(', ')}]`),
+					key,
+					value
+				);
+				break;
+			}
+
 			// additional check for type resolved
 			switch (typeResolved) {
 				case DataType.NUMBER:
-					if (definedTester(scheme.enum) && !enumTester(value, scheme.enum)) {
-						result = new EjvError(
-							ErrorMsg.ONE_OF
-								.replace(ErrorMsgCursorA, `[${scheme.enum.join(', ')}]`),
-							key,
-							value
-						);
-						break;
-					}
-
 					if (definedTester(scheme.min)) {
 						if (!definedTester(scheme.exclusiveMin) || scheme.exclusiveMin !== true) {
 							if (!minNumberTester(value, scheme.min)) {

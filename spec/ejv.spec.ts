@@ -468,5 +468,36 @@ describe('ejv()', () => {
 				});
 			});
 		});
+
+		describe('enum', () => {
+			it('fail', () => {
+				const enumArr : string[] = ['b', 'c'];
+
+				const result : EjvError = ejv({
+					a : 'a'
+				}, [{
+					key : 'a',
+					type : 'string',
+					enum : enumArr
+				}]);
+
+				expect(result).to.be.instanceof(EjvError);
+				expect(result.keyword).to.be.eql(ErrorMsg.ONE_OF
+					.replace(ErrorMsgCursorA, `[${enumArr.join(', ')}]`)
+				);
+				expect(result.path).to.be.eql('a');
+				expect(result.data).to.be.eql('a');
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a : 'a'
+				}, [{
+					key : 'a',
+					type : 'string',
+					enum : ['a', 'b', 'c']
+				}])).to.be.null;
+			});
+		});
 	});
 });
