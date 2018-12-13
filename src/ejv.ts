@@ -4,7 +4,9 @@ import { DataType, ErrorMsg, ErrorMsgCursorA } from './constants';
 import {
 	arrayTester,
 	definedTester,
+	exclusiveMaxNumberTester,
 	exclusiveMinNumberTester,
+	maxNumberTester,
 	minNumberTester,
 	numberTester,
 	objectTester
@@ -72,6 +74,28 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 								result = new EjvError(
 									ErrorMsg.GREATER_THAN
 										.replace(ErrorMsgCursorA, '' + scheme.min),
+									key,
+									value
+								);
+							}
+						}
+
+						if (definedTester(scheme.max)) {
+							if (!maxNumberTester(value, scheme.max)) {
+								result = new EjvError(
+									ErrorMsg.SMALLER_THAN_OR_EQUAL
+										.replace(ErrorMsgCursorA, '' + scheme.max),
+									key,
+									value
+								);
+							}
+
+							if (definedTester(scheme.exclusiveMax)
+								&& scheme.exclusiveMax === true
+								&& !exclusiveMaxNumberTester(value, scheme.max)) {
+								result = new EjvError(
+									ErrorMsg.SMALLER_THAN
+										.replace(ErrorMsgCursorA, '' + scheme.max),
 									key,
 									value
 								);

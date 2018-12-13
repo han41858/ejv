@@ -239,5 +239,115 @@ describe('ejv()', () => {
 				}])).to.be.null;
 			});
 		});
+
+		describe('max & exclusiveMax', () => {
+			it('without exclusiveMax', () => {
+				expect(ejv({
+					a : 9
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 10
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 10
+				}])).to.be.null;
+
+				const result1 : EjvError = ejv({
+					a : 11
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 10
+				}]);
+
+				expect(result1).to.be.instanceof(EjvError);
+				expect(result1.keyword).to.be.eql(
+					ErrorMsg.SMALLER_THAN_OR_EQUAL
+						.replace(ErrorMsgCursorA, '10')
+				);
+			});
+
+			it('exclusiveMax === true', () => {
+				expect(ejv({
+					a : 9
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 10,
+					exclusiveMax : true
+				}])).to.be.null;
+
+				const result1 : EjvError = ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 10,
+					exclusiveMax : true
+				}]);
+
+				expect(result1).to.be.instanceof(EjvError);
+				expect(result1.keyword).to.be.eql(
+					ErrorMsg.SMALLER_THAN
+						.replace(ErrorMsgCursorA, '10')
+				);
+
+				const result2 : EjvError = ejv({
+					a : 11
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 10,
+					exclusiveMax : true
+				}]);
+
+				expect(result2).to.be.instanceof(EjvError);
+				expect(result2.keyword).to.be.eql(
+					ErrorMsg.SMALLER_THAN
+						.replace(ErrorMsgCursorA, '10')
+				);
+			});
+
+			it('exclusiveMax === false', () => {
+				expect(ejv({
+					a : 9
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 10,
+					exclusiveMax : false
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 10,
+					exclusiveMax : false
+				}])).to.be.null;
+
+				const result1 : EjvError = ejv({
+					a : 11
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 10,
+					exclusiveMax : false
+				}]);
+
+				expect(result1).to.be.instanceof(EjvError);
+				expect(result1.keyword).to.be.eql(
+					ErrorMsg.SMALLER_THAN_OR_EQUAL
+						.replace(ErrorMsgCursorA, '10')
+				);
+			});
+		});
 	});
 });

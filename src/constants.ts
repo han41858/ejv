@@ -46,5 +46,8 @@ export enum ErrorMsg {
 	TYPE_MISMATCH = 'type mismatch',
 
 	GREATER_THAN_OR_EQUAL = 'the value should be greater or equal than <<A>>', // min
-	GREATER_THAN = 'the value should be greater than <<A>>' // min
+	GREATER_THAN = 'the value should be greater than <<A>>', // min
+
+	SMALLER_THAN_OR_EQUAL = 'the value should be smaller or equal than <<A>>', // max
+	SMALLER_THAN = 'the value should be smaller than <<A>>' // max
 }
