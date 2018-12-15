@@ -1,10 +1,11 @@
 import { EjvError, Options, Scheme } from './interfaces';
-import { DataType, ErrorMsg, ErrorMsgCursorA, NumberFormat } from './constants';
+import { DataType, ErrorMsg, ErrorMsgCursorA, NumberFormat, StringFormat } from './constants';
 
 import {
 	arrayTester,
 	booleanTester,
 	definedTester,
+	emailTester,
 	enumTester,
 	exclusiveMaxNumberTester,
 	exclusiveMinNumberTester,
@@ -195,6 +196,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 							key,
 							value
 						);
+						break;
 					}
 
 					if (definedTester(scheme.maxLength) && !maxLengthTester(value, scheme.maxLength)) {
@@ -203,6 +205,23 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 							key,
 							value
 						);
+						break;
+					}
+
+					if (definedTester(scheme.format)) {
+						switch (scheme.format) {
+							case StringFormat.EMAIL:
+								if (!emailTester(value)) {
+									result = new EjvError(ErrorMsg.FORMAT
+										.replace(ErrorMsgCursorA, scheme.format),
+										key,
+										value);
+								}
+								break;
+
+							default:
+								throw new Error('not defined string format'); // TODO: dev
+						}
 					}
 					break;
 			}

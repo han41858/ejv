@@ -876,7 +876,7 @@ describe('ejv()', () => {
 			});
 		});
 
-		xdescribe('pattern', () => {
+		describe('pattern', () => {
 			it('email', () => {
 				const result : EjvError = ejv({
 					a : 'ejv'
