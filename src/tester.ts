@@ -5,6 +5,18 @@ export const definedTester : TypeTester = (value : any) : boolean => {
 	return value !== undefined;
 };
 
+export const enumTester : OptionalTester = <T> (value : T, arr : T[]) : boolean => {
+	return arr.includes(value);
+};
+
+export const minLengthTester : OptionalTester = (value : string | any[], minLength : number) : boolean => {
+	return value.length >= minLength;
+};
+
+export const maxLengthTester : OptionalTester = (value : string | any[], maxLength : number) : boolean => {
+	return value.length <= maxLength;
+};
+
 export const booleanTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'boolean';
 };
@@ -41,12 +53,17 @@ export const stringTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'string';
 };
 
-// export const emailTester : TypeTester = (value : any) : boolean => {
-// 	return stringTester(value)
-// 		// RFC 5322, 3.4.1. spec
-// 		&& /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value);
-// };
-//
+// RFC 5322, 3.4.1. spec
+export const emailTester : TypeTester = (value : any) : boolean => {
+	let valid : boolean = false;
+
+	// TODO: regular expression
+	if (stringTester(value)) {
+	}
+
+	return valid;
+};
+
 // // with port
 // export const urlTester : TypeTester = (value : any) : boolean => {
 // 	return stringTester(value)
@@ -83,16 +100,4 @@ export const arrayTester : TypeTester = (value : any) : boolean => {
 		&& value !== null
 		&& value.length !== undefined
 		&& value.push !== undefined;
-};
-
-export const enumTester : Function = <T> (value : T, arr : T[]) : boolean => {
-	return arr.includes(value);
-};
-
-export const minLengthTester : Function = (value : string | any[], minLength : number) : boolean => {
-	return value.length >= minLength;
-};
-
-export const maxLengthTester : Function = (value : string | any[], maxLength : number) : boolean => {
-	return value.length <= maxLength;
 };

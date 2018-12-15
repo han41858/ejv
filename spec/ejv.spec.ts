@@ -875,5 +875,33 @@ describe('ejv()', () => {
 				}])).to.be.null;
 			});
 		});
+
+		xdescribe('pattern', () => {
+			it('email', () => {
+				const result : EjvError = ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'email'
+				}]);
+
+				expect(result).to.be.instanceof(EjvError);
+
+				expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+					.replace(ErrorMsgCursorA, 'email')
+				);
+				expect(result.path).to.be.eql('a');
+				expect(result.data).to.be.eql('ejv');
+
+				expect(ejv({
+					a : 'ejv@ejv.com'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'email'
+				}])).to.be.null;
+			});
+		});
 	});
 });

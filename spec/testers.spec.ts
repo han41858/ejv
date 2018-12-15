@@ -7,6 +7,7 @@ import {
 	booleanTester,
 	dateTester,
 	definedTester,
+	emailTester,
 	enumTester,
 	exclusiveMaxNumberTester,
 	exclusiveMinNumberTester,
@@ -237,35 +238,53 @@ describe('testers', function () {
 				expect(stringTester('hello')).to.be.true;
 			});
 		});
+
+		xdescribe('emailTester()', () => {
+			it('logic test', () => {
+				expect(emailTester('')).to.be.false;
+				expect(emailTester(' ')).to.be.false;
+				expect(emailTester('hello')).to.be.false;
+				expect(emailTester('hello@')).to.be.false;
+				expect(emailTester('hello@domain')).to.be.false;
+				expect(emailTester('hello@domain.')).to.be.false;
+				expect(emailTester('hello@domain.com')).to.be.true;
+				expect(emailTester('hello@domain.com.')).to.be.false;
+				expect(emailTester('hello@domain.com.another')).to.be.true;
+
+				expect(emailTester('prettyandsimple@example.com')).to.be.true;
+				expect(emailTester('very.common@example.com')).to.be.true;
+				expect(emailTester('disposable.style.email.with+symbol@example.com')).to.be.true;
+				expect(emailTester('other.email-with-dash@example.com')).to.be.true;
+				expect(emailTester('x@example.com')).to.be.true;
+				expect(emailTester('"much.more unusual"@example.com')).to.be.true;
+				expect(emailTester('"very.unusual.@.unusual.com"@example.com')).to.be.true;
+				expect(emailTester('"very.(),:;<>[]\".VERY.\"very@\\ \"very\".unusual"@strange.example.com')).to.be.true;
+				expect(emailTester('example-indeed@strange-example.com')).to.be.true;
+				expect(emailTester('admin@mailserver1')).to.be.true;
+				expect(emailTester('#!$%&\'*+-/=?^_`{}|~@example.org')).to.be.true;
+				expect(emailTester('"()<>[]:,;@\\\\\\"!#$%&\'-/=?^_`{}| ~.a"@example.org')).to.be.true;
+				expect(emailTester('" "@example.org')).to.be.true;
+				expect(emailTester('example@localhost')).to.be.true;
+				expect(emailTester('example@s.solutions')).to.be.true;
+				expect(emailTester('user@localserver')).to.be.true;
+				expect(emailTester('user@tt')).to.be.true;
+				expect(emailTester('user@[IPv6:2001:DB8::1]')).to.be.true;
+
+				expect(emailTester('Abc.example.com')).to.be.false;
+				expect(emailTester('A@b@c@example.com')).to.be.false;
+				expect(emailTester('a"b(c)d,e:f;g<h>i[j\\k]l@example.com')).to.be.false;
+				expect(emailTester('just"not"right@example.com')).to.be.false;
+				expect(emailTester('this is"not\allowed@example.com')).to.be.false;
+				expect(emailTester('this\ still\"not\\allowed@example.com')).to.be.false;
+				expect(emailTester('1234567890123456789012345678901234567890123456789012345678901234+x@example.com')).to.be.false;
+				expect(emailTester('john..doe@example.com')).to.be.false;
+				expect(emailTester('john.doe@example..com')).to.be.false;
+				expect(emailTester(' ejv@ejv.com')).to.be.false;
+				expect(emailTester('ejv@ejv.com ')).to.be.false;
+			});
+		});
 	});
 
-	// describe('emailTester()', () => {
-	// 	it('common test', () => {
-	// 		expect(commonTestRunner(
-	// 			emailTester,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false
-	// 		)).to.be.true;
-	// 	});
-	//
-	// 	it('logic test', () => {
-	// 		expect(emailTester('')).to.be.false;
-	// 		expect(emailTester(' ')).to.be.false;
-	// 		expect(emailTester('hello')).to.be.false;
-	// 		expect(emailTester('hello@')).to.be.false;
-	// 		expect(emailTester('hello@domain')).to.be.false;
-	// 		expect(emailTester('hello@domain.')).to.be.false;
-	// 		expect(emailTester('hello@domain.com')).to.be.true;
-	// 		expect(emailTester('hello@domain.com.')).to.be.false;
-	// 		expect(emailTester('hello@domain.com.another')).to.be.true;
-	// 	});
-	// });
-	//
 	// describe('urlTester()', () => {
 	// 	it('common test', () => {
 	// 		expect(commonTestRunner(
