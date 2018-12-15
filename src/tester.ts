@@ -75,8 +75,33 @@ export const stringRegExpTester : OptionalTester = (value : string, regExp : str
 export const emailTester : TypeTester = (value : any) : boolean => {
 	let valid : boolean = false;
 
-	// TODO: regular expression
-	if (stringTester(value)) {
+	if (stringTester(value) && stringRegExpTester(value, /^.+@.+$/)) {
+		const valueAsString : string = value as string;
+
+		const atIndex : number = valueAsString.lastIndexOf('@');
+		const localPart : string = valueAsString.substr(0, atIndex);
+		const domain : string = valueAsString.substr(atIndex + 1);
+
+		// regular expression sources
+		// const aTextRegExpStr : string = '[-a-zA-Z0-9!#$%&\\\'*+/=?^_`{|}~]+';
+
+		const dotAtomRegExp : RegExp = /^(\.?[-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]+)*$/;
+		const quotedStringRegExp : RegExp = /^"[\u0020-\u005b\u005d-\u007e\\]*"$/; // include space (\u005b)
+		const domainLiteralRegExp : RegExp = /^\[[\u0020-\u005a\u005c-\u007e\\]*]$/;
+
+		const validLocalPart : boolean = localPart.length <= 64
+			&& (
+				dotAtomRegExp.test(localPart)
+				|| quotedStringRegExp.test(localPart)
+			);
+
+		const validDomain : boolean = !domain.startsWith('.') && !domain.endsWith('.')
+			&& (
+				dotAtomRegExp.test(domain)
+				|| domainLiteralRegExp.test(domain)
+			);
+
+		valid = validLocalPart && validDomain;
 	}
 
 	return valid;
