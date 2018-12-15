@@ -7,6 +7,7 @@ import {
 	booleanTester,
 	dateTester,
 	definedTester,
+	enumTester,
 	exclusiveMaxNumberTester,
 	exclusiveMinNumberTester,
 	indexTester,
@@ -36,7 +37,15 @@ describe('testers', function () {
 			});
 		});
 
-		// TODO: enumTester()
+		describe('enumTester()', () => {
+			it('logic test', () => {
+				expect(enumTester('a', ['a', 'b', 'c'])).to.be.true;
+				expect(enumTester('a', ['b', 'c'])).to.be.false;
+
+				expect(enumTester(1, [1, 2, 3])).to.be.true;
+				expect(enumTester(1, [2, 3])).to.be.false;
+			});
+		});
 
 		describe('minLengthTester()', () => {
 			it('logic test', () => {
