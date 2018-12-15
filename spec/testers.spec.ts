@@ -20,6 +20,7 @@ import {
 	numberTester,
 	objectTester,
 	regExpTester,
+	stringRegExpTester,
 	stringTester
 } from '../src/tester';
 
@@ -237,6 +238,16 @@ describe('testers', function () {
 				expect(stringTester('')).to.be.true;
 				expect(stringTester(' ')).to.be.true;
 				expect(stringTester('hello')).to.be.true;
+			});
+		});
+
+		describe.only('stringRegExpTester()', () => {
+			it('logic test', () => {
+				expect(stringRegExpTester('abc', /abc/)).to.be.true;
+				expect(stringRegExpTester('abc', /abcd/)).to.be.false;
+
+				expect(stringRegExpTester('abc', new RegExp('abc'))).to.be.true;
+				expect(stringRegExpTester('abc', new RegExp('abcd'))).to.be.false;
 			});
 		});
 

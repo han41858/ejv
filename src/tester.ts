@@ -53,6 +53,24 @@ export const stringTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'string';
 };
 
+export const stringRegExpTester : OptionalTester = (value : string, regExp : string | RegExp) : boolean => {
+	let valid : boolean = false;
+
+	let _regExp : RegExp;
+
+	if (regExpTester(regExp)) {
+		_regExp = regExp as RegExp;
+	} else if (stringTester(regExp)) {
+		_regExp = new RegExp(regExp);
+	}
+
+	if (regExpTester(_regExp)) {
+		valid = _regExp.test(value);
+	}
+
+	return valid;
+};
+
 // RFC 5322, 3.4.1. spec
 export const emailTester : TypeTester = (value : any) : boolean => {
 	let valid : boolean = false;
