@@ -10,6 +10,7 @@ import {
 	exclusiveMinNumberTester,
 	indexTester,
 	integerTester,
+	maxLengthTester,
 	maxNumberTester,
 	minLengthTester,
 	minNumberTester,
@@ -191,6 +192,14 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 					if (definedTester(scheme.minLength) && !minLengthTester(value, scheme.minLength)) {
 						result = new EjvError(ErrorMsg.MIN_LENGTH
 							.replace(ErrorMsgCursorA, '' + scheme.minLength),
+							key,
+							value
+						);
+					}
+
+					if (definedTester(scheme.maxLength) && !maxLengthTester(value, scheme.maxLength)) {
+						result = new EjvError(ErrorMsg.MAX_LENGTH
+							.replace(ErrorMsgCursorA, '' + scheme.maxLength),
 							key,
 							value
 						);

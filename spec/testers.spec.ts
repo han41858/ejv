@@ -12,6 +12,7 @@ import {
 	exclusiveMinNumberTester,
 	indexTester,
 	integerTester,
+	maxLengthTester,
 	maxNumberTester,
 	minLengthTester,
 	minNumberTester,
@@ -56,6 +57,18 @@ describe('testers', function () {
 				expect(minLengthTester([1, 2, 3, 4], 3)).to.be.true;
 				expect(minLengthTester([1, 2, 3, 4], 4)).to.be.true;
 				expect(minLengthTester([1, 2, 3, 4], 5)).to.be.false;
+			});
+		});
+
+		describe('maxLengthTester()', () => {
+			it('logic test', () => {
+				expect(maxLengthTester('abcd', 3)).to.be.false;
+				expect(maxLengthTester('abcd', 4)).to.be.true;
+				expect(maxLengthTester('abcd', 5)).to.be.true;
+
+				expect(maxLengthTester([1, 2, 3, 4], 3)).to.be.false;
+				expect(maxLengthTester([1, 2, 3, 4], 4)).to.be.true;
+				expect(maxLengthTester([1, 2, 3, 4], 5)).to.be.true;
 			});
 		});
 	});

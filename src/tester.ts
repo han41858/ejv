@@ -92,3 +92,7 @@ export const enumTester : Function = <T> (value : T, arr : T[]) : boolean => {
 export const minLengthTester : Function = (value : string | any[], minLength : number) : boolean => {
 	return value.length >= minLength;
 };
+
+export const maxLengthTester : Function = (value : string | any[], maxLength : number) : boolean => {
+	return value.length <= maxLength;
+};

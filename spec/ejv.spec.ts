@@ -839,5 +839,41 @@ describe('ejv()', () => {
 				}])).to.be.null;
 			});
 		});
+
+		describe('maxLength', () => {
+			it('fail', () => {
+				const result : EjvError = ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					maxLength : 2
+				}]);
+
+				expect(result).to.be.instanceof(EjvError);
+				expect(result.keyword).to.be.eql(ErrorMsg.MAX_LENGTH
+					.replace(ErrorMsgCursorA, '2'));
+				expect(result.path).to.be.eql('a');
+				expect(result.data).to.be.eql('ejv');
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					maxLength : 3
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					maxLength : 4
+				}])).to.be.null;
+			});
+		});
 	});
 });
