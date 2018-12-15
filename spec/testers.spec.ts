@@ -19,6 +19,7 @@ import {
 	minNumberTester,
 	numberTester,
 	objectTester,
+	regExpTester,
 	stringTester
 } from '../src/tester';
 
@@ -424,6 +425,28 @@ describe('testers', function () {
 		it('logic test', () => {
 			expect(arrayTester([])).to.be.true;
 			expect(arrayTester('not_array')).to.be.false;
+		});
+	});
+
+	describe.only('regExpTester()', () => {
+		it('common test', () => {
+			expect(commonTestRunner(
+				regExpTester,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('logic test', () => {
+			expect(regExpTester(/\d/)).to.be.true;
+			expect(regExpTester(new RegExp('\d'))).to.be.true;
+
+			expect(regExpTester('\d')).to.be.false;
 		});
 	});
 });

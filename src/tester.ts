@@ -101,3 +101,7 @@ export const arrayTester : TypeTester = (value : any) : boolean => {
 		&& value.length !== undefined
 		&& value.push !== undefined;
 };
+
+export const regExpTester : TypeTester = (value : any) : boolean => {
+	return value instanceof RegExp;
+};
