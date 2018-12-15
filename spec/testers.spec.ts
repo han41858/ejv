@@ -6,6 +6,7 @@ import {
 	arrayTester,
 	booleanTester,
 	dateTester,
+	dateTimeFormatTester,
 	definedTester,
 	emailTester,
 	enumTester,
@@ -295,6 +296,49 @@ describe('testers', function () {
 
 				expect(emailTester(' ejv@ejv.com')).to.be.false;
 				expect(emailTester('ejv@ejv.com ')).to.be.false;
+			});
+		});
+
+		describe.only('dateTimeFormatTester()', () => {
+			it('logic test', () => {
+				// //// ISO 8601
+				// // year
+				// expect(dateTimeFormatTester('100')).to.be.true;
+				// expect(dateTimeFormatTester('1000')).to.be.true;
+				//
+				// // month
+				// expect(dateTimeFormatTester('1')).to.be.true;
+				// expect(dateTimeFormatTester('10')).to.be.true;
+
+				//// RFC 3339
+				expect(dateTimeFormatTester('2018-12-16T05:04:05')).to.be.true;
+				expect(dateTimeFormatTester('2018-12-16T05:04:05.51')).to.be.true;
+				expect(dateTimeFormatTester('2018-12-16T05:04:05.51Z')).to.be.true;
+				expect(dateTimeFormatTester('2018-12-16T05:04:05+09:00')).to.be.true;
+
+				expect(dateTimeFormatTester('2018-12-16T03:34:21')).to.be.true;
+				expect(dateTimeFormatTester('2018-12-16T03:34:21Z')).to.be.true;
+				expect(dateTimeFormatTester('2018-12-16T03:34:21.000')).to.be.true;
+				expect(dateTimeFormatTester('2018-12-16T03:34:21.000Z')).to.be.true;
+				expect(dateTimeFormatTester('2018-12-16T03:34:21.000+09:00')).to.be.true;
+				expect(dateTimeFormatTester('2018-12-16T03:34:21.000-08:00')).to.be.true;
+
+				expect(dateTimeFormatTester('2018-00-16T03:34:21')).to.be.false;
+				expect(dateTimeFormatTester('2018-13-16T03:34:21')).to.be.false;
+				expect(dateTimeFormatTester('2018-1-16T03:34:21')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-6T03:34:21')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-32T03:34:21')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-16T0:34:21')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-16T24:34:21')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-16T03:4:21')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-16T03:60:21')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-16T03:34:1')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-16T03:34:60')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-16T03:34:21.')).to.be.false;
+
+				// // leap second inserted
+				// expect(dateTimeFormatTester('1990-12-31T23:59:60Z')).to.be.true;
+				// expect(dateTimeFormatTester('1990-12-31T15:59:60-08:00')).to.be.true;
 			});
 		});
 	});

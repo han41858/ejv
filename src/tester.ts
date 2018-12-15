@@ -107,6 +107,22 @@ export const emailTester : TypeTester = (value : any) : boolean => {
 	return valid;
 };
 
+// RFC 3339 & ISO 8601 (https://www.ietf.org/rfc/rfc3339.txt)
+export const dateTimeFormatTester : OptionalTester = (value : string) : boolean => {
+	let valid : boolean = false;
+
+	// yyyy-MM-ddThh:mm:ss[.SSSZ]
+	const validRfc3339 : boolean = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/.test(value);
+
+	const validISO8601 : boolean = true;
+
+	// if (validRfc3339 || validISO8601) {
+	// 	// check leap
+	// }
+
+	return validRfc3339;
+};
+
 // // with port
 // export const urlTester : TypeTester = (value : any) : boolean => {
 // 	return stringTester(value)
