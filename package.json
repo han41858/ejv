@@ -4,8 +4,11 @@
   "description": "Easy JSON Validator",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf ./build&&tsc",
-    "build:test": "rm -rf ./build&&tsc -p tsconfig.spec.json",
+    "clean": "rimraf ./build",
+    "prebuild": "yarn clean",
+    "build": "tsc",
+    "prebuild:test": "yarn clean",
+    "build:test": "tsc -p tsconfig.spec.json",
     "pretest": "yarn build:test",
     "test": "mocha ./build/**/*.spec.js"
   },
@@ -28,6 +31,7 @@
     "@types/mocha": "^5.2.5",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
     "typescript": "^3.2.2"
   }
 }
