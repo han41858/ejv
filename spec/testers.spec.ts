@@ -12,6 +12,7 @@ import {
 	indexTester,
 	integerTester,
 	maxNumberTester,
+	minLengthTester,
 	minNumberTester,
 	numberTester,
 	objectTester,
@@ -19,7 +20,7 @@ import {
 } from '../src/tester';
 
 describe('testers', function () {
-	describe('defined', () => {
+	describe('common', () => {
 		describe('definedTester()', () => {
 			it('common test', () => {
 				expect(commonTestRunner(
@@ -32,6 +33,20 @@ describe('testers', function () {
 					true,
 					true
 				)).to.be.true;
+			});
+		});
+
+		// TODO: enumTester()
+
+		describe('minLengthTester()', () => {
+			it('logic test', () => {
+				expect(minLengthTester('abcd', 3)).to.be.true;
+				expect(minLengthTester('abcd', 4)).to.be.true;
+				expect(minLengthTester('abcd', 5)).to.be.false;
+
+				expect(minLengthTester([1, 2, 3, 4], 3)).to.be.true;
+				expect(minLengthTester([1, 2, 3, 4], 4)).to.be.true;
+				expect(minLengthTester([1, 2, 3, 4], 5)).to.be.false;
 			});
 		});
 	});
@@ -179,24 +194,26 @@ describe('testers', function () {
 		});
 	});
 
-	describe('stringTester()', () => {
-		it('common test', () => {
-			expect(commonTestRunner(
-				stringTester,
-				false,
-				false,
-				false,
-				false,
-				true,
-				false,
-				false
-			)).to.be.true;
-		});
+	describe('string', () => {
+		describe('stringTester()', () => {
+			it('common test', () => {
+				expect(commonTestRunner(
+					stringTester,
+					false,
+					false,
+					false,
+					false,
+					true,
+					false,
+					false
+				)).to.be.true;
+			});
 
-		it('logic test', () => {
-			expect(stringTester('')).to.be.true;
-			expect(stringTester(' ')).to.be.true;
-			expect(stringTester('hello')).to.be.true;
+			it('logic test', () => {
+				expect(stringTester('')).to.be.true;
+				expect(stringTester(' ')).to.be.true;
+				expect(stringTester('hello')).to.be.true;
+			});
 		});
 	});
 

@@ -1,5 +1,3 @@
-import { DataType } from './constants';
-
 type TypeTester = (value : any) => boolean;
 type OptionalTester = (value : any, args? : any) => boolean; // skip type test
 
@@ -91,31 +89,6 @@ export const enumTester : Function = <T> (value : T, arr : T[]) : boolean => {
 	return arr.includes(value);
 };
 
-export const typeTester : Function = (type : DataType, value : any) : boolean => {
-	let result : boolean = false;
-
-	switch (type) {
-		case DataType.BOOLEAN:
-			result = booleanTester(value);
-			break;
-
-		case DataType.NUMBER:
-			result = numberTester(value);
-			break;
-
-		case DataType.STRING:
-			result = stringTester(value);
-			break;
-
-		default:
-			throw new Error(`not defined type [${type}]`); // TODO: dev
-	}
-
-	return result;
-};
-
-export const typeArrayTester : Function = (types : DataType[], value : any) : boolean => {
-	return types.some((type : DataType) => {
-		return typeTester(type, value);
-	});
+export const minLengthTester : Function = (value : string | any[], minLength : number) : boolean => {
+	return value.length >= minLength;
 };

@@ -11,6 +11,7 @@ import {
 	indexTester,
 	integerTester,
 	maxNumberTester,
+	minLengthTester,
 	minNumberTester,
 	numberTester,
 	objectTester,
@@ -35,7 +36,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 			}
 
 			let types : DataType[];
-			let typeResolved : DataType;
+			let typeResolved : DataType = null;
 
 			if (!arrayTester(scheme.type)) {
 				types = [scheme.type as DataType];
@@ -183,6 +184,16 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 							}
 							break;
 						}
+					}
+					break;
+
+				case DataType.STRING:
+					if (definedTester(scheme.minLength) && !minLengthTester(value, scheme.minLength)) {
+						result = new EjvError(ErrorMsg.MIN_LENGTH
+							.replace(ErrorMsgCursorA, '' + scheme.minLength),
+							key,
+							value
+						);
 					}
 					break;
 			}

@@ -54,5 +54,8 @@ export enum ErrorMsg {
 	GREATER_THAN = 'the value should be greater than <<A>>', // min
 
 	SMALLER_THAN_OR_EQUAL = 'the value should be smaller or equal than <<A>>', // max
-	SMALLER_THAN = 'the value should be smaller than <<A>>' // max
+	SMALLER_THAN = 'the value should be smaller than <<A>>', // max
+
+	MIN_LENGTH = 'the value should be longer than <<A>>', // minLength
+	MAX_LENGTH = 'the value should be shorter than <<A>>', // maxLength
 }

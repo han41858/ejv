@@ -803,5 +803,41 @@ describe('ejv()', () => {
 				}])).to.be.null;
 			});
 		});
+
+		describe('minLength', () => {
+			it('fail', () => {
+				const result : EjvError = ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					minLength : 4
+				}]);
+
+				expect(result).to.be.instanceof(EjvError);
+				expect(result.keyword).to.be.eql(ErrorMsg.MIN_LENGTH
+					.replace(ErrorMsgCursorA, '4'));
+				expect(result.path).to.be.eql('a');
+				expect(result.data).to.be.eql('ejv');
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					minLength : 2
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					minLength : 3
+				}])).to.be.null;
+			});
+		});
 	});
 });
