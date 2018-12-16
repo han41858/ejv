@@ -299,18 +299,76 @@ describe('testers', function () {
 			});
 		});
 
-		describe.only('dateTimeFormatTester()', () => {
+		describe('dateTimeFormatTester()', () => {
 			it('logic test', () => {
-				// //// ISO 8601
-				// // year
-				// expect(dateTimeFormatTester('100')).to.be.true;
-				// expect(dateTimeFormatTester('1000')).to.be.true;
-				//
-				// // month
-				// expect(dateTimeFormatTester('1')).to.be.true;
-				// expect(dateTimeFormatTester('10')).to.be.true;
+				//// ISO 8601
+				// year
+				expect(dateTimeFormatTester('100')).to.be.false;
+				expect(dateTimeFormatTester('1000')).to.be.true;
+				expect(dateTimeFormatTester('+2000')).to.be.true;
+				expect(dateTimeFormatTester('-2000')).to.be.true;
 
-				//// RFC 3339
+				// calendar date
+				expect(dateTimeFormatTester('2018-1-17')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-32')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-17')).to.be.true;
+				expect(dateTimeFormatTester('2018-13-17')).to.be.false;
+				expect(dateTimeFormatTester('2018-12-7')).to.be.false;
+
+				// expect(dateTimeFormatTester('2018117')).to.be.false; // matching for ordinal dates
+				expect(dateTimeFormatTester('20181217')).to.be.true;
+				expect(dateTimeFormatTester('20181317')).to.be.false;
+				expect(dateTimeFormatTester('20181232')).to.be.false;
+
+				expect(dateTimeFormatTester('2018-1')).to.be.false;
+				expect(dateTimeFormatTester('2018-12')).to.be.true;
+				expect(dateTimeFormatTester('2018-13')).to.be.false;
+
+				expect(dateTimeFormatTester('--1-17')).to.be.false;
+				expect(dateTimeFormatTester('--12-1')).to.be.false;
+				expect(dateTimeFormatTester('--12-17')).to.be.true;
+				expect(dateTimeFormatTester('--13-17')).to.be.false;
+				expect(dateTimeFormatTester('--12-32')).to.be.false;
+
+				expect(dateTimeFormatTester('--117')).to.be.false;
+				expect(dateTimeFormatTester('--1317')).to.be.false;
+				expect(dateTimeFormatTester('--1232')).to.be.false;
+				expect(dateTimeFormatTester('--1217')).to.be.true;
+
+				// week dates
+				expect(dateTimeFormatTester('2018-W01')).to.be.true;
+				expect(dateTimeFormatTester('2018-W53')).to.be.true;
+
+				expect(dateTimeFormatTester('2018-W00')).to.be.false;
+				expect(dateTimeFormatTester('2018-W54')).to.be.false;
+
+				expect(dateTimeFormatTester('2018-W01-3')).to.be.true;
+				expect(dateTimeFormatTester('2018-W53-7')).to.be.true;
+
+				expect(dateTimeFormatTester('2018-W01-0')).to.be.false;
+				expect(dateTimeFormatTester('2018-W53-8')).to.be.false;
+
+				expect(dateTimeFormatTester('2018W01')).to.be.true;
+				expect(dateTimeFormatTester('2018W53')).to.be.true;
+
+				expect(dateTimeFormatTester('2018W00')).to.be.false;
+				expect(dateTimeFormatTester('2018W54')).to.be.false;
+
+				expect(dateTimeFormatTester('2018W010')).to.be.false;
+				expect(dateTimeFormatTester('2018W538')).to.be.false;
+
+				// ordinal dates
+				expect(dateTimeFormatTester('2018-052')).to.be.true;
+
+				expect(dateTimeFormatTester('2018-000')).to.be.false;
+				expect(dateTimeFormatTester('2018-367')).to.be.false;
+
+				expect(dateTimeFormatTester('2018052')).to.be.true;
+
+				expect(dateTimeFormatTester('2018000')).to.be.false;
+				expect(dateTimeFormatTester('2018367')).to.be.false;
+
+				// RFC 3339
 				expect(dateTimeFormatTester('2018-12-16T05:04:05')).to.be.true;
 				expect(dateTimeFormatTester('2018-12-16T05:04:05.51')).to.be.true;
 				expect(dateTimeFormatTester('2018-12-16T05:04:05.51Z')).to.be.true;

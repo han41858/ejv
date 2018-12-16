@@ -109,18 +109,26 @@ export const emailTester : TypeTester = (value : any) : boolean => {
 
 // RFC 3339 & ISO 8601 (https://www.ietf.org/rfc/rfc3339.txt)
 export const dateTimeFormatTester : OptionalTester = (value : string) : boolean => {
-	let valid : boolean = false;
-
-	// yyyy-MM-ddThh:mm:ss[.SSSZ]
-	const validRfc3339 : boolean = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/.test(value);
-
-	const validISO8601 : boolean = true;
+	const valid : boolean = [
+		// RFC 3339 : YYYY-MM-DDThh:mm:ss[.SSSZ]
+		/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/,
+		// ISO 8601
+		/^[-+]?\d{4}$/, // years : YYYY, +YYYY, -YYYY
+		/^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1]))?$/, // calendar dates : YYYY-MM-DD, YYYY-MM
+		/^\d{4}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$/, // calendar dates : YYYYMMDD
+		/^--(0[1-9]|1[0-2])-?(0[1-9]|[1-2][0-9]|3[0-1])$/, // calendar dates : --MM-DD, --MMDD
+		/^\d{4}-W(0[1-9]|[2-4][0-9]|5[0-3])(-[1-7])?$/, // week dates : YYYY-Www, YYYY-Www-D
+		/^\d{4}W(0[1-9]|[2-4][0-9]|5[0-3])[1-7]?$/, // week dates : YYYYWww, YYYYWwwD
+		/^\d{4}-?(00[1-9]|0[1-9][0-9]|[1-2]\d{2}|3[0-5]\d|36[0-5])$/ // ordinal dates : YYYY-DDD, YYYYDDD // TODO: 366 for leap year
+	].some((regExp : RegExp) => {
+		return regExp.test(value);
+	});
 
 	// if (validRfc3339 || validISO8601) {
 	// 	// check leap
 	// }
 
-	return validRfc3339;
+	return valid;
 };
 
 // // with port
