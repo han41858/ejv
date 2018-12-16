@@ -113,29 +113,41 @@ const rfc3339Tester : AdditionalTester = (value : string) : boolean => {
 };
 
 const iso8601DateTester : AdditionalTester = (value : string) : boolean => {
+	const years : string = '(\\d{4})';
+	const months : string = '(0[1-9]|1[0-2])';
+	const dates : string = '(0[1-9]|[1-2][0-9]|3[0-1])';
+	const dateOfYear : string = '(00[1-9]|0[1-9][0-9]|[1-2]\\d{2}|3[0-5]\\d|36[0-5])'; // TODO: 366 for leap year
+	const weeks : string = '(W(0[1-9]|[2-4][0-9]|5[0-3]))';
+	const days : string = '[1-7]';
+
 	return [
-		/^[-+]?\d{4}$/, // years : YYYY, +YYYY, -YYYY
-		/^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1]))?$/, // calendar dates : YYYY-MM-DD, YYYY-MM
-		/^\d{4}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$/, // calendar dates : YYYYMMDD
-		/^--(0[1-9]|1[0-2])-?(0[1-9]|[1-2][0-9]|3[0-1])$/, // calendar dates : --MM-DD, --MMDD
-		/^\d{4}-W(0[1-9]|[2-4][0-9]|5[0-3])(-[1-7])?$/, // week dates : YYYY-Www, YYYY-Www-D
-		/^\d{4}W(0[1-9]|[2-4][0-9]|5[0-3])[1-7]?$/, // week dates : YYYYWww, YYYYWwwD
-		/^\d{4}-?(00[1-9]|0[1-9][0-9]|[1-2]\d{2}|3[0-5]\d|36[0-5])$/ // ordinal dates : YYYY-DDD, YYYYDDD // TODO: 366 for leap year
+		new RegExp(`^[-+]?${years}$`), // years : YYYY, +YYYY, -YYYY
+		new RegExp(`^${years}-${months}(-${dates})?$`), // calendar dates : YYYY-MM-DD, YYYY-MM
+		new RegExp(`^${years}${months}${dates}$`), // calendar dates : YYYYMMDD
+		new RegExp(`^--${months}-?${dates}$`), // calendar dates : --MM-DD, --MMDD
+		new RegExp(`^${years}-${weeks}(-${days})?$`), // week dates : YYYY-Www, YYYY-Www-D
+		new RegExp(`^${years}${weeks}(${days})?$`), // week dates : YYYYWww, YYYYWwwD
+		new RegExp(`^${years}-?${dateOfYear}$`) // ordinal dates : YYYY-DDD, YYYYDDD
 	].some((regExp : RegExp) => {
 		return regExp.test(value);
 	});
 };
 
 const iso8601TimeTester : AdditionalTester = (value : string) : boolean => {
-	return [
-		/^([0-1]\d|2[0-4])$/, // hh
-		/^((([0-1]\d|2[0-3]):[0-5]\d)|24:00)$/, // hh:mm
-		/^((([0-1]\d|2[0-3]):[0-5]\d:([0-5]\d|60))|24:00:00)$/, // hh:mm:ss // 60 for leap second
-		/^((([0-1]\d|2[0-3]):[0-5]\d:([0-5]\d|60)\.[0-9]+)|24:00:00\.0+)$/, // hh:mm:ss.sss
+	const hours : string = '([0-1]\\d|2[0-3])';
+	const minutes : string = '([0-5]\\d)';
+	const seconds : string = '([0-5]\\d|60)'; // 60 for leap second
+	const ms : string = '(\\.[0-9]+)';
 
-		/^((([0-1]\d|2[0-3])[0-5]\d)|2400)$/, // hhmm
-		/^((([0-1]\d|2[0-3])[0-5]\d)([0-5]\d|60)|240000)$/, // hhmmss
-		/^((([0-1]\d|2[0-3])[0-5]\d)([0-5]\d|60)\.[0-9]+|240000\.0+)$/ // hhmmss.sss
+	return [
+		new RegExp(`^(${hours}|24)$`), // hh
+		new RegExp(`^((${hours}:${minutes})|24:00)$`), // hh:mm
+		new RegExp(`^((${hours}:${minutes}:${seconds})|24:00:00)$`), // hh:mm:ss
+		new RegExp(`^((${hours}:${minutes}:${seconds}${ms})|24:00:00\.0+)$`), // hh:mm:ss
+
+		new RegExp(`^(${hours}${minutes}|2400)$`), // hhmm
+		new RegExp(`^(${hours}${minutes}${seconds}|240000)$`), // hhmmss
+		new RegExp(`^(${hours}${minutes}${seconds}${ms}|240000\.0+)$`) // hhmmss.sss
 	]
 		.some((regExp : RegExp) => {
 			return regExp.test(value);
