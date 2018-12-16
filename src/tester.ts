@@ -1,19 +1,19 @@
 type TypeTester = (value : any) => boolean;
-type OptionalTester = (value : any, args? : any) => boolean; // skip type test
+type AdditionalTester = (value : any, args? : any) => boolean; // skip type test
 
 export const definedTester : TypeTester = (value : any) : boolean => {
 	return value !== undefined;
 };
 
-export const enumTester : OptionalTester = <T> (value : T, arr : T[]) : boolean => {
+export const enumTester : AdditionalTester = <T> (value : T, arr : T[]) : boolean => {
 	return arr.includes(value);
 };
 
-export const minLengthTester : OptionalTester = (value : string | any[], minLength : number) : boolean => {
+export const minLengthTester : AdditionalTester = (value : string | any[], minLength : number) : boolean => {
 	return value.length >= minLength;
 };
 
-export const maxLengthTester : OptionalTester = (value : string | any[], maxLength : number) : boolean => {
+export const maxLengthTester : AdditionalTester = (value : string | any[], maxLength : number) : boolean => {
 	return value.length <= maxLength;
 };
 
@@ -25,27 +25,27 @@ export const numberTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'number';
 };
 
-export const integerTester : OptionalTester = (value : number) : boolean => {
+export const integerTester : AdditionalTester = (value : number) : boolean => {
 	return +value.toFixed(0) === value;
 };
 
-export const indexTester : OptionalTester = (value : number) : boolean => {
+export const indexTester : AdditionalTester = (value : number) : boolean => {
 	return integerTester(value) && value >= 0;
 };
 
-export const minNumberTester : OptionalTester = (value : number, min : number) : boolean => {
+export const minNumberTester : AdditionalTester = (value : number, min : number) : boolean => {
 	return value >= min;
 };
 
-export const exclusiveMinNumberTester : OptionalTester = (value : number, min : number) : boolean => {
+export const exclusiveMinNumberTester : AdditionalTester = (value : number, min : number) : boolean => {
 	return value > min;
 };
 
-export const maxNumberTester : OptionalTester = (value : number, max : number) : boolean => {
+export const maxNumberTester : AdditionalTester = (value : number, max : number) : boolean => {
 	return value <= max;
 };
 
-export const exclusiveMaxNumberTester : OptionalTester = (value : number, max : number) : boolean => {
+export const exclusiveMaxNumberTester : AdditionalTester = (value : number, max : number) : boolean => {
 	return value < max;
 };
 
@@ -53,7 +53,7 @@ export const stringTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'string';
 };
 
-export const stringRegExpTester : OptionalTester = (value : string, regExp : string | RegExp) : boolean => {
+export const stringRegExpTester : AdditionalTester = (value : string, regExp : string | RegExp) : boolean => {
 	let valid : boolean = false;
 
 	let _regExp : RegExp;
@@ -108,11 +108,11 @@ export const emailTester : TypeTester = (value : any) : boolean => {
 };
 
 // RFC 3339 (https://www.ietf.org/rfc/rfc3339.txt) : YYYY-MM-DDThh:mm:ss[.SSSZ]
-const rfc3339Tester : OptionalTester = (value : string) : boolean => {
+const rfc3339Tester : AdditionalTester = (value : string) : boolean => {
 	return /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/.test(value);
 };
 
-const iso8601DateTester : OptionalTester = (value : string) : boolean => {
+const iso8601DateTester : AdditionalTester = (value : string) : boolean => {
 	const valid : boolean = [
 		/^[-+]?\d{4}$/, // years : YYYY, +YYYY, -YYYY
 		/^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1]))?$/, // calendar dates : YYYY-MM-DD, YYYY-MM
@@ -128,15 +128,19 @@ const iso8601DateTester : OptionalTester = (value : string) : boolean => {
 	return valid;
 };
 
-const iso8601TimeTester : OptionalTester = (value : string) : boolean => {
+const iso8601TimeTester : AdditionalTester = (value : string) : boolean => {
 	return false;
 };
 
-export const dateFormatTester : OptionalTester = (value : string) : boolean => {
+export const dateFormatTester : AdditionalTester = (value : string) : boolean => {
 	return iso8601DateTester(value);
 };
 
-export const dateTimeFormatTester : OptionalTester = (value : string) : boolean => {
+export const timeFormatTester : AdditionalTester = (value : string) : boolean => {
+	return null;
+};
+
+export const dateTimeFormatTester : AdditionalTester = (value : string) : boolean => {
 	return false;
 };
 
