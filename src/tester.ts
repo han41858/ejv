@@ -107,12 +107,13 @@ export const emailTester : TypeTester = (value : any) : boolean => {
 	return valid;
 };
 
-// RFC 3339 & ISO 8601 (https://www.ietf.org/rfc/rfc3339.txt)
-export const dateTimeFormatTester : OptionalTester = (value : string) : boolean => {
+// RFC 3339 (https://www.ietf.org/rfc/rfc3339.txt) : YYYY-MM-DDThh:mm:ss[.SSSZ]
+const rfc3339Tester : OptionalTester = (value : string) : boolean => {
+	return /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/.test(value);
+};
+
+const iso8601DateTester : OptionalTester = (value : string) : boolean => {
 	const valid : boolean = [
-		// RFC 3339 : YYYY-MM-DDThh:mm:ss[.SSSZ]
-		/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/,
-		// ISO 8601
 		/^[-+]?\d{4}$/, // years : YYYY, +YYYY, -YYYY
 		/^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1]))?$/, // calendar dates : YYYY-MM-DD, YYYY-MM
 		/^\d{4}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$/, // calendar dates : YYYYMMDD
@@ -124,11 +125,19 @@ export const dateTimeFormatTester : OptionalTester = (value : string) : boolean 
 		return regExp.test(value);
 	});
 
-	// if (validRfc3339 || validISO8601) {
-	// 	// check leap
-	// }
-
 	return valid;
+};
+
+const iso8601TimeTester : OptionalTester = (value : string) : boolean => {
+	return false;
+};
+
+export const dateFormatTester : OptionalTester = (value : string) : boolean => {
+	return iso8601DateTester(value);
+};
+
+export const dateTimeFormatTester : OptionalTester = (value : string) : boolean => {
+	return false;
 };
 
 // // with port
