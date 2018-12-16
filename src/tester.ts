@@ -113,7 +113,7 @@ const rfc3339Tester : AdditionalTester = (value : string) : boolean => {
 };
 
 const iso8601DateTester : AdditionalTester = (value : string) : boolean => {
-	const valid : boolean = [
+	return [
 		/^[-+]?\d{4}$/, // years : YYYY, +YYYY, -YYYY
 		/^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1]))?$/, // calendar dates : YYYY-MM-DD, YYYY-MM
 		/^\d{4}(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$/, // calendar dates : YYYYMMDD
@@ -124,12 +124,22 @@ const iso8601DateTester : AdditionalTester = (value : string) : boolean => {
 	].some((regExp : RegExp) => {
 		return regExp.test(value);
 	});
-
-	return valid;
 };
 
 const iso8601TimeTester : AdditionalTester = (value : string) : boolean => {
-	return false;
+	return [
+		/^([0-1]\d|2[0-4])$/, // hh
+		/^((([0-1]\d|2[0-3]):[0-5]\d)|24:00)$/, // hh:mm
+		/^((([0-1]\d|2[0-3]):[0-5]\d:([0-5]\d|60))|24:00:00)$/, // hh:mm:ss // 60 for leap second
+		/^((([0-1]\d|2[0-3]):[0-5]\d:([0-5]\d|60)\.[0-9]+)|24:00:00\.0+)$/, // hh:mm:ss.sss
+
+		/^((([0-1]\d|2[0-3])[0-5]\d)|2400)$/, // hhmm
+		/^((([0-1]\d|2[0-3])[0-5]\d)([0-5]\d|60)|240000)$/, // hhmmss
+		/^((([0-1]\d|2[0-3])[0-5]\d)([0-5]\d|60)\.[0-9]+|240000\.0+)$/ // hhmmss.sss
+	]
+		.some((regExp : RegExp) => {
+			return regExp.test(value);
+		});
 };
 
 export const dateFormatTester : AdditionalTester = (value : string) : boolean => {
@@ -137,7 +147,7 @@ export const dateFormatTester : AdditionalTester = (value : string) : boolean =>
 };
 
 export const timeFormatTester : AdditionalTester = (value : string) : boolean => {
-	return null;
+	return iso8601TimeTester(value);
 };
 
 export const dateTimeFormatTester : AdditionalTester = (value : string) : boolean => {

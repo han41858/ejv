@@ -23,7 +23,8 @@ import {
 	objectTester,
 	regExpTester,
 	stringRegExpTester,
-	stringTester
+	stringTester,
+	timeFormatTester
 } from '../src/tester';
 
 describe('testers', function () {
@@ -368,6 +369,82 @@ describe('testers', function () {
 
 				expect(dateFormatTester('2018000')).to.be.false;
 				expect(dateFormatTester('2018367')).to.be.false;
+			});
+		});
+
+		describe('timeFormatTester()', () => {
+			it('logic test', () => {
+				// hh:mm:ss.sss, hh:mm:ss
+				expect(timeFormatTester('23:35:12.123')).to.be.true;
+				expect(timeFormatTester('24:00:00')).to.be.true;
+				expect(timeFormatTester('24:00:00.000')).to.be.true;
+
+				expect(timeFormatTester('3:35:12.123')).to.be.false;
+				expect(timeFormatTester('24:35:12.123')).to.be.false;
+				expect(timeFormatTester('25:35:12.123')).to.be.false;
+
+				expect(timeFormatTester('23:0:12.123')).to.be.false;
+				expect(timeFormatTester('23:60:12.123')).to.be.false;
+
+				expect(timeFormatTester('23:35:2.123')).to.be.false;
+				expect(timeFormatTester('23:35:60.123')).to.be.true; // leap second
+				expect(timeFormatTester('23:35:61.123')).to.be.false;
+
+				expect(timeFormatTester('23:35:12')).to.be.true;
+				expect(timeFormatTester('23:35:12.1')).to.be.true;
+				expect(timeFormatTester('23:35:12.12')).to.be.true;
+				expect(timeFormatTester('23:35:12.123')).to.be.true;
+				expect(timeFormatTester('23:35:12.1234')).to.be.true;
+				expect(timeFormatTester('23:35:12.12356789')).to.be.true;
+
+				// hh:mm
+				expect(timeFormatTester('23:52')).to.be.true;
+				expect(timeFormatTester('24:00')).to.be.true;
+
+				expect(timeFormatTester('2:52')).to.be.false;
+				expect(timeFormatTester('24:52')).to.be.false;
+
+				expect(timeFormatTester('23:2')).to.be.false;
+				expect(timeFormatTester('23:60')).to.be.false;
+
+				// hhmmss.sss, hhmmss
+				expect(timeFormatTester('233512.123')).to.be.true;
+				expect(timeFormatTester('240000')).to.be.true;
+				expect(timeFormatTester('240000.000')).to.be.true;
+
+				expect(timeFormatTester('33512.123')).to.be.false;
+				expect(timeFormatTester('243512.123')).to.be.false;
+				expect(timeFormatTester('253512.123')).to.be.false;
+
+				expect(timeFormatTester('23012.123')).to.be.false;
+				expect(timeFormatTester('236012.123')).to.be.false;
+
+				expect(timeFormatTester('23352.123')).to.be.false;
+				expect(timeFormatTester('233560.123')).to.be.true; // leap second
+				expect(timeFormatTester('233561.123')).to.be.false;
+
+				expect(timeFormatTester('233512')).to.be.true;
+				expect(timeFormatTester('233512.1')).to.be.true;
+				expect(timeFormatTester('233512.12')).to.be.true;
+				expect(timeFormatTester('233512.123')).to.be.true;
+				expect(timeFormatTester('233512.1234')).to.be.true;
+				expect(timeFormatTester('233512.12356789')).to.be.true;
+
+				// hhmm
+				expect(timeFormatTester('2352')).to.be.true;
+				expect(timeFormatTester('2400')).to.be.true;
+
+				expect(timeFormatTester('252')).to.be.false;
+				expect(timeFormatTester('2452')).to.be.false;
+
+				expect(timeFormatTester('2360')).to.be.false;
+
+				// hh
+				expect(timeFormatTester('00')).to.be.true;
+				expect(timeFormatTester('05')).to.be.true;
+				expect(timeFormatTester('24')).to.be.true;
+
+				expect(timeFormatTester('25')).to.be.false;
 			});
 		});
 
