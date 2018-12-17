@@ -154,6 +154,10 @@ const iso8601TimeTester : AdditionalTester = (value : string) : boolean => {
 		});
 };
 
+const iso8601DateTimeTester : AdditionalTester = (value : string) : boolean => {
+	return false;
+};
+
 export const dateFormatTester : AdditionalTester = (value : string) : boolean => {
 	return iso8601DateTester(value);
 };
@@ -163,7 +167,7 @@ export const timeFormatTester : AdditionalTester = (value : string) : boolean =>
 };
 
 export const dateTimeFormatTester : AdditionalTester = (value : string) : boolean => {
-	return false;
+	return rfc3339Tester(value) || iso8601DateTimeTester(value);
 };
 
 // // with port
