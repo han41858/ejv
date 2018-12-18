@@ -39,7 +39,7 @@ export enum ErrorMsg {
 	NO_ARRAY_SCHEME = 'scheme should be array',
 
 	EMPTY_ROOT_SCHEME = 'root scheme should not be empty',
-	INVALID_TYPE = 'scheme has invalid type enum',
+	INVALID_TYPE_ENUM = 'scheme has invalid type enum',
 
 	// about EjvError
 	REQUIRED = 'required',

@@ -48,6 +48,9 @@ describe('ejv()', () => {
 					a : 'hello'
 				}, [])).to.throw(ErrorMsg.EMPTY_ROOT_SCHEME);
 			});
+
+			// TODO: invalid type
+			// TODO: duplicated type
 		});
 	});
 
@@ -57,20 +60,20 @@ describe('ejv()', () => {
 				typeTester.filter(obj => obj.type !== 'number')
 					.forEach((obj) => {
 						it(obj.type, () => {
-							const result : EjvError = ejv({
+							const error : EjvError = ejv({
 								a : obj.value
 							}, [{
 								key : 'a',
 								type : 'number'
 							}]);
 
-							expect(result).to.be.instanceof(EjvError);
+							expect(error).to.be.instanceof(EjvError);
 
-							expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
 								.replace(ErrorMsgCursorA, 'number')
 							);
-							expect(result.path).to.be.eql('a');
-							expect(result.data).to.be.eql(obj.value);
+							expect(error.path).to.be.eql('a');
+							expect(error.data).to.be.eql(obj.value);
 						});
 					});
 
@@ -78,19 +81,19 @@ describe('ejv()', () => {
 					const value = 123;
 					const typeArr : string[] = ['boolean', 'string'];
 
-					const result : EjvError = ejv({
+					const error : EjvError = ejv({
 						a : value
 					}, [{
 						key : 'a',
 						type : typeArr
 					}]);
 
-					expect(result).to.be.instanceof(EjvError);
+					expect(error).to.be.instanceof(EjvError);
 
-					expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 						.replace(ErrorMsgCursorA, `[${typeArr.join(', ')}]`));
-					expect(result.path).to.be.eql('a');
-					expect(result.data).to.be.eql(value);
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.eql(value);
 				});
 			});
 
@@ -138,7 +141,7 @@ describe('ejv()', () => {
 			it('fail', () => {
 				const enumArr : number[] = [9, 11];
 
-				const result : EjvError = ejv({
+				const error : EjvError = ejv({
 					a : 10
 				}, [{
 					key : 'a',
@@ -146,12 +149,12 @@ describe('ejv()', () => {
 					enum : enumArr
 				}]);
 
-				expect(result).to.be.instanceof(EjvError);
-				expect(result.keyword).to.be.eql(ErrorMsg.ONE_OF
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.ONE_OF
 					.replace(ErrorMsgCursorA, `[${enumArr.join(', ')}]`)
 				);
-				expect(result.path).to.be.eql('a');
-				expect(result.data).to.be.eql(10);
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql(10);
 			});
 
 			it('ok', () => {
@@ -167,7 +170,7 @@ describe('ejv()', () => {
 
 		describe('min & exclusiveMin', () => {
 			it('without exclusiveMin', () => {
-				const result1 : EjvError = ejv({
+				const error1 : EjvError = ejv({
 					a : 9
 				}, [{
 					key : 'a',
@@ -175,8 +178,8 @@ describe('ejv()', () => {
 					min : 10
 				}]);
 
-				expect(result1).to.be.instanceof(EjvError);
-				expect(result1.keyword).to.be.eql(
+				expect(error1).to.be.instanceof(EjvError);
+				expect(error1.keyword).to.be.eql(
 					ErrorMsg.GREATER_THAN_OR_EQUAL
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -199,7 +202,7 @@ describe('ejv()', () => {
 			});
 
 			it('exclusiveMin === true', () => {
-				const result1 : EjvError = ejv({
+				const error1 : EjvError = ejv({
 					a : 9
 				}, [{
 					key : 'a',
@@ -208,13 +211,13 @@ describe('ejv()', () => {
 					exclusiveMin : true
 				}]);
 
-				expect(result1).to.be.instanceof(EjvError);
-				expect(result1.keyword).to.be.eql(
+				expect(error1).to.be.instanceof(EjvError);
+				expect(error1.keyword).to.be.eql(
 					ErrorMsg.GREATER_THAN
 						.replace(ErrorMsgCursorA, '10')
 				);
 
-				const result2 : EjvError = ejv({
+				const error2 : EjvError = ejv({
 					a : 10
 				}, [{
 					key : 'a',
@@ -223,8 +226,8 @@ describe('ejv()', () => {
 					exclusiveMin : true
 				}]);
 
-				expect(result2).to.be.instanceof(EjvError);
-				expect(result2.keyword).to.be.eql(
+				expect(error2).to.be.instanceof(EjvError);
+				expect(error2.keyword).to.be.eql(
 					ErrorMsg.GREATER_THAN
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -240,7 +243,7 @@ describe('ejv()', () => {
 			});
 
 			it('exclusiveMin === false', () => {
-				const result1 : EjvError = ejv({
+				const error1 : EjvError = ejv({
 					a : 9
 				}, [{
 					key : 'a',
@@ -249,8 +252,8 @@ describe('ejv()', () => {
 					exclusiveMin : false
 				}]);
 
-				expect(result1).to.be.instanceof(EjvError);
-				expect(result1.keyword).to.be.eql(
+				expect(error1).to.be.instanceof(EjvError);
+				expect(error1.keyword).to.be.eql(
 					ErrorMsg.GREATER_THAN_OR_EQUAL
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -293,7 +296,7 @@ describe('ejv()', () => {
 					max : 10
 				}])).to.be.null;
 
-				const result1 : EjvError = ejv({
+				const error1 : EjvError = ejv({
 					a : 11
 				}, [{
 					key : 'a',
@@ -301,8 +304,8 @@ describe('ejv()', () => {
 					max : 10
 				}]);
 
-				expect(result1).to.be.instanceof(EjvError);
-				expect(result1.keyword).to.be.eql(
+				expect(error1).to.be.instanceof(EjvError);
+				expect(error1.keyword).to.be.eql(
 					ErrorMsg.SMALLER_THAN_OR_EQUAL
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -318,7 +321,7 @@ describe('ejv()', () => {
 					exclusiveMax : true
 				}])).to.be.null;
 
-				const result1 : EjvError = ejv({
+				const error1 : EjvError = ejv({
 					a : 10
 				}, [{
 					key : 'a',
@@ -327,13 +330,13 @@ describe('ejv()', () => {
 					exclusiveMax : true
 				}]);
 
-				expect(result1).to.be.instanceof(EjvError);
-				expect(result1.keyword).to.be.eql(
+				expect(error1).to.be.instanceof(EjvError);
+				expect(error1.keyword).to.be.eql(
 					ErrorMsg.SMALLER_THAN
 						.replace(ErrorMsgCursorA, '10')
 				);
 
-				const result2 : EjvError = ejv({
+				const error2 : EjvError = ejv({
 					a : 11
 				}, [{
 					key : 'a',
@@ -342,8 +345,8 @@ describe('ejv()', () => {
 					exclusiveMax : true
 				}]);
 
-				expect(result2).to.be.instanceof(EjvError);
-				expect(result2.keyword).to.be.eql(
+				expect(error2).to.be.instanceof(EjvError);
+				expect(error2.keyword).to.be.eql(
 					ErrorMsg.SMALLER_THAN
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -368,7 +371,7 @@ describe('ejv()', () => {
 					exclusiveMax : false
 				}])).to.be.null;
 
-				const result1 : EjvError = ejv({
+				const error1 : EjvError = ejv({
 					a : 11
 				}, [{
 					key : 'a',
@@ -377,8 +380,8 @@ describe('ejv()', () => {
 					exclusiveMax : false
 				}]);
 
-				expect(result1).to.be.instanceof(EjvError);
-				expect(result1.keyword).to.be.eql(
+				expect(error1).to.be.instanceof(EjvError);
+				expect(error1.keyword).to.be.eql(
 					ErrorMsg.SMALLER_THAN_OR_EQUAL
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -398,7 +401,7 @@ describe('ejv()', () => {
 
 				describe('single format', () => {
 					it('fail', () => {
-						const result : EjvError = ejv({
+						const error : EjvError = ejv({
 							a : 123.5
 						}, [{
 							key : 'a',
@@ -406,8 +409,8 @@ describe('ejv()', () => {
 							format : 'integer'
 						}]);
 
-						expect(result).to.be.instanceof(EjvError);
-						expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error).to.be.instanceof(EjvError);
+						expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, 'integer')
 						);
 					});
@@ -425,7 +428,7 @@ describe('ejv()', () => {
 
 				describe('multiple formats', () => {
 					it('fail', () => {
-						const result : EjvError = ejv({
+						const error : EjvError = ejv({
 							a : 123.5
 						}, [{
 							key : 'a',
@@ -433,8 +436,8 @@ describe('ejv()', () => {
 							format : ['integer']
 						}]);
 
-						expect(result).to.be.instanceof(EjvError);
-						expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error).to.be.instanceof(EjvError);
+						expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, '[integer]')
 						);
 					});
@@ -531,7 +534,7 @@ describe('ejv()', () => {
 
 				describe('single format', () => {
 					it('fail', () => {
-						const result1 : EjvError = ejv({
+						const error1 : EjvError = ejv({
 							a : 1.5
 						}, [{
 							key : 'a',
@@ -539,12 +542,12 @@ describe('ejv()', () => {
 							format : 'index'
 						}]);
 
-						expect(result1).to.be.instanceof(EjvError);
-						expect(result1.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.keyword).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, 'index')
 						);
 
-						const result2 : EjvError = ejv({
+						const error2 : EjvError = ejv({
 							a : -1
 						}, [{
 							key : 'a',
@@ -552,12 +555,12 @@ describe('ejv()', () => {
 							format : 'index'
 						}]);
 
-						expect(result2).to.be.instanceof(EjvError);
-						expect(result2.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error2).to.be.instanceof(EjvError);
+						expect(error2.keyword).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, 'index')
 						);
 
-						const result3 : EjvError = ejv({
+						const error3 : EjvError = ejv({
 							a : -1.6
 						}, [{
 							key : 'a',
@@ -565,8 +568,8 @@ describe('ejv()', () => {
 							format : 'index'
 						}]);
 
-						expect(result3).to.be.instanceof(EjvError);
-						expect(result3.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error3).to.be.instanceof(EjvError);
+						expect(error3.keyword).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, 'index')
 						);
 					});
@@ -592,7 +595,7 @@ describe('ejv()', () => {
 
 				describe('multiple formats', () => {
 					it('fail', () => {
-						const result1 : EjvError = ejv({
+						const error1 : EjvError = ejv({
 							a : 1.5
 						}, [{
 							key : 'a',
@@ -600,12 +603,12 @@ describe('ejv()', () => {
 							format : ['index']
 						}]);
 
-						expect(result1).to.be.instanceof(EjvError);
-						expect(result1.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.keyword).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, '[index]')
 						);
 
-						const result2 : EjvError = ejv({
+						const error2 : EjvError = ejv({
 							a : -1
 						}, [{
 							key : 'a',
@@ -613,12 +616,12 @@ describe('ejv()', () => {
 							format : ['index']
 						}]);
 
-						expect(result2).to.be.instanceof(EjvError);
-						expect(result2.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error2).to.be.instanceof(EjvError);
+						expect(error2.keyword).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, '[index]')
 						);
 
-						const result3 : EjvError = ejv({
+						const error3 : EjvError = ejv({
 							a : -1.6
 						}, [{
 							key : 'a',
@@ -626,8 +629,8 @@ describe('ejv()', () => {
 							format : ['index']
 						}]);
 
-						expect(result3).to.be.instanceof(EjvError);
-						expect(result3.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error3).to.be.instanceof(EjvError);
+						expect(error3.keyword).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, '[index]')
 						);
 					});
@@ -696,20 +699,20 @@ describe('ejv()', () => {
 				typeTester.filter(obj => obj.type !== 'string')
 					.forEach((obj) => {
 						it(obj.type, () => {
-							const result : EjvError = ejv({
+							const error : EjvError = ejv({
 								a : obj.value
 							}, [{
 								key : 'a',
 								type : 'string'
 							}]);
 
-							expect(result).to.be.instanceof(EjvError);
+							expect(error).to.be.instanceof(EjvError);
 
-							expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
 								.replace(ErrorMsgCursorA, 'string')
 							);
-							expect(result.path).to.be.eql('a');
-							expect(result.data).to.be.eql(obj.value);
+							expect(error.path).to.be.eql('a');
+							expect(error.data).to.be.eql(obj.value);
 						});
 					});
 
@@ -717,19 +720,19 @@ describe('ejv()', () => {
 					const value = 'ejv';
 					const typeArr : string[] = ['boolean', 'number'];
 
-					const result : EjvError = ejv({
+					const error : EjvError = ejv({
 						a : value
 					}, [{
 						key : 'a',
 						type : typeArr
 					}]);
 
-					expect(result).to.be.instanceof(EjvError);
+					expect(error).to.be.instanceof(EjvError);
 
-					expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 						.replace(ErrorMsgCursorA, `[${typeArr.join(', ')}]`));
-					expect(result.path).to.be.eql('a');
-					expect(result.data).to.be.eql(value);
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.eql(value);
 				});
 			});
 
@@ -777,7 +780,7 @@ describe('ejv()', () => {
 			it('fail', () => {
 				const enumArr : string[] = ['b', 'c'];
 
-				const result : EjvError = ejv({
+				const error : EjvError = ejv({
 					a : 'a'
 				}, [{
 					key : 'a',
@@ -785,12 +788,12 @@ describe('ejv()', () => {
 					enum : enumArr
 				}]);
 
-				expect(result).to.be.instanceof(EjvError);
-				expect(result.keyword).to.be.eql(ErrorMsg.ONE_OF
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.ONE_OF
 					.replace(ErrorMsgCursorA, `[${enumArr.join(', ')}]`)
 				);
-				expect(result.path).to.be.eql('a');
-				expect(result.data).to.be.eql('a');
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('a');
 			});
 
 			it('ok', () => {
@@ -806,7 +809,7 @@ describe('ejv()', () => {
 
 		describe('minLength', () => {
 			it('fail', () => {
-				const result : EjvError = ejv({
+				const error : EjvError = ejv({
 					a : 'ejv'
 				}, [{
 					key : 'a',
@@ -814,11 +817,11 @@ describe('ejv()', () => {
 					minLength : 4
 				}]);
 
-				expect(result).to.be.instanceof(EjvError);
-				expect(result.keyword).to.be.eql(ErrorMsg.MIN_LENGTH
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.MIN_LENGTH
 					.replace(ErrorMsgCursorA, '4'));
-				expect(result.path).to.be.eql('a');
-				expect(result.data).to.be.eql('ejv');
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('ejv');
 			});
 
 			it('ok', () => {
@@ -842,7 +845,7 @@ describe('ejv()', () => {
 
 		describe('maxLength', () => {
 			it('fail', () => {
-				const result : EjvError = ejv({
+				const error : EjvError = ejv({
 					a : 'ejv'
 				}, [{
 					key : 'a',
@@ -850,11 +853,11 @@ describe('ejv()', () => {
 					maxLength : 2
 				}]);
 
-				expect(result).to.be.instanceof(EjvError);
-				expect(result.keyword).to.be.eql(ErrorMsg.MAX_LENGTH
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.MAX_LENGTH
 					.replace(ErrorMsgCursorA, '2'));
-				expect(result.path).to.be.eql('a');
-				expect(result.data).to.be.eql('ejv');
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('ejv');
 			});
 
 			it('ok', () => {
@@ -878,7 +881,7 @@ describe('ejv()', () => {
 
 		describe('pattern', () => {
 			it('email', () => {
-				const result : EjvError = ejv({
+				const error : EjvError = ejv({
 					a : 'ejv'
 				}, [{
 					key : 'a',
@@ -886,13 +889,13 @@ describe('ejv()', () => {
 					format : 'email'
 				}]);
 
-				expect(result).to.be.instanceof(EjvError);
+				expect(error).to.be.instanceof(EjvError);
 
-				expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+				expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
 					.replace(ErrorMsgCursorA, 'email')
 				);
-				expect(result.path).to.be.eql('a');
-				expect(result.data).to.be.eql('ejv');
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('ejv');
 
 				expect(ejv({
 					a : 'ejv@ejv.com'
@@ -904,7 +907,7 @@ describe('ejv()', () => {
 			});
 
 			it('date', () => {
-				const result : EjvError = ejv({
+				const error : EjvError = ejv({
 					a : 'ejv'
 				}, [{
 					key : 'a',
@@ -912,13 +915,13 @@ describe('ejv()', () => {
 					format : 'date'
 				}]);
 
-				expect(result).to.be.instanceof(EjvError);
+				expect(error).to.be.instanceof(EjvError);
 
-				expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+				expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
 					.replace(ErrorMsgCursorA, 'date')
 				);
-				expect(result.path).to.be.eql('a');
-				expect(result.data).to.be.eql('ejv');
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('ejv');
 
 				expect(ejv({
 					a : '2018-12-19'
@@ -930,7 +933,7 @@ describe('ejv()', () => {
 			});
 
 			it('time', () => {
-				const result : EjvError = ejv({
+				const error : EjvError = ejv({
 					a : 'ejv'
 				}, [{
 					key : 'a',
@@ -938,13 +941,13 @@ describe('ejv()', () => {
 					format : 'time'
 				}]);
 
-				expect(result).to.be.instanceof(EjvError);
+				expect(error).to.be.instanceof(EjvError);
 
-				expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+				expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
 					.replace(ErrorMsgCursorA, 'time')
 				);
-				expect(result.path).to.be.eql('a');
-				expect(result.data).to.be.eql('ejv');
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('ejv');
 
 				expect(ejv({
 					a : '00:27:35.123'
@@ -956,7 +959,7 @@ describe('ejv()', () => {
 			});
 
 			it('date-time', () => {
-				const result : EjvError = ejv({
+				const error : EjvError = ejv({
 					a : 'ejv'
 				}, [{
 					key : 'a',
@@ -964,13 +967,13 @@ describe('ejv()', () => {
 					format : 'date-time'
 				}]);
 
-				expect(result).to.be.instanceof(EjvError);
+				expect(error).to.be.instanceof(EjvError);
 
-				expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+				expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
 					.replace(ErrorMsgCursorA, 'date-time')
 				);
-				expect(result.path).to.be.eql('a');
-				expect(result.data).to.be.eql('ejv');
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('ejv');
 
 				expect(ejv({
 					a : '2018-12-19T00:27:35.123Z'
@@ -1007,20 +1010,20 @@ describe('ejv()', () => {
 					})
 					.forEach((obj) => {
 						it(obj.type, () => {
-							const result : EjvError = ejv({
+							const error : EjvError = ejv({
 								a : obj.value
 							}, [{
 								key : 'a',
 								type : 'object'
 							}]);
 
-							expect(result).to.be.instanceof(EjvError);
+							expect(error).to.be.instanceof(EjvError);
 
-							expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
 								.replace(ErrorMsgCursorA, 'object')
 							);
-							expect(result.path).to.be.eql('a');
-							expect(result.data).to.be.eql(obj.value);
+							expect(error.path).to.be.eql('a');
+							expect(error.data).to.be.eql(obj.value);
 						});
 					});
 
@@ -1028,19 +1031,19 @@ describe('ejv()', () => {
 					const value = {};
 					const typeArr : string[] = ['boolean', 'number'];
 
-					const result : EjvError = ejv({
+					const error : EjvError = ejv({
 						a : value
 					}, [{
 						key : 'a',
 						type : typeArr
 					}]);
 
-					expect(result).to.be.instanceof(EjvError);
+					expect(error).to.be.instanceof(EjvError);
 
-					expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 						.replace(ErrorMsgCursorA, `[${typeArr.join(', ')}]`));
-					expect(result.path).to.be.eql('a');
-					expect(result.data).to.be.eql(value);
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.eql(value);
 				});
 			});
 
@@ -1101,6 +1104,129 @@ describe('ejv()', () => {
 						type : ['number', 'object']
 					}])).to.be.null;
 				});
+			});
+		});
+
+		describe('properties', () => {
+			it('with single type', () => {
+				const undefinedError : EjvError = ejv({
+					a : {
+						b : undefined
+					}
+				}, [{
+					key : 'a',
+					type : 'object',
+					properties : [{
+						key : 'b',
+						type : 'string'
+					}]
+				}]);
+
+				expect(undefinedError).to.be.instanceof(EjvError);
+
+				expect(undefinedError.keyword).to.be.eql(ErrorMsg.REQUIRED);
+				expect(undefinedError.path).to.be.eql('a/b');
+
+				const error : EjvError = ejv({
+					a : {
+						b : 1
+					}
+				}, [{
+					key : 'a',
+					type : 'object',
+					properties : [{
+						key : 'b',
+						type : 'string'
+					}]
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+					.replace(ErrorMsgCursorA, 'string'));
+				expect(error.path).to.be.eql('a/b');
+				expect(error.data).to.be.eql(1);
+
+				expect(ejv({
+					a : {
+						b : 1
+					}
+				}, [{
+					key : 'a',
+					type : 'object',
+					properties : [{
+						key : 'b',
+						type : 'number'
+					}]
+				}])).to.be.null;
+			});
+
+			it('with multiple types', () => {
+				const typeArr : string[] = ['string', 'boolean'];
+
+				const undefinedError : EjvError = ejv({
+					a : {
+						b : undefined
+					}
+				}, [{
+					key : 'a',
+					type : 'object',
+					properties : [{
+						key : 'b',
+						type : typeArr
+					}]
+				}]);
+
+				expect(undefinedError).to.be.instanceof(EjvError);
+
+				expect(undefinedError.keyword).to.be.eql(ErrorMsg.REQUIRED);
+				expect(undefinedError.path).to.be.eql('a/b');
+
+				const error : EjvError = ejv({
+					a : {
+						b : 1
+					}
+				}, [{
+					key : 'a',
+					type : 'object',
+					properties : [{
+						key : 'b',
+						type : typeArr
+					}]
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					.replace(ErrorMsgCursorA, `[${typeArr.join(', ')}]`));
+				expect(error.path).to.be.eql('a/b');
+				expect(error.data).to.be.eql(1);
+
+				expect(ejv({
+					a : {
+						b : 1
+					}
+				}, [{
+					key : 'a',
+					type : 'object',
+					properties : [{
+						key : 'b',
+						type : ['number', 'string']
+					}]
+				}])).to.be.null;
+
+				expect(ejv({
+					a : {
+						b : 1
+					}
+				}, [{
+					key : 'a',
+					type : 'object',
+					properties : [{
+						key : 'b',
+						type : ['string', 'number']
+					}]
+				}])).to.be.null;
 			});
 		});
 	});

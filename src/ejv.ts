@@ -1,4 +1,4 @@
-import { EjvError, Options, Scheme } from './interfaces';
+import { EjvError, InternalOptions, Options, Scheme } from './interfaces';
 import { DataType, ErrorMsg, ErrorMsgCursorA, NumberFormat, StringFormat } from './constants';
 
 import {
@@ -23,7 +23,9 @@ import {
 	timeFormatTester
 } from './tester';
 
-const _ejv : Function = (data : object, schemes : Scheme[], options : Options) : null | EjvError => {
+const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOptions = {
+	path : []
+}) : null | EjvError => {
 	// check data by schemes
 	let result : EjvError = null;
 
@@ -36,7 +38,13 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 
 		if (!(scheme.optional === true && !definedTester(data[key]))) {
 			if (!definedTester(data[key])) {
-				result = new EjvError(ErrorMsg.REQUIRED, key, data[key]);
+				options.path.push(key);
+
+				result = new EjvError(
+					ErrorMsg.REQUIRED,
+					options.path,
+					data[key]
+				);
 				break;
 			}
 
@@ -81,24 +89,31 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 
 				return valid;
 			})) {
+				options.path.push(key);
+
 				if (!arrayTester(scheme.type)) {
-					result = new EjvError(ErrorMsg.TYPE_MISMATCH
-						.replace(ErrorMsgCursorA, scheme.type as DataType)
-						, key, value);
+					result = new EjvError(
+						ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, scheme.type as DataType),
+						options.path,
+						value
+					);
 				} else {
-					result = new EjvError(ErrorMsg.TYPE_MISMATCH_ONE_OF
-						.replace(ErrorMsgCursorA, `[${(<DataType[]>scheme.type).join(', ')}]`)
-						, key, value);
+					result = new EjvError(
+						ErrorMsg.TYPE_MISMATCH_ONE_OF.replace(ErrorMsgCursorA, `[${(<DataType[]>scheme.type).join(', ')}]`),
+						options.path,
+						value
+					);
 				}
 				break;
 			}
 
 			// common validation
 			if (definedTester(scheme.enum) && !enumTester(value, scheme.enum)) {
+				options.path.push(key);
+
 				result = new EjvError(
-					ErrorMsg.ONE_OF
-						.replace(ErrorMsgCursorA, `[${scheme.enum.join(', ')}]`),
-					key,
+					ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, `[${scheme.enum.join(', ')}]`),
+					options.path,
 					value
 				);
 				break;
@@ -110,20 +125,22 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 					if (definedTester(scheme.min)) {
 						if (!definedTester(scheme.exclusiveMin) || scheme.exclusiveMin !== true) {
 							if (!minNumberTester(value, scheme.min)) {
+								options.path.push(key);
+
 								result = new EjvError(
-									ErrorMsg.GREATER_THAN_OR_EQUAL
-										.replace(ErrorMsgCursorA, '' + scheme.min),
-									key,
+									ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.min),
+									options.path,
 									value
 								);
 								break;
 							}
 						} else {
 							if (!exclusiveMinNumberTester(value, scheme.min)) {
+								options.path.push(key);
+
 								result = new EjvError(
-									ErrorMsg.GREATER_THAN
-										.replace(ErrorMsgCursorA, '' + scheme.min),
-									key,
+									ErrorMsg.GREATER_THAN.replace(ErrorMsgCursorA, '' + scheme.min),
+									options.path,
 									value
 								);
 								break;
@@ -134,20 +151,22 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 					if (definedTester(scheme.max)) {
 						if (!definedTester(scheme.exclusiveMax) || scheme.exclusiveMax !== true) {
 							if (!maxNumberTester(value, scheme.max)) {
+								options.path.push(key);
+
 								result = new EjvError(
-									ErrorMsg.SMALLER_THAN_OR_EQUAL
-										.replace(ErrorMsgCursorA, '' + scheme.max),
-									key,
+									ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.max),
+									options.path,
 									value
 								);
 								break;
 							}
 						} else {
 							if (!exclusiveMaxNumberTester(value, scheme.max)) {
+								options.path.push(key);
+
 								result = new EjvError(
-									ErrorMsg.SMALLER_THAN
-										.replace(ErrorMsgCursorA, '' + scheme.max),
-									key,
+									ErrorMsg.SMALLER_THAN.replace(ErrorMsgCursorA, '' + scheme.max),
+									options.path,
 									value
 								);
 								break;
@@ -182,14 +201,20 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 
 							return valid;
 						})) {
+							options.path.push(key);
+
 							if (!arrayTester(scheme.format)) {
-								result = new EjvError(ErrorMsg.FORMAT
-									.replace(ErrorMsgCursorA, scheme.format as NumberFormat)
-									, key, value);
+								result = new EjvError(
+									ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format as NumberFormat),
+									options.path,
+									value
+								);
 							} else {
-								result = new EjvError(ErrorMsg.FORMAT
-									.replace(ErrorMsgCursorA, `[${(<NumberFormat[]>scheme.format).join(', ')}]`)
-									, key, value);
+								result = new EjvError(
+									ErrorMsg.FORMAT.replace(ErrorMsgCursorA, `[${(<NumberFormat[]>scheme.format).join(', ')}]`),
+									options.path,
+									value
+								);
 							}
 							break;
 						}
@@ -198,18 +223,22 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 
 				case DataType.STRING:
 					if (definedTester(scheme.minLength) && !minLengthTester(value, scheme.minLength)) {
-						result = new EjvError(ErrorMsg.MIN_LENGTH
-							.replace(ErrorMsgCursorA, '' + scheme.minLength),
-							key,
+						options.path.push(key);
+
+						result = new EjvError(
+							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
+							options.path,
 							value
 						);
 						break;
 					}
 
 					if (definedTester(scheme.maxLength) && !maxLengthTester(value, scheme.maxLength)) {
-						result = new EjvError(ErrorMsg.MAX_LENGTH
-							.replace(ErrorMsgCursorA, '' + scheme.maxLength),
-							key,
+						options.path.push(key);
+
+						result = new EjvError(
+							ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
+							options.path,
 							value
 						);
 						break;
@@ -219,40 +248,52 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 						switch (scheme.format) {
 							case StringFormat.EMAIL:
 								if (!emailTester(value)) {
-									result = new EjvError(ErrorMsg.FORMAT
-										.replace(ErrorMsgCursorA, scheme.format),
-										key,
-										value);
+									options.path.push(key);
+
+									result = new EjvError(
+										ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format),
+										options.path,
+										value
+									);
 									break;
 								}
 								break;
 
 							case StringFormat.DATE:
 								if (!dateFormatTester(value)) {
-									result = new EjvError(ErrorMsg.FORMAT
-										.replace(ErrorMsgCursorA, scheme.format),
-										key,
-										value);
+									options.path.push(key);
+
+									result = new EjvError(
+										ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format),
+										options.path,
+										value
+									);
 									break;
 								}
 								break;
 
 							case StringFormat.TIME:
 								if (!timeFormatTester(value)) {
-									result = new EjvError(ErrorMsg.FORMAT
-										.replace(ErrorMsgCursorA, scheme.format),
-										key,
-										value);
+									options.path.push(key);
+
+									result = new EjvError(
+										ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format),
+										options.path,
+										value
+									);
 									break;
 								}
 								break;
 
 							case StringFormat.DATE_TIME:
 								if (!dateTimeFormatTester(value)) {
-									result = new EjvError(ErrorMsg.FORMAT
-										.replace(ErrorMsgCursorA, scheme.format),
-										key,
-										value);
+									options.path.push(key);
+
+									result = new EjvError(
+										ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format),
+										options.path,
+										value
+									);
 									break;
 								}
 								break;
@@ -260,6 +301,18 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 							default:
 								throw new Error('not defined string format'); // TODO: dev
 						}
+					}
+					break;
+
+				case DataType.OBJECT:
+					if (definedTester(scheme.properties)) {
+						const partialData : object = data[key];
+						const partialScheme : Scheme[] = scheme.properties;
+
+						options.path.push(key);
+
+						// call recursively
+						result = _ejv(partialData, partialScheme, options);
 					}
 					break;
 			}

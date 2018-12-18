@@ -36,12 +36,19 @@ export interface Scheme {
 	// items? : Scheme[];
 }
 
+export interface InternalOptions {
+	path : string[];
+}
+
 export interface Options {
 }
 
 export class EjvError {
+	public path : string;
+
 	constructor (public keyword : string,
-	             public path : string,
+	             path : string[],
 	             public data : any) {
+		this.path = path.join('/');
 	}
 }
