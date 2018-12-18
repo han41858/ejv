@@ -67,6 +67,10 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 						valid = stringTester(value);
 						break;
 
+					case DataType.OBJECT:
+						valid = objectTester(value);
+						break;
+
 					default:
 						throw new Error('not defined data type'); // TODO: dev
 				}

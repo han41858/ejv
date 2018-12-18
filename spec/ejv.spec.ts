@@ -998,4 +998,110 @@ describe('ejv()', () => {
 			});
 		});
 	});
+
+	describe('object', () => {
+		describe('type', () => {
+			describe('mismatch', () => {
+				typeTester.filter(obj => {
+						return !['null', 'date', 'regexp', 'array', 'object'].includes(obj.type);
+					})
+					.forEach((obj) => {
+						it(obj.type, () => {
+							const result : EjvError = ejv({
+								a : obj.value
+							}, [{
+								key : 'a',
+								type : 'object'
+							}]);
+
+							expect(result).to.be.instanceof(EjvError);
+
+							expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+								.replace(ErrorMsgCursorA, 'object')
+							);
+							expect(result.path).to.be.eql('a');
+							expect(result.data).to.be.eql(obj.value);
+						});
+					});
+
+				it('multiple types', () => {
+					const value = {};
+					const typeArr : string[] = ['boolean', 'number'];
+
+					const result : EjvError = ejv({
+						a : value
+					}, [{
+						key : 'a',
+						type : typeArr
+					}]);
+
+					expect(result).to.be.instanceof(EjvError);
+
+					expect(result.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+						.replace(ErrorMsgCursorA, `[${typeArr.join(', ')}]`));
+					expect(result.path).to.be.eql('a');
+					expect(result.data).to.be.eql(value);
+				});
+			});
+
+			describe('match', () => {
+				it('optional', () => {
+					expect(ejv({
+						a : undefined
+					}, [{
+						key : 'a',
+						type : 'object',
+						optional : true
+					}])).to.be.null;
+				});
+
+				typeTester.filter(obj => {
+						return ['null', 'date', 'regexp', 'array', 'object'].includes(obj.type);
+					})
+					.forEach((obj) => {
+						it(obj.type, () => {
+							expect(ejv({
+								a : obj.value
+							}, [{
+								key : 'a',
+								type : 'object'
+							}])).to.be.null;
+						});
+					});
+
+				it('single type', () => {
+					expect(ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : 'object'
+					}])).to.be.null;
+				});
+
+				it('multiple types', () => {
+					expect(ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : ['object', 'number']
+					}])).to.be.null;
+				});
+
+				it('multiple types', () => {
+					expect(ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : ['number', 'object']
+					}])).to.be.null;
+				});
+			});
+		});
+	});
 });
