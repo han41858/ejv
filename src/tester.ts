@@ -154,6 +154,28 @@ const iso8601TimeTester : AdditionalTester = (value : string) : boolean => {
 		});
 };
 
+const iso8601DateTimeTester : AdditionalTester = (value : string) : boolean => {
+	let valid : boolean = false;
+
+	if (/.+T.+/.test(value) // should have 1 'T'
+		&& /(Z|[-+]\d{2}:?\d{2})$/.test(value) // should end with 'Z' or timezone
+	) {
+		let [date, time] = value.split('T');
+
+		if (time.endsWith('Z')) {
+			time = time.replace('Z', '');
+		} else {
+			const timezoneStartIndex : number = time.includes('+') ? time.indexOf('+') : time.indexOf('-');
+
+			time = time.substr(0, timezoneStartIndex);
+		}
+
+		valid = iso8601DateTester(date) && iso8601TimeTester(time);
+	}
+
+	return valid;
+};
+
 export const dateFormatTester : AdditionalTester = (value : string) : boolean => {
 	return iso8601DateTester(value);
 };
@@ -163,7 +185,7 @@ export const timeFormatTester : AdditionalTester = (value : string) : boolean =>
 };
 
 export const dateTimeFormatTester : AdditionalTester = (value : string) : boolean => {
-	return rfc3339Tester(value);
+	return rfc3339Tester(value) || iso8601DateTimeTester(value);
 };
 
 // // with port

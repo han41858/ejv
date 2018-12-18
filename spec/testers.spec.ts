@@ -479,6 +479,10 @@ describe('testers', function () {
 				// // leap second inserted
 				// expect(dateTimeFormatTester('1990-12-31T23:59:60Z')).to.be.true;
 				// expect(dateTimeFormatTester('1990-12-31T15:59:60-08:00')).to.be.true;
+
+				// ISO 8601
+				expect(dateTimeFormatTester('20181219T00:38:05Z')).to.be.true;
+				expect(dateTimeFormatTester('20181219T00:38:05+00:00')).to.be.true;
 			});
 		});
 	});

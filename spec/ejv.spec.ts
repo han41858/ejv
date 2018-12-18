@@ -979,6 +979,22 @@ describe('ejv()', () => {
 					type : 'string',
 					format : 'date-time'
 				}])).to.be.null;
+
+				expect(ejv({
+					a : '2018-12-19T00:27:35+00:00'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'date-time'
+				}])).to.be.null;
+
+				expect(ejv({
+					a : '20181219T002735Z'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'date-time'
+				}])).to.be.null;
 			});
 		});
 	});
