@@ -18,7 +18,7 @@ export enum StringFormat {
 	EMAIL = 'email',
 
 	DATE = 'date',
-	DATE_TILE = 'date-time',
+	DATE_TIME = 'date-time',
 	TIME = 'time',
 
 	URL = 'url',

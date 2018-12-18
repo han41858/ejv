@@ -902,6 +902,84 @@ describe('ejv()', () => {
 					format : 'email'
 				}])).to.be.null;
 			});
+
+			it('date', () => {
+				const result : EjvError = ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'date'
+				}]);
+
+				expect(result).to.be.instanceof(EjvError);
+
+				expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+					.replace(ErrorMsgCursorA, 'date')
+				);
+				expect(result.path).to.be.eql('a');
+				expect(result.data).to.be.eql('ejv');
+
+				expect(ejv({
+					a : '2018-12-19'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'date'
+				}])).to.be.null;
+			});
+
+			it('time', () => {
+				const result : EjvError = ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'time'
+				}]);
+
+				expect(result).to.be.instanceof(EjvError);
+
+				expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+					.replace(ErrorMsgCursorA, 'time')
+				);
+				expect(result.path).to.be.eql('a');
+				expect(result.data).to.be.eql('ejv');
+
+				expect(ejv({
+					a : '00:27:35.123'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'time'
+				}])).to.be.null;
+			});
+
+			it('date-time', () => {
+				const result : EjvError = ejv({
+					a : 'ejv'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'date-time'
+				}]);
+
+				expect(result).to.be.instanceof(EjvError);
+
+				expect(result.keyword).to.be.eql(ErrorMsg.FORMAT
+					.replace(ErrorMsgCursorA, 'date-time')
+				);
+				expect(result.path).to.be.eql('a');
+				expect(result.data).to.be.eql('ejv');
+
+				expect(ejv({
+					a : '2018-12-19T00:27:35.123Z'
+				}, [{
+					key : 'a',
+					type : 'string',
+					format : 'date-time'
+				}])).to.be.null;
+			});
 		});
 	});
 });

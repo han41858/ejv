@@ -4,6 +4,8 @@ import { DataType, ErrorMsg, ErrorMsgCursorA, NumberFormat, StringFormat } from 
 import {
 	arrayTester,
 	booleanTester,
+	dateFormatTester,
+	dateTimeFormatTester,
 	definedTester,
 	emailTester,
 	enumTester,
@@ -17,7 +19,8 @@ import {
 	minNumberTester,
 	numberTester,
 	objectTester,
-	stringTester
+	stringTester,
+	timeFormatTester
 } from './tester';
 
 const _ejv : Function = (data : object, schemes : Scheme[], options : Options) : null | EjvError => {
@@ -216,6 +219,37 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : Options) :
 										.replace(ErrorMsgCursorA, scheme.format),
 										key,
 										value);
+									break;
+								}
+								break;
+
+							case StringFormat.DATE:
+								if (!dateFormatTester(value)) {
+									result = new EjvError(ErrorMsg.FORMAT
+										.replace(ErrorMsgCursorA, scheme.format),
+										key,
+										value);
+									break;
+								}
+								break;
+
+							case StringFormat.TIME:
+								if (!timeFormatTester(value)) {
+									result = new EjvError(ErrorMsg.FORMAT
+										.replace(ErrorMsgCursorA, scheme.format),
+										key,
+										value);
+									break;
+								}
+								break;
+
+							case StringFormat.DATE_TIME:
+								if (!dateTimeFormatTester(value)) {
+									result = new EjvError(ErrorMsg.FORMAT
+										.replace(ErrorMsgCursorA, scheme.format),
+										key,
+										value);
+									break;
 								}
 								break;
 
