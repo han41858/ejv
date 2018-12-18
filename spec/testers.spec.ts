@@ -448,8 +448,7 @@ describe('testers', function () {
 			});
 		});
 
-		// TODO:
-		xdescribe('dateTimeFormatTester()', () => {
+		describe('dateTimeFormatTester()', () => {
 			it('logic test', () => {
 				// RFC 3339
 				expect(dateTimeFormatTester('2018-12-16T05:04:05')).to.be.true;
