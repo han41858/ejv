@@ -89,6 +89,10 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						valid = regExpTester(value);
 						break;
 
+					case DataType.ARRAY:
+						valid = arrayTester(value);
+						break;
+
 					default:
 						throw new Error('not defined data type'); // TODO: dev
 				}
