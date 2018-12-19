@@ -20,6 +20,7 @@ import {
 	minNumberTester,
 	numberTester,
 	objectTester,
+	regExpTester,
 	stringTester,
 	timeFormatTester
 } from './tester';
@@ -82,6 +83,10 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 					case DataType.DATE:
 						valid = dateTester(value);
+						break;
+
+					case DataType.REGEXP:
+						valid = regExpTester(value);
 						break;
 
 					default:

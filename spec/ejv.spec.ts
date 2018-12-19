@@ -1231,7 +1231,7 @@ describe('ejv()', () => {
 		});
 	});
 
-	describe.only('date', () => {
+	describe('date', () => {
 		describe('type', () => {
 			describe('mismatch', () => {
 				typeTester.filter(obj => obj.type !== 'date')
@@ -1309,6 +1309,90 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : ['number', 'date']
+					}])).to.be.null;
+				});
+			});
+		});
+	});
+
+	describe('regexp', () => {
+		describe('type', () => {
+			describe('mismatch', () => {
+				typeTester.filter(obj => obj.type !== 'regexp')
+					.forEach((obj) => {
+						it(obj.type, () => {
+							const error : EjvError = ejv({
+								a : obj.value
+							}, [{
+								key : 'a',
+								type : 'regexp'
+							}]);
+
+							expect(error).to.be.instanceof(EjvError);
+
+							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+								.replace(ErrorMsgCursorA, 'regexp')
+							);
+							expect(error.path).to.be.eql('a');
+							expect(error.data).to.be.eql(obj.value);
+						});
+					});
+
+				it('multiple types', () => {
+					const value = 'ejv';
+					const typeArr : string[] = ['boolean', 'regexp'];
+
+					const error : EjvError = ejv({
+						a : value
+					}, [{
+						key : 'a',
+						type : typeArr
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+						.replace(ErrorMsgCursorA, `[${typeArr.join(', ')}]`));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.eql(value);
+				});
+			});
+
+			describe('match', () => {
+				it('optional', () => {
+					expect(ejv({
+						a : undefined
+					}, [{
+						key : 'a',
+						type : 'regexp',
+						optional : true
+					}])).to.be.null;
+				});
+
+				it('single type', () => {
+					expect(ejv({
+						a : /./
+					}, [{
+						key : 'a',
+						type : 'regexp'
+					}])).to.be.null;
+				});
+
+				it('multiple types', () => {
+					expect(ejv({
+						a : /./
+					}, [{
+						key : 'a',
+						type : ['regexp', 'number']
+					}])).to.be.null;
+				});
+
+				it('multiple types', () => {
+					expect(ejv({
+						a : /./
+					}, [{
+						key : 'a',
+						type : ['number', 'regexp']
 					}])).to.be.null;
 				});
 			});
