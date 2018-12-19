@@ -1230,4 +1230,88 @@ describe('ejv()', () => {
 			});
 		});
 	});
+
+	describe.only('date', () => {
+		describe('type', () => {
+			describe('mismatch', () => {
+				typeTester.filter(obj => obj.type !== 'date')
+					.forEach((obj) => {
+						it(obj.type, () => {
+							const error : EjvError = ejv({
+								a : obj.value
+							}, [{
+								key : 'a',
+								type : 'date'
+							}]);
+
+							expect(error).to.be.instanceof(EjvError);
+
+							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+								.replace(ErrorMsgCursorA, 'date')
+							);
+							expect(error.path).to.be.eql('a');
+							expect(error.data).to.be.eql(obj.value);
+						});
+					});
+
+				it('multiple types', () => {
+					const value = 'ejv';
+					const typeArr : string[] = ['boolean', 'date'];
+
+					const error : EjvError = ejv({
+						a : value
+					}, [{
+						key : 'a',
+						type : typeArr
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+						.replace(ErrorMsgCursorA, `[${typeArr.join(', ')}]`));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.eql(value);
+				});
+			});
+
+			describe('match', () => {
+				it('optional', () => {
+					expect(ejv({
+						a : undefined
+					}, [{
+						key : 'a',
+						type : 'date',
+						optional : true
+					}])).to.be.null;
+				});
+
+				it('single type', () => {
+					expect(ejv({
+						a : new Date
+					}, [{
+						key : 'a',
+						type : 'date'
+					}])).to.be.null;
+				});
+
+				it('multiple types', () => {
+					expect(ejv({
+						a : new Date
+					}, [{
+						key : 'a',
+						type : ['date', 'number']
+					}])).to.be.null;
+				});
+
+				it('multiple types', () => {
+					expect(ejv({
+						a : new Date
+					}, [{
+						key : 'a',
+						type : ['number', 'date']
+					}])).to.be.null;
+				});
+			});
+		});
+	});
 });

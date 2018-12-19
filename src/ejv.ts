@@ -5,6 +5,7 @@ import {
 	arrayTester,
 	booleanTester,
 	dateFormatTester,
+	dateTester,
 	dateTimeFormatTester,
 	definedTester,
 	emailTester,
@@ -77,6 +78,10 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 					case DataType.OBJECT:
 						valid = objectTester(value);
+						break;
+
+					case DataType.DATE:
+						valid = dateTester(value);
 						break;
 
 					default:
