@@ -312,34 +312,28 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 					break;
 
 				case DataType.ARRAY:
-					if (definedTester(scheme.minLength)) {
-						if (!minLengthTester(value, scheme.minLength)) {
-							result = new EjvError(
-								ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
-								options.path,
-								value
-							);
-						}
+					if (definedTester(scheme.minLength) && !minLengthTester(value, scheme.minLength)) {
+						result = new EjvError(
+							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
+							options.path,
+							value
+						);
 					}
 
-					if (definedTester(scheme.maxLength)) {
-						if (!maxLengthTester(value, scheme.maxLength)) {
-							result = new EjvError(
-								ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
-								options.path,
-								value
-							);
-						}
+					if (definedTester(scheme.maxLength) && !maxLengthTester(value, scheme.maxLength)) {
+						result = new EjvError(
+							ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
+							options.path,
+							value
+						);
 					}
 
-					if (definedTester(scheme.unique)) {
-						if (!uniqueItemsTester(value)) {
-							result = new EjvError(
-								ErrorMsg.UNIQUE_ITEMS,
-								options.path,
-								value
-							);
-						}
+					if (definedTester(scheme.unique) && !uniqueItemsTester(value)) {
+						result = new EjvError(
+							ErrorMsg.UNIQUE_ITEMS,
+							options.path,
+							value
+						);
 					}
 					break;
 			}
