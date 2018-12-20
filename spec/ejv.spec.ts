@@ -1553,5 +1553,33 @@ describe('ejv()', () => {
 				}])).to.be.null;
 			});
 		});
+
+		describe('unique', () => {
+			it('fail', () => {
+				const error : EjvError = ejv({
+					a : [1, 2, 2]
+				}, [{
+					key : 'a',
+					type : 'array',
+					unique : true
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				expect(error.keyword).to.be.eql(ErrorMsg.UNIQUE_ITEMS);
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.ordered.members([1, 2, 2]);
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a : [1, 2, 3]
+				}, [{
+					key : 'a',
+					type : 'array',
+					unique : true
+				}])).to.be.null;
+			});
+		});
 	});
 });

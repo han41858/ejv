@@ -22,7 +22,8 @@ import {
 	objectTester,
 	regExpTester,
 	stringTester,
-	timeFormatTester
+	timeFormatTester,
+	uniqueItemsTester
 } from './tester';
 
 const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOptions = {
@@ -325,6 +326,16 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						if (!maxLengthTester(value, scheme.maxLength)) {
 							result = new EjvError(
 								ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
+								options.path,
+								value
+							);
+						}
+					}
+
+					if (definedTester(scheme.unique)) {
+						if (!uniqueItemsTester(value)) {
+							result = new EjvError(
+								ErrorMsg.UNIQUE_ITEMS,
 								options.path,
 								value
 							);

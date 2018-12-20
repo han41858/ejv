@@ -58,4 +58,6 @@ export enum ErrorMsg {
 
 	MIN_LENGTH = 'the value should be longer than <<A>>', // minLength
 	MAX_LENGTH = 'the value should be shorter than <<A>>', // maxLength
+
+	UNIQUE_ITEMS = 'the array should be unique items'
 }

@@ -24,7 +24,8 @@ import {
 	regExpTester,
 	stringRegExpTester,
 	stringTester,
-	timeFormatTester
+	timeFormatTester,
+	uniqueItemsTester
 } from '../src/tester';
 
 describe('testers', function () {
@@ -626,6 +627,14 @@ describe('testers', function () {
 		it('logic test', () => {
 			expect(arrayTester([])).to.be.true;
 			expect(arrayTester('not_array')).to.be.false;
+		});
+	});
+
+	describe('uniqueItemsTester()', () => {
+		it('logic test', () => {
+			expect(uniqueItemsTester([])).to.be.true;
+			expect(uniqueItemsTester([1, 2])).to.be.true;
+			expect(uniqueItemsTester([1, 2, 2])).to.be.false;
 		});
 	});
 

@@ -226,6 +226,12 @@ export const arrayTester : TypeTester = (value : any) : boolean => {
 		&& value.push !== undefined;
 };
 
+export const uniqueItemsTester : AdditionalTester = (array : any[]) : boolean => {
+	return array.every(item => {
+		return array.filter((target : any) => target === item).length === 1;
+	});
+};
+
 export const regExpTester : TypeTester = (value : any) : boolean => {
 	return value instanceof RegExp;
 };
