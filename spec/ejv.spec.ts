@@ -1481,5 +1481,77 @@ describe('ejv()', () => {
 				});
 			});
 		});
+
+		describe('minLength', () => {
+			it('fail', () => {
+				const error : EjvError = ejv({
+					a : [1, 2, 3]
+				}, [{
+					key : 'a',
+					type : 'array',
+					minLength : 4
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.MIN_LENGTH
+					.replace(ErrorMsgCursorA, '4'));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.ordered.members([1, 2, 3]);
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a : [1, 2, 3]
+				}, [{
+					key : 'a',
+					type : 'array',
+					minLength : 2
+				}])).to.be.null;
+
+				expect(ejv({
+					a : [1, 2, 3]
+				}, [{
+					key : 'a',
+					type : 'array',
+					minLength : 3
+				}])).to.be.null;
+			});
+		});
+
+		describe('maxLength', () => {
+			it('fail', () => {
+				const error : EjvError = ejv({
+					a : [1, 2, 3]
+				}, [{
+					key : 'a',
+					type : 'array',
+					maxLength : 2
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.MAX_LENGTH
+					.replace(ErrorMsgCursorA, '2'));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.ordered.members([1, 2, 3]);
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a : [1, 2, 3]
+				}, [{
+					key : 'a',
+					type : 'array',
+					maxLength : 3
+				}])).to.be.null;
+
+				expect(ejv({
+					a : [1, 2, 3]
+				}, [{
+					key : 'a',
+					type : 'array',
+					maxLength : 4
+				}])).to.be.null;
+			});
+		});
 	});
 });

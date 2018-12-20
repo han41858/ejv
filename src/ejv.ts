@@ -329,6 +329,32 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						result = _ejv(partialData, partialScheme, options);
 					}
 					break;
+
+				case DataType.ARRAY:
+					if (definedTester(scheme.minLength)) {
+						if (!minLengthTester(value, scheme.minLength)) {
+							options.path.push(key);
+
+							result = new EjvError(
+								ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
+								options.path,
+								value
+							);
+						}
+					}
+
+					if (definedTester(scheme.maxLength)) {
+						if (!maxLengthTester(value, scheme.maxLength)) {
+							options.path.push(key);
+
+							result = new EjvError(
+								ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
+								options.path,
+								value
+							);
+						}
+					}
+					break;
 			}
 		}
 	}
