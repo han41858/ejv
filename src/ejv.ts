@@ -119,19 +119,18 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 				break;
 			}
 
-			// common validation
-			if (definedTester(scheme.enum) && !enumTester(value, scheme.enum)) {
-				result = new EjvError(
-					ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, `[${scheme.enum.join(', ')}]`),
-					options.path,
-					value
-				);
-				break;
-			}
-
 			// additional check for type resolved
 			switch (typeResolved) {
 				case DataType.NUMBER:
+					if (definedTester(scheme.enum) && !enumTester(value, scheme.enum)) {
+						result = new EjvError(
+							ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, `[${scheme.enum.join(', ')}]`),
+							options.path,
+							value
+						);
+						break;
+					}
+
 					if (definedTester(scheme.min)) {
 						if (!definedTester(scheme.exclusiveMin) || scheme.exclusiveMin !== true) {
 							if (!minNumberTester(value, scheme.min)) {
@@ -222,6 +221,15 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 					break;
 
 				case DataType.STRING:
+					if (definedTester(scheme.enum) && !enumTester(value, scheme.enum)) {
+						result = new EjvError(
+							ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, `[${scheme.enum.join(', ')}]`),
+							options.path,
+							value
+						);
+						break;
+					}
+
 					if (definedTester(scheme.minLength) && !minLengthTester(value, scheme.minLength)) {
 						result = new EjvError(
 							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
