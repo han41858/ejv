@@ -38,10 +38,10 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 		const scheme : Scheme = schemes[i];
 		const key : string = scheme.key;
 
+		options.path.push(key);
+
 		if (!(scheme.optional === true && !definedTester(data[key]))) {
 			if (!definedTester(data[key])) {
-				options.path.push(key);
-
 				result = new EjvError(
 					ErrorMsg.REQUIRED,
 					options.path,
@@ -103,8 +103,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 				return valid;
 			})) {
-				options.path.push(key);
-
 				if (!arrayTester(scheme.type)) {
 					result = new EjvError(
 						ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, scheme.type as DataType),
@@ -123,8 +121,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 			// common validation
 			if (definedTester(scheme.enum) && !enumTester(value, scheme.enum)) {
-				options.path.push(key);
-
 				result = new EjvError(
 					ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, `[${scheme.enum.join(', ')}]`),
 					options.path,
@@ -139,8 +135,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 					if (definedTester(scheme.min)) {
 						if (!definedTester(scheme.exclusiveMin) || scheme.exclusiveMin !== true) {
 							if (!minNumberTester(value, scheme.min)) {
-								options.path.push(key);
-
 								result = new EjvError(
 									ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.min),
 									options.path,
@@ -150,8 +144,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							}
 						} else {
 							if (!exclusiveMinNumberTester(value, scheme.min)) {
-								options.path.push(key);
-
 								result = new EjvError(
 									ErrorMsg.GREATER_THAN.replace(ErrorMsgCursorA, '' + scheme.min),
 									options.path,
@@ -165,8 +157,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 					if (definedTester(scheme.max)) {
 						if (!definedTester(scheme.exclusiveMax) || scheme.exclusiveMax !== true) {
 							if (!maxNumberTester(value, scheme.max)) {
-								options.path.push(key);
-
 								result = new EjvError(
 									ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.max),
 									options.path,
@@ -176,8 +166,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							}
 						} else {
 							if (!exclusiveMaxNumberTester(value, scheme.max)) {
-								options.path.push(key);
-
 								result = new EjvError(
 									ErrorMsg.SMALLER_THAN.replace(ErrorMsgCursorA, '' + scheme.max),
 									options.path,
@@ -215,8 +203,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 							return valid;
 						})) {
-							options.path.push(key);
-
 							if (!arrayTester(scheme.format)) {
 								result = new EjvError(
 									ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format as NumberFormat),
@@ -237,8 +223,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 				case DataType.STRING:
 					if (definedTester(scheme.minLength) && !minLengthTester(value, scheme.minLength)) {
-						options.path.push(key);
-
 						result = new EjvError(
 							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
 							options.path,
@@ -248,8 +232,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 					}
 
 					if (definedTester(scheme.maxLength) && !maxLengthTester(value, scheme.maxLength)) {
-						options.path.push(key);
-
 						result = new EjvError(
 							ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
 							options.path,
@@ -262,8 +244,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						switch (scheme.format) {
 							case StringFormat.EMAIL:
 								if (!emailTester(value)) {
-									options.path.push(key);
-
 									result = new EjvError(
 										ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format),
 										options.path,
@@ -275,8 +255,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 							case StringFormat.DATE:
 								if (!dateFormatTester(value)) {
-									options.path.push(key);
-
 									result = new EjvError(
 										ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format),
 										options.path,
@@ -288,8 +266,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 							case StringFormat.TIME:
 								if (!timeFormatTester(value)) {
-									options.path.push(key);
-
 									result = new EjvError(
 										ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format),
 										options.path,
@@ -301,8 +277,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 							case StringFormat.DATE_TIME:
 								if (!dateTimeFormatTester(value)) {
-									options.path.push(key);
-
 									result = new EjvError(
 										ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format),
 										options.path,
@@ -323,8 +297,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						const partialData : object = data[key];
 						const partialScheme : Scheme[] = scheme.properties;
 
-						options.path.push(key);
-
 						// call recursively
 						result = _ejv(partialData, partialScheme, options);
 					}
@@ -333,8 +305,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 				case DataType.ARRAY:
 					if (definedTester(scheme.minLength)) {
 						if (!minLengthTester(value, scheme.minLength)) {
-							options.path.push(key);
-
 							result = new EjvError(
 								ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
 								options.path,
@@ -345,8 +315,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 					if (definedTester(scheme.maxLength)) {
 						if (!maxLengthTester(value, scheme.maxLength)) {
-							options.path.push(key);
-
 							result = new EjvError(
 								ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
 								options.path,
