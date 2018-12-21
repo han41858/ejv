@@ -26,11 +26,12 @@ import {
 	uniqueItemsTester
 } from './tester';
 
-const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOptions = {
+const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalOptions = {
 	path : []
 }) : null | EjvError => {
 	// check data by schemes
 	let result : EjvError = null;
+	const options : InternalOptions = JSON.parse(JSON.stringify(_options)); // divide instance
 
 	// use for() instead of forEach() to stop
 	const schemeLength : number = schemes.length;
@@ -334,6 +335,51 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							options.path,
 							value
 						);
+					}
+
+					if (definedTester(scheme.items)) {
+						let itemTypes : DataType[];
+
+						if (arrayTester(scheme.items)) {
+							itemTypes = scheme.items as DataType[];
+						} else {
+							itemTypes = [scheme.items] as DataType[];
+						}
+
+						// convert array to object
+						const valueAsArray : any[] = value as any[];
+
+						const tempKeyArr : string[] = valueAsArray.map(() => (new Date).toISOString());
+						const partialData : object = {};
+						const partialScheme : Scheme[] = [];
+
+						tempKeyArr.forEach((tempKey, i) => {
+							partialData[tempKey] = valueAsArray[i];
+							partialScheme.push({
+								key : tempKey,
+								type : itemTypes
+							});
+						});
+
+						// call recursively
+						const tempResult : EjvError = _ejv(partialData, partialScheme, options);
+
+						// convert new EjvError
+						if (!!tempResult) {
+							let errorMsg : string;
+
+							if (arrayTester(scheme.items)) {
+								errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, `[${itemTypes.join(', ')}]`);
+							} else {
+								errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, scheme.items as string);
+							}
+
+							result = new EjvError(
+								errorMsg,
+								options.path,
+								value
+							);
+						}
 					}
 					break;
 			}

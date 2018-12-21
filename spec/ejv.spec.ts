@@ -1581,5 +1581,77 @@ describe('ejv()', () => {
 				}])).to.be.null;
 			});
 		});
+
+		describe('items', () => {
+			describe('simple', () => {
+				it('fail', () => {
+					const error : EjvError = ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : 'string'
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_TYPE
+						.replace(ErrorMsgCursorA, 'string'));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.ordered.members([1, 2, 3]);
+				});
+
+				it('ok', () => {
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : 'number'
+					}])).to.be.null;
+				});
+			});
+
+			describe('multiple', () => {
+				it('fail', () => {
+					const enumArr : string[] = ['boolean', 'string'];
+
+					const error : EjvError = ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : enumArr
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_TYPE
+						.replace(ErrorMsgCursorA, `[${enumArr.join(', ')}]`));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.ordered.members([1, 2, 3]);
+				});
+
+				it('ok', () => {
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : ['string', 'number']
+					}])).to.be.null;
+
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : ['number', 'string']
+					}])).to.be.null;
+				});
+			});
+
+			// TODO: Scheme
+		});
 	});
 });
