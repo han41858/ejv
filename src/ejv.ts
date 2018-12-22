@@ -3,6 +3,7 @@ import { DataType, ErrorMsg, ErrorMsgCursorA, NumberFormat, StringFormat } from 
 
 import {
 	arrayTester,
+	arrayTypeOfTester,
 	dateFormatTester,
 	dateTimeFormatTester,
 	definedTester,
@@ -17,6 +18,7 @@ import {
 	minLengthTester,
 	minNumberTester,
 	objectTester,
+	stringTester,
 	timeFormatTester,
 	typeTester,
 	uniqueItemsTester
@@ -300,61 +302,105 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 						);
 					}
 
-					// if (definedTester(scheme.items)) {
-					// 	if(stringTester(scheme.items) || (arrayTester(scheme.items) && )){
-					// 		// by DataType | DataType[]
-					//
-					// 	}else {
-					// 		// by scheme
-					// 	}
-					//
-					//
-					//
-					//
-					//
-					// 	let itemTypes : DataType[];
-					//
-					// 	if (arrayTester(scheme.items)) {
-					// 		itemTypes = scheme.items as DataType[];
-					// 	} else {
-					// 		itemTypes = [scheme.items] as DataType[];
-					// 	}
-					//
-					// 	// convert array to object
-					// 	const valueAsArray : any[] = value as any[];
-					//
-					// 	const tempKeyArr : string[] = valueAsArray.map(() => (new Date).toISOString());
-					// 	const partialData : object = {};
-					// 	const partialScheme : Scheme[] = [];
-					//
-					// 	tempKeyArr.forEach((tempKey, i) => {
-					// 		partialData[tempKey] = valueAsArray[i];
-					// 		partialScheme.push({
-					// 			key : tempKey,
-					// 			type : itemTypes
-					// 		});
-					// 	});
-					//
-					// 	// call recursively
-					// 	const tempResult : EjvError = _ejv(partialData, partialScheme, options);
-					//
-					// 	// convert new EjvError
-					// 	if (!!tempResult) {
-					// 		let errorMsg : string;
-					//
-					// 		if (arrayTester(scheme.items)) {
-					// 			errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, `[${itemTypes.join(', ')}]`);
-					// 		} else {
-					// 			errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, scheme.items as string);
-					// 		}
-					//
-					// 		result = new EjvError(
-					// 			errorMsg,
-					// 			options.path,
-					// 			value
-					// 		);
-					// 	}
-					// }
+					if (definedTester(scheme.items)) {
+						// convert array to object
+						const valueAsArray : any[] = value as any[];
+
+						const now : Date = new Date;
+						const tempKeyArr : string[] = valueAsArray.map((value : any, i : number) => {
+							return now.toISOString() + i;
+						});
+
+						if (stringTester(scheme.items) // by DataType
+							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items, DataType.STRING)) // by DataType[]
+						) {
+							let itemTypes : DataType[];
+
+							if (arrayTester(scheme.items)) {
+								itemTypes = scheme.items as DataType[];
+							} else {
+								itemTypes = [scheme.items] as DataType[];
+							}
+
+							const partialData : object = {};
+							const partialSchemes : Scheme[] = [];
+
+							tempKeyArr.forEach((tempKey : string, i : number) => {
+								partialData[tempKey] = valueAsArray[i];
+								partialSchemes.push({
+									key : tempKey,
+									type : itemTypes
+								});
+							});
+
+							// call recursively
+							const partialResult : EjvError = _ejv(partialData, partialSchemes, options);
+
+							// convert new EjvError
+							if (!!partialResult) {
+								let errorMsg : string;
+
+								if (arrayTester(scheme.items)) {
+									errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, `[${itemTypes.join(', ')}]`);
+								} else {
+									errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, scheme.items as string);
+								}
+
+								result = new EjvError(
+									errorMsg,
+									options.path,
+									value
+								);
+							}
+							break;
+						} else {
+							// by scheme
+							const itemsAsSchemes : Scheme[] = scheme.items as Scheme[];
+
+							let partialValid : boolean = true;
+
+							// use for() instead of forEach() to break
+							const valueLength : number = valueAsArray.length;
+
+							for (let j = 0; j < valueLength; j++) {
+								const oneValue : any = value[j];
+
+								const partialData : object = {};
+								const partialSchemes : Scheme[] = [];
+
+								const tempKeyForThisValue : string = tempKeyArr[j];
+
+								partialData[tempKeyForThisValue] = oneValue;
+
+								partialSchemes.push(...itemsAsSchemes.map((oneScheme : Scheme) => {
+									const newScheme : Scheme = JSON.parse(JSON.stringify(oneScheme)); // divide instance
+
+									newScheme.key = tempKeyForThisValue;
+
+									return newScheme;
+								}));
+
+								const partialResult : EjvError[] = partialSchemes.map((partialScheme : Scheme) => {
+									// call recursively
+									return _ejv(partialData, [partialScheme], options);
+								});
+
+								if (!partialResult.some(oneResult => oneResult === null)) {
+									partialValid = false;
+									break;
+								}
+							}
+
+							if (partialValid === false) {
+								result = new EjvError(
+									ErrorMsg.ITEMS_SCHEME.replace(ErrorMsgCursorA, JSON.stringify(itemsAsSchemes)),
+									options.path,
+									value
+								);
+								break;
+							}
+						}
+					}
 					break;
 			}
 		}

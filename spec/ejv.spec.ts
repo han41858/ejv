@@ -1582,7 +1582,7 @@ describe('ejv()', () => {
 			});
 		});
 
-		xdescribe('items', () => {
+		describe('items', () => {
 			describe('simple', () => {
 				it('fail', () => {
 					const error : EjvError = ejv({
@@ -1651,7 +1651,7 @@ describe('ejv()', () => {
 				});
 			});
 
-			xdescribe('schemes', () => {
+			describe('schemes', () => {
 				it('fail', () => {
 					const itemScheme : Scheme = {
 						type : 'number' as DataType,
@@ -1669,7 +1669,7 @@ describe('ejv()', () => {
 					expect(error).to.be.instanceof(EjvError);
 
 					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_SCHEME
-						.replace(ErrorMsgCursorA, JSON.stringify(itemScheme)));
+						.replace(ErrorMsgCursorA, `[${JSON.stringify(itemScheme)}]`));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.ordered.members([1, 2, 3]);
 				});
@@ -1687,8 +1687,9 @@ describe('ejv()', () => {
 						}]
 					}])).to.be.null;
 
+					// multiple schemes
 					expect(ejv({
-						a : [1, 2, 3]
+						a : [1]
 					}, [{
 						key : 'a',
 						type : 'array',
