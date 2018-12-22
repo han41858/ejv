@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
-import { ErrorMsg, ErrorMsgCursorA } from '../src/constants';
-import { EjvError } from '../src/interfaces';
+import { DataType, ErrorMsg, ErrorMsgCursorA } from '../src/constants';
+import { EjvError, Scheme } from '../src/interfaces';
 
 const typeTester : {
 	type : string,
@@ -1582,7 +1582,7 @@ describe('ejv()', () => {
 			});
 		});
 
-		describe('items', () => {
+		xdescribe('items', () => {
 			describe('simple', () => {
 				it('fail', () => {
 					const error : EjvError = ejv({
@@ -1651,7 +1651,56 @@ describe('ejv()', () => {
 				});
 			});
 
-			// TODO: Scheme
+			xdescribe('schemes', () => {
+				it('fail', () => {
+					const itemScheme : Scheme = {
+						type : 'number' as DataType,
+						min : 2
+					};
+
+					const error : EjvError = ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : [itemScheme]
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_SCHEME
+						.replace(ErrorMsgCursorA, JSON.stringify(itemScheme)));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.ordered.members([1, 2, 3]);
+				});
+
+				it('ok', () => {
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : [{
+							type : 'number',
+							min : 1,
+							max : 3
+						}]
+					}])).to.be.null;
+
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : [{
+							type : 'number',
+							min : 1
+						}, {
+							type : 'string'
+						}]
+					}])).to.be.null;
+				});
+			});
 		});
 	});
 });

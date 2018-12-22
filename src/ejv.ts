@@ -3,9 +3,7 @@ import { DataType, ErrorMsg, ErrorMsgCursorA, NumberFormat, StringFormat } from 
 
 import {
 	arrayTester,
-	booleanTester,
 	dateFormatTester,
-	dateTester,
 	dateTimeFormatTester,
 	definedTester,
 	emailTester,
@@ -18,11 +16,9 @@ import {
 	maxNumberTester,
 	minLengthTester,
 	minNumberTester,
-	numberTester,
 	objectTester,
-	regExpTester,
-	stringTester,
 	timeFormatTester,
+	typeTester,
 	uniqueItemsTester
 } from './tester';
 
@@ -64,40 +60,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 			const value : any = data[key];
 
 			if (!types.some(type => {
-				let valid : boolean = false;
-
-				switch (type) {
-					case DataType.BOOLEAN:
-						valid = booleanTester(value);
-						break;
-
-					case DataType.NUMBER:
-						valid = numberTester(value);
-						break;
-
-					case DataType.STRING:
-						valid = stringTester(value);
-						break;
-
-					case DataType.OBJECT:
-						valid = objectTester(value);
-						break;
-
-					case DataType.DATE:
-						valid = dateTester(value);
-						break;
-
-					case DataType.REGEXP:
-						valid = regExpTester(value);
-						break;
-
-					case DataType.ARRAY:
-						valid = arrayTester(value);
-						break;
-
-					default:
-						throw new Error('not defined data type'); // TODO: dev
-				}
+				const valid : boolean = typeTester(value, type);
 
 				if (valid) {
 					typeResolved = type;
@@ -337,50 +300,61 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 						);
 					}
 
-					if (definedTester(scheme.items)) {
-						let itemTypes : DataType[];
-
-						if (arrayTester(scheme.items)) {
-							itemTypes = scheme.items as DataType[];
-						} else {
-							itemTypes = [scheme.items] as DataType[];
-						}
-
-						// convert array to object
-						const valueAsArray : any[] = value as any[];
-
-						const tempKeyArr : string[] = valueAsArray.map(() => (new Date).toISOString());
-						const partialData : object = {};
-						const partialScheme : Scheme[] = [];
-
-						tempKeyArr.forEach((tempKey, i) => {
-							partialData[tempKey] = valueAsArray[i];
-							partialScheme.push({
-								key : tempKey,
-								type : itemTypes
-							});
-						});
-
-						// call recursively
-						const tempResult : EjvError = _ejv(partialData, partialScheme, options);
-
-						// convert new EjvError
-						if (!!tempResult) {
-							let errorMsg : string;
-
-							if (arrayTester(scheme.items)) {
-								errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, `[${itemTypes.join(', ')}]`);
-							} else {
-								errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, scheme.items as string);
-							}
-
-							result = new EjvError(
-								errorMsg,
-								options.path,
-								value
-							);
-						}
-					}
+					// if (definedTester(scheme.items)) {
+					// 	if(stringTester(scheme.items) || (arrayTester(scheme.items) && )){
+					// 		// by DataType | DataType[]
+					//
+					// 	}else {
+					// 		// by scheme
+					// 	}
+					//
+					//
+					//
+					//
+					//
+					// 	let itemTypes : DataType[];
+					//
+					// 	if (arrayTester(scheme.items)) {
+					// 		itemTypes = scheme.items as DataType[];
+					// 	} else {
+					// 		itemTypes = [scheme.items] as DataType[];
+					// 	}
+					//
+					// 	// convert array to object
+					// 	const valueAsArray : any[] = value as any[];
+					//
+					// 	const tempKeyArr : string[] = valueAsArray.map(() => (new Date).toISOString());
+					// 	const partialData : object = {};
+					// 	const partialScheme : Scheme[] = [];
+					//
+					// 	tempKeyArr.forEach((tempKey, i) => {
+					// 		partialData[tempKey] = valueAsArray[i];
+					// 		partialScheme.push({
+					// 			key : tempKey,
+					// 			type : itemTypes
+					// 		});
+					// 	});
+					//
+					// 	// call recursively
+					// 	const tempResult : EjvError = _ejv(partialData, partialScheme, options);
+					//
+					// 	// convert new EjvError
+					// 	if (!!tempResult) {
+					// 		let errorMsg : string;
+					//
+					// 		if (arrayTester(scheme.items)) {
+					// 			errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, `[${itemTypes.join(', ')}]`);
+					// 		} else {
+					// 			errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, scheme.items as string);
+					// 		}
+					//
+					// 		result = new EjvError(
+					// 			errorMsg,
+					// 			options.path,
+					// 			value
+					// 		);
+					// 	}
+					// }
 					break;
 			}
 		}

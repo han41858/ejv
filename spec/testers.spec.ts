@@ -4,6 +4,7 @@ import { commonTestRunner } from './common-test-runner';
 
 import {
 	arrayTester,
+	arrayTypeOfTester,
 	booleanTester,
 	dateFormatTester,
 	dateTester,
@@ -627,6 +628,16 @@ describe('testers', function () {
 		it('logic test', () => {
 			expect(arrayTester([])).to.be.true;
 			expect(arrayTester('not_array')).to.be.false;
+		});
+	});
+
+	describe('arrayTypeOfTester()', () => {
+		it('logic test', () => {
+			expect(arrayTypeOfTester([], 'number')).to.be.true;
+			expect(arrayTypeOfTester([1, 2], 'number')).to.be.true;
+			expect(arrayTypeOfTester([1, 2, '3'], 'number')).to.be.false;
+
+			expect(arrayTypeOfTester([new Date, new Date, new Date], 'date')).to.be.true;
 		});
 	});
 

@@ -61,5 +61,6 @@ export enum ErrorMsg {
 
 	UNIQUE_ITEMS = 'the array should be unique items',
 
-	ITEMS_TYPE = 'the array should have items in type of <<A>>'
+	ITEMS_TYPE = 'the array should have items in type of <<A>>',
+	ITEMS_SCHEME = 'the array should be matched with <<A>>'
 }

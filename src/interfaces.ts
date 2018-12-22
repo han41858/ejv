@@ -3,7 +3,7 @@ import { DataType, NumberFormat, StringFormat } from './constants';
 // use common Scheme for multiple types
 export interface Scheme {
 	// common
-	key : string;
+	key? : string; // can be omitted in array items
 	type : DataType | DataType[];
 	optional? : boolean; // false
 	// reverse? not?

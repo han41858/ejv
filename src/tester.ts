@@ -1,5 +1,46 @@
+import { DataType } from './constants';
+
 type TypeTester = (value : any) => boolean;
 type AdditionalTester = (value : any, args? : any) => boolean; // skip type test
+
+export const typeTester : Function = (value : any, type : DataType) : boolean => {
+	let valid : boolean;
+
+	switch (type) {
+		case DataType.BOOLEAN:
+			valid = booleanTester(value);
+			break;
+
+		case DataType.NUMBER:
+			valid = numberTester(value);
+			break;
+
+		case DataType.STRING:
+			valid = stringTester(value);
+			break;
+
+		case DataType.OBJECT:
+			valid = objectTester(value);
+			break;
+
+		case DataType.DATE:
+			valid = dateTester(value);
+			break;
+
+		case DataType.REGEXP:
+			valid = regExpTester(value);
+			break;
+
+		case DataType.ARRAY:
+			valid = arrayTester(value);
+			break;
+
+		default:
+			throw new Error('not defined data type'); // TODO: dev
+	}
+
+	return valid;
+};
 
 export const definedTester : TypeTester = (value : any) : boolean => {
 	return value !== undefined;
@@ -224,6 +265,12 @@ export const arrayTester : TypeTester = (value : any) : boolean => {
 		&& value !== null
 		&& value.length !== undefined
 		&& value.push !== undefined;
+};
+
+export const arrayTypeOfTester : AdditionalTester = (array : any, type : DataType) : boolean => {
+	return array.every(item => {
+		return typeTester(item, type);
+	});
 };
 
 export const uniqueItemsTester : AdditionalTester = (array : any[]) : boolean => {
