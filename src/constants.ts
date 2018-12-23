@@ -21,11 +21,11 @@ export enum StringFormat {
 	DATE_TIME = 'date-time',
 	TIME = 'time',
 
-	URL = 'url',
+	// URL = 'url',
 
-	IP = 'ip', // ipv4 || ipv6
-	IPV4 = 'ipv4',
-	IPV6 = 'ipv6'
+	// IP = 'ip', // ipv4 || ipv6
+	// IPV4 = 'ipv4',
+	// IPV6 = 'ipv6'
 }
 
 export const ErrorMsgCursorA : string = '<<A>>';
@@ -36,10 +36,35 @@ export enum ErrorMsg {
 	NO_JSON_DATA = 'no JSON data to validate',
 
 	NO_SCHEME = 'no scheme',
-	NO_ARRAY_SCHEME = 'scheme should be array',
+	NO_ARRAY_SCHEME = 'schemes should be array',
+	NO_OBJECT_ARRAY_SCHEME = 'schemes should be array of object',
 
-	EMPTY_ROOT_SCHEME = 'root scheme should not be empty',
-	INVALID_TYPE_ENUM = 'scheme has invalid type enum',
+	EMPTY_SCHEME = 'scheme should not be empty',
+	SCHEMES_SHOULD_HAVE_TYPE = 'scheme should have type',
+	SCHEMES_HAS_INVALID_TYPE = 'schemes has invalid type : <<A>>',
+	SCHEMES_HAS_DUPLICATED_TYPE = 'schemes has duplicated type : <<A>>',
+
+	ENUM_SHOULD_BE_ARRAY = 'enum should be array',
+	ENUM_SHOULD_BE_NUMBERS = 'enum values should be numbers',
+	ENUM_SHOULD_BE_STRINGS = 'enum values should be strings',
+
+	MIN_SHOULD_BE_NUMBER = 'min should be number',
+	EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN = 'exclusiveMin should be boolean',
+
+	MAX_SHOULD_BE_NUMBER = 'max should be number',
+	EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN = 'exclusiveMax should be boolean',
+
+	INVALID_NUMBER_FORMAT = 'invalid number format : <<A>>',
+	INVALID_STRING_FORMAT = 'invalid string format : <<A>>',
+
+	MIN_LENGTH_SHOULD_BE_NUMBER = 'minLength should be number',
+	MAX_LENGTH_SHOULD_BE_NUMBER = 'maxLength should be number',
+
+	PROPERTIES_SHOULD_BE_ARRAY = 'properties should be array',
+	PROPERTIES_SHOULD_HAVE_ITEMS = 'properties should have items',
+	PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT = 'properties should be array of object',
+
+	UNIQUE_SHOULD_BE_BOOLEAN = 'unique should be boolean',
 
 	// about EjvError
 	REQUIRED = 'required',
@@ -49,6 +74,7 @@ export enum ErrorMsg {
 	ONE_OF = 'the value should be one of <<A>>', // enum
 
 	FORMAT = 'the value should be a form of <<A>>', // format
+	FORMAT_ONE_OF = 'the value should be form of one of <<A>>',
 
 	GREATER_THAN_OR_EQUAL = 'the value should be greater or equal than <<A>>', // min
 	GREATER_THAN = 'the value should be greater than <<A>>', // min

@@ -34,9 +34,6 @@ export const typeTester : Function = (value : any, type : DataType) : boolean =>
 		case DataType.ARRAY:
 			valid = arrayTester(value);
 			break;
-
-		default:
-			throw new Error('not defined data type'); // TODO: dev
 	}
 
 	return valid;
