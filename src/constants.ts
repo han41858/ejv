@@ -66,7 +66,7 @@ export enum ErrorMsg {
 
 	UNIQUE_SHOULD_BE_BOOLEAN = 'unique should be boolean',
 
-	INVALID_ITEMS_SCHEME = 'invalid schemes of array items',
+	INVALID_ITEMS_SCHEME = 'invalid schemes of array items : <<A>>',
 
 	// about EjvError
 	REQUIRED = 'required',

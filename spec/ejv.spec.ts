@@ -2245,9 +2245,7 @@ describe('ejv()', () => {
 		});
 
 		describe('items', () => {
-			// TODO:
-			xdescribe('check parameter', () => {
-				// TODO:
+			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
 						a : [1, 2, 3]
@@ -2258,28 +2256,31 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
-				it('null is failed', () => {
-
-				});
-
-				describe('simple data type', () => {
-					it('invalid data type', () => {
-
-					});
-				});
-
-				describe('multiple data type', () => {
-
-				});
-
-				describe('multiple scheme', () => {
-					it('not object array', () => {
-
-					});
+				it('null', () => {
+					expect(() => ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : null
+					}])).to.throw(ErrorMsg.INVALID_ITEMS_SCHEME
+						.replace(ErrorMsgCursorA, 'null'));
 				});
 			});
 
 			describe('single data type', () => {
+				describe('check parameter', () => {
+					it('invalid data type', () => {
+						expect(() => ejv({
+							a : [1, 2, 3]
+						}, [{
+							key : 'a',
+							type : 'array',
+							items : 'invalidDataType'
+						}])).to.throw(); // error message by partial scheme
+					});
+				});
+
 				it('fail', () => {
 					const error : EjvError = ejv({
 						a : [1, 2, 3]
@@ -2309,6 +2310,18 @@ describe('ejv()', () => {
 			});
 
 			describe('multiple data type', () => {
+				describe('check parameter', () => {
+					it('invalid data type', () => {
+						expect(() => ejv({
+							a : [1, 2, 3]
+						}, [{
+							key : 'a',
+							type : 'array',
+							items : ['number', 'invalidDataType']
+						}])).to.throw(); // error message by partial scheme
+					});
+				});
+
 				it('fail', () => {
 					const enumArr : string[] = ['boolean', 'string'];
 
@@ -2348,6 +2361,22 @@ describe('ejv()', () => {
 			});
 
 			describe('single scheme', () => {
+				describe('check parameter', () => {
+					it('invalid data type', () => {
+						const scheme : object = {
+							type : 'invalidDataType'
+						};
+
+						expect(() => ejv({
+							a : [1, 2, 3]
+						}, [{
+							key : 'a',
+							type : 'array',
+							items : scheme
+						}])).to.throw(); // error message by partial scheme
+					});
+				});
+
 				it('fail', () => {
 					const itemScheme : Scheme = {
 						type : 'number' as DataType,
@@ -2386,6 +2415,22 @@ describe('ejv()', () => {
 			});
 
 			describe('multiple schemes', () => {
+				describe('check parameter', () => {
+					it('invalid data type', () => {
+						const scheme : object = {
+							type : 'invalidDataType'
+						};
+
+						expect(() => ejv({
+							a : [1, 2, 3]
+						}, [{
+							key : 'a',
+							type : 'array',
+							items : [scheme]
+						}])).to.throw(); // error message by partial scheme
+					});
+				});
+
 				it('fail', () => {
 					const itemSchemes : Scheme[] = [{
 						type : 'number' as DataType,

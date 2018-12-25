@@ -533,10 +533,9 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 								);
 							}
 							break;
-						} else if (objectTester(scheme.items) // by Scheme
+						} else if ((objectTester(scheme.items) && scheme.items !== null) // by Scheme
 							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items, DataType.OBJECT)) // by Scheme[]
 						) {
-							// by scheme
 							let itemsAsSchemes : Scheme[] = [];
 
 							if (arrayTester(scheme.items)) {
@@ -596,7 +595,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 								break;
 							}
 						} else {
-							throw new Error(ErrorMsg.INVALID_ITEMS_SCHEME);
+							throw new Error(ErrorMsg.INVALID_ITEMS_SCHEME.replace(ErrorMsgCursorA, JSON.stringify(scheme.items)));
 						}
 
 					}
