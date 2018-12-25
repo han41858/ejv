@@ -174,7 +174,7 @@ describe('ejv()', () => {
 		});
 
 		describe('enum', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				it('not array', () => {
 					expect(() => ejv({
 						a : 10
@@ -227,7 +227,7 @@ describe('ejv()', () => {
 		});
 
 		describe('min & exclusiveMin', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				it('min type', () => {
 					expect(() => ejv({
 						a : 3
@@ -360,7 +360,7 @@ describe('ejv()', () => {
 		});
 
 		describe('max & exclusiveMax', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				it('max type', () => {
 					expect(() => ejv({
 						a : 3
@@ -493,7 +493,7 @@ describe('ejv()', () => {
 		});
 
 		describe('format', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				describe('invalid number format', () => {
 					it('single', () => {
 						expect(() => ejv({
@@ -909,7 +909,7 @@ describe('ejv()', () => {
 		});
 
 		describe('enum', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				it('not array', () => {
 					expect(() => ejv({
 						a : 'a'
@@ -962,7 +962,7 @@ describe('ejv()', () => {
 		});
 
 		describe('minLength', () => {
-			it('error', () => {
+			it('check parameter', () => {
 				expect(() => ejv({
 					a : 'a'
 				}, [{
@@ -1008,7 +1008,7 @@ describe('ejv()', () => {
 		});
 
 		describe('maxLength', () => {
-			it('error', () => {
+			it('check parameter', () => {
 				expect(() => ejv({
 					a : 'a'
 				}, [{
@@ -1054,7 +1054,7 @@ describe('ejv()', () => {
 		});
 
 		describe('format', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				describe('invalid string format', () => {
 					it('single format', () => {
 						expect(() => ejv({
@@ -1444,7 +1444,7 @@ describe('ejv()', () => {
 		});
 
 		describe('properties', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				it('not array', () => {
 					expect(() => ejv({
 						a : {
@@ -1857,7 +1857,7 @@ describe('ejv()', () => {
 		});
 
 		describe('minLength', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				it('not number', () => {
 					expect(() => ejv({
 						a : [1, 2, 3]
@@ -1905,7 +1905,7 @@ describe('ejv()', () => {
 		});
 
 		describe('maxLength', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				it('not number', () => {
 					expect(() => ejv({
 						a : [1, 2, 3]
@@ -1953,7 +1953,7 @@ describe('ejv()', () => {
 		});
 
 		describe('unique', () => {
-			describe('error', () => {
+			describe('check parameter', () => {
 				it('not boolean', () => {
 					expect(() => ejv({
 						a : [1, 2, 3]
