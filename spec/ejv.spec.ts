@@ -185,6 +185,16 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
+				it('null', () => {
+					expect(() => ejv({
+						a : 1
+					}, [{
+						key : 'a',
+						type : 'number',
+						enum : null
+					}])).to.be.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
+				});
+
 				it('not array', () => {
 					expect(() => ejv({
 						a : 10
@@ -246,6 +256,16 @@ describe('ejv()', () => {
 						type : 'number',
 						min : undefined
 					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a : 3
+					}, [{
+						key : 'a',
+						type : 'number',
+						min : null
+					}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
 				});
 
 				it('min type', () => {
@@ -400,6 +420,16 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
+				it('null', () => {
+					expect(() => ejv({
+						a : 3
+					}, [{
+						key : 'a',
+						type : 'number',
+						max : null
+					}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+				});
+
 				it('max type', () => {
 					expect(() => ejv({
 						a : 3
@@ -552,6 +582,17 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
+				it('null', () => {
+					expect(() => ejv({
+						a : 123.5
+					}, [{
+						key : 'a',
+						type : 'number',
+						format : null
+					}])).to.be.throw(ErrorMsg.INVALID_NUMBER_FORMAT
+						.replace(ErrorMsgCursorA, 'null'));
+				});
+
 				describe('invalid number format', () => {
 					it('single', () => {
 						expect(() => ejv({
@@ -560,7 +601,8 @@ describe('ejv()', () => {
 							key : 'a',
 							type : 'number',
 							format : 'invalidNumberFormat'
-						}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
+						}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
+							.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
 					});
 
 					it('multiple', () => {
@@ -570,7 +612,8 @@ describe('ejv()', () => {
 							key : 'a',
 							type : 'number',
 							format : ['index', 'invalidNumberFormat']
-						}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
+						}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
+							.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
 					});
 				});
 			});
@@ -960,6 +1003,16 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
+				it('null', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						enum : null
+					}])).to.be.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
+				});
+
 				it('not array', () => {
 					expect(() => ejv({
 						a : 'a'
@@ -1012,7 +1065,7 @@ describe('ejv()', () => {
 		});
 
 		describe('minLength', () => {
-			it('check parameter', () => {
+			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
 						a : 'ejv'
@@ -1023,13 +1076,25 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
-				expect(() => ejv({
-					a : 'a'
-				}, [{
-					key : 'a',
-					type : 'string',
-					minLength : '1'
-				}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+				it('null', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						minLength : null
+					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+				});
+
+				it('string', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						minLength : '1'
+					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+				});
 			});
 
 			it('fail', () => {
@@ -1079,13 +1144,25 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
-				expect(() => ejv({
-					a : 'a'
-				}, [{
-					key : 'a',
-					type : 'string',
-					maxLength : '1'
-				}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+				it('null', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						maxLength : null
+					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+				});
+
+				it('string', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						maxLength : '1'
+					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+				});
 			});
 
 			it('fail', () => {
@@ -1133,6 +1210,17 @@ describe('ejv()', () => {
 						type : 'string',
 						format : undefined
 					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						format : null
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_FORMAT
+						.replace(ErrorMsgCursorA, 'null'));
 				});
 
 				describe('invalid string format', () => {
@@ -1535,6 +1623,18 @@ describe('ejv()', () => {
 						type : 'object',
 						properties : undefined
 					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : 'object',
+						properties : null
+					}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
@@ -1960,7 +2060,17 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
-				it('not number', () => {
+				it('null', () => {
+					expect(() => ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						minLength : null
+					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+				});
+
+				it('string', () => {
 					expect(() => ejv({
 						a : [1, 2, 3]
 					}, [{
@@ -2018,7 +2128,17 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
-				it('not number', () => {
+				it('null', () => {
+					expect(() => ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						maxLength : null
+					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+				});
+
+				it('string', () => {
 					expect(() => ejv({
 						a : [1, 2, 3]
 					}, [{
@@ -2074,6 +2194,16 @@ describe('ejv()', () => {
 						type : 'array',
 						unique : undefined
 					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						unique : null
+					}])).to.throw(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
 				});
 
 				it('not boolean', () => {
