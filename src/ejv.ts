@@ -533,9 +533,17 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 								);
 							}
 							break;
-						} else {
+						} else if (objectTester(scheme.items) // by Scheme
+							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items, DataType.OBJECT)) // by Scheme[]
+						) {
 							// by scheme
-							const itemsAsSchemes : Scheme[] = scheme.items as Scheme[];
+							let itemsAsSchemes : Scheme[] = [];
+
+							if (arrayTester(scheme.items)) {
+								itemsAsSchemes = scheme.items as Scheme[];
+							} else {
+								itemsAsSchemes = [scheme.items] as Scheme[];
+							}
 
 							let partialValid : boolean = true;
 
@@ -572,14 +580,25 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 							}
 
 							if (partialValid === false) {
+								let errorMsg : string;
+
+								if (arrayTester(scheme.items)) {
+									errorMsg = ErrorMsg.ITEMS_SCHEMES.replace(ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
+								} else {
+									errorMsg = ErrorMsg.ITEMS_SCHEME.replace(ErrorMsgCursorA, JSON.stringify(scheme.items));
+								}
+
 								result = new EjvError(
-									ErrorMsg.ITEMS_SCHEME.replace(ErrorMsgCursorA, JSON.stringify(itemsAsSchemes)),
+									errorMsg,
 									options.path,
 									value
 								);
 								break;
 							}
+						} else {
+							throw new Error(ErrorMsg.INVALID_ITEMS_SCHEME);
 						}
+
 					}
 					break;
 			}

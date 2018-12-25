@@ -2246,11 +2246,40 @@ describe('ejv()', () => {
 
 		describe('items', () => {
 			// TODO:
-			// describe('error', () => {
-			//
-			// });
+			xdescribe('check parameter', () => {
+				// TODO:
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : undefined
+					}])).to.be.null;
+				});
 
-			describe('simple', () => {
+				it('null is failed', () => {
+
+				});
+
+				describe('simple data type', () => {
+					it('invalid data type', () => {
+
+					});
+				});
+
+				describe('multiple data type', () => {
+
+				});
+
+				describe('multiple scheme', () => {
+					it('not object array', () => {
+
+					});
+				});
+			});
+
+			describe('single data type', () => {
 				it('fail', () => {
 					const error : EjvError = ejv({
 						a : [1, 2, 3]
@@ -2279,7 +2308,7 @@ describe('ejv()', () => {
 				});
 			});
 
-			describe('multiple', () => {
+			describe('multiple data type', () => {
 				it('fail', () => {
 					const enumArr : string[] = ['boolean', 'string'];
 
@@ -2318,7 +2347,7 @@ describe('ejv()', () => {
 				});
 			});
 
-			describe('schemes', () => {
+			describe('single scheme', () => {
 				it('fail', () => {
 					const itemScheme : Scheme = {
 						type : 'number' as DataType,
@@ -2330,13 +2359,51 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'array',
-						items : [itemScheme]
+						items : itemScheme
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
 
 					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_SCHEME
-						.replace(ErrorMsgCursorA, `[${JSON.stringify(itemScheme)}]`));
+						.replace(ErrorMsgCursorA, JSON.stringify(itemScheme)));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.ordered.members([1, 2, 3]);
+				});
+
+				it('ok', () => {
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : {
+							type : 'number',
+							min : 1,
+							max : 3
+						}
+					}])).to.be.null;
+				});
+			});
+
+			describe('multiple schemes', () => {
+				it('fail', () => {
+					const itemSchemes : Scheme[] = [{
+						type : 'number' as DataType,
+						min : 2
+					}];
+
+					const error : EjvError = ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : itemSchemes
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_SCHEMES
+						.replace(ErrorMsgCursorA, JSON.stringify(itemSchemes)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.ordered.members([1, 2, 3]);
 				});

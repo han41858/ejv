@@ -33,7 +33,7 @@ export interface Scheme {
 
 	// array
 	unique? : boolean; // false
-	items? : DataType | DataType[] | Scheme[];
+	items? : DataType | DataType[] | Scheme | Scheme[];
 }
 
 export interface InternalOptions {
