@@ -175,6 +175,16 @@ describe('ejv()', () => {
 
 		describe('enum', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 1
+					}, [{
+						key : 'a',
+						type : 'number',
+						enum : undefined
+					}])).to.be.null;
+				});
+
 				it('not array', () => {
 					expect(() => ejv({
 						a : 10
@@ -228,6 +238,16 @@ describe('ejv()', () => {
 
 		describe('min & exclusiveMin', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 1
+					}, [{
+						key : 'a',
+						type : 'number',
+						min : undefined
+					}])).to.be.null;
+				});
+
 				it('min type', () => {
 					expect(() => ejv({
 						a : 3
@@ -251,6 +271,15 @@ describe('ejv()', () => {
 			});
 
 			it('without exclusiveMin', () => {
+				expect(ejv({
+					a : 1
+				}, [{
+					key : 'a',
+					type : 'number',
+					min : 1,
+					exclusiveMin : undefined
+				}])).to.be.null;
+
 				const error1 : EjvError = ejv({
 					a : 9
 				}, [{
@@ -361,6 +390,16 @@ describe('ejv()', () => {
 
 		describe('max & exclusiveMax', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 1
+					}, [{
+						key : 'a',
+						type : 'number',
+						max : undefined
+					}])).to.be.null;
+				});
+
 				it('max type', () => {
 					expect(() => ejv({
 						a : 3
@@ -384,6 +423,15 @@ describe('ejv()', () => {
 			});
 
 			it('without exclusiveMax', () => {
+				expect(ejv({
+					a : 1
+				}, [{
+					key : 'a',
+					type : 'number',
+					max : 1,
+					exclusiveMax : undefined
+				}])).to.be.null;
+
 				expect(ejv({
 					a : 9
 				}, [{
@@ -494,6 +542,16 @@ describe('ejv()', () => {
 
 		describe('format', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 123.5
+					}, [{
+						key : 'a',
+						type : 'number',
+						format : undefined
+					}])).to.be.null;
+				});
+
 				describe('invalid number format', () => {
 					it('single', () => {
 						expect(() => ejv({
@@ -518,15 +576,6 @@ describe('ejv()', () => {
 			});
 
 			describe('integer', () => {
-				it('undefined', () => {
-					expect(ejv({
-						a : 123.5
-					}, [{
-						key : 'a',
-						type : 'number'
-					}])).to.be.null;
-				});
-
 				describe('single format', () => {
 					it('fail', () => {
 						const error : EjvError = ejv({
@@ -653,15 +702,6 @@ describe('ejv()', () => {
 			});
 
 			describe('index', () => {
-				it('undefined', () => {
-					expect(ejv({
-						a : 1.5
-					}, [{
-						key : 'a',
-						type : 'number'
-					}])).to.be.null;
-				});
-
 				describe('single format', () => {
 					it('fail', () => {
 						const error1 : EjvError = ejv({
@@ -910,6 +950,16 @@ describe('ejv()', () => {
 
 		describe('enum', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						enum : undefined
+					}])).to.be.null;
+				});
+
 				it('not array', () => {
 					expect(() => ejv({
 						a : 'a'
@@ -963,6 +1013,16 @@ describe('ejv()', () => {
 
 		describe('minLength', () => {
 			it('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 'ejv'
+					}, [{
+						key : 'a',
+						type : 'string',
+						minLength : undefined
+					}])).to.be.null;
+				});
+
 				expect(() => ejv({
 					a : 'a'
 				}, [{
@@ -1009,6 +1069,16 @@ describe('ejv()', () => {
 
 		describe('maxLength', () => {
 			it('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 'ejv'
+					}, [{
+						key : 'a',
+						type : 'string',
+						maxLength : undefined
+					}])).to.be.null;
+				});
+
 				expect(() => ejv({
 					a : 'a'
 				}, [{
@@ -1055,6 +1125,16 @@ describe('ejv()', () => {
 
 		describe('format', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						format : undefined
+					}])).to.be.null;
+				});
+
 				describe('invalid string format', () => {
 					it('single format', () => {
 						expect(() => ejv({
@@ -1445,6 +1525,18 @@ describe('ejv()', () => {
 
 		describe('properties', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : 'object',
+						properties : undefined
+					}])).to.be.null;
+				});
+
 				it('not array', () => {
 					expect(() => ejv({
 						a : {
@@ -1858,6 +1950,16 @@ describe('ejv()', () => {
 
 		describe('minLength', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						minLength : undefined
+					}])).to.be.null;
+				});
+
 				it('not number', () => {
 					expect(() => ejv({
 						a : [1, 2, 3]
@@ -1906,6 +2008,16 @@ describe('ejv()', () => {
 
 		describe('maxLength', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						maxLength : undefined
+					}])).to.be.null;
+				});
+
 				it('not number', () => {
 					expect(() => ejv({
 						a : [1, 2, 3]
@@ -1954,6 +2066,16 @@ describe('ejv()', () => {
 
 		describe('unique', () => {
 			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : [1, 2, 3]
+					}, [{
+						key : 'a',
+						type : 'array',
+						unique : undefined
+					}])).to.be.null;
+				});
+
 				it('not boolean', () => {
 					expect(() => ejv({
 						a : [1, 2, 3]
