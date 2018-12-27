@@ -15,8 +15,8 @@ export interface Scheme {
 	max? : number;
 	exclusiveMax? : boolean; // false
 
-	// common - number & string & Date
-	enum? : number[] | string[] | Date[];
+	// common - number & string
+	enum? : number[] | string[];
 
 	// common - number & string
 	format? : NumberFormat | NumberFormat[] | StringFormat | StringFormat[];

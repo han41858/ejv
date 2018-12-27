@@ -5,9 +5,9 @@ Easy JSON Validator
 ejv는 JSON 객체를 검사할 때 사용하는 라이브러리입니다.
 복잡한 JSON 객체를 간단한 문법으로 검사해 보세요.
 
-> ejv 는 TypeScript로 작성되었으며 JavaScript 코드로 컴파일되어 배포됩니다. 따라서 TypeScript 문법으로 사용할 수도 있고 JavaScript 형태로 사용할 수도 있습니다.
+> ejv 는 TypeScript로 작성되었으며 JavaScript 코드로 컴파일되어 배포됩니다. 따라서 TypeScript 문법으로 사용할 수도 있고 JavaScript 문법으로 사용할 수도 있습니다.
 
-## `ejv()`
+## `ejv(data : object, schemes : Scheme[])`
 
 ejv 라이브러리는 단 하나의 함수만 제공합니다. 모든 검사는 이 함수를 사용합니다.
 
@@ -35,7 +35,128 @@ if (!error) {
 
 이 때 검사 규칙은 배열 형태로 정의합니다. ejv는 배열에 있는 검사 규칙을 순서대로 확인하기 때문에 검사항목의 우선순위를 지정할 수 있습니다.
 
+### 필수 항목
+
+#### `key` : `string`
+
+검사할 프로퍼티의 이름을 지정합니다. JSON 객체에 있는 `a` 프로퍼티를 검사하려면 `key : 'a'`라고 지정합니다.
+
+> 이 프로퍼티는 `array` 타입에 `items` 옵션을 사용할 때 생략할 수 있습니다.
+
+
+#### `type` : [`DataType`](#DataType) | `DataType[]`
+
+프로퍼티의 형식을 지정합니다. 타입이 하나만 지정되면 해당 타입인지 검사합니다. 그리고 배열로 지정되면 배열에 있는 항목 중 하나에 해당되는지 검사합니다.
+
+
+
+### 옵션 항목
+
+#### 공통
+
+- `optional : boolean`
+
+`true`로 설정하면 `undefined` 값을 허용합니다.
+
+```typescript
+ejv({
+  // 빈 객체
+}, [{
+  key : 'a',
+  optional : true // 프로퍼티가 선언되지 않아도 에러가 발생하지 않습니다.
+}])
+```
+
+- `enum : number[] | string[]`
+
+배열로 전달되는 값만 허용합니다.
+
+```typescript
+ejv({
+  a : 1,
+  b : 'hello'
+}, [{
+  key : 'a',
+  type : 'number',
+  enum : [1, 2, 3] // 1, 2, 3 값을 허용합니다.
+}, {
+  key : 'b',
+  type : 'string',
+  enum : ['hello', 'ejv'] // 'hello'나 'ejv' 값을 허용합니다.
+}])
+```
+
+#### `'number'` 타입 옵션
+
+- `min : number`
+
+최소값을 지정합니다. 이 값보다 작은 숫자이면 에러가 발생합니다.
+
+- `exclusiveMin : boolean`
+
+`true`로 지정하면 최소 한계값과 같은 값을 허용하지 않습니다. `false`로 지정하면 최소 한계값과 같은 값을 허용합니다. 이 옵션은 `min` 옵션이 지정되었을 때만 유효합니다.
+
+```typescript
+ejv({
+  num1 : 10,
+  num2 : 10
+}, [{
+  key : 'num1',
+  type : 'number',
+  min : 10 // 성공
+}, {
+  key : 'num2',
+  type : 'number',
+  min : 10,
+  exclusiveMin : true // 실패
+}])
+```
+
+- `max : number`
+
+최대값을 지정합니다. 이 값보다 큰 숫자이면 에러가 발생합니다.
+
+- `exclusiveMax : boolean`
+
+`true`로 지정하면 최대 한계값과 같은 값을 허용하지 않습니다. `false`로 지정하면 최대 한계값과 같은 값을 허용합니다. 이 옵션은 `max` 옵션이 지정되었을 때만 유효합니다.
+
+```typescript
+ejv({
+  num1 : 10,
+  num2 : 10
+}, [{
+  key : 'num1',
+  type : 'number',
+  max : 10 // 성공
+}, {
+  key : 'num2',
+  type : 'number',
+  max : 10,
+  exclusiveMax : true // 실패
+}])
+```
+
+#### `'string'` 타입 옵션
+
+#### `'object'` 타입 옵션
+
+#### `'array'` 타입 옵션
+
+
 ## `DataType`
+
+검사할 프로퍼티의 타입을 지정합니다. 사용할 수 있는 값은 다음과 같습니다.
+
+타입|예
+---|---
+`'boolean'`|`true`, `false`
+`'number'`|`0`, `1`, `1.5`, ...
+`'string'`|`'ejv'`, `'hello'`, ...
+`'object'`|`{}`, `{ key : 123 }`, ...
+`'date'`|`new Date`
+`'regexp'`|`new RegExp(/./)`, `/./`, ...
+`'array'`|`[]`, `[1, 2, 3]`, ...
+
 
 ## `EjvError`
 
@@ -43,11 +164,32 @@ if (!error) {
 
 `EjvError` 객체는 `ejv()` 검사가 실패했을 때 반환되는 객체입니다.
  
-`EjvError` 형식을 꼭 사용할 필요는 없습니다. 다만, TypeScript를 사용한다면 이 객체의 프로퍼티를 참조할 때 활용할 수 있습니다.
+> `EjvError` 형식을 꼭 사용할 필요는 없습니다. 다만, TypeScript를 사용한다면 이 객체의 프로퍼티를 참조할 때 활용할 수 있습니다.
 
 
-프로퍼티|타입|설명
----|---|---
-`keyword`|`string`|
-`path`|`string`|
-`data`|`any`|
+- `keyword : string`
+
+발생한 에러의 내용을 설명합니다.
+
+- `path : string`
+
+에러가 발생한 데이터 위치를 가리킵니다.
+- `data : any`
+
+에러가 발생한 데이터를 표시합니다.
+
+사용방법)
+```typescript
+import { ejv, EjvError } from 'ejv';
+
+const error : null | EjvError = ejv({
+  a : 10
+}, [{
+  key : 'a',
+  type : 'string' 
+}]);
+
+console.log(error.keyword); // 'the value should be a string'
+console.log(error.path); // 'a'
+console.log(error.data); // 10
+```

@@ -1,5 +1,4 @@
 export enum DataType {
-	NULL = 'null',
 	BOOLEAN = 'boolean',
 	NUMBER = 'number',
 	STRING = 'string',
