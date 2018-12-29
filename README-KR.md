@@ -136,7 +136,69 @@ ejv({
 }])
 ```
 
+- `format : NumberFormat | NumberFormat[]`
+
+숫자의 형식을 지정합니다. 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다. 사용할 수 있는 값은 다음과 같습니다.
+               
+타입|예
+---|---
+`'integer'`|정수만 허용합니다. ex) -1, 0, 1, ...
+`'index'`|인덱스만 허용합니다. `format : 'integer', min : 0`을 설정한 것과 같습니다. ex) 0, 1, 2, ...
+
 #### `'string'` 타입 옵션
+
+- `format : StringFormat | StringFormat[]`
+
+문자열의 형식을 지정합니다. 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다. 사용할 수 있는 값은 다음과 같습니다.
+               
+타입|예
+---|---
+`'email'`|이메일 형식인지 검사합니다. [RFC 5322 3.4.1](https://tools.ietf.org/html/rfc5322#section-3.4.1) 스펙을 기준으로 합니다. ex) `'email@domain.com'`
+`'date'`|날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29'` 
+`'time'`|시간 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'21:07:35'`
+`'date-time'`|날짜-시간 형식인지 검사합니다. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) 스펙과 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29T21:07:35Z'`
+
+- `minLength : number`
+
+문자열의 최소 길이를 지정합니다.
+
+```typescript
+ejv({
+  str1 : 'hello',
+  str2 : 'hello 2'
+}, [{
+  key : 'str1',
+  type : 'string',
+  minLength : 5 // 성공
+}, {
+  key : 'str2',
+  type : 'string',
+  minLength : 10 // 실패
+}])
+````
+
+- `maxLength : string`
+
+문자열의 최대 길이를 지정합니다.
+
+```typescript
+ejv({
+  str1 : 'hello',
+  str2 : 'hello 2'
+}, [{
+  key : 'str1',
+  type : 'string',
+  maxLength : 5 // 성공
+}, {
+  key : 'str2',
+  type : 'string',
+  maxLength : 5 // 실패
+}])
+````
+
+- `pattern : string | string[] | RegExp | RegExp[]`
+
+문자열의 형식을 지정합니다. 문자열로 지정되면 이 문자열을 정규표현식으로 변환해서 검사하며, 정규표현식으로 지정되면 정규표현식을 통과하는지 검사합니다. 이 옵션의 값이 배열로 지정되면 배열 중 하나를 통과하면 검사를 통과합니다.
 
 #### `'object'` 타입 옵션
 
