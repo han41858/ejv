@@ -20,6 +20,8 @@ import {
 	minNumberTester,
 	numberTester,
 	objectTester,
+	regExpTester,
+	stringRegExpTester,
 	stringTester,
 	timeFormatTester,
 	typeTester,
@@ -413,6 +415,98 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 								);
 							}
 							break;
+						}
+					}
+
+					if (definedTester(scheme.pattern)) {
+						// check parameter
+						if (scheme.pattern === null) {
+							throw new Error(ErrorMsg.INVALID_STRING_PATTERN
+								.replace(ErrorMsgCursorA, 'null'));
+						}
+
+						const isValidPattern = (pattern : string | RegExp) : boolean => {
+							return (stringTester(pattern) && minLengthTester(pattern, 1))
+								|| (regExpTester(pattern) && pattern.toString() !== '/(?:)/' && pattern.toString() !== '/null/');
+						};
+
+						const patternToString = (pattern : string | RegExp) : string => {
+							let regExpStr : string;
+
+							if (pattern === null) {
+								regExpStr = '/null/';
+							} else if (stringTester(pattern)) {
+								if (minLengthTester(pattern, 1)) {
+									regExpStr = new RegExp(pattern as string).toString();
+								} else {
+									regExpStr = '//';
+								}
+							} else {
+								regExpStr = pattern.toString();
+							}
+
+							// empty regular expression
+							if (regExpStr === '/(?:)/') {
+								regExpStr = '//';
+							}
+
+							return regExpStr;
+						};
+
+						const createArrayErrorMsg = (patternsAsArray : (string | RegExp)[]) : string => {
+							return '[' + patternsAsArray.map(onePattern => {
+								return patternToString(onePattern);
+							}).join(', ') + ']';
+						};
+
+						if (arrayTester(scheme.pattern)) {
+							const patternsAsArray : (string | RegExp)[] = scheme.pattern as (string | RegExp)[];
+
+							if (!minLengthTester(patternsAsArray, 1)) { // empty array
+								throw new Error(ErrorMsg.INVALID_STRING_PATTERN
+									.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)));
+							}
+
+							const regExpPatterns : RegExp[] = patternsAsArray.map(pattern => {
+								if (!isValidPattern(pattern)) {
+									throw new Error(ErrorMsg.INVALID_STRING_PATTERN
+										.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)));
+								}
+
+								return new RegExp(pattern);
+							}) as RegExp[];
+
+							// check value
+							if (!regExpPatterns.some((regexp : RegExp) => {
+								return stringRegExpTester(value, regexp);
+							})) {
+								result = new EjvError(
+									ErrorMsg.PATTERN_ONE_OF
+										.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)),
+									options.path,
+									value
+								);
+							}
+
+						} else {
+							const patternAsOne : string | RegExp = scheme.pattern as string | RegExp;
+
+							if (!isValidPattern(patternAsOne)) {
+								throw new Error(ErrorMsg.INVALID_STRING_PATTERN
+									.replace(ErrorMsgCursorA, patternToString(patternAsOne)));
+							}
+
+							// check value
+							const regExp : RegExp = new RegExp(patternAsOne);
+
+							if (!stringRegExpTester(value, regExp)) {
+								result = new EjvError(
+									ErrorMsg.PATTERN
+										.replace(ErrorMsgCursorA, patternToString(patternAsOne)),
+									options.path,
+									value
+								);
+							}
 						}
 					}
 					break;

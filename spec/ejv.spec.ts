@@ -1504,6 +1504,258 @@ describe('ejv()', () => {
 				});
 			});
 		});
+
+		describe('pattern', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : null
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, 'null'));
+				});
+
+				it('number', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : 1
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, '1'));
+				});
+
+				it('empty string', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : ''
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, '//'));
+				});
+
+				it('empty array', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : []
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, '[]'));
+				});
+
+				it('null array', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : [null, /ab/]
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, '[/null/, /ab/]'));
+				});
+
+				it('number array', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : [1, 3]
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, '[1, 3]'));
+				});
+
+				it('empty string array', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : ['']
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, '[//]'));
+				});
+
+				it('empty reg exp', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : new RegExp('')
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, '//'));
+				});
+
+				it('null reg exp', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : new RegExp(null)
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, '/null/'));
+				});
+
+				it('empty reg exp array', () => {
+					expect(() => ejv({
+						a : 'ejv@ejv.com'
+					}, [{
+						key : 'a',
+						type : 'string',
+						pattern : [new RegExp('')]
+					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+						.replace(ErrorMsgCursorA, '[//]'));
+				});
+			});
+
+			it('by string', () => {
+				expect(ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : 'ab+c'
+				}])).to.be.null;
+
+				const error : EjvError = ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : 'ac'
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.PATTERN
+					.replace(ErrorMsgCursorA, '/ac/'));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('abc');
+			});
+
+			it('by string[]', () => {
+				expect(ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : ['ab+c']
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : ['ac', 'ab+c']
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : ['ab+c', 'ac']
+				}])).to.be.null;
+
+				const error : EjvError = ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : ['abcc', 'ac']
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.PATTERN_ONE_OF
+					.replace(ErrorMsgCursorA, '[/abcc/, /ac/]'));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('abc');
+			});
+
+			it('by RegExp', () => {
+				expect(ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : /ab+c/
+				}])).to.be.null;
+
+				const error : EjvError = ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : /ac/
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.PATTERN
+					.replace(ErrorMsgCursorA, /ac/.toString()));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('abc');
+			});
+
+			it('by RegExp[]', () => {
+				expect(ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : /ab+c/
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : [/ac/, /ab+c/]
+				}])).to.be.null;
+
+				expect(ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : [/ab+c/, /ac/]
+				}])).to.be.null;
+
+				const error : EjvError = ejv({
+					a : 'abc'
+				}, [{
+					key : 'a',
+					type : 'string',
+					pattern : [/abcc/, /ac/]
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.keyword).to.be.eql(ErrorMsg.PATTERN_ONE_OF
+					.replace(ErrorMsgCursorA, '[/abcc/, /ac/]'));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('abc');
+			});
+		});
 	});
 
 	describe('object', () => {

@@ -55,6 +55,7 @@ export enum ErrorMsg {
 
 	INVALID_NUMBER_FORMAT = 'invalid number format : <<A>>',
 	INVALID_STRING_FORMAT = 'invalid string format : <<A>>',
+	INVALID_STRING_PATTERN = 'invalid string pattern : <<A>>',
 
 	MIN_LENGTH_SHOULD_BE_NUMBER = 'minLength should be number',
 	MAX_LENGTH_SHOULD_BE_NUMBER = 'maxLength should be number',
@@ -85,6 +86,9 @@ export enum ErrorMsg {
 
 	MIN_LENGTH = 'the value should be longer than <<A>>', // minLength
 	MAX_LENGTH = 'the value should be shorter than <<A>>', // maxLength
+
+	PATTERN = 'the value should be pattern of <<A>>', // pattern
+	PATTERN_ONE_OF = 'the value should be one of pattern of <<A>>', // pattern
 
 	UNIQUE_ITEMS = 'the array should be unique items',
 
