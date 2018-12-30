@@ -12,12 +12,16 @@ import {
 	definedTester,
 	emailTester,
 	enumTester,
+	exclusiveMaxDateTester,
 	exclusiveMaxNumberTester,
+	exclusiveMinDateTester,
 	exclusiveMinNumberTester,
 	indexTester,
 	integerTester,
+	maxDateTester,
 	maxLengthTester,
 	maxNumberTester,
+	minDateTester,
 	minLengthTester,
 	minNumberTester,
 	numberTester,
@@ -612,6 +616,142 @@ describe('testers', function () {
 				expect(dateTester(new Date)).to.be.true;
 				expect(dateTester((new Date).toISOString())).to.be.false;
 			});
+		});
+
+		it('minDateTester()', () => {
+			expect(minDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 29)
+			)).to.be.true;
+			expect(minDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 30)
+			)).to.be.true;
+			expect(minDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 31)
+			)).to.be.false;
+
+			expect(minDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, -1)
+			)).to.be.true;
+			expect(minDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, 0)
+			)).to.be.true;
+			expect(minDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, 1)
+			)).to.be.false;
+		});
+
+		it('exclusiveMinDateTester()', () => {
+			expect(exclusiveMinDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 29)
+			)).to.be.true;
+			expect(exclusiveMinDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 30)
+			)).to.be.false;
+			expect(exclusiveMinDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 31)
+			)).to.be.false;
+
+			expect(exclusiveMinDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, -1)
+			)).to.be.true;
+			expect(exclusiveMinDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, 0)
+			)).to.be.false;
+			expect(exclusiveMinDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, 1)
+			)).to.be.false;
+		});
+
+		it('maxDateTester()', () => {
+			expect(maxDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 29)
+			)).to.be.false;
+			expect(maxDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 30)
+			)).to.be.true;
+			expect(maxDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 31)
+			)).to.be.true;
+
+			expect(maxDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, -1)
+			)).to.be.false;
+			expect(maxDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, 0)
+			)).to.be.true;
+			expect(maxDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, 1)
+			)).to.be.true;
+		});
+
+		it('exclusiveMaxDateTester()', () => {
+			expect(exclusiveMaxDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 29)
+			)).to.be.false;
+			expect(exclusiveMaxDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 30)
+			)).to.be.false;
+			expect(exclusiveMaxDateTester(
+				new Date(2018, 11, 30),
+				new Date(2018, 11, 31)
+			)).to.be.true;
+
+			expect(exclusiveMaxDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, -1)
+			)).to.be.false;
+			expect(exclusiveMaxDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, 0)
+			)).to.be.false;
+			expect(exclusiveMaxDateTester(
+				new Date(2018, 11, 30,
+					0, 0, 0, 0),
+				new Date(2018, 11, 30,
+					0, 0, 0, 1)
+			)).to.be.true;
 		});
 	});
 

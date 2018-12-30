@@ -257,6 +257,22 @@ export const dateTester : TypeTester = (value : any) : boolean => {
 		&& value.getFullYear !== undefined;
 };
 
+export const minDateTester : AdditionalTester = (value : Date, min : Date) : boolean => {
+	return +value >= +min;
+};
+
+export const exclusiveMinDateTester : AdditionalTester = (value : Date, min : Date) : boolean => {
+	return +value > +min;
+};
+
+export const maxDateTester : AdditionalTester = (value : Date, max : Date) : boolean => {
+	return +value <= +max;
+};
+
+export const exclusiveMaxDateTester : AdditionalTester = (value : Date, max : Date) : boolean => {
+	return +value < +max;
+};
+
 export const arrayTester : TypeTester = (value : any) : boolean => {
 	return objectTester(value)
 		&& value !== null
