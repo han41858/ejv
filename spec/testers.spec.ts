@@ -570,104 +570,112 @@ describe('testers', function () {
 	// 	});
 	// });
 
-	describe('objectTester()', () => {
-		it('common test', () => {
-			expect(commonTestRunner(
-				objectTester,
-				true, // null is object
-				false,
-				false,
-				false,
-				false,
-				true, // array is object
-				true
-			)).to.be.true;
-		});
+	describe('object', () => {
+		describe('objectTester()', () => {
+			it('common test', () => {
+				expect(commonTestRunner(
+					objectTester,
+					true, // null is object
+					false,
+					false,
+					false,
+					false,
+					true, // array is object
+					true
+				)).to.be.true;
+			});
 
-		it('logic test', () => {
-			expect(objectTester(null)).to.be.true;
-			expect(objectTester({})).to.be.true;
-			expect(objectTester({ a : 1 })).to.be.true;
-		});
-	});
-
-	describe('dateTester()', () => {
-		it('common test', () => {
-			expect(commonTestRunner(
-				dateTester,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false
-			)).to.be.true;
-		});
-
-		it('logic test', () => {
-			expect(dateTester(new Date)).to.be.true;
-			expect(dateTester((new Date).toISOString())).to.be.false;
+			it('logic test', () => {
+				expect(objectTester(null)).to.be.true;
+				expect(objectTester({})).to.be.true;
+				expect(objectTester({ a : 1 })).to.be.true;
+			});
 		});
 	});
 
-	describe('arrayTester()', () => {
-		it('common test', () => {
-			expect(commonTestRunner(
-				arrayTester,
-				false,
-				false,
-				false,
-				false,
-				false,
-				true,
-				false
-			)).to.be.true;
-		});
+	describe('date', () => {
+		describe('dateTester()', () => {
+			it('common test', () => {
+				expect(commonTestRunner(
+					dateTester,
+					false,
+					false,
+					false,
+					false,
+					false,
+					false,
+					false
+				)).to.be.true;
+			});
 
-		it('logic test', () => {
-			expect(arrayTester([])).to.be.true;
-			expect(arrayTester('not_array')).to.be.false;
-		});
-	});
-
-	describe('arrayTypeOfTester()', () => {
-		it('logic test', () => {
-			expect(arrayTypeOfTester([], 'number')).to.be.true;
-			expect(arrayTypeOfTester([1, 2], 'number')).to.be.true;
-			expect(arrayTypeOfTester([1, 2, '3'], 'number')).to.be.false;
-
-			expect(arrayTypeOfTester([new Date, new Date, new Date], 'date')).to.be.true;
+			it('logic test', () => {
+				expect(dateTester(new Date)).to.be.true;
+				expect(dateTester((new Date).toISOString())).to.be.false;
+			});
 		});
 	});
 
-	describe('uniqueItemsTester()', () => {
-		it('logic test', () => {
-			expect(uniqueItemsTester([])).to.be.true;
-			expect(uniqueItemsTester([1, 2])).to.be.true;
-			expect(uniqueItemsTester([1, 2, 2])).to.be.false;
+	describe('array', () => {
+		describe('arrayTester()', () => {
+			it('common test', () => {
+				expect(commonTestRunner(
+					arrayTester,
+					false,
+					false,
+					false,
+					false,
+					false,
+					true,
+					false
+				)).to.be.true;
+			});
+
+			it('logic test', () => {
+				expect(arrayTester([])).to.be.true;
+				expect(arrayTester('not_array')).to.be.false;
+			});
+		});
+
+		describe('arrayTypeOfTester()', () => {
+			it('logic test', () => {
+				expect(arrayTypeOfTester([], 'number')).to.be.true;
+				expect(arrayTypeOfTester([1, 2], 'number')).to.be.true;
+				expect(arrayTypeOfTester([1, 2, '3'], 'number')).to.be.false;
+
+				expect(arrayTypeOfTester([new Date, new Date, new Date], 'date')).to.be.true;
+			});
+		});
+
+		describe('uniqueItemsTester()', () => {
+			it('logic test', () => {
+				expect(uniqueItemsTester([])).to.be.true;
+				expect(uniqueItemsTester([1, 2])).to.be.true;
+				expect(uniqueItemsTester([1, 2, 2])).to.be.false;
+			});
 		});
 	});
 
-	describe('regExpTester()', () => {
-		it('common test', () => {
-			expect(commonTestRunner(
-				regExpTester,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false,
-				false
-			)).to.be.true;
-		});
+	describe('regexp', () => {
+		describe('regExpTester()', () => {
+			it('common test', () => {
+				expect(commonTestRunner(
+					regExpTester,
+					false,
+					false,
+					false,
+					false,
+					false,
+					false,
+					false
+				)).to.be.true;
+			});
 
-		it('logic test', () => {
-			expect(regExpTester(/\d/)).to.be.true;
-			expect(regExpTester(new RegExp('\d'))).to.be.true;
+			it('logic test', () => {
+				expect(regExpTester(/\d/)).to.be.true;
+				expect(regExpTester(new RegExp('\d'))).to.be.true;
 
-			expect(regExpTester('\d')).to.be.false;
+				expect(regExpTester('\d')).to.be.false;
+			});
 		});
 	});
 });
