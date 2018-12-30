@@ -33,7 +33,7 @@ if (!error) {
 
 `ejv()` 함수로 JSON 객체를 검사하려면 이 함수의 두 번째 인자로 검사 규칙을 전달해야 합니다.
 
-이 때 검사 규칙은 배열 형태로 정의합니다. ejv는 배열에 있는 검사 규칙을 순서대로 확인하기 때문에 검사항목의 우선순위를 지정할 수 있습니다.
+이 때 검사 규칙은 배열 형태로 정의합니다. ejv는 배열에 있는 검사 규칙을 순서대로 확인하기 때문에 검사항목의 우선순위를 지정할 수 있으며, 함수의 실행 결과는 항상 같습니다.
 
 ### 필수 항목
 
@@ -64,7 +64,7 @@ ejv({
 }, [{
   key : 'a',
   optional : true // 프로퍼티가 선언되지 않아도 에러가 발생하지 않습니다.
-}])
+}]);
 ```
 
 - `enum : number[] | string[]`
@@ -83,7 +83,7 @@ ejv({
   key : 'b',
   type : 'string',
   enum : ['hello', 'ejv'] // 'hello'나 'ejv' 값을 허용합니다.
-}])
+}]);
 ```
 
 #### `'number'` 타입 옵션
@@ -109,7 +109,7 @@ ejv({
   type : 'number',
   min : 10,
   exclusiveMin : true // 실패
-}])
+}]);
 ```
 
 - `max : number`
@@ -133,7 +133,7 @@ ejv({
   type : 'number',
   max : 10,
   exclusiveMax : true // 실패
-}])
+}]);
 ```
 
 - `format : NumberFormat | NumberFormat[]`
@@ -169,7 +169,7 @@ ejv({
   key : 'str',
   type : 'string',
   minLength : 5
-}])
+}]);
 ````
 
 - `maxLength : string`
@@ -183,7 +183,7 @@ ejv({
   key : 'str',
   type : 'string',
   maxLength : 5
-}])
+}]);
 ````
 
 - `pattern : string | string[] | RegExp | RegExp[]`
@@ -209,10 +209,33 @@ ejv({
   key : 'str',
   type : 'string',
   pattern : [/abc/, /ac/]
-}])
+}]);
 ```
 
 #### `'object'` 타입 옵션
+
+- `properties : Scheme[]`
+
+객체의 세부 형식을 지정합니다. 검사 대상으로 지정된 객체는 ejv()가 재귀적으로 검사합니다.
+
+```typescript
+ejv({
+  data : {
+  	num : 10,
+  	str : 'ejv'
+  }
+}, [{
+  key : 'data',
+  type : 'object',
+  properties : [{
+  	key : 'num',
+  	type : 'number'
+  }, {
+  	key : 'str',
+  	type : 'string'
+  }]
+}]);
+```
 
 #### `'date'` 타입 옵션
 
@@ -245,7 +268,7 @@ ejv({
   type : 'date',
   min : '2019-12-30T00:00:00Z',
   exclusiveMin : true // 실패
-}])
+}]);
 ```
 
 - `max : Date | string`
@@ -277,7 +300,7 @@ ejv({
   type : 'date',
   max : '2019-12-30T00:00:00Z',
   exclusiveMax : true // 실패
-}])
+}]);
 ```
 
 #### `'array'` 타입 옵션
