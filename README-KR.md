@@ -90,11 +90,11 @@ ejv({
 
 - `min : number`
 
-최소값을 지정합니다. 이 값보다 작은 숫자이면 에러가 발생합니다.
+최소값을 검사합니다. 이 값보다 작은 숫자이면 에러가 발생합니다.
 
 - `exclusiveMin : boolean`
 
-`true`로 지정하면 최소 한계값과 같은 값을 허용하지 않습니다. `false`로 지정하면 최소 한계값과 같은 값을 허용합니다. 이 옵션은 `min` 옵션이 지정되었을 때만 유효합니다.
+`true`로 지정하면 최소 한계값과 같은 값을 허용하지 않습니다. `false`로 지정하면 최소 한계값과 같은 값을 허용합니다. 이 옵션은 `min` 옵션이 사용되었을 때만 유효합니다.
 
 ```typescript
 ejv({
@@ -114,11 +114,11 @@ ejv({
 
 - `max : number`
 
-최대값을 지정합니다. 이 값보다 큰 숫자이면 에러가 발생합니다.
+최대값을 검사합니다. 이 값보다 큰 숫자이면 에러가 발생합니다.
 
 - `exclusiveMax : boolean`
 
-`true`로 지정하면 최대 한계값과 같은 값을 허용하지 않습니다. `false`로 지정하면 최대 한계값과 같은 값을 허용합니다. 이 옵션은 `max` 옵션이 지정되었을 때만 유효합니다.
+`true`로 지정하면 최대 한계값과 같은 값을 허용하지 않습니다. `false`로 지정하면 최대 한계값과 같은 값을 허용합니다. 이 옵션은 `max` 옵션이 사용되었을 때만 유효합니다.
 
 ```typescript
 ejv({
@@ -138,7 +138,7 @@ ejv({
 
 - `format : NumberFormat | NumberFormat[]`
 
-숫자의 형식을 지정합니다. 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다. 사용할 수 있는 값은 다음과 같습니다.
+숫자의 형식을 검사합니다. 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다. 사용할 수 있는 값은 다음과 같습니다.
                
 타입|예
 ---|---
@@ -149,7 +149,7 @@ ejv({
 
 - `format : StringFormat | StringFormat[]`
 
-문자열의 형식을 지정합니다. 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다. 사용할 수 있는 값은 다음과 같습니다.
+문자열의 형식을 검사합니다. 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다. 사용할 수 있는 값은 다음과 같습니다.
                
 타입|예
 ---|---
@@ -160,47 +160,125 @@ ejv({
 
 - `minLength : number`
 
-문자열의 최소 길이를 지정합니다.
+문자열의 최소 길이를 검사합니다.
 
 ```typescript
 ejv({
-  str1 : 'hello',
-  str2 : 'hello 2'
+  str : 'hello'
 }, [{
-  key : 'str1',
+  key : 'str',
   type : 'string',
-  minLength : 5 // 성공
-}, {
-  key : 'str2',
-  type : 'string',
-  minLength : 10 // 실패
+  minLength : 5
 }])
 ````
 
 - `maxLength : string`
 
-문자열의 최대 길이를 지정합니다.
+문자열의 최대 길이를 검사합니다.
 
 ```typescript
 ejv({
-  str1 : 'hello',
-  str2 : 'hello 2'
+  str : 'hello'
 }, [{
-  key : 'str1',
+  key : 'str',
   type : 'string',
-  maxLength : 5 // 성공
-}, {
-  key : 'str2',
-  type : 'string',
-  maxLength : 5 // 실패
+  maxLength : 5
 }])
 ````
 
 - `pattern : string | string[] | RegExp | RegExp[]`
 
-문자열의 형식을 지정합니다. 문자열로 지정되면 이 문자열을 정규표현식으로 변환해서 검사하며, 정규표현식으로 지정되면 정규표현식을 통과하는지 검사합니다. 이 옵션의 값이 배열로 지정되면 배열 중 하나를 통과하면 검사를 통과합니다.
+문자열의 형식을 검사합니다. 문자열로 지정되면 이 문자열을 정규표현식으로 변환해서 검사하며, 정규표현식으로 지정되면 정규표현식을 통과하는지 검사합니다. 이 옵션의 값이 배열로 지정되면 배열 중 하나를 통과하면 검사를 통과합니다.
+
+```typescript
+ejv({
+  str : 'abc'
+}, [{
+  key : 'str',
+  type : 'string',
+  pattern : 'abc'
+}, {
+  key : 'str',
+  type : 'string',
+  pattern : ['abc', 'ac']
+}, {
+  key : 'str',
+  type : 'string',
+  pattern : /abc/
+}, {
+  key : 'str',
+  type : 'string',
+  pattern : [/abc/, /ac/]
+}])
+```
 
 #### `'object'` 타입 옵션
+
+#### `'date'` 타입 옵션
+
+- `min : Date | string`
+
+날짜의 최소값을 검사합니다. 이 값보다 이전 날짜이면 에러가 발생합니다. 최소값은 `Date` 객체나 날짜를 표현하는 문자열을 사용할 수 있습니다.
+
+- `exclusiveMin : boolean`
+
+`true`로 지정하면 날짜의 최소값과 같은 값을 허용하지 않습니다. `false`로 지정하면 날짜의 최소값과 같은 값을 허용합니다. 이 옵션은 `min` 옵션이 사용되었을 때만 유효합니다.
+
+```typescript
+ejv({
+  date1 : new Date(2019, 11, 30)
+}, [{
+  key : 'date1',
+  type : 'date',
+  min : new Date(2019, 11, 30) // 성공
+}, {
+  key : 'date1',
+  type : 'date',
+  min : new Date(2019, 11, 30),
+  exclusiveMin : true // 실패
+}, {
+  key : 'date1',
+  type : 'date',
+  min : '20191230T00:00:00Z' // 성공
+}, {
+  key : 'date1',
+  type : 'date',
+  min : '20191230T00:00:00Z',
+  exclusiveMin : true // 실패
+}])
+```
+
+- `max : Date | string`
+
+날짜의 최대값을 검사합니다. 이 값보다 이후 날짜이면 에러가 발생합니다. 최대값은 `Date` 객체나 날짜를 표현하는 문자열을 사용할 수 있습니다.
+
+- `exclusiveMax : boolean`
+
+`true`로 지정하면 날짜의 최대값과 같은 값을 허용하지 않습니다. `false`로 지정하면 날짜의 최대값과 같은 값을 허용합니다. 이 옵션은 `max` 옵션이 사용되었을 때만 유효합니다.
+
+```typescript
+ejv({
+  date1 : new Date(2019, 11, 30)
+}, [{
+  key : 'date1',
+  type : 'date',
+  max : new Date(2019, 11, 30) // 성공
+}, {
+  key : 'date1',
+  type : 'date',
+  max : new Date(2019, 11, 30),
+  exclusiveMax : true // 실패
+}, {
+  key : 'date1',
+  type : 'date',
+  max : '20191230T00:00:00Z' // 성공
+}, {
+  key : 'date1',
+  type : 'date',
+  max : '20191230T00:00:00Z',
+  exclusiveMa : true // 실패
+}])
+```
 
 #### `'array'` 타입 옵션
 
@@ -222,7 +300,7 @@ ejv({
 
 ## `EjvError`
 
-객체가 검사 규칙을 통과하면 `null` 객체를 반환합니다. 그리고 검사 규칙을 통과하지 못하면 `EjvError` 타입의 인스턴스를 반환합니다.
+객체가 검사 규칙을 통과하면 `null` 객체를 반환하지만, 검사 규칙을 통과하지 못하면 `EjvError` 타입의 인스턴스를 반환합니다.
 
 `EjvError` 객체는 `ejv()` 검사가 실패했을 때 반환되는 객체입니다.
  
