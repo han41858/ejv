@@ -8,11 +8,11 @@ export interface Scheme {
 	optional? : boolean; // false
 	// reverse? not?
 
-	// common - number & Date
-	min? : number;
+	// common - number & Date (date string, Date)
+	min? : number | string | Date;
 	exclusiveMin? : boolean; // false
 
-	max? : number;
+	max? : number | string | Date;
 	exclusiveMax? : boolean; // false
 
 	// common - number & string

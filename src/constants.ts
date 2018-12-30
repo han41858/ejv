@@ -64,6 +64,9 @@ export enum ErrorMsg {
 	PROPERTIES_SHOULD_HAVE_ITEMS = 'properties should have items',
 	PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT = 'properties should be array of object',
 
+	MIN_DATE_SHOULD_BE_DATE_OR_STRING = 'min should be Date or string representing date',
+	MAX_DATE_SHOULD_BE_DATE_OR_STRING = 'max should be Date or string representing date',
+
 	UNIQUE_SHOULD_BE_BOOLEAN = 'unique should be boolean',
 
 	INVALID_ITEMS_SCHEME = 'invalid schemes of array items : <<A>>',
@@ -89,6 +92,12 @@ export enum ErrorMsg {
 
 	PATTERN = 'the value should be pattern of <<A>>', // pattern
 	PATTERN_ONE_OF = 'the value should be one of pattern of <<A>>', // pattern
+
+	AFTER_OR_SAME_DATE = 'the value should be after or same date than <<A>>', // date
+	AFTER_DATE = 'the value should be after date than <<A>>', // date
+
+	BEFORE_OR_SAME_DATE = 'the value should be before or same date than <<A>>', // date
+	BEFORE_DATE = 'the value should be before date than <<A>>', // date
 
 	UNIQUE_ITEMS = 'the array should be unique items',
 

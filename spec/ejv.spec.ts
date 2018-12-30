@@ -2131,6 +2131,973 @@ describe('ejv()', () => {
 				});
 			});
 		});
+
+		describe('min & exclusiveMin', () => {
+			describe('check parameter', () => {
+				it('min === null', () => {
+					expect(() => ejv({
+						date : new Date
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : null
+					}])).to.throw(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING);
+				});
+
+				it('exclusiveMin === null', () => {
+					expect(() => ejv({
+						date : new Date
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date,
+						exclusiveMin : null
+					}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+				});
+			});
+
+			describe('by date', () => {
+				it('without exclusiveMin', () => {
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 29)
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30)
+					}])).to.be.null;
+
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 31)
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					// with time
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30,
+							0, 0, 0, -1)
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}])).to.be.null;
+
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30,
+							0, 0, 0, 1)
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+				});
+
+				it('exclusiveMin === false', () => {
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 29),
+						exclusiveMin : false
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30),
+						exclusiveMin : false
+					}])).to.be.null;
+
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 31),
+						exclusiveMin : false
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					// with time
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30,
+							0, 0, 0, -1),
+						exclusiveMin : false
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30,
+							0, 0, 0, 0),
+						exclusiveMin : false
+					}])).to.be.null;
+
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30,
+							0, 0, 0, 1),
+						exclusiveMin : false
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+				});
+
+				it('exclusiveMin === true', () => {
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 29),
+						exclusiveMin : true
+					}])).to.be.null;
+
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30),
+						exclusiveMin : true
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.AFTER_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 31),
+						exclusiveMin : true
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.AFTER_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+
+					// with time
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30,
+							0, 0, 0, -1),
+						exclusiveMin : true
+					}])).to.be.null;
+
+					const error3 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30,
+							0, 0, 0, 0),
+						exclusiveMin : true
+					}]);
+
+					expect(error3).to.be.instanceof(EjvError);
+					expect(error3.keyword).to.include(ErrorMsg.AFTER_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error3.path).to.be.eql('date');
+					expect(error3.data).to.be.instanceof(Date);
+
+					const error4 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : new Date(2018, 11, 30,
+							0, 0, 0, 1),
+						exclusiveMin : true
+					}]);
+
+					expect(error4).to.be.instanceof(EjvError);
+					expect(error4.keyword).to.include(ErrorMsg.AFTER_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error4.path).to.be.eql('date');
+					expect(error4.data).to.be.instanceof(Date);
+				});
+			});
+
+			describe('by date string', () => {
+				it('without exclusiveMin', () => {
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29'
+					}])).to.be.null;
+
+					// skip for different timezone
+					// expect(ejv({
+					// 	date : new Date(2018, 11, 30)
+					// }, [{
+					// 	key : 'date',
+					// 	type : 'date',
+					// 	min : '2018-12-30'
+					// }])).to.be.null;
+
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-31'
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					// with time
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29T14:59:59.999Z'
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29T15:00:00.000Z'
+					}])).to.be.null;
+
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29T15:00:00.001Z'
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+				});
+
+				it('exclusiveMin === false', () => {
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29',
+						exclusiveMin : false
+					}])).to.be.null;
+
+					// skip for different timezone
+					// expect(ejv({
+					// 	date : new Date(2018, 11, 30)
+					// }, [{
+					// 	key : 'date',
+					// 	type : 'date',
+					// 	min : '2018-12-30',
+					// 	exclusiveMin : false
+					// }])).to.be.null;
+
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-31',
+						exclusiveMin : false
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					// with time
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29T14:59:59.999Z',
+						exclusiveMin : false
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29T15:00:00.000Z',
+						exclusiveMin : false
+					}])).to.be.null;
+
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29T15:00:00.001Z',
+						exclusiveMin : false
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+				});
+
+				it('exclusiveMin === true', () => {
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29',
+						exclusiveMin : true
+					}])).to.be.null;
+
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-30',
+						exclusiveMin : true
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.AFTER_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-31',
+						exclusiveMin : true
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.AFTER_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+
+					// with time
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-29T14:59:59.999Z',
+						exclusiveMin : true
+					}])).to.be.null;
+
+					const error3 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-30T15:00:00.000Z',
+						exclusiveMin : true
+					}]);
+
+					expect(error3).to.be.instanceof(EjvError);
+					expect(error3.keyword).to.include(ErrorMsg.AFTER_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error3.path).to.be.eql('date');
+					expect(error3.data).to.be.instanceof(Date);
+
+					const error4 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						min : '2018-12-30T15:00:00.001Z',
+						exclusiveMin : true
+					}]);
+
+					expect(error4).to.be.instanceof(EjvError);
+					expect(error4.keyword).to.include(ErrorMsg.AFTER_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error4.path).to.be.eql('date');
+					expect(error4.data).to.be.instanceof(Date);
+				});
+			});
+		});
+
+		describe('max & exclusiveMax', () => {
+			describe('check parameter', () => {
+				it('max === null', () => {
+					expect(() => ejv({
+						date : new Date
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : null
+					}])).to.throw(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING);
+				});
+
+				it('exclusiveMax === null', () => {
+					expect(() => ejv({
+						date : new Date
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date,
+						exclusiveMax : null
+					}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+				});
+			});
+
+			describe('by date', () => {
+				it('without exclusiveMax', () => {
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 29)
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30)
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 31)
+					}])).to.be.null;
+
+					// with time
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30,
+							0, 0, 0, -1)
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30,
+							0, 0, 0, 1)
+					}])).to.be.null;
+				});
+
+				it('exclusiveMax === false', () => {
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 29),
+						exclusiveMax : false
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30),
+						exclusiveMax : false
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 31),
+						exclusiveMax : false
+					}])).to.be.null;
+
+					// with time
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30,
+							0, 0, 0, -1),
+						exclusiveMax : false
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30,
+							0, 0, 0, 0),
+						exclusiveMax : false
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30,
+							0, 0, 0, 1),
+						exclusiveMax : false
+					}])).to.be.null;
+				});
+
+				it('exclusiveMax === true', () => {
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 29),
+						exclusiveMax : true
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.BEFORE_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30),
+						exclusiveMax : true
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.BEFORE_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 31),
+						exclusiveMax : true
+					}])).to.be.null;
+
+					// with time
+					const error3 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30,
+							0, 0, 0, -1),
+						exclusiveMax : true
+					}]);
+
+					expect(error3).to.be.instanceof(EjvError);
+					expect(error3.keyword).to.include(ErrorMsg.BEFORE_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error3.path).to.be.eql('date');
+					expect(error3.data).to.be.instanceof(Date);
+
+					const error4 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30,
+							0, 0, 0, 0),
+						exclusiveMax : true
+					}]);
+
+					expect(error4).to.be.instanceof(EjvError);
+					expect(error4.keyword).to.include(ErrorMsg.BEFORE_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error4.path).to.be.eql('date');
+					expect(error4.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : new Date(2018, 11, 30,
+							0, 0, 0, 1),
+						exclusiveMax : true
+					}])).to.be.null;
+				});
+			});
+
+			describe('by date string', () => {
+				it('without exclusiveMax', () => {
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29'
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-30'
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-31'
+					}])).to.be.null;
+
+					// with time
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T14:59:59.999Z'
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T15:00:00.000Z'
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T15:00:00.001Z'
+					}])).to.be.null;
+				});
+
+				it('exclusiveMax === false', () => {
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-28T15:00:00.000Z',
+						exclusiveMax : false
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T15:00:00.000Z',
+						exclusiveMax : false
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-30T15:00:00.000Z',
+						exclusiveMax : false
+					}])).to.be.null;
+
+					// with time
+					const error2 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T14:59:59.999Z',
+						exclusiveMax : false
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+					expect(error2.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error2.path).to.be.eql('date');
+					expect(error2.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T15:00:00.000Z',
+						exclusiveMax : false
+					}])).to.be.null;
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T15:00:00.001Z',
+						exclusiveMax : false
+					}])).to.be.null;
+				});
+
+				it('exclusiveMax === true', () => {
+					const error1 : EjvError = ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29',
+						exclusiveMax : true
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+					expect(error1.keyword).to.include(ErrorMsg.BEFORE_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error1.path).to.be.eql('date');
+					expect(error1.data).to.be.instanceof(Date);
+
+					// skip for different timezone
+					// const error2 : EjvError = ejv({
+					// 	date : new Date(2018, 11, 30)
+					// }, [{
+					// 	key : 'date',
+					// 	type : 'date',
+					// 	max : '2018-12-30',
+					// 	exclusiveMax : true
+					// }]);
+					//
+					// expect(error2).to.be.instanceof(EjvError);
+					// expect(error2.keyword).to.include(ErrorMsg.BEFORE_DATE
+					// 	.replace(ErrorMsgCursorA, ''));
+					// expect(error2.path).to.be.eql('date');
+					// expect(error2.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-31',
+						exclusiveMax : true
+					}])).to.be.null;
+
+					// with time
+					const error3 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T14:59:59.999Z',
+						exclusiveMax : true
+					}]);
+
+					expect(error3).to.be.instanceof(EjvError);
+					expect(error3.keyword).to.include(ErrorMsg.BEFORE_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error3.path).to.be.eql('date');
+					expect(error3.data).to.be.instanceof(Date);
+
+					const error4 : EjvError = ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T15:00:00.000Z',
+						exclusiveMax : true
+					}]);
+
+					expect(error4).to.be.instanceof(EjvError);
+					expect(error4.keyword).to.include(ErrorMsg.BEFORE_DATE
+						.replace(ErrorMsgCursorA, ''));
+					expect(error4.path).to.be.eql('date');
+					expect(error4.data).to.be.instanceof(Date);
+
+					expect(ejv({
+						date : new Date(2018, 11, 30,
+							0, 0, 0, 0)
+					}, [{
+						key : 'date',
+						type : 'date',
+						max : '2018-12-29T15:00:00.001Z',
+						exclusiveMax : true
+					}])).to.be.null;
+				});
+			});
+		});
 	});
 
 	describe('regexp', () => {

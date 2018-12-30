@@ -6,16 +6,21 @@ import {
 	arrayTypeOfTester,
 	booleanTester,
 	dateFormatTester,
+	dateTester,
 	dateTimeFormatTester,
 	definedTester,
 	emailTester,
 	enumTester,
+	exclusiveMaxDateTester,
 	exclusiveMaxNumberTester,
+	exclusiveMinDateTester,
 	exclusiveMinNumberTester,
 	indexTester,
 	integerTester,
+	maxDateTester,
 	maxLengthTester,
 	maxNumberTester,
+	minDateTester,
 	minLengthTester,
 	minNumberTester,
 	numberTester,
@@ -530,6 +535,80 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 
 						// call recursively
 						result = _ejv(partialData, partialScheme, options);
+					}
+					break;
+
+				case DataType.DATE:
+					if (definedTester(scheme.min)) {
+						if (!(
+							(stringTester(scheme.min) && (dateFormatTester(scheme.min) || dateTimeFormatTester(scheme.min)))
+							|| dateTester(scheme.min)
+						)) {
+							throw new Error(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING);
+						}
+
+						if (definedTester(scheme.exclusiveMin) && !booleanTester(scheme.exclusiveMin)) {
+							throw new Error(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+						}
+
+						const minDate : Date = new Date(scheme.min);
+
+						if (scheme.exclusiveMin !== true) {
+							if (!minDateTester(value, minDate)) {
+								result = new EjvError(
+									ErrorMsg.AFTER_OR_SAME_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
+									options.path,
+									value
+								);
+								break;
+							}
+
+						} else {
+							if (!exclusiveMinDateTester(value, minDate)) {
+								result = new EjvError(
+									ErrorMsg.AFTER_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
+									options.path,
+									value
+								);
+								break;
+							}
+						}
+					}
+
+					if (definedTester(scheme.max)) {
+						if (!(
+							(stringTester(scheme.max) && (dateFormatTester(scheme.max) || dateTimeFormatTester(scheme.max)))
+							|| dateTester(scheme.max)
+						)) {
+							throw new Error(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING);
+						}
+
+						if (definedTester(scheme.exclusiveMax) && !booleanTester(scheme.exclusiveMax)) {
+							throw new Error(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+						}
+
+						const maxDate : Date = new Date(scheme.max);
+
+						if (scheme.exclusiveMax !== true) {
+							if (!maxDateTester(value, maxDate)) {
+								result = new EjvError(
+									ErrorMsg.BEFORE_OR_SAME_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
+									options.path,
+									value
+								);
+								break;
+							}
+
+						} else {
+							if (!exclusiveMaxDateTester(value, maxDate)) {
+								result = new EjvError(
+									ErrorMsg.BEFORE_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
+									options.path,
+									value
+								);
+								break;
+							}
+						}
 					}
 					break;
 
