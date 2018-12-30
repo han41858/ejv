@@ -239,11 +239,11 @@ ejv({
 }, {
   key : 'date1',
   type : 'date',
-  min : '20191230T00:00:00Z' // 성공
+  min : '2019-12-30T00:00:00Z' // 성공
 }, {
   key : 'date1',
   type : 'date',
-  min : '20191230T00:00:00Z',
+  min : '2019-12-30T00:00:00Z',
   exclusiveMin : true // 실패
 }])
 ```
@@ -271,12 +271,12 @@ ejv({
 }, {
   key : 'date1',
   type : 'date',
-  max : '20191230T00:00:00Z' // 성공
+  max : '2019-12-30T00:00:00Z' // 성공
 }, {
   key : 'date1',
   type : 'date',
-  max : '20191230T00:00:00Z',
-  exclusiveMa : true // 실패
+  max : '2019-12-30T00:00:00Z',
+  exclusiveMax : true // 실패
 }])
 ```
 
