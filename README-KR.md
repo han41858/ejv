@@ -1,15 +1,21 @@
-# ejv
- 
-Easy JSON Validator
+# ejv - Easy JSON Validator
 
 ejv는 JSON 객체를 검사할 때 사용하는 라이브러리입니다.
 복잡한 JSON 객체를 간단한 문법으로 검사해 보세요.
 
 > ejv 는 TypeScript로 작성되었으며 JavaScript 코드로 컴파일되어 배포됩니다. 따라서 TypeScript 문법으로 사용할 수도 있고 JavaScript 문법으로 사용할 수도 있습니다.
 
+## 설치방법
+
+```bash
+npm install ejv
+```
+
 ## `ejv(data : object, schemes : Scheme[])`
 
 ejv 라이브러리는 단 하나의 함수만 제공합니다. 모든 검사는 이 함수를 사용합니다.
+
+`ejv()` 함수는 단순하게 사용할 수 있는 동기 함수입니다. 이 함수는 Promise 나 Observable 에도 불편함없이 사용할 수 있습니다.
 
 사용방법)
 ```typescript
@@ -25,7 +31,7 @@ const error : null | EjvError = ejv({
 if (!error) {
   console.log('검사 성공');
 } else {
-  console.log('검사 실패');	
+  console.log('검사 실패');
 }
 ```
 
@@ -139,7 +145,7 @@ ejv({
 - `format : NumberFormat | NumberFormat[]`
 
 숫자의 형식을 검사합니다. 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다. 사용할 수 있는 값은 다음과 같습니다.
-               
+
 타입|예
 ---|---
 `'integer'`|정수만 허용합니다. ex) -1, 0, 1, ...
@@ -150,11 +156,11 @@ ejv({
 - `format : StringFormat | StringFormat[]`
 
 문자열의 형식을 검사합니다. 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다. 사용할 수 있는 값은 다음과 같습니다.
-               
+
 타입|예
 ---|---
 `'email'`|이메일 형식인지 검사합니다. [RFC 5322 3.4.1](https://tools.ietf.org/html/rfc5322#section-3.4.1) 스펙을 기준으로 합니다. ex) `'email@domain.com'`
-`'date'`|날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29'` 
+`'date'`|날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29'`
 `'time'`|시간 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'21:07:35'`
 `'date-time'`|날짜-시간 형식인지 검사합니다. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) 스펙과 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29T21:07:35Z'`
 
@@ -339,7 +345,7 @@ ejv({
 
 - `items : Scheme[]`
 
-배열의 항목을 검사할 규칙을 지정합니다. 이 때 지정하는 Scheme은 ejv() 함수에 사용하는 Scheme과 같은 형식이지만 `key`는 생략합니다. 배열로 지정한 규칙은 ejv()가 재귀적으로 검사하며, 배열에 지정된 순서대로 처리됩니다. 
+배열의 항목을 검사할 규칙을 지정합니다. 이 때 지정하는 Scheme은 ejv() 함수에 사용하는 Scheme과 같은 형식이지만 `key`는 생략합니다. 배열로 지정한 규칙은 ejv()가 재귀적으로 검사하며, 배열에 지정된 순서대로 처리됩니다.
 
 ```typescript
 ejv({
@@ -375,7 +381,7 @@ ejv({
 객체가 검사 규칙을 통과하면 `null` 객체를 반환하지만, 검사 규칙을 통과하지 못하면 `EjvError` 타입의 인스턴스를 반환합니다.
 
 `EjvError` 객체는 `ejv()` 검사가 실패했을 때 반환되는 객체입니다.
- 
+
 > `EjvError` 형식을 꼭 사용할 필요는 없습니다. 다만, TypeScript를 사용한다면 이 객체의 프로퍼티를 참조할 때 활용할 수 있습니다.
 
 
@@ -391,6 +397,7 @@ ejv({
 에러가 발생한 데이터를 표시합니다.
 
 사용방법)
+
 ```typescript
 import { ejv, EjvError } from 'ejv';
 
@@ -398,7 +405,7 @@ const error : null | EjvError = ejv({
   a : 10
 }, [{
   key : 'a',
-  type : 'string' 
+  type : 'string'
 }]);
 
 console.log(error.keyword); // 'the value should be a string'
