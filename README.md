@@ -1,5 +1,7 @@
 # ejv - Easy JSON Validator
 
+[한국어](https://github.com/han41858/ejv/blob/master/README-KR.md)
+
 ejv is JSON validation library. Check your JSON object with simple syntax.
 
 > ejv is written by TypeScript, and published by JavaScript.
@@ -20,11 +22,31 @@ All validation use this function.
 So you can use this function with Promise or Observable easily.
 This function does not change original JSON object.
 
-usage)
+usage - TypeScript)
+
 ```typescript
 import { ejv, EjvError } from 'ejv';
 
 const error : null | EjvError = ejv({
+  a : 10
+}, [{
+  key : 'a',
+  type : 'number'
+}]);
+
+if (!error) {
+  console.log('success');
+} else {
+  console.log('failed');
+}
+```
+
+usage - JavaScript)
+
+```javascript
+const { ejv } = require('ejv');
+
+const error = ejv({
   a : 10
 }, [{
   key : 'a',

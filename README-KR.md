@@ -21,7 +21,8 @@ ejv 라이브러리는 단 하나의 함수만 제공합니다.
 이 함수는 Promise 나 Observable 에도 불편함없이 사용할 수 있습니다.
 이 함수는 검사하는 JSON 객체를 변경하지 않습니다.
 
-사용방법)
+사용방법 - TypeScript)
+
 ```typescript
 import { ejv, EjvError } from 'ejv';
 
@@ -38,6 +39,24 @@ if (!error) {
   console.log('검사 실패');
 }
 ```
+
+사용방법 - JavaScript)
+
+```javascript
+const { ejv } = require('ejv');
+
+const error = ejv({
+  a : 10
+}, [{
+  key : 'a',
+  type : 'number'
+}]);
+
+if (!error) {
+  console.log('검사 성공');
+} else {
+  console.log('검사 실패');
+}
 
 ## `Scheme`
 
