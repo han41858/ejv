@@ -1,1 +1,1 @@
-export declare const ejv : Function;
+export declare const ejv: Function;
