@@ -57,8 +57,8 @@ export enum ErrorMsg {
 	INVALID_STRING_FORMAT = 'invalid string format : <<A>>',
 	INVALID_STRING_PATTERN = 'invalid string pattern : <<A>>',
 
-	MIN_LENGTH_SHOULD_BE_NUMBER = 'minLength should be number',
-	MAX_LENGTH_SHOULD_BE_NUMBER = 'maxLength should be number',
+	MIN_LENGTH_SHOULD_BE_INTEGER = 'minLength should be a integer',
+	MAX_LENGTH_SHOULD_BE_INTEGER = 'maxLength should be a integer',
 
 	PROPERTIES_SHOULD_BE_ARRAY = 'properties should be array',
 	PROPERTIES_SHOULD_HAVE_ITEMS = 'properties should have items',

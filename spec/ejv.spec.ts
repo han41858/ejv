@@ -1083,7 +1083,17 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						minLength : null
-					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+				});
+
+				it('float number', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						minLength : 1.5
+					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('string', () => {
@@ -1093,7 +1103,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						minLength : '1'
-					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
 
@@ -1151,7 +1161,17 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						maxLength : null
-					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+				});
+
+				it('float number', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						maxLength : 1.5
+					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('string', () => {
@@ -1161,7 +1181,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						maxLength : '1'
-					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
 
@@ -3286,7 +3306,17 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'array',
 						minLength : null
-					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+				});
+
+				it('float number', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						minLength : 1.5
+					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('string', () => {
@@ -3296,7 +3326,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'array',
 						minLength : '1'
-					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
 
@@ -3354,7 +3384,17 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'array',
 						maxLength : null
-					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+				});
+
+				it('float number', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						maxLength : 1.5
+					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('string', () => {
@@ -3364,7 +3404,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'array',
 						maxLength : '1'
-					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
 

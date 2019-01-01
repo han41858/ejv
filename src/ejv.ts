@@ -322,8 +322,8 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 					}
 
 					if (definedTester(scheme.minLength)) {
-						if (!numberTester(scheme.minLength)) {
-							throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+						if (!(numberTester(scheme.minLength) && integerTester(scheme.minLength))) {
+							throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 						}
 
 						if (!minLengthTester(value, scheme.minLength)) {
@@ -337,8 +337,8 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 					}
 
 					if (definedTester(scheme.maxLength)) {
-						if (!numberTester(scheme.maxLength)) {
-							throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+						if (!(numberTester(scheme.maxLength) && integerTester(scheme.maxLength))) {
+							throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 						}
 
 						if (!maxLengthTester(value, scheme.maxLength)) {
@@ -614,8 +614,8 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 
 				case DataType.ARRAY:
 					if (definedTester(scheme.minLength)) {
-						if (!numberTester(scheme.minLength)) {
-							throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_NUMBER);
+						if (!(numberTester(scheme.minLength) && integerTester(scheme.minLength))) {
+							throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 						}
 
 						if (!minLengthTester(value, scheme.minLength)) {
@@ -628,8 +628,8 @@ const _ejv : Function = (data : object, schemes : Scheme[], _options : InternalO
 					}
 
 					if (definedTester(scheme.maxLength)) {
-						if (!numberTester(scheme.maxLength)) {
-							throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_NUMBER);
+						if (!(numberTester(scheme.maxLength) && integerTester(scheme.maxLength))) {
+							throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 						}
 
 						if (!maxLengthTester(value, scheme.maxLength)) {
