@@ -22,11 +22,26 @@ All validation use this function.
 So you can use this function with Promise or Observable easily.
 This function does not change original JSON object.
 
-usage - TypeScript)
+### Load symbol
+
+- TypeScript, JavaScript (after ES6)
 
 ```typescript
 import { ejv, EjvError } from 'ejv';
+```
 
+- JavaScript (before ES6)
+
+```javascript
+var _ejv = require('ejv');
+var ejv = _ejv.ejv;
+```
+
+### Usage
+
+- TypeScript
+
+```typescript
 const error : null | EjvError = ejv({
   a : 10
 }, [{
@@ -41,12 +56,10 @@ if (!error) {
 }
 ```
 
-usage - JavaScript)
+- JavaScript
 
 ```javascript
-const { ejv } = require('ejv');
-
-const error = ejv({
+var error = ejv({
   a : 10
 }, [{
   key : 'a',
