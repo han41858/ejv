@@ -1,6 +1,6 @@
 {
   "name": "ejv",
-  "version": "0.0.1",
+  "version": "1.0.0-rc.1",
   "description": "Easy JSON Validator",
   "main": "index.js",
   "scripts": {
