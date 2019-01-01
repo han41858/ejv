@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "interfaces.js",
+  "sourceRoot": "",
+  "sources": [
+    "../src/interfaces.ts"
+  ],
+  "names": [],
+  "mappings": ";;AA6CA;IAGC,kBAAoB,OAAgB,EACvB,IAAe,EACR,IAAU;QAFV,YAAO,GAAP,OAAO,CAAS;QAEhB,SAAI,GAAJ,IAAI,CAAM;QAC7B,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC,IAAI,CAAC,GAAG,CAAC,CAAC;IAC5B,CAAC;IACF,eAAC;AAAD,CAAC,AARD,IAQC;AARY,4BAAQ"
+}
