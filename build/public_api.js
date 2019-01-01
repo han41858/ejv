@@ -6,6 +6,7 @@ var constants_1 = require("./constants");
 exports.DataType = constants_1.DataType;
 exports.NumberFormat = constants_1.NumberFormat;
 exports.StringFormat = constants_1.StringFormat;
+exports.ErrorMsg = constants_1.ErrorMsg;
 var interfaces_1 = require("./interfaces");
 exports.EjvError = interfaces_1.EjvError;
 //# sourceMappingURL=public_api.js.map

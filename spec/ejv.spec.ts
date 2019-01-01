@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
-import { DataType, ErrorMsg, ErrorMsgCursorA } from '../src/constants';
+import { DataType, ErrorKey, ErrorMsg, ErrorMsgCursorA } from '../src/constants';
 import { EjvError, Scheme } from '../src/interfaces';
 
 const typeTester : {
@@ -88,6 +88,46 @@ describe('ejv()', () => {
 				}])).to.throw(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
 			});
 		});
+
+		describe('options', () => {
+			describe('errorMsg', () => {
+				it('override required error', () => {
+					const customErrorMsg : string = 'property \'a\' required';
+
+					const error : EjvError = ejv({
+						// empty
+					}, [{
+						key : 'a',
+						type : 'number'
+					}], {
+						errorMsg : {
+							[ErrorKey.REQUIRED] : customErrorMsg
+						}
+					});
+
+					expect(error).to.be.instanceof(EjvError);
+					expect(error.message).to.be.eql(customErrorMsg);
+				});
+
+				it('override type matching error', () => {
+					const customErrorMsg : string = 'property \'a\' should be a number';
+
+					const error : EjvError = ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'number'
+					}], {
+						errorMsg : {
+							[ErrorKey.TYPE_MISMATCH] : customErrorMsg
+						}
+					});
+
+					expect(error).to.be.instanceof(EjvError);
+					expect(error.message).to.be.eql(customErrorMsg);
+				});
+			});
+		});
 	});
 
 	describe('number', () => {
@@ -105,7 +145,7 @@ describe('ejv()', () => {
 
 							expect(error).to.be.instanceof(EjvError);
 
-							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+							expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
 								.replace(ErrorMsgCursorA, 'number')
 							);
 							expect(error.path).to.be.eql('a');
@@ -126,7 +166,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(typeArr)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.eql(value);
@@ -228,7 +268,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.ONE_OF
+				expect(error.message).to.be.eql(ErrorMsg.ONE_OF
 					.replace(ErrorMsgCursorA, JSON.stringify(enumArr))
 				);
 				expect(error.path).to.be.eql('a');
@@ -309,7 +349,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.keyword).to.be.eql(
+				expect(error1.message).to.be.eql(
 					ErrorMsg.GREATER_THAN_OR_EQUAL
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -342,7 +382,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.keyword).to.be.eql(
+				expect(error1.message).to.be.eql(
 					ErrorMsg.GREATER_THAN
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -357,7 +397,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error2).to.be.instanceof(EjvError);
-				expect(error2.keyword).to.be.eql(
+				expect(error2.message).to.be.eql(
 					ErrorMsg.GREATER_THAN
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -383,7 +423,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.keyword).to.be.eql(
+				expect(error1.message).to.be.eql(
 					ErrorMsg.GREATER_THAN_OR_EQUAL
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -487,7 +527,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.keyword).to.be.eql(
+				expect(error1.message).to.be.eql(
 					ErrorMsg.SMALLER_THAN_OR_EQUAL
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -513,7 +553,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.keyword).to.be.eql(
+				expect(error1.message).to.be.eql(
 					ErrorMsg.SMALLER_THAN
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -528,7 +568,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error2).to.be.instanceof(EjvError);
-				expect(error2.keyword).to.be.eql(
+				expect(error2.message).to.be.eql(
 					ErrorMsg.SMALLER_THAN
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -563,7 +603,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.keyword).to.be.eql(
+				expect(error1.message).to.be.eql(
 					ErrorMsg.SMALLER_THAN_OR_EQUAL
 						.replace(ErrorMsgCursorA, '10')
 				);
@@ -630,7 +670,7 @@ describe('ejv()', () => {
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
-						expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error.message).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, 'integer')
 						);
 					});
@@ -659,7 +699,7 @@ describe('ejv()', () => {
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
-						expect(error.keyword).to.be.eql(ErrorMsg.FORMAT_ONE_OF
+						expect(error.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
 							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 						);
 					});
@@ -756,7 +796,7 @@ describe('ejv()', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
-						expect(error1.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error1.message).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, 'index')
 						);
 
@@ -769,7 +809,7 @@ describe('ejv()', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
-						expect(error2.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error2.message).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, 'index')
 						);
 
@@ -782,7 +822,7 @@ describe('ejv()', () => {
 						}]);
 
 						expect(error3).to.be.instanceof(EjvError);
-						expect(error3.keyword).to.be.eql(ErrorMsg.FORMAT
+						expect(error3.message).to.be.eql(ErrorMsg.FORMAT
 							.replace(ErrorMsgCursorA, 'index')
 						);
 					});
@@ -819,7 +859,7 @@ describe('ejv()', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
-						expect(error1.keyword).to.be.eql(ErrorMsg.FORMAT_ONE_OF
+						expect(error1.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
 							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 						);
 
@@ -832,7 +872,7 @@ describe('ejv()', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
-						expect(error2.keyword).to.be.eql(ErrorMsg.FORMAT_ONE_OF
+						expect(error2.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
 							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 						);
 
@@ -845,7 +885,7 @@ describe('ejv()', () => {
 						}]);
 
 						expect(error3).to.be.instanceof(EjvError);
-						expect(error3.keyword).to.be.eql(ErrorMsg.FORMAT_ONE_OF
+						expect(error3.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
 							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 						);
 					});
@@ -923,7 +963,7 @@ describe('ejv()', () => {
 
 							expect(error).to.be.instanceof(EjvError);
 
-							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+							expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
 								.replace(ErrorMsgCursorA, 'string')
 							);
 							expect(error.path).to.be.eql('a');
@@ -944,7 +984,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(typeArr)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.eql(value);
@@ -1046,7 +1086,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.ONE_OF
+				expect(error.message).to.be.eql(ErrorMsg.ONE_OF
 					.replace(ErrorMsgCursorA, JSON.stringify(enumArr))
 				);
 				expect(error.path).to.be.eql('a');
@@ -1117,7 +1157,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.MIN_LENGTH
+				expect(error.message).to.be.eql(ErrorMsg.MIN_LENGTH
 					.replace(ErrorMsgCursorA, '4'));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.eql('ejv');
@@ -1195,7 +1235,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.MAX_LENGTH
+				expect(error.message).to.be.eql(ErrorMsg.MAX_LENGTH
 					.replace(ErrorMsgCursorA, '2'));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.eql('ejv');
@@ -1280,7 +1320,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
+					expect(error.message).to.be.eql(ErrorMsg.FORMAT
 						.replace(ErrorMsgCursorA, 'email')
 					);
 					expect(error.path).to.be.eql('a');
@@ -1308,7 +1348,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.FORMAT_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 					);
 					expect(error.path).to.be.eql('a');
@@ -1336,7 +1376,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
+					expect(error.message).to.be.eql(ErrorMsg.FORMAT
 						.replace(ErrorMsgCursorA, 'date')
 					);
 					expect(error.path).to.be.eql('a');
@@ -1364,7 +1404,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.FORMAT_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 					);
 					expect(error.path).to.be.eql('a');
@@ -1392,7 +1432,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
+					expect(error.message).to.be.eql(ErrorMsg.FORMAT
 						.replace(ErrorMsgCursorA, 'time')
 					);
 					expect(error.path).to.be.eql('a');
@@ -1420,7 +1460,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.FORMAT_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 					);
 					expect(error.path).to.be.eql('a');
@@ -1448,7 +1488,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.FORMAT
+					expect(error.message).to.be.eql(ErrorMsg.FORMAT
 						.replace(ErrorMsgCursorA, 'date-time')
 					);
 					expect(error.path).to.be.eql('a');
@@ -1492,7 +1532,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.FORMAT_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 					);
 					expect(error.path).to.be.eql('a');
@@ -1666,7 +1706,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.PATTERN
+				expect(error.message).to.be.eql(ErrorMsg.PATTERN
 					.replace(ErrorMsgCursorA, '/ac/'));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.eql('abc');
@@ -1706,7 +1746,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.PATTERN_ONE_OF
+				expect(error.message).to.be.eql(ErrorMsg.PATTERN_ONE_OF
 					.replace(ErrorMsgCursorA, '[/abcc/, /ac/]'));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.eql('abc');
@@ -1730,7 +1770,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.PATTERN
+				expect(error.message).to.be.eql(ErrorMsg.PATTERN
 					.replace(ErrorMsgCursorA, /ac/.toString()));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.eql('abc');
@@ -1770,7 +1810,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.PATTERN_ONE_OF
+				expect(error.message).to.be.eql(ErrorMsg.PATTERN_ONE_OF
 					.replace(ErrorMsgCursorA, '[/abcc/, /ac/]'));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.eql('abc');
@@ -1795,7 +1835,7 @@ describe('ejv()', () => {
 
 							expect(error).to.be.instanceof(EjvError);
 
-							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+							expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
 								.replace(ErrorMsgCursorA, 'object')
 							);
 							expect(error.path).to.be.eql('a');
@@ -1816,7 +1856,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(typeArr)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.eql(value);
@@ -1962,7 +2002,7 @@ describe('ejv()', () => {
 
 				expect(undefinedError).to.be.instanceof(EjvError);
 
-				expect(undefinedError.keyword).to.be.eql(ErrorMsg.REQUIRED);
+				expect(undefinedError.message).to.be.eql(ErrorMsg.REQUIRED);
 				expect(undefinedError.path).to.be.eql('a/b');
 
 				const error : EjvError = ejv({
@@ -1980,7 +2020,7 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 
-				expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+				expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
 					.replace(ErrorMsgCursorA, 'string'));
 				expect(error.path).to.be.eql('a/b');
 				expect(error.data).to.be.eql(1);
@@ -2017,7 +2057,7 @@ describe('ejv()', () => {
 
 				expect(undefinedError).to.be.instanceof(EjvError);
 
-				expect(undefinedError.keyword).to.be.eql(ErrorMsg.REQUIRED);
+				expect(undefinedError.message).to.be.eql(ErrorMsg.REQUIRED);
 				expect(undefinedError.path).to.be.eql('a/b');
 
 				const error : EjvError = ejv({
@@ -2035,7 +2075,7 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 
-				expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+				expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 					.replace(ErrorMsgCursorA, JSON.stringify(typeArr)));
 				expect(error.path).to.be.eql('a/b');
 				expect(error.data).to.be.eql(1);
@@ -2084,7 +2124,7 @@ describe('ejv()', () => {
 
 							expect(error).to.be.instanceof(EjvError);
 
-							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+							expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
 								.replace(ErrorMsgCursorA, 'date')
 							);
 							expect(error.path).to.be.eql('a');
@@ -2105,7 +2145,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(typeArr)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.eql(value);
@@ -2203,7 +2243,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+					expect(error1.message).to.include(ErrorMsg.AFTER_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2240,7 +2280,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+					expect(error2.message).to.include(ErrorMsg.AFTER_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2275,7 +2315,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+					expect(error1.message).to.include(ErrorMsg.AFTER_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2315,7 +2355,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+					expect(error2.message).to.include(ErrorMsg.AFTER_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2341,7 +2381,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.AFTER_DATE
+					expect(error1.message).to.include(ErrorMsg.AFTER_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2356,7 +2396,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.AFTER_DATE
+					expect(error2.message).to.include(ErrorMsg.AFTER_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2385,7 +2425,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error3).to.be.instanceof(EjvError);
-					expect(error3.keyword).to.include(ErrorMsg.AFTER_DATE
+					expect(error3.message).to.include(ErrorMsg.AFTER_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error3.path).to.be.eql('date');
 					expect(error3.data).to.be.instanceof(Date);
@@ -2402,7 +2442,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error4).to.be.instanceof(EjvError);
-					expect(error4.keyword).to.include(ErrorMsg.AFTER_DATE
+					expect(error4.message).to.include(ErrorMsg.AFTER_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error4.path).to.be.eql('date');
 					expect(error4.data).to.be.instanceof(Date);
@@ -2437,7 +2477,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+					expect(error1.message).to.include(ErrorMsg.AFTER_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2471,7 +2511,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+					expect(error2.message).to.include(ErrorMsg.AFTER_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2507,7 +2547,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+					expect(error1.message).to.include(ErrorMsg.AFTER_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2544,7 +2584,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.AFTER_OR_SAME_DATE
+					expect(error2.message).to.include(ErrorMsg.AFTER_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2570,7 +2610,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.AFTER_DATE
+					expect(error1.message).to.include(ErrorMsg.AFTER_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2585,7 +2625,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.AFTER_DATE
+					expect(error2.message).to.include(ErrorMsg.AFTER_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2612,7 +2652,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error3).to.be.instanceof(EjvError);
-					expect(error3.keyword).to.include(ErrorMsg.AFTER_DATE
+					expect(error3.message).to.include(ErrorMsg.AFTER_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error3.path).to.be.eql('date');
 					expect(error3.data).to.be.instanceof(Date);
@@ -2628,7 +2668,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error4).to.be.instanceof(EjvError);
-					expect(error4.keyword).to.include(ErrorMsg.AFTER_DATE
+					expect(error4.message).to.include(ErrorMsg.AFTER_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error4.path).to.be.eql('date');
 					expect(error4.data).to.be.instanceof(Date);
@@ -2671,7 +2711,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+					expect(error1.message).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2704,7 +2744,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+					expect(error2.message).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2741,7 +2781,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+					expect(error1.message).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2777,7 +2817,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+					expect(error2.message).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2816,7 +2856,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.BEFORE_DATE
+					expect(error1.message).to.include(ErrorMsg.BEFORE_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2831,7 +2871,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.BEFORE_DATE
+					expect(error2.message).to.include(ErrorMsg.BEFORE_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2858,7 +2898,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error3).to.be.instanceof(EjvError);
-					expect(error3.keyword).to.include(ErrorMsg.BEFORE_DATE
+					expect(error3.message).to.include(ErrorMsg.BEFORE_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error3.path).to.be.eql('date');
 					expect(error3.data).to.be.instanceof(Date);
@@ -2875,7 +2915,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error4).to.be.instanceof(EjvError);
-					expect(error4.keyword).to.include(ErrorMsg.BEFORE_DATE
+					expect(error4.message).to.include(ErrorMsg.BEFORE_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error4.path).to.be.eql('date');
 					expect(error4.data).to.be.instanceof(Date);
@@ -2904,7 +2944,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+					expect(error1.message).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -2936,7 +2976,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+					expect(error2.message).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -2971,7 +3011,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+					expect(error1.message).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -3006,7 +3046,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
-					expect(error2.keyword).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
+					expect(error2.message).to.include(ErrorMsg.BEFORE_OR_SAME_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error2.path).to.be.eql('date');
 					expect(error2.data).to.be.instanceof(Date);
@@ -3043,7 +3083,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
-					expect(error1.keyword).to.include(ErrorMsg.BEFORE_DATE
+					expect(error1.message).to.include(ErrorMsg.BEFORE_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error1.path).to.be.eql('date');
 					expect(error1.data).to.be.instanceof(Date);
@@ -3059,7 +3099,7 @@ describe('ejv()', () => {
 					// }]);
 					//
 					// expect(error2).to.be.instanceof(EjvError);
-					// expect(error2.keyword).to.include(ErrorMsg.BEFORE_DATE
+					// expect(error2.message).to.include(ErrorMsg.BEFORE_DATE
 					// 	.replace(ErrorMsgCursorA, ''));
 					// expect(error2.path).to.be.eql('date');
 					// expect(error2.data).to.be.instanceof(Date);
@@ -3085,7 +3125,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error3).to.be.instanceof(EjvError);
-					expect(error3.keyword).to.include(ErrorMsg.BEFORE_DATE
+					expect(error3.message).to.include(ErrorMsg.BEFORE_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error3.path).to.be.eql('date');
 					expect(error3.data).to.be.instanceof(Date);
@@ -3101,7 +3141,7 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error4).to.be.instanceof(EjvError);
-					expect(error4.keyword).to.include(ErrorMsg.BEFORE_DATE
+					expect(error4.message).to.include(ErrorMsg.BEFORE_DATE
 						.replace(ErrorMsgCursorA, ''));
 					expect(error4.path).to.be.eql('date');
 					expect(error4.data).to.be.instanceof(Date);
@@ -3135,7 +3175,7 @@ describe('ejv()', () => {
 
 							expect(error).to.be.instanceof(EjvError);
 
-							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+							expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
 								.replace(ErrorMsgCursorA, 'regexp')
 							);
 							expect(error.path).to.be.eql('a');
@@ -3156,7 +3196,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(typeArr)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.eql(value);
@@ -3219,7 +3259,7 @@ describe('ejv()', () => {
 
 							expect(error).to.be.instanceof(EjvError);
 
-							expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH
+							expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
 								.replace(ErrorMsgCursorA, 'array')
 							);
 							expect(error.path).to.be.eql('a');
@@ -3240,7 +3280,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
 						.replace(ErrorMsgCursorA, JSON.stringify(typeArr)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.eql(value);
@@ -3340,7 +3380,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.MIN_LENGTH
+				expect(error.message).to.be.eql(ErrorMsg.MIN_LENGTH
 					.replace(ErrorMsgCursorA, '4'));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.ordered.members([1, 2, 3]);
@@ -3418,7 +3458,7 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.keyword).to.be.eql(ErrorMsg.MAX_LENGTH
+				expect(error.message).to.be.eql(ErrorMsg.MAX_LENGTH
 					.replace(ErrorMsgCursorA, '2'));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.ordered.members([1, 2, 3]);
@@ -3487,7 +3527,7 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 
-				expect(error.keyword).to.be.eql(ErrorMsg.UNIQUE_ITEMS);
+				expect(error.message).to.be.eql(ErrorMsg.UNIQUE_ITEMS);
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.ordered.members([1, 2, 2]);
 			});
@@ -3551,7 +3591,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_TYPE
+					expect(error.message).to.be.eql(ErrorMsg.ITEMS_TYPE
 						.replace(ErrorMsgCursorA, 'string'));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.ordered.members([1, 2, 3]);
@@ -3594,7 +3634,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_TYPE
+					expect(error.message).to.be.eql(ErrorMsg.ITEMS_TYPE
 						.replace(ErrorMsgCursorA, JSON.stringify(enumArr)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.ordered.members([1, 2, 3]);
@@ -3652,7 +3692,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_SCHEME
+					expect(error.message).to.be.eql(ErrorMsg.ITEMS_SCHEME
 						.replace(ErrorMsgCursorA, JSON.stringify(itemScheme)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.ordered.members([1, 2, 3]);
@@ -3706,7 +3746,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 
-					expect(error.keyword).to.be.eql(ErrorMsg.ITEMS_SCHEMES
+					expect(error.message).to.be.eql(ErrorMsg.ITEMS_SCHEMES
 						.replace(ErrorMsgCursorA, JSON.stringify(itemSchemes)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.ordered.members([1, 2, 3]);

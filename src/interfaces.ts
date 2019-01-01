@@ -1,4 +1,4 @@
-import { DataType, NumberFormat, StringFormat } from './constants';
+import { DataType, ErrorKey, NumberFormat, StringFormat } from './constants';
 
 // use common Scheme for multiple types
 export interface Scheme {
@@ -36,17 +36,21 @@ export interface Scheme {
 	items? : DataType | DataType[] | Scheme | Scheme[];
 }
 
-export interface InternalOptions {
-	path : string[];
+export interface Options {
+	errorMsg? : {
+		[key in ErrorKey] : any;
+	}
 }
 
-export interface Options {
+export interface InternalOptions extends Options {
+	path : string[];
 }
 
 export class EjvError {
 	public path : string;
 
-	constructor (public keyword : string,
+	constructor (public errorKey : ErrorKey,
+	             public message : string,
 	             path : string[],
 	             public data : any) {
 		this.path = path.join('/');

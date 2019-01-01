@@ -1,4 +1,4 @@
-import { DataType, NumberFormat, StringFormat } from './constants';
+import { DataType, ErrorKey, NumberFormat, StringFormat } from './constants';
 export interface Scheme {
     key?: string;
     type: DataType | DataType[];
@@ -16,14 +16,18 @@ export interface Scheme {
     unique?: boolean;
     items?: DataType | DataType[] | Scheme | Scheme[];
 }
-export interface InternalOptions {
+export interface Options {
+    errorMsg?: {
+        [key in ErrorKey]: any;
+    };
+}
+export interface InternalOptions extends Options {
     path: string[];
 }
-export interface Options {
-}
 export declare class EjvError {
-    keyword: string;
+    errorKey: ErrorKey;
+    message: string;
     data: any;
     path: string;
-    constructor(keyword: string, path: string[], data: any);
+    constructor(errorKey: ErrorKey, message: string, path: string[], data: any);
 }

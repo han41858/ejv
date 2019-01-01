@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var EjvError = /** @class */ (function () {
-    function EjvError(keyword, path, data) {
-        this.keyword = keyword;
+    function EjvError(errorKey, message, path, data) {
+        this.errorKey = errorKey;
+        this.message = message;
         this.data = data;
         this.path = path.join('/');
     }

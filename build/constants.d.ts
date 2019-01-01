@@ -18,6 +18,30 @@ export declare enum StringFormat {
     TIME = "time"
 }
 export declare const ErrorMsgCursorA: string;
+export declare enum ErrorKey {
+    REQUIRED = "REQUIRED",
+    TYPE_MISMATCH = "TYPE_MISMATCH",
+    TYPE_MISMATCH_ONE_OF = "TYPE_MISMATCH_ONE_OF",
+    ONE_OF = "ONE_OF",
+    FORMAT = "FORMAT",
+    FORMAT_ONE_OF = "FORMAT_ONE_OF",
+    GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL",
+    GREATER_THAN = "GREATER_THAN",
+    SMALLER_THAN_OR_EQUAL = "SMALLER_THAN_OR_EQUAL",
+    SMALLER_THAN = "SMALLER_THAN",
+    MIN_LENGTH = "MIN_LENGTH",
+    MAX_LENGTH = "MAX_LENGTH",
+    PATTERN = "PATTERN",
+    PATTERN_ONE_OF = "PATTERN_ONE_OF",
+    AFTER_OR_SAME_DATE = "AFTER_OR_SAME_DATE",
+    AFTER_DATE = "AFTER_DATE",
+    BEFORE_OR_SAME_DATE = "BEFORE_OR_SAME_DATE",
+    BEFORE_DATE = "BEFORE_DATE",
+    UNIQUE_ITEMS = "UNIQUE_ITEMS",
+    ITEMS_TYPE = "ITEMS_TYPE",
+    ITEMS_SCHEME = "ITEMS_SCHEME",
+    ITEMS_SCHEMES = "ITEMS_SCHEMES"
+}
 export declare enum ErrorMsg {
     NO_DATA = "no data to validate",
     NO_JSON_DATA = "no JSON data to validate",
