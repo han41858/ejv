@@ -1,6 +1,6 @@
 {
   "name": "ejv",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "Easy JSON Validator",
   "main": "build/ejv.js",
   "scripts": {
@@ -18,7 +18,8 @@
   },
   "keywords": [
     "json",
-    "validator"
+    "validator",
+    "validation"
   ],
   "author": "Janghyun Han <han41858@gmail.com>",
   "license": "MIT",
