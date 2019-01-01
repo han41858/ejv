@@ -1,8 +1,9 @@
 {
   "name": "ejv",
-  "version": "1.0.0-rc.5",
+  "version": "1.0.0-rc.6",
   "description": "Easy JSON Validator",
   "main": "build/public_api.js",
+  "types": "build/public_api.d.ts",
   "scripts": {
     "clean": "rimraf ./build",
     "prebuild": "yarn clean",
