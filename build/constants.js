@@ -27,31 +27,31 @@ var StringFormat;
     // IPV6 = 'ipv6'
 })(StringFormat = exports.StringFormat || (exports.StringFormat = {}));
 exports.ErrorMsgCursorA = '<<A>>';
-var ErrorKey;
-(function (ErrorKey) {
-    ErrorKey["REQUIRED"] = "REQUIRED";
-    ErrorKey["TYPE_MISMATCH"] = "TYPE_MISMATCH";
-    ErrorKey["TYPE_MISMATCH_ONE_OF"] = "TYPE_MISMATCH_ONE_OF";
-    ErrorKey["ONE_OF"] = "ONE_OF";
-    ErrorKey["FORMAT"] = "FORMAT";
-    ErrorKey["FORMAT_ONE_OF"] = "FORMAT_ONE_OF";
-    ErrorKey["GREATER_THAN_OR_EQUAL"] = "GREATER_THAN_OR_EQUAL";
-    ErrorKey["GREATER_THAN"] = "GREATER_THAN";
-    ErrorKey["SMALLER_THAN_OR_EQUAL"] = "SMALLER_THAN_OR_EQUAL";
-    ErrorKey["SMALLER_THAN"] = "SMALLER_THAN";
-    ErrorKey["MIN_LENGTH"] = "MIN_LENGTH";
-    ErrorKey["MAX_LENGTH"] = "MAX_LENGTH";
-    ErrorKey["PATTERN"] = "PATTERN";
-    ErrorKey["PATTERN_ONE_OF"] = "PATTERN_ONE_OF";
-    ErrorKey["AFTER_OR_SAME_DATE"] = "AFTER_OR_SAME_DATE";
-    ErrorKey["AFTER_DATE"] = "AFTER_DATE";
-    ErrorKey["BEFORE_OR_SAME_DATE"] = "BEFORE_OR_SAME_DATE";
-    ErrorKey["BEFORE_DATE"] = "BEFORE_DATE";
-    ErrorKey["UNIQUE_ITEMS"] = "UNIQUE_ITEMS";
-    ErrorKey["ITEMS_TYPE"] = "ITEMS_TYPE";
-    ErrorKey["ITEMS_SCHEME"] = "ITEMS_SCHEME";
-    ErrorKey["ITEMS_SCHEMES"] = "ITEMS_SCHEMES";
-})(ErrorKey = exports.ErrorKey || (exports.ErrorKey = {}));
+var ErrorType;
+(function (ErrorType) {
+    ErrorType["REQUIRED"] = "REQUIRED";
+    ErrorType["TYPE_MISMATCH"] = "TYPE_MISMATCH";
+    ErrorType["TYPE_MISMATCH_ONE_OF"] = "TYPE_MISMATCH_ONE_OF";
+    ErrorType["ONE_OF"] = "ONE_OF";
+    ErrorType["FORMAT"] = "FORMAT";
+    ErrorType["FORMAT_ONE_OF"] = "FORMAT_ONE_OF";
+    ErrorType["GREATER_THAN_OR_EQUAL"] = "GREATER_THAN_OR_EQUAL";
+    ErrorType["GREATER_THAN"] = "GREATER_THAN";
+    ErrorType["SMALLER_THAN_OR_EQUAL"] = "SMALLER_THAN_OR_EQUAL";
+    ErrorType["SMALLER_THAN"] = "SMALLER_THAN";
+    ErrorType["MIN_LENGTH"] = "MIN_LENGTH";
+    ErrorType["MAX_LENGTH"] = "MAX_LENGTH";
+    ErrorType["PATTERN"] = "PATTERN";
+    ErrorType["PATTERN_ONE_OF"] = "PATTERN_ONE_OF";
+    ErrorType["AFTER_OR_SAME_DATE"] = "AFTER_OR_SAME_DATE";
+    ErrorType["AFTER_DATE"] = "AFTER_DATE";
+    ErrorType["BEFORE_OR_SAME_DATE"] = "BEFORE_OR_SAME_DATE";
+    ErrorType["BEFORE_DATE"] = "BEFORE_DATE";
+    ErrorType["UNIQUE_ITEMS"] = "UNIQUE_ITEMS";
+    ErrorType["ITEMS_TYPE"] = "ITEMS_TYPE";
+    ErrorType["ITEMS_SCHEME"] = "ITEMS_SCHEME";
+    ErrorType["ITEMS_SCHEMES"] = "ITEMS_SCHEMES";
+})(ErrorType = exports.ErrorType || (exports.ErrorType = {}));
 var ErrorMsg;
 (function (ErrorMsg) {
     // about Error

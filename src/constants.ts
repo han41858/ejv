@@ -29,7 +29,7 @@ export enum StringFormat {
 
 export const ErrorMsgCursorA : string = '<<A>>';
 
-export enum ErrorKey {
+export enum ErrorType {
 	REQUIRED = 'REQUIRED',
 	TYPE_MISMATCH = 'TYPE_MISMATCH',
 	TYPE_MISMATCH_ONE_OF = 'TYPE_MISMATCH_ONE_OF',

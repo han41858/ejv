@@ -18,7 +18,7 @@ export declare enum StringFormat {
     TIME = "time"
 }
 export declare const ErrorMsgCursorA: string;
-export declare enum ErrorKey {
+export declare enum ErrorType {
     REQUIRED = "REQUIRED",
     TYPE_MISMATCH = "TYPE_MISMATCH",
     TYPE_MISMATCH_ONE_OF = "TYPE_MISMATCH_ONE_OF",

@@ -432,7 +432,7 @@ ejv({
 
 ## `DataType`
 
-Specify the type of profferty to inspect. The values available are as follows.
+Specify the type of property to inspect. The values available are as follows.
 
 type|example
 ---|---
@@ -453,6 +453,9 @@ The `EjvError` object is an object that represents the error that occurred at th
 > You do not always need to use `EjvError` type.
 However, if you use TypeScript, you can use it to refer to the property of an error object.
 
+- `type : ErrorType`
+
+Represents the type of the error that occurred.
 
 - `keyword : string`
 
@@ -478,7 +481,35 @@ const error : null | EjvError = ejv({
   type : 'string'
 }]);
 
+console.log(error.type); // 'TYPE_MISMATCH'
 console.log(error.keyword); // 'the value should be a string'
 console.log(error.path); // 'a'
 console.log(error.data); // 10
+```
+
+## Options
+
+When using a `ejv()` function, you can specify options as a third parameter.
+
+- `customErrorMsg: object`
+
+You can override error message corresponding with `EjvError.type` to another content.
+
+This option is used in the type of `object`. You can use `ErrorType` as a key when overriding error message.
+
+```typescript
+import { ejv, EjvError, ErrorType } from 'ejv';
+
+const error : null | EjvError = ejv({
+  a : 10
+}, [{
+  key : 'a',
+  type : 'string'
+}, {
+  customErrorMsg : {
+    [ErrorType.TYPE_MISMATCH] : 'property "a" should be a "string".'
+  }
+}]);
+
+console.log(error.message); // 'property "a" should be a "string".'
 ```

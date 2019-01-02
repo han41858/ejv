@@ -1,4 +1,4 @@
-import { DataType, ErrorKey, NumberFormat, StringFormat } from './constants';
+import { DataType, ErrorType, NumberFormat, StringFormat } from './constants';
 
 // use common Scheme for multiple types
 export interface Scheme {
@@ -37,9 +37,9 @@ export interface Scheme {
 }
 
 export interface Options {
-	errorMsg? : {
-		[key in ErrorKey] : any;
-	}
+	customErrorMsg? : {
+		[key in ErrorType] : any;
+	};
 }
 
 export interface InternalOptions extends Options {
@@ -49,7 +49,7 @@ export interface InternalOptions extends Options {
 export class EjvError {
 	public path : string;
 
-	constructor (public errorKey : ErrorKey,
+	constructor (public type : ErrorType,
 	             public message : string,
 	             path : string[],
 	             public data : any) {

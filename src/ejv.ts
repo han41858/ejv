@@ -1,5 +1,5 @@
 import { EjvError, InternalOptions, Options, Scheme } from './interfaces';
-import { DataType, ErrorKey, ErrorMsg, ErrorMsgCursorA, NumberFormat, StringFormat } from './constants';
+import { DataType, ErrorMsg, ErrorMsgCursorA, ErrorType, NumberFormat, StringFormat } from './constants';
 
 import {
 	arrayTester,
@@ -69,7 +69,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 		if (!(scheme.optional === true && !definedTester(data[key]))) {
 			if (!definedTester(data[key])) {
 				result = new EjvError(
-					ErrorKey.REQUIRED,
+					ErrorType.REQUIRED,
 					ErrorMsg.REQUIRED,
 					_options.path,
 					data[key]
@@ -122,14 +122,14 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 			})) {
 				if (!arrayTester(scheme.type)) {
 					result = new EjvError(
-						ErrorKey.TYPE_MISMATCH,
+						ErrorType.TYPE_MISMATCH,
 						ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, scheme.type as DataType),
 						_options.path,
 						value
 					);
 				} else {
 					result = new EjvError(
-						ErrorKey.TYPE_MISMATCH_ONE_OF,
+						ErrorType.TYPE_MISMATCH_ONE_OF,
 						ErrorMsg.TYPE_MISMATCH_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.type)),
 						_options.path,
 						value
@@ -152,7 +152,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 						if (!enumTester(value, scheme.enum)) {
 							result = new EjvError(
-								ErrorKey.ONE_OF,
+								ErrorType.ONE_OF,
 								ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enum)),
 								_options.path,
 								value
@@ -174,7 +174,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							if (scheme.exclusiveMin === true) {
 								if (!exclusiveMinNumberTester(value, scheme.min)) {
 									result = new EjvError(
-										ErrorKey.GREATER_THAN,
+										ErrorType.GREATER_THAN,
 										ErrorMsg.GREATER_THAN.replace(ErrorMsgCursorA, '' + scheme.min),
 										_options.path,
 										value
@@ -184,7 +184,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							} else {
 								if (!minNumberTester(value, scheme.min)) {
 									result = new EjvError(
-										ErrorKey.GREATER_THAN_OR_EQUAL,
+										ErrorType.GREATER_THAN_OR_EQUAL,
 										ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.min),
 										_options.path,
 										value
@@ -195,7 +195,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						} else {
 							if (!minNumberTester(value, scheme.min)) {
 								result = new EjvError(
-									ErrorKey.GREATER_THAN_OR_EQUAL,
+									ErrorType.GREATER_THAN_OR_EQUAL,
 									ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.min),
 									_options.path,
 									value
@@ -218,7 +218,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							if (scheme.exclusiveMax === true) {
 								if (!exclusiveMaxNumberTester(value, scheme.max)) {
 									result = new EjvError(
-										ErrorKey.SMALLER_THAN,
+										ErrorType.SMALLER_THAN,
 										ErrorMsg.SMALLER_THAN.replace(ErrorMsgCursorA, '' + scheme.max),
 										_options.path,
 										value
@@ -228,7 +228,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							} else {
 								if (!maxNumberTester(value, scheme.max)) {
 									result = new EjvError(
-										ErrorKey.SMALLER_THAN_OR_EQUAL,
+										ErrorType.SMALLER_THAN_OR_EQUAL,
 										ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.max),
 										_options.path,
 										value
@@ -239,7 +239,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						} else {
 							if (!maxNumberTester(value, scheme.max)) {
 								result = new EjvError(
-									ErrorKey.SMALLER_THAN_OR_EQUAL,
+									ErrorType.SMALLER_THAN_OR_EQUAL,
 									ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.max),
 									_options.path,
 									value
@@ -299,14 +299,14 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						})) {
 							if (!arrayTester(scheme.format)) {
 								result = new EjvError(
-									ErrorKey.FORMAT,
+									ErrorType.FORMAT,
 									ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format as NumberFormat),
 									_options.path,
 									value
 								);
 							} else {
 								result = new EjvError(
-									ErrorKey.FORMAT_ONE_OF,
+									ErrorType.FORMAT_ONE_OF,
 									ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.format)),
 									_options.path,
 									value
@@ -329,7 +329,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 						if (!enumTester(value, scheme.enum)) {
 							result = new EjvError(
-								ErrorKey.ONE_OF,
+								ErrorType.ONE_OF,
 								ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enum)),
 								_options.path,
 								value
@@ -345,7 +345,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 						if (!minLengthTester(value, scheme.minLength)) {
 							result = new EjvError(
-								ErrorKey.MIN_LENGTH,
+								ErrorType.MIN_LENGTH,
 								ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
 								_options.path,
 								value
@@ -361,7 +361,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 						if (!maxLengthTester(value, scheme.maxLength)) {
 							result = new EjvError(
-								ErrorKey.MAX_LENGTH,
+								ErrorType.MAX_LENGTH,
 								ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
 								_options.path,
 								value
@@ -427,14 +427,14 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						})) {
 							if (!arrayTester(scheme.format)) {
 								result = new EjvError(
-									ErrorKey.FORMAT,
+									ErrorType.FORMAT,
 									ErrorMsg.FORMAT.replace(ErrorMsgCursorA, scheme.format as StringFormat),
 									_options.path,
 									value
 								);
 							} else {
 								result = new EjvError(
-									ErrorKey.FORMAT_ONE_OF,
+									ErrorType.FORMAT_ONE_OF,
 									ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.format)),
 									_options.path,
 									value
@@ -507,7 +507,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 								return stringRegExpTester(value, regexp);
 							})) {
 								result = new EjvError(
-									ErrorKey.PATTERN_ONE_OF,
+									ErrorType.PATTERN_ONE_OF,
 									ErrorMsg.PATTERN_ONE_OF
 										.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)),
 									_options.path,
@@ -528,7 +528,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 							if (!stringRegExpTester(value, regExp)) {
 								result = new EjvError(
-									ErrorKey.PATTERN,
+									ErrorType.PATTERN,
 									ErrorMsg.PATTERN.replace(ErrorMsgCursorA, patternToString(patternAsOne)),
 									_options.path,
 									value
@@ -578,7 +578,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						if (scheme.exclusiveMin !== true) {
 							if (!minDateTester(value, minDate)) {
 								result = new EjvError(
-									ErrorKey.AFTER_OR_SAME_DATE,
+									ErrorType.AFTER_OR_SAME_DATE,
 									ErrorMsg.AFTER_OR_SAME_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
 									_options.path,
 									value
@@ -589,7 +589,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						} else {
 							if (!exclusiveMinDateTester(value, minDate)) {
 								result = new EjvError(
-									ErrorKey.AFTER_DATE,
+									ErrorType.AFTER_DATE,
 									ErrorMsg.AFTER_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
 									_options.path,
 									value
@@ -616,7 +616,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						if (scheme.exclusiveMax !== true) {
 							if (!maxDateTester(value, maxDate)) {
 								result = new EjvError(
-									ErrorKey.BEFORE_OR_SAME_DATE,
+									ErrorType.BEFORE_OR_SAME_DATE,
 									ErrorMsg.BEFORE_OR_SAME_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
 									_options.path,
 									value
@@ -627,7 +627,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						} else {
 							if (!exclusiveMaxDateTester(value, maxDate)) {
 								result = new EjvError(
-									ErrorKey.BEFORE_DATE,
+									ErrorType.BEFORE_DATE,
 									ErrorMsg.BEFORE_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
 									_options.path,
 									value
@@ -646,7 +646,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 						if (!minLengthTester(value, scheme.minLength)) {
 							result = new EjvError(
-								ErrorKey.MIN_LENGTH,
+								ErrorType.MIN_LENGTH,
 								ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
 								_options.path,
 								value
@@ -661,7 +661,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 						if (!maxLengthTester(value, scheme.maxLength)) {
 							result = new EjvError(
-								ErrorKey.MAX_LENGTH,
+								ErrorType.MAX_LENGTH,
 								ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
 								_options.path,
 								value
@@ -676,7 +676,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 						if (!uniqueItemsTester(value)) {
 							result = new EjvError(
-								ErrorKey.UNIQUE_ITEMS,
+								ErrorType.UNIQUE_ITEMS,
 								ErrorMsg.UNIQUE_ITEMS,
 								_options.path,
 								value
@@ -729,7 +729,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 								}
 
 								result = new EjvError(
-									ErrorKey.ITEMS_TYPE,
+									ErrorType.ITEMS_TYPE,
 									errorMsg,
 									_options.path,
 									value
@@ -782,14 +782,14 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							}
 
 							if (partialValid === false) {
-								let errorKey : ErrorKey;
+								let errorKey : ErrorType;
 								let errorMsg : string;
 
 								if (arrayTester(scheme.items)) {
-									errorKey = ErrorKey.ITEMS_SCHEMES;
+									errorKey = ErrorType.ITEMS_SCHEMES;
 									errorMsg = ErrorMsg.ITEMS_SCHEMES.replace(ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
 								} else {
-									errorKey = ErrorKey.ITEMS_SCHEME;
+									errorKey = ErrorType.ITEMS_SCHEME;
 									errorMsg = ErrorMsg.ITEMS_SCHEME.replace(ErrorMsgCursorA, JSON.stringify(scheme.items));
 								}
 
@@ -811,9 +811,9 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 		}
 	}
 
-	if (definedTester(result) && definedTester(options.errorMsg)) {
+	if (definedTester(result) && definedTester(options.customErrorMsg)) {
 		// override error message
-		const customMsg : string = options.errorMsg[result.errorKey];
+		const customMsg : string = options.customErrorMsg[result.type];
 
 		if (definedTester(customMsg)) {
 			result.message = customMsg;

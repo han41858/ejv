@@ -453,8 +453,11 @@ ejv({
 > `EjvError` 형식을 꼭 사용할 필요는 없습니다.
 하지만 TypeScript를 사용한다면 이 객체의 프로퍼티를 참조할 때 활용할 수 있습니다.
 
+- `type : ErrorKey`
 
-- `keyword : string`
+발생한 에러의 타입을 표현합니다.
+
+- `message : string`
 
 발생한 에러의 내용을 설명합니다.
 
@@ -478,7 +481,35 @@ const error : null | EjvError = ejv({
   type : 'string'
 }]);
 
-console.log(error.keyword); // 'the value should be a string'
+console.log(error.type); // 'TYPE_MISMATCH'
+console.log(error.message); // 'the value should be a string'
 console.log(error.path); // 'a'
 console.log(error.data); // 10
+```
+
+## 옵션
+
+`ejv()` 함수를 사용할 때 3번째 인자로 옵션을 지정할 수 있습니다.
+
+- `customErrorMsg: object`
+
+ejv가 제공하는 에러 메시지를 다른 내용으로 변경하려면 `EjvError.type`에 해당하는 키로 에러 메시지를 오버라이드 할 수 있습니다.
+
+이 옵션은 `object` 형태로 사용합니다. 오버라이드하려는 에러에 해당하는 `ErrorType`를 키로 사용해서 원하는 문구를 지정해 보세요.
+
+```typescript
+import { ejv, EjvError, ErrorType } from 'ejv';
+
+const error : null | EjvError = ejv({
+  a : 10
+}, [{
+  key : 'a',
+  type : 'string'
+}, {
+  customErrorMsg : {
+    [ErrorType.TYPE_MISMATCH] : 'property "a" should be a "string".'
+  }
+}]);
+
+console.log(error.message); // 'property "a" should be a "string".'
 ```

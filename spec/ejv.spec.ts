@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
-import { DataType, ErrorKey, ErrorMsg, ErrorMsgCursorA } from '../src/constants';
+import { DataType, ErrorMsg, ErrorMsgCursorA, ErrorType } from '../src/constants';
 import { EjvError, Scheme } from '../src/interfaces';
 
 const typeTester : {
@@ -90,7 +90,7 @@ describe('ejv()', () => {
 		});
 
 		describe('options', () => {
-			describe('errorMsg', () => {
+			describe('customErrorMsg', () => {
 				it('override required error', () => {
 					const customErrorMsg : string = 'property \'a\' required';
 
@@ -100,8 +100,8 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'number'
 					}], {
-						errorMsg : {
-							[ErrorKey.REQUIRED] : customErrorMsg
+						customErrorMsg : {
+							[ErrorType.REQUIRED] : customErrorMsg
 						}
 					});
 
@@ -118,8 +118,8 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'number'
 					}], {
-						errorMsg : {
-							[ErrorKey.TYPE_MISMATCH] : customErrorMsg
+						customErrorMsg : {
+							[ErrorType.TYPE_MISMATCH] : customErrorMsg
 						}
 					});
 
