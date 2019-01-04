@@ -6,6 +6,7 @@ export interface Scheme {
 	key? : string; // can be omitted in array items
 	type : DataType | DataType[];
 	optional? : boolean; // false
+	nullable? : boolean; // false
 	// reverse? not?
 
 	// common - number & Date (date string, Date)

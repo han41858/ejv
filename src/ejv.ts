@@ -63,14 +63,25 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 	for (let i = 0; i < schemeLength; i++) {
 		const scheme : Scheme = schemes[i];
 		const key : string = scheme.key;
+		const value : any = data[key];
 
 		_options.path.push(key);
 
-		if (!(scheme.optional === true && !definedTester(data[key]))) {
+		if (!(scheme.optional === true && !definedTester(value))) {
 			if (!definedTester(data[key])) {
 				result = new EjvError(
 					ErrorType.REQUIRED,
 					ErrorMsg.REQUIRED,
+					_options.path,
+					data[key]
+				);
+				break;
+			}
+
+			if (value === null && scheme.nullable !== true) {
+				result = new EjvError(
+					ErrorType.SHOULD_NOT_BE_NULL,
+					ErrorMsg.SHOULD_NOT_BE_NULL,
 					_options.path,
 					data[key]
 				);
@@ -108,8 +119,6 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 			if (!uniqueItemsTester(types)) {
 				throw new Error(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
 			}
-
-			const value : any = data[key];
 
 			if (!types.some(type => {
 				const valid : boolean = typeTester(value, type);

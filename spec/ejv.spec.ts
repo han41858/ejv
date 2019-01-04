@@ -8,7 +8,6 @@ const typeTester : {
 	type : string,
 	value : any
 }[] = [
-	{ type : 'null', value : null },
 	{ type : 'boolean', value : true },
 	{ type : 'number', value : 123 },
 	{ type : 'string', value : 'ejv' },
@@ -126,6 +125,59 @@ describe('ejv()', () => {
 					expect(error).to.be.instanceof(EjvError);
 					expect(error.message).to.be.eql(customErrorMsg);
 				});
+			});
+		});
+	});
+
+	describe('common', () => {
+		// TODO: optional but defined
+
+		describe('nullable', () => {
+			it('default', () => {
+				const error : EjvError = ejv({
+					a : null
+				}, [{
+					key : 'a',
+					type : 'string'
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.type).to.be.eql(ErrorType.SHOULD_NOT_BE_NULL);
+				expect(error.message).to.be.eql(ErrorMsg.SHOULD_NOT_BE_NULL);
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.null;
+			});
+
+			it('nullable === false', () => {
+				const error : EjvError = ejv({
+					a : null
+				}, [{
+					key : 'a',
+					type : 'string',
+					nullable : false
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.type).to.be.eql(ErrorType.SHOULD_NOT_BE_NULL);
+				expect(error.message).to.be.eql(ErrorMsg.SHOULD_NOT_BE_NULL);
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.null;
+			});
+
+			it('nullable === true', () => {
+				const error : EjvError = ejv({
+					a : null
+				}, [{
+					key : 'a',
+					type : 'string',
+					nullable : true
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
+				expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, 'string'));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.null;
 			});
 		});
 	});
@@ -2018,7 +2070,8 @@ describe('ejv()', () => {
 
 				expect(nullError).to.be.instanceof(EjvError);
 
-				expect(nullError.message).to.be.eql(ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, 'object'));
+				expect(nullError.type).to.be.eql(ErrorType.SHOULD_NOT_BE_NULL);
+				expect(nullError.message).to.be.eql(ErrorMsg.SHOULD_NOT_BE_NULL);
 				expect(nullError.path).to.be.eql('a');
 
 				const error : EjvError = ejv({
