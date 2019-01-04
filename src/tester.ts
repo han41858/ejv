@@ -1,5 +1,8 @@
 import { DataType } from './constants';
 
+type TypeTester = (value : any) => boolean;
+type AdditionalTester = (value : any, args? : any) => boolean; // skip type test
+
 export const typeTester : Function = (value : any, type : DataType) : boolean => {
 	let valid : boolean;
 
@@ -36,59 +39,59 @@ export const typeTester : Function = (value : any, type : DataType) : boolean =>
 	return valid;
 };
 
-export const definedTester : Function = (value : any) : boolean => {
+export const definedTester : TypeTester = (value : any) : boolean => {
 	return value !== undefined;
 };
 
-export const enumTester : Function = <T> (value : T, arr : T[]) : boolean => {
+export const enumTester : AdditionalTester = <T> (value : T, arr : T[]) : boolean => {
 	return arr.includes(value);
 };
 
-export const minLengthTester : Function = (value : string | any[], minLength : number) : boolean => {
+export const minLengthTester : AdditionalTester = (value : string | any[], minLength : number) : boolean => {
 	return value.length >= minLength;
 };
 
-export const maxLengthTester : Function = (value : string | any[], maxLength : number) : boolean => {
+export const maxLengthTester : AdditionalTester = (value : string | any[], maxLength : number) : boolean => {
 	return value.length <= maxLength;
 };
 
-export const booleanTester : Function = (value : any) : boolean => {
+export const booleanTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'boolean';
 };
 
-export const numberTester : Function = (value : any) : boolean => {
+export const numberTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'number';
 };
 
-export const integerTester : Function = (value : number) : boolean => {
+export const integerTester : AdditionalTester = (value : number) : boolean => {
 	return +value.toFixed(0) === value;
 };
 
-export const indexTester : Function = (value : number) : boolean => {
+export const indexTester : AdditionalTester = (value : number) : boolean => {
 	return integerTester(value) && value >= 0;
 };
 
-export const minNumberTester : Function = (value : number, min : number) : boolean => {
+export const minNumberTester : AdditionalTester = (value : number, min : number) : boolean => {
 	return value >= min;
 };
 
-export const exclusiveMinNumberTester : Function = (value : number, min : number) : boolean => {
+export const exclusiveMinNumberTester : AdditionalTester = (value : number, min : number) : boolean => {
 	return value > min;
 };
 
-export const maxNumberTester : Function = (value : number, max : number) : boolean => {
+export const maxNumberTester : AdditionalTester = (value : number, max : number) : boolean => {
 	return value <= max;
 };
 
-export const exclusiveMaxNumberTester : Function = (value : number, max : number) : boolean => {
+export const exclusiveMaxNumberTester : AdditionalTester = (value : number, max : number) : boolean => {
 	return value < max;
 };
 
-export const stringTester : Function = (value : any) : boolean => {
+export const stringTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'string';
 };
 
-export const stringRegExpTester : Function = (value : string, regExp : string | RegExp) : boolean => {
+export const stringRegExpTester : AdditionalTester = (value : string, regExp : string | RegExp) : boolean => {
 	let valid : boolean = false;
 
 	let _regExp : RegExp;
@@ -107,7 +110,7 @@ export const stringRegExpTester : Function = (value : string, regExp : string | 
 };
 
 // RFC 5322, 3.4.1. spec
-export const emailTester : Function = (value : any) : boolean => {
+export const emailTester : TypeTester = (value : any) : boolean => {
 	let valid : boolean = false;
 
 	if (stringTester(value) && stringRegExpTester(value, /^.+@.+$/)) {
@@ -143,11 +146,11 @@ export const emailTester : Function = (value : any) : boolean => {
 };
 
 // RFC 3339 (https://www.ietf.org/rfc/rfc3339.txt) : YYYY-MM-DDThh:mm:ss[.SSSZ]
-const rfc3339Tester : Function = (value : string) : boolean => {
+const rfc3339Tester : AdditionalTester = (value : string) : boolean => {
 	return /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/.test(value);
 };
 
-const iso8601DateTester : Function = (value : string) : boolean => {
+const iso8601DateTester : AdditionalTester = (value : string) : boolean => {
 	const years : string = '(\\d{4})';
 	const months : string = '(0[1-9]|1[0-2])';
 	const dates : string = '(0[1-9]|[1-2][0-9]|3[0-1])';
@@ -168,7 +171,7 @@ const iso8601DateTester : Function = (value : string) : boolean => {
 	});
 };
 
-const iso8601TimeTester : Function = (value : string) : boolean => {
+const iso8601TimeTester : AdditionalTester = (value : string) : boolean => {
 	const hours : string = '([0-1]\\d|2[0-3])';
 	const minutes : string = '([0-5]\\d)';
 	const seconds : string = '([0-5]\\d|60)'; // 60 for leap second
@@ -189,7 +192,7 @@ const iso8601TimeTester : Function = (value : string) : boolean => {
 		});
 };
 
-const iso8601DateTimeTester : Function = (value : string) : boolean => {
+const iso8601DateTimeTester : AdditionalTester = (value : string) : boolean => {
 	let valid : boolean = false;
 
 	if (/.+T.+/.test(value) // should have 1 'T'
@@ -211,90 +214,84 @@ const iso8601DateTimeTester : Function = (value : string) : boolean => {
 	return valid;
 };
 
-export const dateFormatTester : Function = (value : string) : boolean => {
+export const dateFormatTester : AdditionalTester = (value : string) : boolean => {
 	return iso8601DateTester(value);
 };
 
-export const timeFormatTester : Function = (value : string) : boolean => {
+export const timeFormatTester : AdditionalTester = (value : string) : boolean => {
 	return iso8601TimeTester(value);
 };
 
-export const dateTimeFormatTester : Function = (value : string) : boolean => {
+export const dateTimeFormatTester : AdditionalTester = (value : string) : boolean => {
 	return rfc3339Tester(value) || iso8601DateTimeTester(value);
 };
 
 // // with port
-// export const urlTester : Function = (value : any) : boolean => {
+// export const urlTester : TypeTester = (value : any) : boolean => {
 // 	return stringTester(value)
 // 		&& /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(value);
 // };
 //
 // // TODO: with port
-// export const ipv4Tester : Function = (value : any) : boolean => {
+// export const ipv4Tester : TypeTester = (value : any) : boolean => {
 // 	return stringTester(value)
 // 		&& /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(value);
 // };
 //
-// export const ipv6Tester : Function = (value : any) : boolean => {
+// export const ipv6Tester : TypeTester = (value : any) : boolean => {
 // 	return stringTester(value)
 // 		&& /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$;/.test(value);
 // };
 //
-// export const ipTester : Function = (value : any) : boolean => {
+// export const ipTester : TypeTester = (value : any) : boolean => {
 // 	return ipv4Tester(value) || ipv6Tester(value);
 // };
 
-export const objectTester : Function = (value : any) : boolean => {
+export const objectTester : TypeTester = (value : any) : boolean => {
 	return typeof value === 'object';
 };
 
-export const dateTester : Function = (value : any) : boolean => {
+export const dateTester : TypeTester = (value : any) : boolean => {
 	return objectTester(value)
 		&& value !== null
 		&& value.getFullYear !== undefined;
 };
 
-export const minDateTester : Function = (value : Date, min : Date) : boolean => {
+export const minDateTester : AdditionalTester = (value : Date, min : Date) : boolean => {
 	return +value >= +min;
 };
 
-export const exclusiveMinDateTester : Function = (value : Date, min : Date) : boolean => {
+export const exclusiveMinDateTester : AdditionalTester = (value : Date, min : Date) : boolean => {
 	return +value > +min;
 };
 
-export const maxDateTester : Function = (value : Date, max : Date) : boolean => {
+export const maxDateTester : AdditionalTester = (value : Date, max : Date) : boolean => {
 	return +value <= +max;
 };
 
-export const exclusiveMaxDateTester : Function = (value : Date, max : Date) : boolean => {
+export const exclusiveMaxDateTester : AdditionalTester = (value : Date, max : Date) : boolean => {
 	return +value < +max;
 };
 
-export const arrayTester : Function = (value : any) : boolean => {
-	console.log(value,
-		objectTester(value),
-		value !== null,
-		value.length !== undefined,
-		value.push !== undefined);
-
+export const arrayTester : TypeTester = (value : any) : boolean => {
 	return objectTester(value)
 		&& value !== null
 		&& value.length !== undefined
 		&& value.push !== undefined;
 };
 
-export const arrayTypeOfTester : Function = (array : any, type : DataType) : boolean => {
+export const arrayTypeOfTester : AdditionalTester = (array : any, type : DataType) : boolean => {
 	return array.every(item => {
 		return typeTester(item, type);
 	});
 };
 
-export const uniqueItemsTester : Function = (array : any[]) : boolean => {
+export const uniqueItemsTester : AdditionalTester = (array : any[]) : boolean => {
 	return array.every(item => {
 		return array.filter((target : any) => target === item).length === 1;
 	});
 };
 
-export const regExpTester : Function = (value : any) : boolean => {
+export const regExpTester : TypeTester = (value : any) : boolean => {
 	return value instanceof RegExp;
 };
