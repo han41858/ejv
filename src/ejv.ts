@@ -540,6 +540,8 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 				case DataType.OBJECT:
 					if (definedTester(scheme.properties)) {
+						console.log('\n\ncheck scheme.properties');
+
 						if (!arrayTester(scheme.properties)) {
 							throw new Error(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
 						}
@@ -550,6 +552,16 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 						if (!arrayTypeOfTester(scheme.properties, DataType.OBJECT)) {
 							throw new Error(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
+						}
+
+						console.log(value, !objectTester(value), value === null, !objectTester(value) || value === null);
+						if (!objectTester(value) || value === null) {
+							result = new EjvError(
+								ErrorType.TYPE_MISMATCH,
+								ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, typeResolved),
+								options.path,
+								value
+							);
 						}
 
 						const partialData : object = data[key];

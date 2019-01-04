@@ -1986,7 +1986,7 @@ describe('ejv()', () => {
 				});
 			});
 
-			it('with single type', () => {
+			it.only('with single type', () => {
 				const undefinedError : EjvError = ejv({
 					a : {
 						b : undefined
@@ -2004,6 +2004,22 @@ describe('ejv()', () => {
 
 				expect(undefinedError.message).to.be.eql(ErrorMsg.REQUIRED);
 				expect(undefinedError.path).to.be.eql('a/b');
+
+				const nullError : EjvError = ejv({
+					a : null
+				}, [{
+					key : 'a',
+					type : 'object',
+					properties : [{
+						key : 'b',
+						type : 'string'
+					}]
+				}]);
+
+				expect(nullError).to.be.instanceof(EjvError);
+
+				expect(nullError.message).to.be.eql(ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, 'object'));
+				expect(nullError.path).to.be.eql('a');
 
 				const error : EjvError = ejv({
 					a : {
