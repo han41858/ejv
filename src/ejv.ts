@@ -552,6 +552,16 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							throw new Error(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
 						}
 
+						if (!objectTester(value) || value === null) {
+							result = new EjvError(
+								ErrorType.TYPE_MISMATCH,
+								ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, 'object'),
+								_options.path,
+								value
+							);
+							break;
+						}
+
 						const partialData : object = data[key];
 						const partialScheme : Scheme[] = scheme.properties;
 
