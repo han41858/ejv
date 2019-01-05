@@ -2331,6 +2331,120 @@ describe('ejv()', () => {
 				}])).to.be.null;
 			});
 		});
+
+		describe('allowNoProperty', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : 'object',
+						allowNoProperty : undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : 'object',
+						allowNoProperty : null
+					}])).to.throw(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
+				});
+			});
+
+			describe('default', () => {
+				it('empty object', () => {
+					const error : EjvError = ejv({
+						a : {}
+					}, [{
+						key : 'a',
+						type : 'object'
+					}]);
+
+					expect(error).to.be.null;
+				});
+
+				it('object has property', () => {
+					const error : EjvError = ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : 'object'
+					}]);
+
+					expect(error).to.be.null;
+				});
+			});
+
+			describe('allowNoProperty === false', () => {
+				it('empty object', () => {
+					const error : EjvError = ejv({
+						a : {}
+					}, [{
+						key : 'a',
+						type : 'object',
+						allowNoProperty : false
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+					expect(error.type).to.be.eql(ErrorType.NO_PROPERTY);
+					expect(error.message).to.be.eql(ErrorMsg.NO_PROPERTY);
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.a('object');
+				});
+
+				it('object has property', () => {
+					const error : EjvError = ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : 'object',
+						allowNoProperty : false
+					}]);
+
+					expect(error).to.be.null;
+				});
+			});
+
+			describe('allowNoProperty === true', () => {
+				it('empty object', () => {
+					const error : EjvError = ejv({
+						a : {}
+					}, [{
+						key : 'a',
+						type : 'object',
+						allowNoProperty : true
+					}]);
+
+					expect(error).to.be.null;
+				});
+
+				it('object has property', () => {
+					const error : EjvError = ejv({
+						a : {
+							b : 1
+						}
+					}, [{
+						key : 'a',
+						type : 'object',
+						allowNoProperty : true
+					}]);
+
+					expect(error).to.be.null;
+				});
+			});
+		});
 	});
 
 	describe('date', () => {

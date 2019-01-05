@@ -290,6 +290,22 @@ ejv({
 
 #### `'object'` options
 
+- `allowNoProperty : boolean`
+
+Checks if object has at least one property.
+If you specify `false`, ejv will not allow the empty object.
+If you omit this option or specify it as `true`, ejv will allow the empty object has no property.
+
+```typescript
+ejv({
+  obj : {}
+}, [{
+  key : 'obj',
+  type : 'object',
+  allowNoProperty : false // failed
+}});
+```
+
 - `properties : Scheme[]`
 
 Specify the details of the object.

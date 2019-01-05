@@ -52,6 +52,8 @@ export enum ErrorType {
 	PATTERN = 'PATTERN',
 	PATTERN_ONE_OF = 'PATTERN_ONE_OF',
 
+	NO_PROPERTY = 'NO_PROPERTY',
+
 	AFTER_OR_SAME_DATE = 'AFTER_OR_SAME_DATE',
 	AFTER_DATE = 'AFTER_DATE',
 
@@ -84,10 +86,10 @@ export enum ErrorMsg {
 	ENUM_SHOULD_BE_STRINGS = 'enum values should be strings',
 
 	MIN_SHOULD_BE_NUMBER = 'min should be number',
-	EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN = 'exclusiveMin should be boolean',
+	EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN = 'exclusiveMin should be a boolean',
 
 	MAX_SHOULD_BE_NUMBER = 'max should be number',
-	EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN = 'exclusiveMax should be boolean',
+	EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN = 'exclusiveMax should be a boolean',
 
 	INVALID_NUMBER_FORMAT = 'invalid number format : <<A>>',
 	INVALID_STRING_FORMAT = 'invalid string format : <<A>>',
@@ -100,10 +102,12 @@ export enum ErrorMsg {
 	PROPERTIES_SHOULD_HAVE_ITEMS = 'properties should have items',
 	PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT = 'properties should be array of object',
 
+	ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN = 'allowNoProperty should be a boolean',
+
 	MIN_DATE_SHOULD_BE_DATE_OR_STRING = 'min should be Date or string representing date',
 	MAX_DATE_SHOULD_BE_DATE_OR_STRING = 'max should be Date or string representing date',
 
-	UNIQUE_SHOULD_BE_BOOLEAN = 'unique should be boolean',
+	UNIQUE_SHOULD_BE_BOOLEAN = 'unique should be a boolean',
 
 	INVALID_ITEMS_SCHEME = 'invalid schemes of array items : <<A>>',
 
@@ -129,6 +133,8 @@ export enum ErrorMsg {
 
 	PATTERN = 'the value should be pattern of <<A>>', // pattern
 	PATTERN_ONE_OF = 'the value should be one of pattern of <<A>>', // pattern
+
+	NO_PROPERTY = 'the value should have property',
 
 	AFTER_OR_SAME_DATE = 'the value should be after or same date than <<A>>', // date
 	AFTER_DATE = 'the value should be after date than <<A>>', // date

@@ -31,6 +31,7 @@ export interface Scheme {
 
 	// object
 	properties? : Scheme[];
+	allowNoProperty? : boolean; // true
 
 	// array
 	unique? : boolean; // false

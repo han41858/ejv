@@ -248,6 +248,10 @@ export const objectTester : Function = (value : any) : boolean => {
 	return typeof value === 'object';
 };
 
+export const hasPropertyTester : Function = (value : any) : boolean => {
+	return Object.keys(value).length > 0;
+};
+
 export const dateTester : Function = (value : any) : boolean => {
 	return objectTester(value)
 		&& value !== null

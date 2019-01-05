@@ -289,6 +289,22 @@ ejv({
 
 #### `'object'` 타입 옵션
 
+- `allowNoProperty : boolean`
+
+객체에 프로퍼티가 최소한 1개 이상 있는지 검사합니다.
+이 옵션에 `false`를 지정하면 프로퍼티가 없는 객체를 허용하지 않습니다.
+이 옵션을 생략하거나 `true`로 지정하면 프로퍼티가 없는 객체를 허용합니다.
+
+```typescript
+ejv({
+  obj : {}
+}, [{
+  key : 'obj',
+  type : 'object',
+  allowNoProperty : false // 실패
+}});
+```
+
 - `properties : Scheme[]`
 
 객체의 세부 형식을 지정합니다.

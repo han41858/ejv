@@ -16,6 +16,7 @@ import {
 	exclusiveMaxNumberTester,
 	exclusiveMinDateTester,
 	exclusiveMinNumberTester,
+	hasPropertyTester,
 	indexTester,
 	integerTester,
 	maxDateTester,
@@ -593,6 +594,13 @@ describe('testers', function () {
 				expect(objectTester(null)).to.be.true;
 				expect(objectTester({})).to.be.true;
 				expect(objectTester({ a : 1 })).to.be.true;
+			});
+		});
+
+		describe('hasPropertyTester()', () => {
+			it('logic test', () => {
+				expect(hasPropertyTester({})).to.be.false;
+				expect(hasPropertyTester({ a : 1 })).to.be.true;
 			});
 		});
 	});

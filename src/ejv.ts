@@ -15,6 +15,7 @@ import {
 	exclusiveMaxNumberTester,
 	exclusiveMinDateTester,
 	exclusiveMinNumberTester,
+	hasPropertyTester,
 	indexTester,
 	integerTester,
 	maxDateTester,
@@ -538,6 +539,22 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 					break;
 
 				case DataType.OBJECT:
+					if (definedTester(scheme.allowNoProperty)) {
+						if (!booleanTester(scheme.allowNoProperty)) {
+							throw new Error(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
+						}
+
+						if (scheme.allowNoProperty !== true && !hasPropertyTester(value)) {
+							result = new EjvError(
+								ErrorType.NO_PROPERTY,
+								ErrorMsg.NO_PROPERTY,
+								_options.path,
+								value
+							);
+							break;
+						}
+					}
+
 					if (definedTester(scheme.properties)) {
 						if (!arrayTester(scheme.properties)) {
 							throw new Error(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
