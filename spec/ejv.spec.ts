@@ -278,8 +278,8 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.type).to.be.eql(ErrorType.SHOULD_NOT_BE_NULL);
-				expect(error.message).to.be.eql(ErrorMsg.SHOULD_NOT_BE_NULL);
+				expect(error.type).to.be.eql(ErrorType.REQUIRED);
+				expect(error.message).to.be.eql(ErrorMsg.REQUIRED);
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.null;
 			});
@@ -294,8 +294,8 @@ describe('ejv()', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error.type).to.be.eql(ErrorType.SHOULD_NOT_BE_NULL);
-				expect(error.message).to.be.eql(ErrorMsg.SHOULD_NOT_BE_NULL);
+				expect(error.type).to.be.eql(ErrorType.REQUIRED);
+				expect(error.message).to.be.eql(ErrorMsg.REQUIRED);
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.null;
 			});
@@ -2225,9 +2225,8 @@ describe('ejv()', () => {
 				}]);
 
 				expect(nullError).to.be.instanceof(EjvError);
-
-				expect(nullError.type).to.be.eql(ErrorType.SHOULD_NOT_BE_NULL);
-				expect(nullError.message).to.be.eql(ErrorMsg.SHOULD_NOT_BE_NULL);
+				expect(nullError.type).to.be.eql(ErrorType.REQUIRED);
+				expect(nullError.message).to.be.eql(ErrorMsg.REQUIRED);
 				expect(nullError.path).to.be.eql('a');
 
 				const error : EjvError = ejv({

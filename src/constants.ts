@@ -31,7 +31,6 @@ export const ErrorMsgCursorA : string = '<<A>>';
 
 export enum ErrorType {
 	REQUIRED = 'REQUIRED',
-	SHOULD_NOT_BE_NULL = 'SHOULD_NOT_BE_NULL',
 
 	TYPE_MISMATCH = 'TYPE_MISMATCH',
 	TYPE_MISMATCH_ONE_OF = 'TYPE_MISMATCH_ONE_OF',
@@ -110,7 +109,6 @@ export enum ErrorMsg {
 
 	// about EjvError
 	REQUIRED = 'required',
-	SHOULD_NOT_BE_NULL = 'the value should not be a null',
 
 	TYPE_MISMATCH = 'the value should be a <<A>>',
 	TYPE_MISMATCH_ONE_OF = 'the value should be one of <<A>>',

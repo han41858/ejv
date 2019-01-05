@@ -100,11 +100,10 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 				throw new Error(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
 			}
 
-			// check value
 			if (value === null && scheme.nullable !== true) {
 				result = new EjvError(
-					ErrorType.SHOULD_NOT_BE_NULL,
-					ErrorMsg.SHOULD_NOT_BE_NULL,
+					ErrorType.REQUIRED,
+					ErrorMsg.REQUIRED,
 					_options.path,
 					data[key]
 				);
