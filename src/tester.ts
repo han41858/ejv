@@ -107,7 +107,7 @@ export const stringRegExpTester : Function = (value : string, regExp : string | 
 };
 
 // RFC 5322, 3.4.1. spec
-export const emailTester : Function = (value : any) : boolean => {
+export const emailTester : Function = (value : string) : boolean => {
 	let valid : boolean = false;
 
 	if (stringTester(value) && stringRegExpTester(value, /^.+@.+$/)) {
@@ -248,7 +248,7 @@ export const objectTester : Function = (value : any) : boolean => {
 	return typeof value === 'object';
 };
 
-export const hasPropertyTester : Function = (value : any) : boolean => {
+export const hasPropertyTester : Function = (value : object) : boolean => {
 	return Object.keys(value).length > 0;
 };
 
@@ -281,7 +281,7 @@ export const arrayTester : Function = (value : any) : boolean => {
 		&& value.push !== undefined;
 };
 
-export const arrayTypeOfTester : Function = (array : any, type : DataType) : boolean => {
+export const arrayTypeOfTester : Function = (array : any[], type : DataType) : boolean => {
 	return array.every(item => {
 		return typeTester(item, type);
 	});
