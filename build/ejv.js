@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var interfaces_1 = require("./interfaces");
 var constants_1 = require("./constants");
 var tester_1 = require("./tester");
+var util_1 = require("./util");
 var _ejv = function (data, schemes, options) {
     if (options === void 0) { options = {
         path: []
@@ -19,7 +20,7 @@ var _ejv = function (data, schemes, options) {
     }
     // check data by schemes
     var result = null;
-    var _options = JSON.parse(JSON.stringify(options)); // divide instance
+    var _options = util_1.clone(options); // divide instance
     if (!tester_1.definedTester(_options.path)) {
         _options.path = [];
     }
@@ -508,7 +509,7 @@ var _ejv = function (data, schemes, options) {
                                 var tempKeyForThisValue = tempKeyArr[j];
                                 partialData[tempKeyForThisValue] = oneValue;
                                 partialSchemes.push.apply(partialSchemes, itemsAsSchemes.map(function (oneScheme) {
-                                    var newScheme = JSON.parse(JSON.stringify(oneScheme)); // divide instance
+                                    var newScheme = util_1.clone(oneScheme); // divide instance
                                     newScheme.key = tempKeyForThisValue;
                                     return newScheme;
                                 }));
