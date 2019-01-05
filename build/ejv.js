@@ -347,6 +347,15 @@ var _ejv = function (data, schemes, options) {
                     }
                     break;
                 case constants_1.DataType.OBJECT:
+                    if (tester_1.definedTester(scheme.allowNoProperty)) {
+                        if (!tester_1.booleanTester(scheme.allowNoProperty)) {
+                            throw new Error(constants_1.ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
+                        }
+                        if (scheme.allowNoProperty !== true && !tester_1.hasPropertyTester(value)) {
+                            result = new interfaces_1.EjvError(constants_1.ErrorType.NO_PROPERTY, constants_1.ErrorMsg.NO_PROPERTY, _options.path, value);
+                            break;
+                        }
+                    }
                     if (tester_1.definedTester(scheme.properties)) {
                         if (!tester_1.arrayTester(scheme.properties)) {
                             throw new Error(constants_1.ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);

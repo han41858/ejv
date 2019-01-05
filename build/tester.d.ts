@@ -18,6 +18,7 @@ export declare const dateFormatTester: Function;
 export declare const timeFormatTester: Function;
 export declare const dateTimeFormatTester: Function;
 export declare const objectTester: Function;
+export declare const hasPropertyTester: Function;
 export declare const dateTester: Function;
 export declare const minDateTester: Function;
 export declare const exclusiveMinDateTester: Function;

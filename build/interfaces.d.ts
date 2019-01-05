@@ -14,6 +14,7 @@ export interface Scheme {
     maxLength?: number;
     pattern?: string | string[] | RegExp | RegExp[];
     properties?: Scheme[];
+    allowNoProperty?: boolean;
     unique?: boolean;
     items?: DataType | DataType[] | Scheme | Scheme[];
 }

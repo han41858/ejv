@@ -1,6 +1,6 @@
 {
   "name": "ejv",
-  "version": "1.0.0-rc.9",
+  "version": "1.0.0-rc.10",
   "description": "Easy JSON Validator",
   "main": "build/public_api.js",
   "types": "build/public_api.d.ts",

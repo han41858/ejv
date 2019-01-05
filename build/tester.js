@@ -194,6 +194,9 @@ exports.dateTimeFormatTester = function (value) {
 exports.objectTester = function (value) {
     return typeof value === 'object';
 };
+exports.hasPropertyTester = function (value) {
+    return Object.keys(value).length > 0;
+};
 exports.dateTester = function (value) {
     return exports.objectTester(value)
         && value !== null
