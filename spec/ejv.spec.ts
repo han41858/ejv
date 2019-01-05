@@ -4000,6 +4000,18 @@ describe('ejv()', () => {
 						items : 'number'
 					}])).to.be.null;
 				});
+
+				it('ok - empty array', () => {
+					const error : EjvError = ejv({
+						a : []
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : 'object'
+					}]);
+
+					expect(error).to.be.null;
+				});
 			});
 
 			describe('multiple data type', () => {
