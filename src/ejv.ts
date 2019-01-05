@@ -33,6 +33,7 @@ import {
 	typeTester,
 	uniqueItemsTester
 } from './tester';
+import { clone } from './util';
 
 const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOptions = {
 	path : []
@@ -52,7 +53,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 	// check data by schemes
 	let result : EjvError = null;
-	const _options : InternalOptions = JSON.parse(JSON.stringify(options)); // divide instance
+	const _options : InternalOptions = clone(options); // divide instance
 
 	if (!definedTester(_options.path)) {
 		_options.path = [];
@@ -789,7 +790,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 								partialData[tempKeyForThisValue] = oneValue;
 
 								partialSchemes.push(...itemsAsSchemes.map((oneScheme : Scheme) => {
-									const newScheme : Scheme = JSON.parse(JSON.stringify(oneScheme)); // divide instance
+									const newScheme : Scheme = clone(oneScheme); // divide instance
 
 									newScheme.key = tempKeyForThisValue;
 

@@ -2023,6 +2023,29 @@ describe('ejv()', () => {
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.eql('abc');
 			});
+
+			describe('special case', () => {
+				it('array of object has string', () => {
+					const error : EjvError = ejv({
+						a : [{
+							b : 'ejv'
+						}]
+					}, [{
+						key : 'a',
+						type : 'array',
+						items : [{
+							type : 'object',
+							properties : [{
+								key : 'b',
+								type : 'string',
+								pattern : /ejv/
+							}]
+						}]
+					}]);
+
+					expect(error).to.be.null;
+				});
+			});
 		});
 	});
 
