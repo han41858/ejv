@@ -3,6 +3,7 @@ export interface Scheme {
     key?: string;
     type: DataType | DataType[];
     optional?: boolean;
+    nullable?: boolean;
     min?: number | string | Date;
     exclusiveMin?: boolean;
     max?: number | string | Date;

@@ -30,6 +30,7 @@ exports.ErrorMsgCursorA = '<<A>>';
 var ErrorType;
 (function (ErrorType) {
     ErrorType["REQUIRED"] = "REQUIRED";
+    ErrorType["SHOULD_NOT_BE_NULL"] = "SHOULD_NOT_BE_NULL";
     ErrorType["TYPE_MISMATCH"] = "TYPE_MISMATCH";
     ErrorType["TYPE_MISMATCH_ONE_OF"] = "TYPE_MISMATCH_ONE_OF";
     ErrorType["ONE_OF"] = "ONE_OF";
@@ -85,6 +86,7 @@ var ErrorMsg;
     ErrorMsg["INVALID_ITEMS_SCHEME"] = "invalid schemes of array items : <<A>>";
     // about EjvError
     ErrorMsg["REQUIRED"] = "required";
+    ErrorMsg["SHOULD_NOT_BE_NULL"] = "the value should not be a null";
     ErrorMsg["TYPE_MISMATCH"] = "the value should be a <<A>>";
     ErrorMsg["TYPE_MISMATCH_ONE_OF"] = "the value should be one of <<A>>";
     ErrorMsg["ONE_OF"] = "the value should be one of <<A>>";
