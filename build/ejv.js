@@ -451,99 +451,101 @@ var _ejv = function (data, schemes, options) {
                     if (tester_1.definedTester(scheme.items)) {
                         // convert array to object
                         var valueAsArray_1 = value;
-                        var now_1 = new Date;
-                        var tempKeyArr = valueAsArray_1.map(function (value, i) {
-                            return now_1.toISOString() + i;
-                        });
-                        if (tester_1.stringTester(scheme.items) // by DataType
-                            || (tester_1.arrayTester(scheme.items) && tester_1.arrayTypeOfTester(scheme.items, constants_1.DataType.STRING)) // by DataType[]
-                        ) {
-                            var itemTypes_1;
-                            if (tester_1.arrayTester(scheme.items)) {
-                                itemTypes_1 = scheme.items;
-                            }
-                            else {
-                                itemTypes_1 = [scheme.items];
-                            }
-                            var partialData_1 = {};
-                            var partialSchemes_1 = [];
-                            tempKeyArr.forEach(function (tempKey, i) {
-                                partialData_1[tempKey] = valueAsArray_1[i];
-                                partialSchemes_1.push({
-                                    key: tempKey,
-                                    type: itemTypes_1
-                                });
+                        if (valueAsArray_1.length > 0) {
+                            var now_1 = new Date;
+                            var tempKeyArr = valueAsArray_1.map(function (value, i) {
+                                return now_1.toISOString() + i;
                             });
-                            // call recursively
-                            var partialResult = _ejv(partialData_1, partialSchemes_1, _options);
-                            // convert new EjvError
-                            if (!!partialResult) {
-                                var errorMsg = void 0;
+                            if (tester_1.stringTester(scheme.items) // by DataType
+                                || (tester_1.arrayTester(scheme.items) && tester_1.arrayTypeOfTester(scheme.items, constants_1.DataType.STRING)) // by DataType[]
+                            ) {
+                                var itemTypes_1;
                                 if (tester_1.arrayTester(scheme.items)) {
-                                    errorMsg = constants_1.ErrorMsg.ITEMS_TYPE.replace(constants_1.ErrorMsgCursorA, JSON.stringify(itemTypes_1));
+                                    itemTypes_1 = scheme.items;
                                 }
                                 else {
-                                    errorMsg = constants_1.ErrorMsg.ITEMS_TYPE.replace(constants_1.ErrorMsgCursorA, scheme.items);
+                                    itemTypes_1 = [scheme.items];
                                 }
-                                result = new interfaces_1.EjvError(constants_1.ErrorType.ITEMS_TYPE, errorMsg, _options.path, value);
-                            }
-                            break;
-                        }
-                        else if ((tester_1.objectTester(scheme.items) && scheme.items !== null) // by Scheme
-                            || (tester_1.arrayTester(scheme.items) && tester_1.arrayTypeOfTester(scheme.items, constants_1.DataType.OBJECT)) // by Scheme[]
-                        ) {
-                            var itemsAsSchemes = [];
-                            if (tester_1.arrayTester(scheme.items)) {
-                                itemsAsSchemes = scheme.items;
-                            }
-                            else {
-                                itemsAsSchemes = [scheme.items];
-                            }
-                            var partialValid = true;
-                            // use for() instead of forEach() to break
-                            var valueLength = valueAsArray_1.length;
-                            var _loop_2 = function (j) {
-                                var oneValue = value[j];
-                                var partialData = {};
-                                var partialSchemes = [];
-                                var tempKeyForThisValue = tempKeyArr[j];
-                                partialData[tempKeyForThisValue] = oneValue;
-                                partialSchemes.push.apply(partialSchemes, itemsAsSchemes.map(function (oneScheme) {
-                                    var newScheme = util_1.clone(oneScheme); // divide instance
-                                    newScheme.key = tempKeyForThisValue;
-                                    return newScheme;
-                                }));
-                                var partialResult = partialSchemes.map(function (partialScheme) {
-                                    // call recursively
-                                    return _ejv(partialData, [partialScheme], _options);
+                                var partialData_1 = {};
+                                var partialSchemes_1 = [];
+                                tempKeyArr.forEach(function (tempKey, i) {
+                                    partialData_1[tempKey] = valueAsArray_1[i];
+                                    partialSchemes_1.push({
+                                        key: tempKey,
+                                        type: itemTypes_1
+                                    });
                                 });
-                                if (!partialResult.some(function (oneResult) { return oneResult === null; })) {
-                                    partialValid = false;
-                                    return "break";
+                                // call recursively
+                                var partialResult = _ejv(partialData_1, partialSchemes_1, _options);
+                                // convert new EjvError
+                                if (!!partialResult) {
+                                    var errorMsg = void 0;
+                                    if (tester_1.arrayTester(scheme.items)) {
+                                        errorMsg = constants_1.ErrorMsg.ITEMS_TYPE.replace(constants_1.ErrorMsgCursorA, JSON.stringify(itemTypes_1));
+                                    }
+                                    else {
+                                        errorMsg = constants_1.ErrorMsg.ITEMS_TYPE.replace(constants_1.ErrorMsgCursorA, scheme.items);
+                                    }
+                                    result = new interfaces_1.EjvError(constants_1.ErrorType.ITEMS_TYPE, errorMsg, _options.path, value);
                                 }
-                            };
-                            for (var j = 0; j < valueLength; j++) {
-                                var state_2 = _loop_2(j);
-                                if (state_2 === "break")
-                                    break;
-                            }
-                            if (partialValid === false) {
-                                var errorKey = void 0;
-                                var errorMsg = void 0;
-                                if (tester_1.arrayTester(scheme.items)) {
-                                    errorKey = constants_1.ErrorType.ITEMS_SCHEMES;
-                                    errorMsg = constants_1.ErrorMsg.ITEMS_SCHEMES.replace(constants_1.ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
-                                }
-                                else {
-                                    errorKey = constants_1.ErrorType.ITEMS_SCHEME;
-                                    errorMsg = constants_1.ErrorMsg.ITEMS_SCHEME.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.items));
-                                }
-                                result = new interfaces_1.EjvError(errorKey, errorMsg, _options.path, value);
                                 break;
                             }
-                        }
-                        else {
-                            throw new Error(constants_1.ErrorMsg.INVALID_ITEMS_SCHEME.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.items)));
+                            else if ((tester_1.objectTester(scheme.items) && scheme.items !== null) // by Scheme
+                                || (tester_1.arrayTester(scheme.items) && tester_1.arrayTypeOfTester(scheme.items, constants_1.DataType.OBJECT)) // by Scheme[]
+                            ) {
+                                var itemsAsSchemes = [];
+                                if (tester_1.arrayTester(scheme.items)) {
+                                    itemsAsSchemes = scheme.items;
+                                }
+                                else {
+                                    itemsAsSchemes = [scheme.items];
+                                }
+                                var partialValid = true;
+                                // use for() instead of forEach() to break
+                                var valueLength = valueAsArray_1.length;
+                                var _loop_2 = function (j) {
+                                    var oneValue = value[j];
+                                    var partialData = {};
+                                    var partialSchemes = [];
+                                    var tempKeyForThisValue = tempKeyArr[j];
+                                    partialData[tempKeyForThisValue] = oneValue;
+                                    partialSchemes.push.apply(partialSchemes, itemsAsSchemes.map(function (oneScheme) {
+                                        var newScheme = util_1.clone(oneScheme); // divide instance
+                                        newScheme.key = tempKeyForThisValue;
+                                        return newScheme;
+                                    }));
+                                    var partialResult = partialSchemes.map(function (partialScheme) {
+                                        // call recursively
+                                        return _ejv(partialData, [partialScheme], _options);
+                                    });
+                                    if (!partialResult.some(function (oneResult) { return oneResult === null; })) {
+                                        partialValid = false;
+                                        return "break";
+                                    }
+                                };
+                                for (var j = 0; j < valueLength; j++) {
+                                    var state_2 = _loop_2(j);
+                                    if (state_2 === "break")
+                                        break;
+                                }
+                                if (partialValid === false) {
+                                    var errorKey = void 0;
+                                    var errorMsg = void 0;
+                                    if (tester_1.arrayTester(scheme.items)) {
+                                        errorKey = constants_1.ErrorType.ITEMS_SCHEMES;
+                                        errorMsg = constants_1.ErrorMsg.ITEMS_SCHEMES.replace(constants_1.ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
+                                    }
+                                    else {
+                                        errorKey = constants_1.ErrorType.ITEMS_SCHEME;
+                                        errorMsg = constants_1.ErrorMsg.ITEMS_SCHEME.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.items));
+                                    }
+                                    result = new interfaces_1.EjvError(errorKey, errorMsg, _options.path, value);
+                                    break;
+                                }
+                            }
+                            else {
+                                throw new Error(constants_1.ErrorMsg.INVALID_ITEMS_SCHEME.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.items)));
+                            }
                         }
                     }
                     break;

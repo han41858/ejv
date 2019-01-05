@@ -1,7 +1,7 @@
 import { DataType, ErrorType, NumberFormat, StringFormat } from './constants';
 export interface Scheme {
     key?: string;
-    type: DataType | DataType[];
+    type: string | string[] | DataType | DataType[];
     optional?: boolean;
     nullable?: boolean;
     min?: number | string | Date;
@@ -9,14 +9,14 @@ export interface Scheme {
     max?: number | string | Date;
     exclusiveMax?: boolean;
     enum?: number[] | string[];
-    format?: NumberFormat | NumberFormat[] | StringFormat | StringFormat[];
+    format?: string | string[] | NumberFormat | NumberFormat[] | StringFormat | StringFormat[];
     minLength?: number;
     maxLength?: number;
     pattern?: string | string[] | RegExp | RegExp[];
     properties?: Scheme[];
     allowNoProperty?: boolean;
     unique?: boolean;
-    items?: DataType | DataType[] | Scheme | Scheme[];
+    items?: string | string[] | DataType | DataType[] | Scheme | Scheme[];
 }
 export interface Options {
     customErrorMsg?: {
