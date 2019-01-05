@@ -56,9 +56,8 @@ var _ejv = function (data, schemes, options) {
             if (!tester_1.uniqueItemsTester(types)) {
                 throw new Error(constants_1.ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
             }
-            // check value
             if (value === null && scheme.nullable !== true) {
-                result = new interfaces_1.EjvError(constants_1.ErrorType.SHOULD_NOT_BE_NULL, constants_1.ErrorMsg.SHOULD_NOT_BE_NULL, _options.path, data[key]);
+                result = new interfaces_1.EjvError(constants_1.ErrorType.REQUIRED, constants_1.ErrorMsg.REQUIRED, _options.path, data[key]);
                 return "break";
             }
             if (!types.some(function (type) {

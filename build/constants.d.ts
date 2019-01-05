@@ -20,7 +20,6 @@ export declare enum StringFormat {
 export declare const ErrorMsgCursorA: string;
 export declare enum ErrorType {
     REQUIRED = "REQUIRED",
-    SHOULD_NOT_BE_NULL = "SHOULD_NOT_BE_NULL",
     TYPE_MISMATCH = "TYPE_MISMATCH",
     TYPE_MISMATCH_ONE_OF = "TYPE_MISMATCH_ONE_OF",
     ONE_OF = "ONE_OF",
@@ -73,7 +72,6 @@ export declare enum ErrorMsg {
     UNIQUE_SHOULD_BE_BOOLEAN = "unique should be boolean",
     INVALID_ITEMS_SCHEME = "invalid schemes of array items : <<A>>",
     REQUIRED = "required",
-    SHOULD_NOT_BE_NULL = "the value should not be a null",
     TYPE_MISMATCH = "the value should be a <<A>>",
     TYPE_MISMATCH_ONE_OF = "the value should be one of <<A>>",
     ONE_OF = "the value should be one of <<A>>",
