@@ -4,7 +4,7 @@ import { DataType, ErrorType, NumberFormat, StringFormat } from './constants';
 export interface Scheme {
 	// common
 	key? : string; // can be omitted in array items
-	type : DataType | DataType[];
+	type : string | string[] | DataType | DataType[];
 	optional? : boolean; // false
 	nullable? : boolean; // false
 	// reverse? not?
@@ -20,7 +20,7 @@ export interface Scheme {
 	enum? : number[] | string[];
 
 	// common - number & string
-	format? : NumberFormat | NumberFormat[] | StringFormat | StringFormat[];
+	format? : string | string[] | NumberFormat | NumberFormat[] | StringFormat | StringFormat[];
 
 	// common - string & array
 	minLength? : number;
@@ -35,7 +35,7 @@ export interface Scheme {
 
 	// array
 	unique? : boolean; // false
-	items? : DataType | DataType[] | Scheme | Scheme[];
+	items? : string | string[] | DataType | DataType[] | Scheme | Scheme[];
 }
 
 export interface Options {
