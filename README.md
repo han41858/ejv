@@ -116,6 +116,20 @@ ejv({
 }]);
 ```
 
+- `nullable : boolean`
+
+If you set it to `true`, ejv will allow the `null` value.
+This option is available for all validation rules.
+
+```typescript
+ejv({
+  a : null
+}, [{
+  key : 'a',
+  nullable : true
+}]);
+```
+
 - `enum : number[] | string[]`
 
 Allows only the values that are delivered in an array.

@@ -115,6 +115,20 @@ ejv({
 }]);
 ```
 
+- `nullable : boolean`
+
+`true`로 설정하면 `null` 값을 허용합니다.
+이 옵션은 모든 검사규칙에 사용할 수 있습니다.
+
+```typescript
+ejv({
+  a : null
+}, [{
+  key : 'a',
+  nullable : true
+}]);
+```
+
 - `enum : number[] | string[]`
 
 배열로 전달되는 값만 허용합니다.
