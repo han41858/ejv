@@ -3913,13 +3913,21 @@ describe('ejv()', () => {
 			it('default', () => {
 				const error : EjvError = ejv({
 					a : [1, 2, 3],
-					b : [1, 1, 1]
+					b : [1, 1, 1],
+					c : ['a', 'a', 'a']
 				}, [{
 					key : 'a',
 					type : 'array'
 				}, {
 					key : 'b',
 					type : 'array'
+				}, {
+					key : 'c',
+					type : 'array',
+					items : {
+						type : 'string',
+						minLength : 1
+					}
 				}]);
 
 				expect(error).to.be.null;
@@ -3928,7 +3936,8 @@ describe('ejv()', () => {
 			it('false', () => {
 				const error : EjvError = ejv({
 					a : [1, 2, 3],
-					b : [1, 1, 1]
+					b : [1, 1, 1],
+					c : ['a', 'a', 'a']
 				}, [{
 					key : 'a',
 					type : 'array',
@@ -3937,6 +3946,14 @@ describe('ejv()', () => {
 					key : 'b',
 					type : 'array',
 					unique : false
+				}, {
+					key : 'c',
+					type : 'array',
+					unique : false,
+					items : {
+						type : 'string',
+						minLength : 1
+					}
 				}]);
 
 				expect(error).to.be.null;
@@ -3945,7 +3962,8 @@ describe('ejv()', () => {
 			it('true', () => {
 				const error : EjvError = ejv({
 					a : [1, 2, 3],
-					b : [1, 1, 1]
+					b : [1, 1, 1],
+					c : [2, 2, 2]
 				}, [{
 					key : 'a',
 					type : 'array',
@@ -3954,13 +3972,35 @@ describe('ejv()', () => {
 					key : 'b',
 					type : 'array',
 					unique : true
+				}, {
+					key : 'c',
+					type : 'array',
+					unique : true
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error.type).to.be.eql(ErrorType.UNIQUE_ITEMS);
 				expect(error.message).to.be.eql(ErrorMsg.UNIQUE_ITEMS);
-				expect(error.path).to.be.eql('b');
+				expect(error.path).to.be.eql('b'); // not c
 				expect(error.data).to.be.ordered.members([1, 1, 1]);
+
+				const stringsError : EjvError = ejv({
+					a : ['a', 'a', 'a']
+				}, [{
+					key : 'a',
+					type : 'array',
+					unique : true,
+					items : {
+						type : 'string',
+						minLength : 1
+					}
+				}]);
+
+				expect(stringsError).to.be.instanceof(EjvError);
+				expect(stringsError.type).to.be.eql(ErrorType.UNIQUE_ITEMS);
+				expect(stringsError.message).to.be.eql(ErrorMsg.UNIQUE_ITEMS);
+				expect(stringsError.path).to.be.eql('a');
+				expect(stringsError.data).to.be.ordered.members(['a', 'a', 'a']);
 			});
 		});
 
@@ -4058,7 +4098,8 @@ describe('ejv()', () => {
 					const enumArr : string[] = ['boolean', 'string'];
 
 					const error : EjvError = ejv({
-						a : [1, 2, 3]
+						a : [1, 2, 3],
+						b : [1, 2, 2]
 					}, [{
 						key : 'a',
 						type : 'array',
@@ -4170,7 +4211,8 @@ describe('ejv()', () => {
 					}];
 
 					const error : EjvError = ejv({
-						a : [1, 2, 3]
+						a : [1, 2, 3],
+						b : [1, 2, 2]
 					}, [{
 						key : 'a',
 						type : 'array',

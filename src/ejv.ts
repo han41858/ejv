@@ -515,6 +515,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 									_options.path,
 									value
 								);
+								break;
 							}
 
 						} else {
@@ -535,6 +536,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 									_options.path,
 									value
 								);
+								break;
 							}
 						}
 					}
@@ -679,6 +681,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 								_options.path,
 								value
 							);
+							break;
 						}
 					}
 
@@ -694,6 +697,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 								_options.path,
 								value
 							);
+							break;
 						}
 					}
 
@@ -709,6 +713,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 								_options.path,
 								value
 							);
+							break;
 						}
 					}
 
@@ -844,6 +849,10 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 				_options.path,
 				data[key]
 			);
+			break;
+		}
+
+		if (!!result) {
 			break;
 		}
 	}
