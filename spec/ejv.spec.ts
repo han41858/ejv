@@ -3910,11 +3910,48 @@ describe('ejv()', () => {
 				});
 			});
 
-			it('fail', () => {
+			it('default', () => {
 				const error : EjvError = ejv({
-					a : [1, 2, 2]
+					a : [1, 2, 3],
+					b : [1, 1, 1]
 				}, [{
 					key : 'a',
+					type : 'array'
+				}, {
+					key : 'b',
+					type : 'array'
+				}]);
+
+				expect(error).to.be.null;
+			});
+
+			it('false', () => {
+				const error : EjvError = ejv({
+					a : [1, 2, 3],
+					b : [1, 1, 1]
+				}, [{
+					key : 'a',
+					type : 'array',
+					unique : false
+				}, {
+					key : 'b',
+					type : 'array',
+					unique : false
+				}]);
+
+				expect(error).to.be.null;
+			});
+
+			it('true', () => {
+				const error : EjvError = ejv({
+					a : [1, 2, 3],
+					b : [1, 1, 1]
+				}, [{
+					key : 'a',
+					type : 'array',
+					unique : true
+				}, {
+					key : 'b',
 					type : 'array',
 					unique : true
 				}]);
@@ -3922,18 +3959,8 @@ describe('ejv()', () => {
 				expect(error).to.be.instanceof(EjvError);
 				expect(error.type).to.be.eql(ErrorType.UNIQUE_ITEMS);
 				expect(error.message).to.be.eql(ErrorMsg.UNIQUE_ITEMS);
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.ordered.members([1, 2, 2]);
-			});
-
-			it('ok', () => {
-				expect(ejv({
-					a : [1, 2, 3]
-				}, [{
-					key : 'a',
-					type : 'array',
-					unique : true
-				}])).to.be.null;
+				expect(error.path).to.be.eql('b');
+				expect(error.data).to.be.ordered.members([1, 1, 1]);
 			});
 		});
 

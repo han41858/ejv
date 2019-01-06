@@ -53,16 +53,17 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 	// check data by schemes
 	let result : EjvError = null;
-	const _options : InternalOptions = clone(options); // divide instance
-
-	if (!definedTester(_options.path)) {
-		_options.path = [];
-	}
 
 	// use for() instead of forEach() to stop
 	const schemeLength : number = schemes.length;
 
 	for (let i = 0; i < schemeLength; i++) {
+		const _options : InternalOptions = clone(options); // divide instance
+
+		if (!definedTester(_options.path)) {
+			_options.path = [];
+		}
+
 		const scheme : Scheme = schemes[i];
 		const key : string = scheme.key;
 		const value : any = data[key];
@@ -701,7 +702,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							throw new Error(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
 						}
 
-						if (!uniqueItemsTester(value)) {
+						if (scheme.unique === true && !uniqueItemsTester(value)) {
 							result = new EjvError(
 								ErrorType.UNIQUE_ITEMS,
 								ErrorMsg.UNIQUE_ITEMS,
