@@ -20,13 +20,13 @@ var _ejv = function (data, schemes, options) {
     }
     // check data by schemes
     var result = null;
-    var _options = util_1.clone(options); // divide instance
-    if (!tester_1.definedTester(_options.path)) {
-        _options.path = [];
-    }
     // use for() instead of forEach() to stop
     var schemeLength = schemes.length;
     var _loop_1 = function (i) {
+        var _options = util_1.clone(options); // divide instance
+        if (!tester_1.definedTester(_options.path)) {
+            _options.path = [];
+        }
         var scheme = schemes[i];
         var key = scheme.key;
         var value = data[key];
@@ -444,7 +444,7 @@ var _ejv = function (data, schemes, options) {
                         if (!tester_1.booleanTester(scheme.unique)) {
                             throw new Error(constants_1.ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
                         }
-                        if (!tester_1.uniqueItemsTester(value)) {
+                        if (scheme.unique === true && !tester_1.uniqueItemsTester(value)) {
                             result = new interfaces_1.EjvError(constants_1.ErrorType.UNIQUE_ITEMS, constants_1.ErrorMsg.UNIQUE_ITEMS, _options.path, value);
                         }
                     }
