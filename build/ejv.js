@@ -331,6 +331,7 @@ var _ejv = function (data, schemes, options) {
                             })) {
                                 result = new interfaces_1.EjvError(constants_1.ErrorType.PATTERN_ONE_OF, constants_1.ErrorMsg.PATTERN_ONE_OF
                                     .replace(constants_1.ErrorMsgCursorA, createArrayErrorMsg_1(patternsAsArray_1)), _options.path, value);
+                                break;
                             }
                         }
                         else {
@@ -343,6 +344,7 @@ var _ejv = function (data, schemes, options) {
                             var regExp = new RegExp(patternAsOne);
                             if (!tester_1.stringRegExpTester(value, regExp)) {
                                 result = new interfaces_1.EjvError(constants_1.ErrorType.PATTERN, constants_1.ErrorMsg.PATTERN.replace(constants_1.ErrorMsgCursorA, patternToString_1(patternAsOne)), _options.path, value);
+                                break;
                             }
                         }
                     }
@@ -430,6 +432,7 @@ var _ejv = function (data, schemes, options) {
                         }
                         if (!tester_1.minLengthTester(value, scheme.minLength)) {
                             result = new interfaces_1.EjvError(constants_1.ErrorType.MIN_LENGTH, constants_1.ErrorMsg.MIN_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + scheme.minLength), _options.path, value);
+                            break;
                         }
                     }
                     if (tester_1.definedTester(scheme.maxLength)) {
@@ -438,6 +441,7 @@ var _ejv = function (data, schemes, options) {
                         }
                         if (!tester_1.maxLengthTester(value, scheme.maxLength)) {
                             result = new interfaces_1.EjvError(constants_1.ErrorType.MAX_LENGTH, constants_1.ErrorMsg.MAX_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + scheme.maxLength), _options.path, value);
+                            break;
                         }
                     }
                     if (tester_1.definedTester(scheme.unique)) {
@@ -446,6 +450,7 @@ var _ejv = function (data, schemes, options) {
                         }
                         if (scheme.unique === true && !tester_1.uniqueItemsTester(value)) {
                             result = new interfaces_1.EjvError(constants_1.ErrorType.UNIQUE_ITEMS, constants_1.ErrorMsg.UNIQUE_ITEMS, _options.path, value);
+                            break;
                         }
                     }
                     if (tester_1.definedTester(scheme.items)) {
@@ -553,6 +558,9 @@ var _ejv = function (data, schemes, options) {
         }
         else if (scheme.optional !== true) {
             result = new interfaces_1.EjvError(constants_1.ErrorType.REQUIRED, constants_1.ErrorMsg.REQUIRED, _options.path, data[key]);
+            return "break";
+        }
+        if (!!result) {
             return "break";
         }
     };
