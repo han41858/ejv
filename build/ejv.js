@@ -580,11 +580,8 @@ var _ejv = function (data, schemes, options) {
 };
 exports.ejv = function (data, schemes, options) {
     // check data itself
-    if (!tester_1.definedTester(data)) {
-        throw new Error(constants_1.ErrorMsg.NO_DATA);
-    }
-    if (!tester_1.objectTester(data) || data === null) {
-        throw new Error(constants_1.ErrorMsg.NO_JSON_DATA);
+    if (!tester_1.definedTester(data) || !tester_1.objectTester(data) || data === null) {
+        return new interfaces_1.EjvError(constants_1.ErrorType.REQUIRED, constants_1.ErrorMsg.NO_DATA, ['/'], data);
     }
     // check schemes itself
     if (!tester_1.definedTester(schemes) || schemes === null) {
