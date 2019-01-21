@@ -871,12 +871,8 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 export const ejv : Function = (data : object, schemes : Scheme[], options? : Options) : null | EjvError => {
 	// check data itself
-	if (!definedTester(data)) {
-		throw new Error(ErrorMsg.NO_DATA);
-	}
-
-	if (!objectTester(data) || data === null) {
-		throw new Error(ErrorMsg.NO_JSON_DATA);
+	if (!definedTester(data) || !objectTester(data) || data === null) {
+		return new EjvError(ErrorType.REQUIRED, ErrorMsg.NO_DATA, ['/'], data);
 	}
 
 	// check schemes itself

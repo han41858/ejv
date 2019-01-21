@@ -21,11 +21,21 @@ describe('ejv()', () => {
 	describe('ejv() itself', () => {
 		describe('data', () => {
 			it('no data', () => {
-				expect(ejv).to.throw(Error, ErrorMsg.NO_DATA);
+				const error : EjvError = ejv();
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error).to.have.property('type', ErrorType.REQUIRED);
+				expect(error).to.have.property('message', ErrorMsg.NO_DATA);
+				expect(error).to.have.property('path', '/');
 			});
 
 			it('null data', () => {
-				expect(() => ejv(null)).to.throw(Error, ErrorMsg.NO_JSON_DATA);
+				const error : EjvError = ejv(null);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error).to.have.property('type', ErrorType.REQUIRED);
+				expect(error).to.have.property('message', ErrorMsg.NO_DATA);
+				expect(error).to.have.property('path', '/');
 			});
 		});
 
