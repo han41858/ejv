@@ -36,6 +36,7 @@ export enum ErrorType {
 	TYPE_MISMATCH_ONE_OF = 'TYPE_MISMATCH_ONE_OF',
 
 	ONE_OF = 'ONE_OF',
+	NOT_ONE_OF = 'NOT_ONE_OF',
 
 	FORMAT = 'FORMAT',
 	FORMAT_ONE_OF = 'FORMAT_ONE_OF',
@@ -85,6 +86,10 @@ export enum ErrorMsg {
 	ENUM_SHOULD_BE_NUMBERS = 'enum values should be numbers',
 	ENUM_SHOULD_BE_STRINGS = 'enum values should be strings',
 
+	ENUM_REVERSE_SHOULD_BE_ARRAY = 'enumReverse should be array',
+	ENUM_REVERSE_SHOULD_BE_NUMBERS = 'enumReverse values should be numbers',
+	ENUM_REVERSE_SHOULD_BE_STRINGS = 'enumReverse values should be strings',
+
 	MIN_SHOULD_BE_NUMBER = 'min should be number',
 	EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN = 'exclusiveMin should be a boolean',
 
@@ -118,6 +123,7 @@ export enum ErrorMsg {
 	TYPE_MISMATCH_ONE_OF = 'the value should be one of <<A>>',
 
 	ONE_OF = 'the value should be one of <<A>>', // enum
+	NOT_ONE_OF = 'the value should be not one of <<A>>', // enumReverse
 
 	FORMAT = 'the value should be a form of <<A>>', // format
 	FORMAT_ONE_OF = 'the value should be form of one of <<A>>',

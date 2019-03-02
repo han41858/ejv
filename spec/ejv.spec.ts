@@ -487,6 +487,80 @@ describe('ejv()', () => {
 			});
 		});
 
+		describe('enumReverse', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 1
+					}, [{
+						key : 'a',
+						type : 'number',
+						enumReverse : undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a : 1
+					}, [{
+						key : 'a',
+						type : 'number',
+						enumReverse : null
+					}])).to.be.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+				});
+
+				it('not array', () => {
+					expect(() => ejv({
+						a : 10
+					}, [{
+						key : 'a',
+						type : 'number',
+						enumReverse : 1
+					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+				});
+
+				it('not number', () => {
+					expect(() => ejv({
+						a : 10
+					}, [{
+						key : 'a',
+						type : 'number',
+						enumReverse : ['10']
+					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS);
+				});
+			});
+
+			it('fail', () => {
+				const enumArr : number[] = [9, 10];
+
+				const error : EjvError = ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					enumReverse : enumArr
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.type).to.be.eql(ErrorType.NOT_ONE_OF);
+				expect(error.message).to.be.eql(ErrorMsg.NOT_ONE_OF
+					.replace(ErrorMsgCursorA, JSON.stringify(enumArr))
+				);
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql(10);
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a : 10
+				}, [{
+					key : 'a',
+					type : 'number',
+					enumReverse : [9, 11]
+				}])).to.be.null;
+			});
+		});
+
 		describe('min & exclusiveMin', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
@@ -1312,6 +1386,80 @@ describe('ejv()', () => {
 					key : 'a',
 					type : 'string',
 					enum : ['a', 'b', 'c']
+				}])).to.be.null;
+			});
+		});
+
+		describe('enumReverse', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						enumReverse : undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						enumReverse : null
+					}])).to.be.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+				});
+
+				it('not array', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						enumReverse : 'a'
+					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+				});
+
+				it('not string', () => {
+					expect(() => ejv({
+						a : 'a'
+					}, [{
+						key : 'a',
+						type : 'string',
+						enumReverse : [10]
+					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS);
+				});
+			});
+
+			it('fail', () => {
+				const enumArr : string[] = ['a', 'c'];
+
+				const error : EjvError = ejv({
+					a : 'a'
+				}, [{
+					key : 'a',
+					type : 'string',
+					enumReverse : enumArr
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.type).to.be.eql(ErrorType.NOT_ONE_OF);
+				expect(error.message).to.be.eql(ErrorMsg.NOT_ONE_OF
+					.replace(ErrorMsgCursorA, JSON.stringify(enumArr))
+				);
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.eql('a');
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a : 'a'
+				}, [{
+					key : 'a',
+					type : 'string',
+					enumReverse : ['b', 'c']
 				}])).to.be.null;
 			});
 		});

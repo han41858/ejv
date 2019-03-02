@@ -18,6 +18,7 @@ export interface Scheme {
 
 	// common - number & string
 	enum? : number[] | string[];
+	enumReverse? : number[] | string[];
 
 	// common - number & string
 	format? : string | string[] | NumberFormat | NumberFormat[] | StringFormat | StringFormat[];

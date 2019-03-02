@@ -163,6 +163,26 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						}
 					}
 
+					if (definedTester(scheme.enumReverse)) {
+						if (!arrayTester(scheme.enumReverse)) {
+							throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+						}
+
+						if (!arrayTypeOfTester(scheme.enumReverse, DataType.NUMBER)) {
+							throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS);
+						}
+
+						if (enumTester(value, scheme.enumReverse)) {
+							result = new EjvError(
+								ErrorType.NOT_ONE_OF,
+								ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enumReverse)),
+								_options.path,
+								value
+							);
+							break;
+						}
+					}
+
 					if (definedTester(scheme.min)) {
 						if (!numberTester(scheme.min)) {
 							throw new Error(ErrorMsg.MIN_SHOULD_BE_NUMBER);
@@ -333,6 +353,26 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							result = new EjvError(
 								ErrorType.ONE_OF,
 								ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enum)),
+								_options.path,
+								value
+							);
+							break;
+						}
+					}
+
+					if (definedTester(scheme.enumReverse)) {
+						if (!arrayTester(scheme.enumReverse)) {
+							throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+						}
+
+						if (!arrayTypeOfTester(scheme.enumReverse, DataType.STRING)) {
+							throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS);
+						}
+
+						if (enumTester(value, scheme.enumReverse)) {
+							result = new EjvError(
+								ErrorType.NOT_ONE_OF,
+								ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enumReverse)),
 								_options.path,
 								value
 							);

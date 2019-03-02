@@ -150,6 +150,26 @@ ejv({
 }]);
 ```
 
+- `enumReverse : number[] | string[]`
+
+Not allows the values that are delivered in an array. This result is reverse of the option `enum`.
+This option is available for the rules of validation: `type: number` and `type: string`.
+
+```typescript
+ejv({
+  a : 1,
+  b : 'hello'
+}, [{
+  key : 'a',
+  type : 'number',
+  enumReverse : [1, 2, 3] // not allow 1, 2, 3
+}, {
+  key : 'b',
+  type : 'string',
+  enumReverse : ['hello', 'ejv'] // not allow 'hello', 'ejv'
+}]);
+```
+
 #### `'number'` options
 
 - `min : number`
