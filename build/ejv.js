@@ -91,6 +91,18 @@ var _ejv = function (data, schemes, options) {
                             break;
                         }
                     }
+                    if (tester_1.definedTester(scheme.enumReverse)) {
+                        if (!tester_1.arrayTester(scheme.enumReverse)) {
+                            throw new Error(constants_1.ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+                        }
+                        if (!tester_1.arrayTypeOfTester(scheme.enumReverse, constants_1.DataType.NUMBER)) {
+                            throw new Error(constants_1.ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS);
+                        }
+                        if (tester_1.enumTester(value, scheme.enumReverse)) {
+                            result = new interfaces_1.EjvError(constants_1.ErrorType.NOT_ONE_OF, constants_1.ErrorMsg.NOT_ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.enumReverse)), _options.path, value);
+                            break;
+                        }
+                    }
                     if (tester_1.definedTester(scheme.min)) {
                         if (!tester_1.numberTester(scheme.min)) {
                             throw new Error(constants_1.ErrorMsg.MIN_SHOULD_BE_NUMBER);
@@ -203,6 +215,18 @@ var _ejv = function (data, schemes, options) {
                         }
                         if (!tester_1.enumTester(value, scheme.enum)) {
                             result = new interfaces_1.EjvError(constants_1.ErrorType.ONE_OF, constants_1.ErrorMsg.ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.enum)), _options.path, value);
+                            break;
+                        }
+                    }
+                    if (tester_1.definedTester(scheme.enumReverse)) {
+                        if (!tester_1.arrayTester(scheme.enumReverse)) {
+                            throw new Error(constants_1.ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+                        }
+                        if (!tester_1.arrayTypeOfTester(scheme.enumReverse, constants_1.DataType.STRING)) {
+                            throw new Error(constants_1.ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS);
+                        }
+                        if (tester_1.enumTester(value, scheme.enumReverse)) {
+                            result = new interfaces_1.EjvError(constants_1.ErrorType.NOT_ONE_OF, constants_1.ErrorMsg.NOT_ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.enumReverse)), _options.path, value);
                             break;
                         }
                     }

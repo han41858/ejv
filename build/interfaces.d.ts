@@ -9,6 +9,7 @@ export interface Scheme {
     max?: number | string | Date;
     exclusiveMax?: boolean;
     enum?: number[] | string[];
+    enumReverse?: number[] | string[];
     format?: string | string[] | NumberFormat | NumberFormat[] | StringFormat | StringFormat[];
     minLength?: number;
     maxLength?: number;
