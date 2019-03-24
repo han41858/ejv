@@ -4344,6 +4344,78 @@ describe('ejv()', () => {
 						}
 					}])).to.be.null;
 				});
+
+				it('fail - array of object', () => {
+					const data : { number : number }[] = [
+						{ number : 2 },
+						{ number : 3 },
+						{ number : 4 },
+						{ number : 5 }
+					];
+
+					const error : EjvError = ejv({
+						a : data
+					}, [
+						{
+							key : 'a', type : 'array', items : [
+								{
+									type : 'object', properties : [
+										{ key : 'number', type : 'number', min : 4 }
+									]
+								}
+							]
+						}
+					]);
+
+					expect(error).to.be.instanceof(EjvError);
+					expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
+					expect(error.message).to.be.eql(ErrorMsg.GREATER_THAN_OR_EQUAL
+						.replace(ErrorMsgCursorA, '' + 4));
+					expect(error.path).to.be.eql('a/number');
+					expect(error.data).to.be.ordered.members(data);
+				});
+
+				it('fail - array of deep object', () => {
+					const data = [
+						{ b : { c : { d : { number : 2 } } } },
+						{ b : { c : { d : { number : 3 } } } },
+						{ b : { c : { d : { number : 4 } } } },
+						{ b : { c : { d : { number : 5 } } } }
+					];
+
+					const error : EjvError = ejv({
+						a : data
+					}, [
+						{
+							key : 'a', type : 'array', items : [
+								{
+									type : 'object', properties : [
+										{
+											key : 'b', type : 'object', properties : [
+												{
+													key : 'c', type : 'object', properties : [
+														{
+															key : 'd', type : 'object', properties : [
+																{ key : 'number', type : 'number', min : 4 }
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]);
+
+					expect(error).to.be.instanceof(EjvError);
+					expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
+					expect(error.message).to.be.eql(ErrorMsg.GREATER_THAN_OR_EQUAL
+						.replace(ErrorMsgCursorA, '' + 4));
+					expect(error.path).to.be.eql('a/b/c/d/number');
+					expect(error.data).to.be.ordered.members(data);
+				});
 			});
 
 			describe('multiple schemes', () => {

@@ -864,17 +864,29 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 									if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
 										errorType = ErrorType.ITEMS_SCHEMES;
 										errorMsg = ErrorMsg.ITEMS_SCHEMES.replace(ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
+
+										result = new EjvError(
+											errorType,
+											errorMsg,
+											_options.path,
+											value
+										);
 									} else {
 										errorType = partialError.type;
 										errorMsg = partialError.message;
-									}
 
-									result = new EjvError(
-										errorType,
-										errorMsg,
-										_options.path,
-										value
-									);
+										// index 0 : key of array
+										// index 1 : temp key
+										const additionalKeys : string[] = partialError.path.split('/')
+											.filter((one, i) => i > 1);
+
+										result = new EjvError(
+											errorType,
+											errorMsg,
+											[..._options.path, ...additionalKeys],
+											value
+										);
+									}
 									break;
 								}
 							} else {
