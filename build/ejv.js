@@ -562,7 +562,7 @@ var _ejv = function (data, schemes, options) {
                                 if (!!partialError) {
                                     var errorType_2 = void 0;
                                     var errorMsg = void 0;
-                                    if (tester_1.arrayTester(scheme.items)) {
+                                    if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
                                         errorType_2 = constants_1.ErrorType.ITEMS_SCHEMES;
                                         errorMsg = constants_1.ErrorMsg.ITEMS_SCHEMES.replace(constants_1.ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
                                     }
