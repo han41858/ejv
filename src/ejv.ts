@@ -821,7 +821,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 									itemsAsSchemes = [scheme.items] as Scheme[];
 								}
 
-								let partialValid : boolean = true;
+								let partialError : EjvError = null;
 
 								// use for() instead of forEach() to break
 								const valueLength : number = valueAsArray.length;
@@ -844,31 +844,33 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 										return newScheme;
 									}));
 
-									const partialResult : EjvError[] = partialSchemes.map((partialScheme : Scheme) => {
+									const partialResults : EjvError[] = partialSchemes.map((partialScheme : Scheme) => {
 										// call recursively
 										return _ejv(partialData, [partialScheme], _options);
 									});
 
-									if (!partialResult.some(oneResult => oneResult === null)) {
-										partialValid = false;
+									if (!partialResults.some(oneResult => oneResult === null)) {
+										partialError = partialResults.find(oneResult => {
+											return !!oneResult;
+										});
 										break;
 									}
 								}
 
-								if (partialValid === false) {
-									let errorKey : ErrorType;
+								if (!!partialError) {
+									let errorType : ErrorType;
 									let errorMsg : string;
 
 									if (arrayTester(scheme.items)) {
-										errorKey = ErrorType.ITEMS_SCHEMES;
+										errorType = ErrorType.ITEMS_SCHEMES;
 										errorMsg = ErrorMsg.ITEMS_SCHEMES.replace(ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
 									} else {
-										errorKey = ErrorType.ITEMS_SCHEME;
-										errorMsg = ErrorMsg.ITEMS_SCHEME.replace(ErrorMsgCursorA, JSON.stringify(scheme.items));
+										errorType = partialError.type;
+										errorMsg = partialError.message;
 									}
 
 									result = new EjvError(
-										errorKey,
+										errorType,
 										errorMsg,
 										_options.path,
 										value

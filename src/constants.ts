@@ -64,8 +64,7 @@ export enum ErrorType {
 	UNIQUE_ITEMS = 'UNIQUE_ITEMS',
 
 	ITEMS_TYPE = 'ITEMS_TYPE',
-	ITEMS_SCHEME = 'ITEMS_SCHEME',
-	ITEMS_SCHEMES = 'ITEMS_SCHEMES',
+	ITEMS_SCHEMES = 'ITEMS_SCHEMES'
 }
 
 export enum ErrorMsg {
@@ -151,6 +150,5 @@ export enum ErrorMsg {
 	UNIQUE_ITEMS = 'the array should be unique items',
 
 	ITEMS_TYPE = 'the array should have items in type of <<A>>',
-	ITEMS_SCHEME = 'the array should have items matched with scheme of <<A>>',
 	ITEMS_SCHEMES = 'the array should have items matched with schemes of <<A>>'
 }

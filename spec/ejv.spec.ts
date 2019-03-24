@@ -4292,6 +4292,7 @@ describe('ejv()', () => {
 			});
 
 			describe('single scheme', () => {
+				// single scheme has it's original error type & message
 				describe('check parameter', () => {
 					it('invalid data type', () => {
 						const scheme : object = {
@@ -4323,9 +4324,9 @@ describe('ejv()', () => {
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
-					expect(error.type).to.be.eql(ErrorType.ITEMS_SCHEME);
-					expect(error.message).to.be.eql(ErrorMsg.ITEMS_SCHEME
-						.replace(ErrorMsgCursorA, JSON.stringify(itemScheme)));
+					expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
+					expect(error.message).to.be.eql(ErrorMsg.GREATER_THAN_OR_EQUAL
+						.replace(ErrorMsgCursorA, '' + 2));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.ordered.members([1, 2, 3]);
 				});
