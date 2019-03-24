@@ -565,12 +565,17 @@ var _ejv = function (data, schemes, options) {
                                     if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
                                         errorType_2 = constants_1.ErrorType.ITEMS_SCHEMES;
                                         errorMsg = constants_1.ErrorMsg.ITEMS_SCHEMES.replace(constants_1.ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
+                                        result = new interfaces_1.EjvError(errorType_2, errorMsg, _options.path, value);
                                     }
                                     else {
                                         errorType_2 = partialError.type;
                                         errorMsg = partialError.message;
+                                        // index 0 : key of array
+                                        // index 1 : temp key
+                                        var additionalKeys = partialError.path.split('/')
+                                            .filter(function (one, i) { return i > 1; });
+                                        result = new interfaces_1.EjvError(errorType_2, errorMsg, _options.path.concat(additionalKeys), value);
                                     }
-                                    result = new interfaces_1.EjvError(errorType_2, errorMsg, _options.path, value);
                                     break;
                                 }
                             }
