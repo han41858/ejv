@@ -4364,10 +4364,17 @@ describe('ejv()', () => {
 				});
 
 				it('fail', () => {
-					const itemSchemes : Scheme[] = [{
+					const itemScheme1 : Scheme = {
 						type : 'number' as DataType,
 						min : 2
-					}];
+					};
+
+					const itemScheme2 : Scheme = {
+						type : 'number' as DataType,
+						min : 3
+					};
+
+					const allSchemes : Scheme[] = [itemScheme1, itemScheme2];
 
 					const error : EjvError = ejv({
 						a : [1, 2, 3],
@@ -4375,13 +4382,13 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'array',
-						items : itemSchemes
+						items : allSchemes
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
 					expect(error.type).to.be.eql(ErrorType.ITEMS_SCHEMES);
 					expect(error.message).to.be.eql(ErrorMsg.ITEMS_SCHEMES
-						.replace(ErrorMsgCursorA, JSON.stringify(itemSchemes)));
+						.replace(ErrorMsgCursorA, JSON.stringify(allSchemes)));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.ordered.members([1, 2, 3]);
 				});

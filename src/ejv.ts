@@ -861,7 +861,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 									let errorType : ErrorType;
 									let errorMsg : string;
 
-									if (arrayTester(scheme.items)) {
+									if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
 										errorType = ErrorType.ITEMS_SCHEMES;
 										errorMsg = ErrorMsg.ITEMS_SCHEMES.replace(ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
 									} else {
