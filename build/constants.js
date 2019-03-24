@@ -51,7 +51,6 @@ var ErrorType;
     ErrorType["BEFORE_DATE"] = "BEFORE_DATE";
     ErrorType["UNIQUE_ITEMS"] = "UNIQUE_ITEMS";
     ErrorType["ITEMS_TYPE"] = "ITEMS_TYPE";
-    ErrorType["ITEMS_SCHEME"] = "ITEMS_SCHEME";
     ErrorType["ITEMS_SCHEMES"] = "ITEMS_SCHEMES";
 })(ErrorType = exports.ErrorType || (exports.ErrorType = {}));
 var ErrorMsg;
@@ -112,7 +111,6 @@ var ErrorMsg;
     ErrorMsg["BEFORE_DATE"] = "the value should be before date than <<A>>";
     ErrorMsg["UNIQUE_ITEMS"] = "the array should be unique items";
     ErrorMsg["ITEMS_TYPE"] = "the array should have items in type of <<A>>";
-    ErrorMsg["ITEMS_SCHEME"] = "the array should have items matched with scheme of <<A>>";
     ErrorMsg["ITEMS_SCHEMES"] = "the array should have items matched with schemes of <<A>>";
 })(ErrorMsg = exports.ErrorMsg || (exports.ErrorMsg = {}));
 //# sourceMappingURL=constants.js.map

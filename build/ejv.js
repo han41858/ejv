@@ -529,7 +529,7 @@ var _ejv = function (data, schemes, options) {
                                 else {
                                     itemsAsSchemes = [scheme.items];
                                 }
-                                var partialValid = true;
+                                var partialError = null;
                                 // use for() instead of forEach() to break
                                 var valueLength = valueAsArray_1.length;
                                 var _loop_2 = function (j) {
@@ -543,12 +543,14 @@ var _ejv = function (data, schemes, options) {
                                         newScheme.key = tempKeyForThisValue;
                                         return newScheme;
                                     }));
-                                    var partialResult = partialSchemes.map(function (partialScheme) {
+                                    var partialResults = partialSchemes.map(function (partialScheme) {
                                         // call recursively
                                         return _ejv(partialData, [partialScheme], _options);
                                     });
-                                    if (!partialResult.some(function (oneResult) { return oneResult === null; })) {
-                                        partialValid = false;
+                                    if (!partialResults.some(function (oneResult) { return oneResult === null; })) {
+                                        partialError = partialResults.find(function (oneResult) {
+                                            return !!oneResult;
+                                        });
                                         return "break";
                                     }
                                 };
@@ -557,18 +559,18 @@ var _ejv = function (data, schemes, options) {
                                     if (state_2 === "break")
                                         break;
                                 }
-                                if (partialValid === false) {
-                                    var errorKey = void 0;
+                                if (!!partialError) {
+                                    var errorType_2 = void 0;
                                     var errorMsg = void 0;
                                     if (tester_1.arrayTester(scheme.items)) {
-                                        errorKey = constants_1.ErrorType.ITEMS_SCHEMES;
+                                        errorType_2 = constants_1.ErrorType.ITEMS_SCHEMES;
                                         errorMsg = constants_1.ErrorMsg.ITEMS_SCHEMES.replace(constants_1.ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
                                     }
                                     else {
-                                        errorKey = constants_1.ErrorType.ITEMS_SCHEME;
-                                        errorMsg = constants_1.ErrorMsg.ITEMS_SCHEME.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.items));
+                                        errorType_2 = partialError.type;
+                                        errorMsg = partialError.message;
                                     }
-                                    result = new interfaces_1.EjvError(errorKey, errorMsg, _options.path, value);
+                                    result = new interfaces_1.EjvError(errorType_2, errorMsg, _options.path, value);
                                     break;
                                 }
                             }
