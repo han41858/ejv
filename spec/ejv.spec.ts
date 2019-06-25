@@ -3875,6 +3875,42 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 			});
+
+			describe('has invalid type', () => {
+				it('has undefined', () => {
+					const value = ['a', undefined];
+
+					const error : EjvError = ejv({
+						a : value
+					}, [
+						{ key : 'a', type : 'string' }
+					]);
+
+					expect(error).to.be.instanceof(EjvError);
+					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
+						.replace(ErrorMsgCursorA, 'string'));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.eql(value);
+				});
+
+				it('has null', () => {
+					const value = ['a', null];
+
+					const error : EjvError = ejv({
+						a : value
+					}, [
+						{ key : 'a', type : 'string' }
+					]);
+
+					expect(error).to.be.instanceof(EjvError);
+					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
+						.replace(ErrorMsgCursorA, 'string'));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.eql(value);
+				});
+			});
 		});
 
 		describe('minLength', () => {
