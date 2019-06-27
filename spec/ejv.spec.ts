@@ -3883,15 +3883,29 @@ describe('ejv()', () => {
 					const error : EjvError = ejv({
 						a : value
 					}, [
-						{ key : 'a', type : 'string' }
+						{ key : 'a', type : 'array', items : 'string' }
 					]);
 
 					expect(error).to.be.instanceof(EjvError);
-					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
+					expect(error.type).to.be.eql(ErrorType.ITEMS_TYPE);
+					expect(error.message).to.be.eql(ErrorMsg.ITEMS_TYPE
 						.replace(ErrorMsgCursorA, 'string'));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.eql(value);
+				});
+
+				it('has undefined, but optional', () => {
+					const value = ['a', undefined];
+
+					expect(ejv({
+						a : value
+					}, [
+						{
+							key : 'a', type : 'array', items : [
+								{ type : 'string', optional : true }
+							]
+						}
+					])).to.be.null;
 				});
 
 				it('has null', () => {
@@ -3900,15 +3914,29 @@ describe('ejv()', () => {
 					const error : EjvError = ejv({
 						a : value
 					}, [
-						{ key : 'a', type : 'string' }
+						{ key : 'a', type : 'array', items : 'string' }
 					]);
 
 					expect(error).to.be.instanceof(EjvError);
-					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
+					expect(error.type).to.be.eql(ErrorType.ITEMS_TYPE);
+					expect(error.message).to.be.eql(ErrorMsg.ITEMS_TYPE
 						.replace(ErrorMsgCursorA, 'string'));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.eql(value);
+				});
+
+				it('has null, but nullable', () => {
+					const value = ['a', null];
+
+					expect(ejv({
+						a : value
+					}, [
+						{
+							key : 'a', type : 'array', items : [
+								{ type : 'string', nullable : true }
+							]
+						}
+					])).to.be.null;
 				});
 			});
 		});

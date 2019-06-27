@@ -846,7 +846,15 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 									const partialResults : EjvError[] = partialSchemes.map((partialScheme : Scheme) => {
 										// call recursively
-										return _ejv(partialData, [partialScheme], _options);
+										let _ejvError : EjvError = _ejv(partialData, [partialScheme], _options);
+
+										// nullable
+										if (!!_ejvError && _ejvError.type === ErrorType.TYPE_MISMATCH
+											&& _ejvError.data === null && partialScheme.nullable === true) {
+											_ejvError = null;
+										}
+
+										return _ejvError;
 									});
 
 									if (!partialResults.some(oneResult => oneResult === null)) {
