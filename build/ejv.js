@@ -545,7 +545,13 @@ var _ejv = function (data, schemes, options) {
                                     }));
                                     var partialResults = partialSchemes.map(function (partialScheme) {
                                         // call recursively
-                                        return _ejv(partialData, [partialScheme], _options);
+                                        var _ejvError = _ejv(partialData, [partialScheme], _options);
+                                        // nullable
+                                        if (!!_ejvError && _ejvError.type === constants_1.ErrorType.TYPE_MISMATCH
+                                            && _ejvError.data === null && partialScheme.nullable === true) {
+                                            _ejvError = null;
+                                        }
+                                        return _ejvError;
                                     });
                                     if (!partialResults.some(function (oneResult) { return oneResult === null; })) {
                                         partialError = partialResults.find(function (oneResult) {
