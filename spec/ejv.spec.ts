@@ -319,11 +319,7 @@ describe('ejv()', () => {
 					nullable : true
 				}]);
 
-				expect(error).to.be.instanceof(EjvError);
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-				expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, 'string'));
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.null;
+				expect(error).to.be.null;
 			});
 		});
 	});
