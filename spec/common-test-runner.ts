@@ -1,5 +1,5 @@
 // to test common type easily
-export const commonTestRunner = (testFnc : Function,
+export const commonTestRunner = (testFnc,
                                  nullResult : boolean,
                                  undefinedResult : boolean,
                                  booleanResult : boolean,

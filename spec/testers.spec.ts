@@ -33,6 +33,7 @@ import {
 	timeFormatTester,
 	uniqueItemsTester
 } from '../src/tester';
+import { DataType } from '../src/constants';
 
 describe('testers', function () {
 	describe('common', () => {
@@ -786,11 +787,11 @@ describe('testers', function () {
 
 		describe('arrayTypeOfTester()', () => {
 			it('logic test', () => {
-				expect(arrayTypeOfTester([], 'number')).to.be.true;
-				expect(arrayTypeOfTester([1, 2], 'number')).to.be.true;
-				expect(arrayTypeOfTester([1, 2, '3'], 'number')).to.be.false;
+				expect(arrayTypeOfTester([], DataType.NUMBER)).to.be.true;
+				expect(arrayTypeOfTester([1, 2], DataType.NUMBER)).to.be.true;
+				expect(arrayTypeOfTester([1, 2, '3'], DataType.NUMBER)).to.be.false;
 
-				expect(arrayTypeOfTester([new Date, new Date, new Date], 'date')).to.be.true;
+				expect(arrayTypeOfTester([new Date, new Date, new Date], DataType.DATE)).to.be.true;
 			});
 		});
 

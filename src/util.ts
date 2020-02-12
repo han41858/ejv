@@ -1,4 +1,4 @@
-export const clone : Function = (obj : any) : any => {
+export const clone = (obj : any) : any => {
 	let result : any = null;
 
 	if (!!obj) {

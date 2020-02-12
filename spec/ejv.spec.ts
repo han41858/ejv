@@ -21,7 +21,7 @@ describe('ejv()', () => {
 	describe('ejv() itself', () => {
 		describe('data', () => {
 			it('no data', () => {
-				const error : EjvError = ejv();
+				const error : EjvError = ejv(undefined, undefined);
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error).to.have.property('type', ErrorType.REQUIRED);
@@ -30,7 +30,7 @@ describe('ejv()', () => {
 			});
 
 			it('null data', () => {
-				const error : EjvError = ejv(null);
+				const error : EjvError = ejv(null, undefined);
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error).to.have.property('type', ErrorType.REQUIRED);
@@ -43,7 +43,7 @@ describe('ejv()', () => {
 			it('no scheme', () => {
 				expect(() => ejv({
 					a : 'hello'
-				})).to.throw(ErrorMsg.NO_SCHEME);
+				}, undefined)).to.throw(ErrorMsg.NO_SCHEME);
 			});
 
 			it('null scheme', () => {
@@ -61,7 +61,7 @@ describe('ejv()', () => {
 			it('invalid scheme object', () => {
 				expect(() => ejv({
 					a : 'hello'
-				}, ['string'])).to.throw(ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
+				}, ['string' as any as Scheme])).to.throw(ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
 			});
 
 			it('no type', () => {
@@ -69,7 +69,7 @@ describe('ejv()', () => {
 					a : 'hello'
 				}, [{
 					key : 'a'
-				}])).to.throw(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
+				} as any as Scheme])).to.throw(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
 			});
 
 			it('invalid type', () => {
@@ -464,7 +464,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'number',
-						enum : 1
+						enum : 1 as any
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
@@ -541,7 +541,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'number',
-						enumReverse : 1
+						enumReverse : 1 as any
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
@@ -629,7 +629,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'number',
 						min : 3,
-						exclusiveMin : '3'
+						exclusiveMin : '3' as any
 					}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
 				});
 			});
@@ -791,7 +791,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'number',
 						max : 3,
-						exclusiveMax : '3'
+						exclusiveMax : '3' as any
 					}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 				});
 			});
@@ -1379,7 +1379,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						enum : 'a'
+						enum : 'a' as any
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
@@ -1456,7 +1456,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						enumReverse : 'a'
+						enumReverse : 'a' as any
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
@@ -1543,7 +1543,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						minLength : '1'
+						minLength : '1' as any
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -1625,7 +1625,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						maxLength : '1'
+						maxLength : '1' as any
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -2027,7 +2027,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						pattern : 1
+						pattern : 1 as any
 					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '1'));
 				});
@@ -2071,7 +2071,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						pattern : [1, 3]
+						pattern : [1, 3] as any
 					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[1, 3]'));
 				});
@@ -2435,7 +2435,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'object',
-						properties : 'b'
+						properties : 'b' as any
 					}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
 				});
 
@@ -2459,7 +2459,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'object',
-						properties : ['b']
+						properties : ['b'] as any
 					}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
 				});
 			});
@@ -4098,7 +4098,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'array',
-						minLength : '1'
+						minLength : '1' as any
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -4181,7 +4181,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'array',
-						maxLength : '1'
+						maxLength : '1' as any
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -4254,7 +4254,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'array',
-						unique : 'hello'
+						unique : 'hello' as any
 					}])).to.throw(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
 				});
 			});
@@ -4506,7 +4506,7 @@ describe('ejv()', () => {
 						}, [{
 							key : 'a',
 							type : 'array',
-							items : scheme
+							items : scheme as any
 						}])).to.throw(); // error message by partial scheme
 					});
 				});
@@ -4626,7 +4626,7 @@ describe('ejv()', () => {
 						}, [{
 							key : 'a',
 							type : 'array',
-							items : [scheme]
+							items : [scheme] as any
 						}])).to.throw(); // error message by partial scheme
 					});
 				});

@@ -41,7 +41,7 @@ export interface Scheme {
 
 export interface Options {
 	customErrorMsg? : {
-		[key in ErrorType] : any;
+		[key in ErrorType]? : string;
 	};
 }
 

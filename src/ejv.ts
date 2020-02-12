@@ -35,7 +35,7 @@ import {
 } from './tester';
 import { clone } from './util';
 
-const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOptions = {
+const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 	path : []
 }) : null | EjvError => {
 	// check schemes
@@ -217,7 +217,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						}
 
 						if (scheme.exclusiveMin === true) {
-							if (!exclusiveMinNumberTester(value, scheme.min)) {
+							if (!exclusiveMinNumberTester(value, scheme.min as number)) {
 								result = new EjvError(
 									ErrorType.GREATER_THAN,
 									ErrorMsg.GREATER_THAN.replace(ErrorMsgCursorA, '' + scheme.min),
@@ -228,7 +228,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 								break;
 							}
 						} else {
-							if (!minNumberTester(value, scheme.min)) {
+							if (!minNumberTester(value, scheme.min as number)) {
 								result = new EjvError(
 									ErrorType.GREATER_THAN_OR_EQUAL,
 									ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.min),
@@ -240,7 +240,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							}
 						}
 					} else {
-						if (!minNumberTester(value, scheme.min)) {
+						if (!minNumberTester(value, scheme.min as number)) {
 							result = new EjvError(
 								ErrorType.GREATER_THAN_OR_EQUAL,
 								ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.min),
@@ -264,7 +264,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						}
 
 						if (scheme.exclusiveMax === true) {
-							if (!exclusiveMaxNumberTester(value, scheme.max)) {
+							if (!exclusiveMaxNumberTester(value, scheme.max as number)) {
 								result = new EjvError(
 									ErrorType.SMALLER_THAN,
 									ErrorMsg.SMALLER_THAN.replace(ErrorMsgCursorA, '' + scheme.max),
@@ -275,7 +275,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 								break;
 							}
 						} else {
-							if (!maxNumberTester(value, scheme.max)) {
+							if (!maxNumberTester(value, scheme.max as number)) {
 								result = new EjvError(
 									ErrorType.SMALLER_THAN_OR_EQUAL,
 									ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.max),
@@ -287,7 +287,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							}
 						}
 					} else {
-						if (!maxNumberTester(value, scheme.max)) {
+						if (!maxNumberTester(value, scheme.max as number)) {
 							result = new EjvError(
 								ErrorType.SMALLER_THAN_OR_EQUAL,
 								ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.max),
@@ -531,7 +531,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 					}
 
 					const isValidPattern = (pattern : string | RegExp) : boolean => {
-						return (stringTester(pattern) && minLengthTester(pattern, 1))
+						return (stringTester(pattern) && minLengthTester(pattern as string, 1))
 							|| (regExpTester(pattern) && pattern.toString() !== '/(?:)/' && pattern.toString() !== '/null/');
 					};
 
@@ -541,7 +541,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						if (pattern === null) {
 							regExpStr = '/null/';
 						} else if (stringTester(pattern)) {
-							if (minLengthTester(pattern, 1)) {
+							if (minLengthTester(pattern as string, 1)) {
 								regExpStr = new RegExp(pattern as string).toString();
 							} else {
 								regExpStr = '//';
@@ -679,7 +679,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 			case DataType.DATE:
 				if (definedTester(scheme.min)) {
 					if (!(
-						(stringTester(scheme.min) && (dateFormatTester(scheme.min) || dateTimeFormatTester(scheme.min)))
+						(stringTester(scheme.min) && (dateFormatTester(scheme.min as string) || dateTimeFormatTester(scheme.min as string)))
 						|| dateTester(scheme.min)
 					)) {
 						throw new Error(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING);
@@ -719,7 +719,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 
 				if (definedTester(scheme.max)) {
 					if (!(
-						(stringTester(scheme.max) && (dateFormatTester(scheme.max) || dateTimeFormatTester(scheme.max)))
+						(stringTester(scheme.max) && (dateFormatTester(scheme.max as string) || dateTimeFormatTester(scheme.max as string)))
 						|| dateTester(scheme.max)
 					)) {
 						throw new Error(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING);
@@ -821,7 +821,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 						});
 
 						if (stringTester(scheme.items) // by DataType
-							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items, DataType.STRING)) // by DataType[]
+							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as DataType[], DataType.STRING)) // by DataType[]
 						) {
 							let itemTypes : DataType[];
 
@@ -874,7 +874,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 							}
 							break;
 						} else if ((objectTester(scheme.items) && scheme.items !== null) // by Scheme
-							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items, DataType.OBJECT)) // by Scheme[]
+							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as Scheme[], DataType.OBJECT)) // by Scheme[]
 						) {
 							let itemsAsSchemes : Scheme[] = [];
 
@@ -984,7 +984,7 @@ const _ejv : Function = (data : object, schemes : Scheme[], options : InternalOp
 	return result;
 };
 
-export const ejv : Function = (data : object, schemes : Scheme[], options? : Options) : null | EjvError => {
+export const ejv = (data : object, schemes : Scheme[], options? : Options) : null | EjvError => {
 	// check data itself
 	if (!definedTester(data) || !objectTester(data) || data === null) {
 		return new EjvError(ErrorType.REQUIRED, ErrorMsg.NO_DATA, ['/'], data, undefined);
@@ -1007,5 +1007,5 @@ export const ejv : Function = (data : object, schemes : Scheme[], options? : Opt
 		throw new Error(ErrorMsg.EMPTY_SCHEME);
 	}
 
-	return _ejv(data, schemes, options);
+	return _ejv(data, schemes, options as InternalOptions);
 };
