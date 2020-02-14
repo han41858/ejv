@@ -517,7 +517,11 @@ Points to the location of the data where the error occurred.
 
 - `data : any`
 
-Displays the data that the error occurred.
+Means the data that passed to `ejv()`.
+
+- `errorData : any`
+
+Means the data that the error occurred.
 
 usage)
 
@@ -534,7 +538,8 @@ const error : null | EjvError = ejv({
 console.log(error.type); // 'TYPE_MISMATCH'
 console.log(error.keyword); // 'the value should be a string'
 console.log(error.path); // 'a'
-console.log(error.data); // 10
+console.log(error.data); // { a : 10 }
+console.log(error.errorData); // 10
 ```
 
 ## Options

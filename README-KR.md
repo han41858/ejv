@@ -517,7 +517,11 @@ ejv({
 
 - `data : any`
 
-에러가 발생한 데이터를 표시합니다.
+`ejv()`로 전달한 데이터 자체를 의미합니다.
+
+- `errorData : any`
+
+에러가 발생한 데이터를 의미합니다.
 
 사용방법)
 
@@ -534,7 +538,8 @@ const error : null | EjvError = ejv({
 console.log(error.type); // 'TYPE_MISMATCH'
 console.log(error.message); // 'the value should be a string'
 console.log(error.path); // 'a'
-console.log(error.data); // 10
+console.log(error.data); // { a : 10 }
+console.log(error.errorData); // 10
 ```
 
 ## 옵션
