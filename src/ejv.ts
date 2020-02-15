@@ -689,7 +689,15 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
 					}
 
-					const minDate : Date = new Date(scheme.min);
+					let minDate : Date = new Date(scheme.min);
+
+					// adjust timezone
+					if (stringTester(scheme.min)) {
+						// by minutes
+						const timezoneOffset : number = minDate.getTimezoneOffset();
+
+						minDate = new Date(+minDate + (timezoneOffset * 60 * 1000));
+					}
 
 					if (scheme.exclusiveMin !== true) {
 						if (!minDateTester(value, minDate)) {
@@ -729,7 +737,15 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 					}
 
-					const maxDate : Date = new Date(scheme.max);
+					let maxDate : Date = new Date(scheme.max);
+
+					// adjust timezone
+					if (stringTester(scheme.max)) {
+						// by minutes
+						const timezoneOffset : number = maxDate.getTimezoneOffset();
+
+						maxDate = new Date(+maxDate + (timezoneOffset * 60 * 1000));
+					}
 
 					if (scheme.exclusiveMax !== true) {
 						if (!maxDateTester(value, maxDate)) {
