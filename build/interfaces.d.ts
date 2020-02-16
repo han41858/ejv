@@ -21,7 +21,7 @@ export interface Scheme {
 }
 export interface Options {
     customErrorMsg?: {
-        [key in ErrorType]: any;
+        [key in ErrorType]?: string;
     };
 }
 export interface InternalOptions extends Options {
@@ -31,6 +31,7 @@ export declare class EjvError {
     type: ErrorType;
     message: string;
     data: any;
+    errorData: any;
     path: string;
-    constructor(type: ErrorType, message: string, path: string[], data: any);
+    constructor(type: ErrorType, message: string, path: string[], data: any, errorData: any);
 }

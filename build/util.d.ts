@@ -1,1 +1,1 @@
-export declare const clone: Function;
+export declare const clone: (obj: any) => any;
