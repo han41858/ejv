@@ -607,6 +607,17 @@ describe('testers', function () {
 	});
 
 	describe('date', () => {
+		const now : Date = new Date();
+
+		const year : number = now.getFullYear();
+		const month : number = now.getMonth();
+		const date : number = now.getDate();
+
+		const hours : number = now.getHours();
+		const minutes : number = now.getMinutes();
+		const seconds : number = now.getSeconds();
+		const ms : number = now.getMilliseconds();
+
 		describe('dateTester()', () => {
 			it('common test', () => {
 				expect(commonTestRunner(
@@ -629,137 +640,113 @@ describe('testers', function () {
 
 		it('minDateTester()', () => {
 			expect(minDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 29)
+				new Date(year, month, date),
+				new Date(year, month, date - 1)
 			)).to.be.true;
 			expect(minDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 30)
+				new Date(year, month, date),
+				new Date(year, month, date)
 			)).to.be.true;
 			expect(minDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 31)
+				new Date(year, month, date),
+				new Date(year, month, date + 1)
 			)).to.be.false;
 
 			expect(minDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, -1)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms - 1)
 			)).to.be.true;
 			expect(minDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, 0)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms)
 			)).to.be.true;
 			expect(minDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, 1)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms + 1)
 			)).to.be.false;
 		});
 
 		it('exclusiveMinDateTester()', () => {
 			expect(exclusiveMinDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 29)
+				new Date(year, month, date),
+				new Date(year, month, date - 1)
 			)).to.be.true;
 			expect(exclusiveMinDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 30)
+				new Date(year, month, date),
+				new Date(year, month, date)
 			)).to.be.false;
 			expect(exclusiveMinDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 31)
+				new Date(year, month, date),
+				new Date(year, month, date + 1)
 			)).to.be.false;
 
 			expect(exclusiveMinDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, -1)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms - 1)
 			)).to.be.true;
 			expect(exclusiveMinDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, 0)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms)
 			)).to.be.false;
 			expect(exclusiveMinDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, 1)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms + 1)
 			)).to.be.false;
 		});
 
 		it('maxDateTester()', () => {
 			expect(maxDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 29)
+				new Date(year, month, date),
+				new Date(year, month, date - 1)
 			)).to.be.false;
 			expect(maxDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 30)
+				new Date(year, month, date),
+				new Date(year, month, date)
 			)).to.be.true;
 			expect(maxDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 31)
+				new Date(year, month, date),
+				new Date(year, month, date + 1)
 			)).to.be.true;
 
 			expect(maxDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, -1)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms - 1)
 			)).to.be.false;
 			expect(maxDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, 0)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms)
 			)).to.be.true;
 			expect(maxDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, 1)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms + 1)
 			)).to.be.true;
 		});
 
 		it('exclusiveMaxDateTester()', () => {
 			expect(exclusiveMaxDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 29)
+				new Date(year, month, date),
+				new Date(year, month, date - 1)
 			)).to.be.false;
 			expect(exclusiveMaxDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 30)
+				new Date(year, month, date),
+				new Date(year, month, date)
 			)).to.be.false;
 			expect(exclusiveMaxDateTester(
-				new Date(2018, 11, 30),
-				new Date(2018, 11, 31)
+				new Date(year, month, date),
+				new Date(year, month, date + 1)
 			)).to.be.true;
 
 			expect(exclusiveMaxDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, -1)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms - 1)
 			)).to.be.false;
 			expect(exclusiveMaxDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, 0)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms)
 			)).to.be.false;
 			expect(exclusiveMaxDateTester(
-				new Date(2018, 11, 30,
-					0, 0, 0, 0),
-				new Date(2018, 11, 30,
-					0, 0, 0, 1)
+				new Date(year, month, date, hours, minutes, seconds, ms),
+				new Date(year, month, date, hours, minutes, seconds, ms + 1)
 			)).to.be.true;
 		});
 	});
