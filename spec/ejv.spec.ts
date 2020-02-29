@@ -4572,6 +4572,62 @@ describe('ejv()', () => {
 						}]
 					}])).to.be.null;
 				});
+
+				it('nested array - single scheme', () => {
+					const arr : string[] = ['ok', null];
+					const testObj = {
+						a : [{
+							b : arr
+						}]
+					};
+
+					const itemScheme : Scheme = { type : 'string', minLength : 1 };
+
+					const error : EjvError = ejv(testObj, [{
+						key : 'a', type : 'array', items : {
+							type : 'object', properties : [{
+								key : 'b', type : 'array', unique : true, minLength : 1, optional : true,
+								items : itemScheme
+							}]
+						}
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
+						.replace(ErrorMsgCursorA, JSON.stringify(itemScheme)));
+					expect(error.path).to.be.eql('a/0/b/1');
+					expect(error.data).to.be.eql(testObj);
+					expect(error.errorData).to.be.eql(null);
+				});
+
+				it('nested array - multiple chemes', () => {
+					const arr : string[] = ['ok', null];
+					const testObj = {
+						a : [{
+							b : arr
+						}]
+					};
+
+					const itemScheme : Scheme[] = [{ type : 'string', minLength : 1 }];
+
+					const error : EjvError = ejv(testObj, [{
+						key : 'a', type : 'array', items : {
+							type : 'object', properties : [{
+								key : 'b', type : 'array', unique : true, minLength : 1, optional : true,
+								items : itemScheme
+							}]
+						}
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
+					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
+						.replace(ErrorMsgCursorA, JSON.stringify(itemScheme)));
+					expect(error.path).to.be.eql('a/0/b/1');
+					expect(error.data).to.be.eql(testObj);
+					expect(error.errorData).to.be.eql(null);
+				});
 			});
 		});
 	});

@@ -839,13 +839,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						if (stringTester(scheme.items) // by DataType
 							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as DataType[], DataType.STRING)) // by DataType[]
 						) {
-							let itemTypes : DataType[];
-
-							if (arrayTester(scheme.items)) {
-								itemTypes = scheme.items as DataType[];
-							} else {
-								itemTypes = [scheme.items] as DataType[];
-							}
+							const itemTypes : DataType[] = (arrayTester(scheme.items) ? scheme.items : [scheme.items]) as DataType[];
 
 							const partialData : object = {};
 							const partialSchemes : Scheme[] = [];
@@ -892,19 +886,12 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						} else if ((objectTester(scheme.items) && scheme.items !== null) // by Scheme
 							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as Scheme[], DataType.OBJECT)) // by Scheme[]
 						) {
-							let itemsAsSchemes : Scheme[] = [];
-
-							if (arrayTester(scheme.items)) {
-								itemsAsSchemes = scheme.items as Scheme[];
-							} else {
-								itemsAsSchemes = [scheme.items] as Scheme[];
-							}
+							const itemsAsSchemes : Scheme[] = (arrayTester(scheme.items) ? scheme.items : [scheme.items]) as Scheme[];
 
 							let partialError : EjvError = null;
 
 							// use for() instead of forEach() to break
 							const valueLength : number = valueAsArray.length;
-							let errorIndex : number;
 
 							for (let arrIndex = 0; arrIndex < valueLength; arrIndex++) {
 								const oneValue : any = value[arrIndex];
@@ -929,7 +916,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 									const partialResult : EjvError = _ejv(partialData, [partialScheme], _options);
 
 									if (!!partialResult) {
-										errorIndex = arrIndex;
+										partialResult.path = partialResult.path.replace(tempKeyForThisValue, '' + arrIndex);
 									}
 
 									return partialResult;
@@ -946,11 +933,6 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 							if (!!partialError) {
 								let errorType : ErrorType;
 								let errorMsg : string;
-
-								// index 0 : key of array
-								// index 1 : temp key
-								const additionalKeys : string[] = partialError.path.split('/')
-									.filter((one, i) => i > 1);
 
 								if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
 									errorType = ErrorType.ITEMS_SCHEMES;
@@ -969,7 +951,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 								result = new EjvError(
 									errorType,
 									errorMsg,
-									[..._options.path, '' + errorIndex, ...additionalKeys],
+									partialError.path.split('/'),
 									data,
 									partialError.errorData
 								);
