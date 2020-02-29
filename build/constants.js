@@ -57,7 +57,6 @@ var ErrorMsg;
 (function (ErrorMsg) {
     // about Error
     ErrorMsg["NO_DATA"] = "no data to validate";
-    ErrorMsg["NO_JSON_DATA"] = "no JSON data to validate";
     ErrorMsg["NO_SCHEME"] = "no scheme";
     ErrorMsg["NO_ARRAY_SCHEME"] = "schemes should be array";
     ErrorMsg["NO_OBJECT_ARRAY_SCHEME"] = "schemes should be array of object";

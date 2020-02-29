@@ -1,4 +1,11 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var interfaces_1 = require("./interfaces");
 var constants_1 = require("./constants");
@@ -517,13 +524,7 @@ var _ejv = function (data, schemes, options) {
                         if (tester_1.stringTester(scheme.items) // by DataType
                             || (tester_1.arrayTester(scheme.items) && tester_1.arrayTypeOfTester(scheme.items, constants_1.DataType.STRING)) // by DataType[]
                         ) {
-                            var itemTypes_1;
-                            if (tester_1.arrayTester(scheme.items)) {
-                                itemTypes_1 = scheme.items;
-                            }
-                            else {
-                                itemTypes_1 = [scheme.items];
-                            }
+                            var itemTypes_1 = (tester_1.arrayTester(scheme.items) ? scheme.items : [scheme.items]);
                             var partialData_1 = {};
                             var partialSchemes_1 = [];
                             tempKeyArr.forEach(function (tempKey, i) {
@@ -550,24 +551,17 @@ var _ejv = function (data, schemes, options) {
                                     return scheme.key === partialKey_1;
                                 });
                                 var partialKeyIndex = partialSchemes_1.indexOf(partialScheme);
-                                result = new interfaces_1.EjvError(constants_1.ErrorType.ITEMS_TYPE, errorMsg, _options.path.concat(['' + partialKeyIndex]), data, partialData_1[partialKey_1]);
+                                result = new interfaces_1.EjvError(constants_1.ErrorType.ITEMS_TYPE, errorMsg, __spreadArrays(_options.path, ['' + partialKeyIndex]), data, partialData_1[partialKey_1]);
                             }
                             break;
                         }
                         else if ((tester_1.objectTester(scheme.items) && scheme.items !== null) // by Scheme
                             || (tester_1.arrayTester(scheme.items) && tester_1.arrayTypeOfTester(scheme.items, constants_1.DataType.OBJECT)) // by Scheme[]
                         ) {
-                            var itemsAsSchemes = [];
-                            if (tester_1.arrayTester(scheme.items)) {
-                                itemsAsSchemes = scheme.items;
-                            }
-                            else {
-                                itemsAsSchemes = [scheme.items];
-                            }
+                            var itemsAsSchemes = (tester_1.arrayTester(scheme.items) ? scheme.items : [scheme.items]);
                             var partialError = null;
                             // use for() instead of forEach() to break
                             var valueLength = valueAsArray_1.length;
-                            var errorIndex_1;
                             var _loop_2 = function (arrIndex) {
                                 var oneValue = value[arrIndex];
                                 var partialData = {};
@@ -583,7 +577,7 @@ var _ejv = function (data, schemes, options) {
                                     // call recursively
                                     var partialResult = _ejv(partialData, [partialScheme], _options);
                                     if (!!partialResult) {
-                                        errorIndex_1 = arrIndex;
+                                        partialResult.path = partialResult.path.replace(tempKeyForThisValue, '' + arrIndex);
                                     }
                                     return partialResult;
                                 });
@@ -602,10 +596,6 @@ var _ejv = function (data, schemes, options) {
                             if (!!partialError) {
                                 var errorType_1 = void 0;
                                 var errorMsg = void 0;
-                                // index 0 : key of array
-                                // index 1 : temp key
-                                var additionalKeys = partialError.path.split('/')
-                                    .filter(function (one, i) { return i > 1; });
                                 if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
                                     errorType_1 = constants_1.ErrorType.ITEMS_SCHEMES;
                                     errorMsg = constants_1.ErrorMsg.ITEMS_SCHEMES.replace(constants_1.ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
@@ -616,10 +606,10 @@ var _ejv = function (data, schemes, options) {
                                     if (errorType_1 === constants_1.ErrorType.REQUIRED) {
                                         // REQUIRED in array is TYPE_MISMATCH except with nullable === true
                                         errorType_1 = constants_1.ErrorType.TYPE_MISMATCH;
-                                        errorMsg = constants_1.ErrorMsg.TYPE_MISMATCH.replace(constants_1.ErrorMsgCursorA, scheme.items);
+                                        errorMsg = constants_1.ErrorMsg.TYPE_MISMATCH.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.items));
                                     }
                                 }
-                                result = new interfaces_1.EjvError(errorType_1, errorMsg, _options.path.concat(['' + errorIndex_1], additionalKeys), data, partialError.errorData);
+                                result = new interfaces_1.EjvError(errorType_1, errorMsg, partialError.path.split('/'), data, partialError.errorData);
                                 break;
                             }
                         }

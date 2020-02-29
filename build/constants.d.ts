@@ -45,7 +45,6 @@ export declare enum ErrorType {
 }
 export declare enum ErrorMsg {
     NO_DATA = "no data to validate",
-    NO_JSON_DATA = "no JSON data to validate",
     NO_SCHEME = "no scheme",
     NO_ARRAY_SCHEME = "schemes should be array",
     NO_OBJECT_ARRAY_SCHEME = "schemes should be array of object",
