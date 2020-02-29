@@ -962,7 +962,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 									if (errorType === ErrorType.REQUIRED) {
 										// REQUIRED in array is TYPE_MISMATCH except with nullable === true
 										errorType = ErrorType.TYPE_MISMATCH;
-										errorMsg = ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, scheme.items as string);
+										errorMsg = ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, JSON.stringify(scheme.items));
 									}
 								}
 
