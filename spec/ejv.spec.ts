@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
-import { DataType, ErrorMsg, ErrorMsgCursorA, ErrorType } from '../src/constants';
+import { ErrorMsg, ErrorMsgCursorA, ErrorType } from '../src/constants';
 import { EjvError, Scheme } from '../src/interfaces';
 
 const typeTester : {
@@ -4395,7 +4395,7 @@ describe('ejv()', () => {
 
 				it('fail', () => {
 					const itemScheme : Scheme = {
-						type : 'number' as DataType,
+						type : 'number',
 						min : 2
 					};
 
@@ -4515,12 +4515,12 @@ describe('ejv()', () => {
 
 				it('fail', () => {
 					const itemScheme1 : Scheme = {
-						type : 'number' as DataType,
+						type : 'number',
 						min : 2
 					};
 
 					const itemScheme2 : Scheme = {
-						type : 'number' as DataType,
+						type : 'number',
 						min : 3
 					};
 
