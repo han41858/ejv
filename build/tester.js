@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.regExpTester = exports.uniqueItemsTester = exports.arrayTypeOfTester = exports.arrayTester = exports.exclusiveMaxDateTester = exports.maxDateTester = exports.exclusiveMinDateTester = exports.minDateTester = exports.dateTester = exports.hasPropertyTester = exports.objectTester = exports.dateTimeFormatTester = exports.timeFormatTester = exports.dateFormatTester = exports.emailTester = exports.stringRegExpTester = exports.stringTester = exports.exclusiveMaxNumberTester = exports.maxNumberTester = exports.exclusiveMinNumberTester = exports.minNumberTester = exports.indexTester = exports.integerTester = exports.numberTester = exports.booleanTester = exports.maxLengthTester = exports.minLengthTester = exports.enumTester = exports.definedTester = exports.typeTester = void 0;
 var constants_1 = require("./constants");
 exports.typeTester = function (value, type) {
     var valid;
@@ -69,14 +70,14 @@ exports.stringTester = function (value) {
 };
 exports.stringRegExpTester = function (value, regExp) {
     var valid = false;
-    var _regExp;
+    var _regExp = undefined;
     if (exports.regExpTester(regExp)) {
         _regExp = regExp;
     }
     else if (exports.stringTester(regExp)) {
         _regExp = new RegExp(regExp);
     }
-    if (exports.regExpTester(_regExp)) {
+    if (!!_regExp && exports.regExpTester(_regExp)) {
         valid = _regExp.test(value);
     }
     return valid;

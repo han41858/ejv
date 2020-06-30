@@ -7,6 +7,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ejv = void 0;
 var interfaces_1 = require("./interfaces");
 var constants_1 = require("./constants");
 var tester_1 = require("./tester");
@@ -36,10 +37,12 @@ var _ejv = function (data, schemes, options) {
         }
         var scheme = schemes[i];
         var key = scheme.key;
-        var value = data[key];
-        _options.path.push(key);
+        var value;
+        if (!!key) {
+            value = data[key];
+            _options.path.push(key);
+        }
         var types = void 0;
-        var typeResolved = null;
         if (!tester_1.definedTester(scheme.type)) {
             throw new Error(constants_1.ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
         }
@@ -50,14 +53,10 @@ var _ejv = function (data, schemes, options) {
             types = scheme.type;
         }
         var allDataType = Object.values(constants_1.DataType);
-        var errorType;
-        if (!types.every(function (type) {
-            var valid = tester_1.stringTester(type) && tester_1.enumTester(type, allDataType);
-            if (valid === false) {
-                errorType = type;
-            }
-            return valid;
-        })) {
+        var errorType = types.find(function (type) {
+            return !(tester_1.stringTester(type) && tester_1.enumTester(type, allDataType));
+        });
+        if (!!errorType) {
             throw new Error(constants_1.ErrorMsg.SCHEMES_HAS_INVALID_TYPE.replace(constants_1.ErrorMsgCursorA, errorType));
         }
         if (!tester_1.uniqueItemsTester(types)) {
@@ -81,13 +80,10 @@ var _ejv = function (data, schemes, options) {
                 return "continue";
             }
         }
-        if (!types.some(function (type) {
-            var valid = tester_1.typeTester(value, type);
-            if (valid) {
-                typeResolved = type;
-            }
-            return valid;
-        })) {
+        var typeResolved = types.find(function (type) {
+            return tester_1.typeTester(value, type);
+        });
+        if (!typeResolved) {
             if (!tester_1.arrayTester(scheme.type)) {
                 result = new interfaces_1.EjvError(constants_1.ErrorType.TYPE_MISMATCH, constants_1.ErrorMsg.TYPE_MISMATCH.replace(constants_1.ErrorMsgCursorA, scheme.type), _options.path, data, value);
             }
@@ -103,23 +99,25 @@ var _ejv = function (data, schemes, options) {
                     if (!tester_1.arrayTester(scheme.enum)) {
                         throw new Error(constants_1.ErrorMsg.ENUM_SHOULD_BE_ARRAY);
                     }
-                    if (!tester_1.arrayTypeOfTester(scheme.enum, constants_1.DataType.NUMBER)) {
+                    var enumArr = scheme.enum;
+                    if (!tester_1.arrayTypeOfTester(enumArr, constants_1.DataType.NUMBER)) {
                         throw new Error(constants_1.ErrorMsg.ENUM_SHOULD_BE_NUMBERS);
                     }
-                    if (!tester_1.enumTester(value, scheme.enum)) {
-                        result = new interfaces_1.EjvError(constants_1.ErrorType.ONE_OF, constants_1.ErrorMsg.ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.enum)), _options.path, data, value);
+                    if (!tester_1.enumTester(value, enumArr)) {
+                        result = new interfaces_1.EjvError(constants_1.ErrorType.ONE_OF, constants_1.ErrorMsg.ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(enumArr)), _options.path, data, value);
                         break;
                     }
                 }
                 if (tester_1.definedTester(scheme.enumReverse)) {
-                    if (!tester_1.arrayTester(scheme.enumReverse)) {
+                    var enumReverseArr = scheme.enumReverse;
+                    if (!tester_1.arrayTester(enumReverseArr)) {
                         throw new Error(constants_1.ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
                     }
-                    if (!tester_1.arrayTypeOfTester(scheme.enumReverse, constants_1.DataType.NUMBER)) {
+                    if (!tester_1.arrayTypeOfTester(enumReverseArr, constants_1.DataType.NUMBER)) {
                         throw new Error(constants_1.ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS);
                     }
-                    if (tester_1.enumTester(value, scheme.enumReverse)) {
-                        result = new interfaces_1.EjvError(constants_1.ErrorType.NOT_ONE_OF, constants_1.ErrorMsg.NOT_ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.enumReverse)), _options.path, data, value);
+                    if (tester_1.enumTester(value, enumReverseArr)) {
+                        result = new interfaces_1.EjvError(constants_1.ErrorType.NOT_ONE_OF, constants_1.ErrorMsg.NOT_ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(enumReverseArr)), _options.path, data, value);
                         break;
                     }
                 }
@@ -191,15 +189,11 @@ var _ejv = function (data, schemes, options) {
                     }
                     else {
                         var formatAsArray = scheme.format;
-                        var errorFormat_1;
-                        if (!formatAsArray.every(function (format) {
-                            var valid = tester_1.enumTester(format, allNumberFormat_1);
-                            if (!valid) {
-                                errorFormat_1 = format;
-                            }
-                            return valid;
-                        })) {
-                            throw new Error(constants_1.ErrorMsg.INVALID_NUMBER_FORMAT.replace(constants_1.ErrorMsgCursorA, errorFormat_1));
+                        var errorFormat = formatAsArray.find(function (format) {
+                            return !tester_1.enumTester(format, allNumberFormat_1);
+                        });
+                        if (!!errorFormat) {
+                            throw new Error(constants_1.ErrorMsg.INVALID_NUMBER_FORMAT.replace(constants_1.ErrorMsgCursorA, errorFormat));
                         }
                         formats = scheme.format;
                     }
@@ -230,10 +224,11 @@ var _ejv = function (data, schemes, options) {
                     if (!tester_1.arrayTester(scheme.enum)) {
                         throw new Error(constants_1.ErrorMsg.ENUM_SHOULD_BE_ARRAY);
                     }
-                    if (!tester_1.arrayTypeOfTester(scheme.enum, constants_1.DataType.STRING)) {
+                    var enumArr = scheme.enum;
+                    if (!tester_1.arrayTypeOfTester(enumArr, constants_1.DataType.STRING)) {
                         throw new Error(constants_1.ErrorMsg.ENUM_SHOULD_BE_STRINGS);
                     }
-                    if (!tester_1.enumTester(value, scheme.enum)) {
+                    if (!tester_1.enumTester(value, enumArr)) {
                         result = new interfaces_1.EjvError(constants_1.ErrorType.ONE_OF, constants_1.ErrorMsg.ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.enum)), _options.path, data, value);
                         break;
                     }
@@ -242,29 +237,32 @@ var _ejv = function (data, schemes, options) {
                     if (!tester_1.arrayTester(scheme.enumReverse)) {
                         throw new Error(constants_1.ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
                     }
-                    if (!tester_1.arrayTypeOfTester(scheme.enumReverse, constants_1.DataType.STRING)) {
+                    var enumReverseArr = scheme.enumReverse;
+                    if (!tester_1.arrayTypeOfTester(enumReverseArr, constants_1.DataType.STRING)) {
                         throw new Error(constants_1.ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS);
                     }
-                    if (tester_1.enumTester(value, scheme.enumReverse)) {
-                        result = new interfaces_1.EjvError(constants_1.ErrorType.NOT_ONE_OF, constants_1.ErrorMsg.NOT_ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(scheme.enumReverse)), _options.path, data, value);
+                    if (tester_1.enumTester(value, enumReverseArr)) {
+                        result = new interfaces_1.EjvError(constants_1.ErrorType.NOT_ONE_OF, constants_1.ErrorMsg.NOT_ONE_OF.replace(constants_1.ErrorMsgCursorA, JSON.stringify(enumReverseArr)), _options.path, data, value);
                         break;
                     }
                 }
                 if (tester_1.definedTester(scheme.minLength)) {
-                    if (!(tester_1.numberTester(scheme.minLength) && tester_1.integerTester(scheme.minLength))) {
+                    var minLength = scheme.minLength;
+                    if (!(tester_1.numberTester(minLength) && tester_1.integerTester(minLength))) {
                         throw new Error(constants_1.ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
                     }
-                    if (!tester_1.minLengthTester(value, scheme.minLength)) {
-                        result = new interfaces_1.EjvError(constants_1.ErrorType.MIN_LENGTH, constants_1.ErrorMsg.MIN_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + scheme.minLength), _options.path, data, value);
+                    if (!tester_1.minLengthTester(value, minLength)) {
+                        result = new interfaces_1.EjvError(constants_1.ErrorType.MIN_LENGTH, constants_1.ErrorMsg.MIN_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + minLength), _options.path, data, value);
                         break;
                     }
                 }
                 if (tester_1.definedTester(scheme.maxLength)) {
-                    if (!(tester_1.numberTester(scheme.maxLength) && tester_1.integerTester(scheme.maxLength))) {
+                    var maxLength = scheme.maxLength;
+                    if (!(tester_1.numberTester(maxLength) && tester_1.integerTester(maxLength))) {
                         throw new Error(constants_1.ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
                     }
-                    if (!tester_1.maxLengthTester(value, scheme.maxLength)) {
-                        result = new interfaces_1.EjvError(constants_1.ErrorType.MAX_LENGTH, constants_1.ErrorMsg.MAX_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + scheme.maxLength), _options.path, data, value);
+                    if (!tester_1.maxLengthTester(value, maxLength)) {
+                        result = new interfaces_1.EjvError(constants_1.ErrorType.MAX_LENGTH, constants_1.ErrorMsg.MAX_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + maxLength), _options.path, data, value);
                         break;
                     }
                 }
@@ -280,15 +278,11 @@ var _ejv = function (data, schemes, options) {
                     }
                     else {
                         var formatAsArray = scheme.format;
-                        var errorFormat_2;
-                        if (!formatAsArray.every(function (format) {
-                            var valid = tester_1.enumTester(format, allStringFormat_1);
-                            if (valid === false) {
-                                errorFormat_2 = format;
-                            }
-                            return valid;
-                        })) {
-                            throw new Error(constants_1.ErrorMsg.INVALID_STRING_FORMAT.replace(constants_1.ErrorMsgCursorA, errorFormat_2));
+                        var errorFormat = formatAsArray.find(function (format) {
+                            return !tester_1.enumTester(format, allStringFormat_1);
+                        });
+                        if (!!errorFormat) {
+                            throw new Error(constants_1.ErrorMsg.INVALID_STRING_FORMAT.replace(constants_1.ErrorMsgCursorA, errorFormat));
                         }
                         formats = scheme.format;
                     }
@@ -407,10 +401,11 @@ var _ejv = function (data, schemes, options) {
                     if (!tester_1.arrayTester(scheme.properties)) {
                         throw new Error(constants_1.ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
                     }
-                    if (!tester_1.minLengthTester(scheme.properties, 1)) {
+                    var properties = scheme.properties;
+                    if (!tester_1.minLengthTester(properties, 1)) {
                         throw new Error(constants_1.ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS);
                     }
-                    if (!tester_1.arrayTypeOfTester(scheme.properties, constants_1.DataType.OBJECT)) {
+                    if (!tester_1.arrayTypeOfTester(properties, constants_1.DataType.OBJECT)) {
                         throw new Error(constants_1.ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
                     }
                     if (!tester_1.objectTester(value)) {
@@ -487,20 +482,22 @@ var _ejv = function (data, schemes, options) {
                 break;
             case constants_1.DataType.ARRAY:
                 if (tester_1.definedTester(scheme.minLength)) {
-                    if (!(tester_1.numberTester(scheme.minLength) && tester_1.integerTester(scheme.minLength))) {
+                    var minLength = scheme.minLength;
+                    if (!(tester_1.numberTester(scheme.minLength) && tester_1.integerTester(minLength))) {
                         throw new Error(constants_1.ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
                     }
-                    if (!tester_1.minLengthTester(value, scheme.minLength)) {
-                        result = new interfaces_1.EjvError(constants_1.ErrorType.MIN_LENGTH, constants_1.ErrorMsg.MIN_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + scheme.minLength), _options.path, data, value);
+                    if (!tester_1.minLengthTester(value, minLength)) {
+                        result = new interfaces_1.EjvError(constants_1.ErrorType.MIN_LENGTH, constants_1.ErrorMsg.MIN_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + minLength), _options.path, data, value);
                         break;
                     }
                 }
                 if (tester_1.definedTester(scheme.maxLength)) {
-                    if (!(tester_1.numberTester(scheme.maxLength) && tester_1.integerTester(scheme.maxLength))) {
+                    var maxLength = scheme.maxLength;
+                    if (!(tester_1.numberTester(scheme.maxLength) && tester_1.integerTester(maxLength))) {
                         throw new Error(constants_1.ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
                     }
-                    if (!tester_1.maxLengthTester(value, scheme.maxLength)) {
-                        result = new interfaces_1.EjvError(constants_1.ErrorType.MAX_LENGTH, constants_1.ErrorMsg.MAX_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + scheme.maxLength), _options.path, data, value);
+                    if (!tester_1.maxLengthTester(value, maxLength)) {
+                        result = new interfaces_1.EjvError(constants_1.ErrorType.MAX_LENGTH, constants_1.ErrorMsg.MAX_LENGTH.replace(constants_1.ErrorMsgCursorA, '' + maxLength), _options.path, data, value);
                         break;
                     }
                 }
@@ -630,10 +627,12 @@ var _ejv = function (data, schemes, options) {
             break;
     }
     if (tester_1.definedTester(result) && tester_1.definedTester(options.customErrorMsg)) {
+        var resultAsNotNull = result;
+        var customErrorMsgObj = options.customErrorMsg;
         // override error message
-        var customMsg = options.customErrorMsg[result.type];
+        var customMsg = customErrorMsgObj[resultAsNotNull.type];
         if (tester_1.definedTester(customMsg)) {
-            result.message = customMsg;
+            resultAsNotNull.message = customMsg;
         }
     }
     return result;

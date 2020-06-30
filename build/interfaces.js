@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.EjvError = void 0;
 var EjvError = /** @class */ (function () {
     function EjvError(type, message, path, data, errorData) {
         this.type = type;

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ErrorMsg = exports.ErrorType = exports.ErrorMsgCursorA = exports.StringFormat = exports.NumberFormat = exports.DataType = void 0;
 var DataType;
 (function (DataType) {
     DataType["BOOLEAN"] = "boolean";

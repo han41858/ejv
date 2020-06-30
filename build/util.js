@@ -7,15 +7,16 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.clone = void 0;
 exports.clone = function (obj) {
     var result = null;
     if (!!obj) {
         var type = typeof obj;
         if (type === 'object') {
-            if (obj.push !== undefined && obj.push instanceof Function) {
+            if (obj.push !== undefined && typeof obj.push === 'function') {
                 type = 'array';
             }
-            else if (obj.getFullYear !== undefined && obj.getFullYear instanceof Function) {
+            else if (obj.getFullYear !== undefined && typeof obj.getFullYear === 'function') {
                 type = 'date';
             }
             else if (obj.byteLength !== undefined) {
