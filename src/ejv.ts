@@ -35,7 +35,13 @@ import {
 } from './tester';
 import { clone } from './util';
 
-const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
+
+interface AnyObject {
+	[key : string] : any;
+}
+
+
+const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 	path : []
 }) : null | EjvError => {
 	// check schemes
@@ -52,7 +58,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 	}
 
 	// check data by schemes
-	let result : EjvError = null;
+	let result : EjvError | null = null;
 
 	// use for() instead of forEach() to stop
 	const schemeLength : number = schemes.length;
@@ -65,13 +71,17 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 		}
 
 		const scheme : Scheme = schemes[i];
-		const key : string = scheme.key;
-		const value : any = data[key];
+		const key : keyof T = scheme.key as keyof T;
 
-		_options.path.push(key);
+		let value : any;
+
+		if (!!key) {
+			value = data[key];
+
+			_options.path.push(key as string);
+		}
 
 		let types : DataType[];
-		let typeResolved : DataType = null;
 
 		if (!definedTester(scheme.type)) {
 			throw new Error(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
@@ -84,17 +94,13 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 		}
 
 		const allDataType : DataType[] = Object.values(DataType);
-		let errorType : string;
 
-		if (!types.every(type => {
-			const valid : boolean = stringTester(type) && enumTester(type, allDataType);
 
-			if (valid === false) {
-				errorType = type;
-			}
+		const errorType : string | undefined = types.find(type => {
+			return !(stringTester(type) && enumTester(type, allDataType));
+		});
 
-			return valid;
-		})) {
+		if (!!errorType) {
 			throw new Error(ErrorMsg.SCHEMES_HAS_INVALID_TYPE.replace(ErrorMsgCursorA, errorType));
 		}
 
@@ -132,15 +138,11 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 			}
 		}
 
-		if (!types.some(type => {
-			const valid : boolean = typeTester(value, type);
+		const typeResolved : DataType | undefined = types.find(type => {
+			return typeTester(value, type);
+		});
 
-			if (valid) {
-				typeResolved = type;
-			}
-
-			return valid;
-		})) {
+		if (!typeResolved) {
 			if (!arrayTester(scheme.type)) {
 				result = new EjvError(
 					ErrorType.TYPE_MISMATCH,
@@ -169,14 +171,16 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 					}
 
-					if (!arrayTypeOfTester(scheme.enum, DataType.NUMBER)) {
+					const enumArr : number[] = scheme.enum as number[];
+
+					if (!arrayTypeOfTester(enumArr, DataType.NUMBER)) {
 						throw new Error(ErrorMsg.ENUM_SHOULD_BE_NUMBERS);
 					}
 
-					if (!enumTester(value, scheme.enum)) {
+					if (!enumTester(value, enumArr)) {
 						result = new EjvError(
 							ErrorType.ONE_OF,
-							ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enum)),
+							ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumArr)),
 							_options.path,
 							data,
 							value
@@ -186,18 +190,20 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 				}
 
 				if (definedTester(scheme.enumReverse)) {
-					if (!arrayTester(scheme.enumReverse)) {
+					const enumReverseArr : number[] | string[] = scheme.enumReverse as number[] | string[];
+
+					if (!arrayTester(enumReverseArr)) {
 						throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 					}
 
-					if (!arrayTypeOfTester(scheme.enumReverse, DataType.NUMBER)) {
+					if (!arrayTypeOfTester(enumReverseArr, DataType.NUMBER)) {
 						throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS);
 					}
 
-					if (enumTester(value, scheme.enumReverse)) {
+					if (enumTester(value, enumReverseArr)) {
 						result = new EjvError(
 							ErrorType.NOT_ONE_OF,
-							ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enumReverse)),
+							ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
 							_options.path,
 							data,
 							value
@@ -316,17 +322,11 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 					} else {
 						const formatAsArray : NumberFormat[] = scheme.format as NumberFormat[];
 
-						let errorFormat : string;
+						const errorFormat : string | undefined = formatAsArray.find(format => {
+							return !enumTester(format, allNumberFormat);
+						});
 
-						if (!formatAsArray.every(format => {
-							const valid : boolean = enumTester(format, allNumberFormat);
-
-							if (!valid) {
-								errorFormat = format;
-							}
-
-							return valid;
-						})) {
+						if (!!errorFormat) {
 							throw new Error(ErrorMsg.INVALID_NUMBER_FORMAT.replace(ErrorMsgCursorA, errorFormat));
 						}
 
@@ -376,11 +376,13 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 					}
 
-					if (!arrayTypeOfTester(scheme.enum, DataType.STRING)) {
+					const enumArr : string[] = scheme.enum as string[];
+
+					if (!arrayTypeOfTester(enumArr, DataType.STRING)) {
 						throw new Error(ErrorMsg.ENUM_SHOULD_BE_STRINGS);
 					}
 
-					if (!enumTester(value, scheme.enum)) {
+					if (!enumTester(value, enumArr)) {
 						result = new EjvError(
 							ErrorType.ONE_OF,
 							ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enum)),
@@ -397,14 +399,16 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 					}
 
-					if (!arrayTypeOfTester(scheme.enumReverse, DataType.STRING)) {
+					const enumReverseArr : string[] = scheme.enumReverse as string[];
+
+					if (!arrayTypeOfTester(enumReverseArr, DataType.STRING)) {
 						throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS);
 					}
 
-					if (enumTester(value, scheme.enumReverse)) {
+					if (enumTester(value, enumReverseArr)) {
 						result = new EjvError(
 							ErrorType.NOT_ONE_OF,
-							ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enumReverse)),
+							ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
 							_options.path,
 							data,
 							value
@@ -414,14 +418,16 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 				}
 
 				if (definedTester(scheme.minLength)) {
-					if (!(numberTester(scheme.minLength) && integerTester(scheme.minLength))) {
+					const minLength : number = scheme.minLength as number;
+
+					if (!(numberTester(minLength) && integerTester(minLength))) {
 						throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 					}
 
-					if (!minLengthTester(value, scheme.minLength)) {
+					if (!minLengthTester(value, minLength)) {
 						result = new EjvError(
 							ErrorType.MIN_LENGTH,
-							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
+							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
 							_options.path,
 							data,
 							value
@@ -431,14 +437,16 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 				}
 
 				if (definedTester(scheme.maxLength)) {
-					if (!(numberTester(scheme.maxLength) && integerTester(scheme.maxLength))) {
+					const maxLength : number = scheme.maxLength as number;
+
+					if (!(numberTester(maxLength) && integerTester(maxLength))) {
 						throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 					}
 
-					if (!maxLengthTester(value, scheme.maxLength)) {
+					if (!maxLengthTester(value, maxLength)) {
 						result = new EjvError(
 							ErrorType.MAX_LENGTH,
-							ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
+							ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
 							_options.path,
 							data,
 							value
@@ -462,17 +470,11 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						formats = [scheme.format] as StringFormat[];
 					} else {
 						const formatAsArray : string[] = scheme.format as string[];
-						let errorFormat : string;
+						const errorFormat : string | undefined = formatAsArray.find(format => {
+							return !enumTester(format, allStringFormat);
+						});
 
-						if (!formatAsArray.every(format => {
-							const valid : boolean = enumTester(format, allStringFormat);
-
-							if (valid === false) {
-								errorFormat = format;
-							}
-
-							return valid;
-						})) {
+						if (!!errorFormat) {
 							throw new Error(ErrorMsg.INVALID_STRING_FORMAT.replace(ErrorMsgCursorA, errorFormat));
 						}
 
@@ -644,11 +646,13 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
 					}
 
-					if (!minLengthTester(scheme.properties, 1)) {
+					const properties : Scheme[] = scheme.properties as Scheme[];
+
+					if (!minLengthTester(properties, 1)) {
 						throw new Error(ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS);
 					}
 
-					if (!arrayTypeOfTester(scheme.properties, DataType.OBJECT)) {
+					if (!arrayTypeOfTester(properties, DataType.OBJECT)) {
 						throw new Error(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
 					}
 
@@ -663,8 +667,8 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						break;
 					}
 
-					const partialData : object = data[key];
-					const partialScheme : Scheme[] = scheme.properties;
+					const partialData : T[keyof T] = data[key];
+					const partialScheme : Scheme[] = scheme.properties as Scheme[];
 
 					// call recursively
 					result = _ejv(partialData, partialScheme, _options);
@@ -689,7 +693,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
 					}
 
-					let minDate : Date = new Date(scheme.min);
+					let minDate : Date = new Date(scheme.min as string | Date);
 
 					// adjust timezone
 					if (stringTester(scheme.min)) {
@@ -737,7 +741,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 					}
 
-					let maxDate : Date = new Date(scheme.max);
+					let maxDate : Date = new Date(scheme.max as string | Date);
 
 					// adjust timezone
 					if (stringTester(scheme.max)) {
@@ -776,14 +780,16 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 
 			case DataType.ARRAY:
 				if (definedTester(scheme.minLength)) {
-					if (!(numberTester(scheme.minLength) && integerTester(scheme.minLength))) {
+					const minLength : number = scheme.minLength as number;
+
+					if (!(numberTester(scheme.minLength) && integerTester(minLength))) {
 						throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 					}
 
-					if (!minLengthTester(value, scheme.minLength)) {
+					if (!minLengthTester(value, minLength)) {
 						result = new EjvError(
 							ErrorType.MIN_LENGTH,
-							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + scheme.minLength),
+							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
 							_options.path,
 							data,
 							value
@@ -793,14 +799,16 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 				}
 
 				if (definedTester(scheme.maxLength)) {
-					if (!(numberTester(scheme.maxLength) && integerTester(scheme.maxLength))) {
+					const maxLength : number = scheme.maxLength as number;
+
+					if (!(numberTester(scheme.maxLength) && integerTester(maxLength))) {
 						throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 					}
 
-					if (!maxLengthTester(value, scheme.maxLength)) {
+					if (!maxLengthTester(value, maxLength)) {
 						result = new EjvError(
 							ErrorType.MAX_LENGTH,
-							ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + scheme.maxLength),
+							ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
 							_options.path,
 							data,
 							value
@@ -841,7 +849,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						) {
 							const itemTypes : DataType[] = (arrayTester(scheme.items) ? scheme.items : [scheme.items]) as DataType[];
 
-							const partialData : object = {};
+							const partialData : AnyObject = {};
 							const partialSchemes : Scheme[] = [];
 
 							tempKeyArr.forEach((tempKey : string, i : number) => {
@@ -853,7 +861,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 							});
 
 							// call recursively
-							const partialResult : EjvError = _ejv(partialData, partialSchemes, _options);
+							const partialResult : EjvError | null = _ejv(partialData, partialSchemes, _options);
 
 							// convert new EjvError
 							if (!!partialResult) {
@@ -870,7 +878,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 
 								const partialScheme : Scheme = partialSchemes.find(scheme => {
 									return scheme.key === partialKey;
-								});
+								}) as Scheme;
 
 								const partialKeyIndex : number = partialSchemes.indexOf(partialScheme);
 
@@ -888,7 +896,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 						) {
 							const itemsAsSchemes : Scheme[] = (arrayTester(scheme.items) ? scheme.items : [scheme.items]) as Scheme[];
 
-							let partialError : EjvError = null;
+							let partialError : EjvError | null | undefined = null;
 
 							// use for() instead of forEach() to break
 							const valueLength : number = valueAsArray.length;
@@ -896,7 +904,7 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 							for (let arrIndex = 0; arrIndex < valueLength; arrIndex++) {
 								const oneValue : any = value[arrIndex];
 
-								const partialData : object = {};
+								const partialData : AnyObject = {};
 								const partialSchemes : Scheme[] = [];
 
 								const tempKeyForThisValue : string = tempKeyArr[arrIndex];
@@ -911,9 +919,9 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 									return newScheme;
 								}));
 
-								const partialResults : EjvError[] = partialSchemes.map((partialScheme : Scheme) => {
+								const partialResults : (EjvError | null)[] = partialSchemes.map((partialScheme : Scheme) => {
 									// call recursively
-									const partialResult : EjvError = _ejv(partialData, [partialScheme], _options);
+									const partialResult : EjvError | null = _ejv(partialData, [partialScheme], _options);
 
 									if (!!partialResult) {
 										partialResult.path = partialResult.path.replace(tempKeyForThisValue, '' + arrIndex);
@@ -971,11 +979,18 @@ const _ejv = (data : object, schemes : Scheme[], options : InternalOptions = {
 	}
 
 	if (definedTester(result) && definedTester(options.customErrorMsg)) {
+		const resultAsNotNull : EjvError = result as NonNullable<EjvError>;
+		const customErrorMsgObj : {
+			[key in ErrorType]? : string;
+		} = options.customErrorMsg as {
+			[key in ErrorType]? : string;
+		};
+
 		// override error message
-		const customMsg : string = options.customErrorMsg[result.type];
+		const customMsg : string = customErrorMsgObj[resultAsNotNull.type] as string;
 
 		if (definedTester(customMsg)) {
-			result.message = customMsg;
+			resultAsNotNull.message = customMsg;
 		}
 	}
 

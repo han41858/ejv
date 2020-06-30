@@ -5,9 +5,9 @@ export const clone = (obj : any) : any => {
 		let type : string = typeof obj;
 
 		if (type === 'object') {
-			if (obj.push !== undefined && obj.push instanceof Function) {
+			if (obj.push !== undefined && typeof obj.push === 'function') {
 				type = 'array';
-			} else if (obj.getFullYear !== undefined && obj.getFullYear instanceof Function) {
+			} else if (obj.getFullYear !== undefined && typeof obj.getFullYear === 'function') {
 				type = 'date';
 			} else if (obj.byteLength !== undefined) {
 				type = 'buffer';
@@ -35,7 +35,7 @@ export const clone = (obj : any) : any => {
 				break;
 
 			case 'array':
-				result = [...obj.map(one => {
+				result = [...obj.map((one : any) => {
 					return clone(one);
 				})];
 				break;

@@ -91,7 +91,7 @@ export const stringTester = (value : any) : boolean => {
 export const stringRegExpTester = (value : string, regExp : string | RegExp) : boolean => {
 	let valid : boolean = false;
 
-	let _regExp : RegExp;
+	let _regExp : RegExp | undefined = undefined;
 
 	if (regExpTester(regExp)) {
 		_regExp = regExp as RegExp;
@@ -99,7 +99,7 @@ export const stringRegExpTester = (value : string, regExp : string | RegExp) : b
 		_regExp = new RegExp(regExp);
 	}
 
-	if (regExpTester(_regExp)) {
+	if (!!_regExp && regExpTester(_regExp)) {
 		valid = _regExp.test(value);
 	}
 
@@ -158,11 +158,11 @@ const iso8601DateTester = (value : string) : boolean => {
 	return [
 		new RegExp(`^[-+]?${ years }$`), // years : YYYY, +YYYY, -YYYY
 		new RegExp(`^${ years }-${ months }(-${ dates })?$`), // calendar dates : YYYY-MM-DD, YYYY-MM
-		new RegExp(`^${years}${months}${dates}$`), // calendar dates : YYYYMMDD
-		new RegExp(`^--${months}-?${dates}$`), // calendar dates : --MM-DD, --MMDD
-		new RegExp(`^${years}-${weeks}(-${days})?$`), // week dates : YYYY-Www, YYYY-Www-D
-		new RegExp(`^${years}${weeks}(${days})?$`), // week dates : YYYYWww, YYYYWwwD
-		new RegExp(`^${years}-?${dateOfYear}$`) // ordinal dates : YYYY-DDD, YYYYDDD
+		new RegExp(`^${ years }${ months }${ dates }$`), // calendar dates : YYYYMMDD
+		new RegExp(`^--${ months }-?${ dates }$`), // calendar dates : --MM-DD, --MMDD
+		new RegExp(`^${ years }-${ weeks }(-${ days })?$`), // week dates : YYYY-Www, YYYY-Www-D
+		new RegExp(`^${ years }${ weeks }(${ days })?$`), // week dates : YYYYWww, YYYYWwwD
+		new RegExp(`^${ years }-?${ dateOfYear }$`) // ordinal dates : YYYY-DDD, YYYYDDD
 	].some((regExp : RegExp) => {
 		return regExp.test(value);
 	});
@@ -180,9 +180,9 @@ const iso8601TimeTester = (value : string) : boolean => {
 		new RegExp(`^((${ hours }:${ minutes }:${ seconds })|24:00:00)$`), // hh:mm:ss
 		new RegExp(`^((${ hours }:${ minutes }:${ seconds }${ ms })|24:00:00\.0+)$`), // hh:mm:ss
 
-		new RegExp(`^(${hours}${minutes}|2400)$`), // hhmm
-		new RegExp(`^(${hours}${minutes}${seconds}|240000)$`), // hhmmss
-		new RegExp(`^(${hours}${minutes}${seconds}${ms}|240000\.0+)$`) // hhmmss.sss
+		new RegExp(`^(${ hours }${ minutes }|2400)$`), // hhmm
+		new RegExp(`^(${ hours }${ minutes }${ seconds }|240000)$`), // hhmmss
+		new RegExp(`^(${ hours }${ minutes }${ seconds }${ ms }|240000\.0+)$`) // hhmmss.sss
 	]
 		.some((regExp : RegExp) => {
 			return regExp.test(value);
@@ -282,7 +282,7 @@ export const arrayTester = (value : any) : boolean => {
 };
 
 export const arrayTypeOfTester = (array : any[], type : DataType) : boolean => {
-	return array.every(item => {
+	return array.every((item : any) => {
 		return typeTester(item, type);
 	});
 };
