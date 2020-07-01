@@ -4,5 +4,4 @@ node_modules/
 
 yarn.lock
 
-build/spec
-build/src
+build
