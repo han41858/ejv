@@ -151,7 +151,7 @@ const iso8601DateTester = (value : string) : boolean => {
 	const years : string = '(\\d{4})';
 	const months : string = '(0[1-9]|1[0-2])';
 	const dates : string = '(0[1-9]|[1-2][0-9]|3[0-1])';
-	const dateOfYear : string = '(00[1-9]|0[1-9][0-9]|[1-2]\\d{2}|3[0-5]\\d|36[0-5])'; // TODO: 366 for leap year
+	const dateOfYear : string = '(00[1-9]|0[1-9][0-9]|[1-2]\\d{2}|3[0-5]\\d|36[0-6])'; // 366 for leap year
 	const weeks : string = '(W(0[1-9]|[2-4][0-9]|5[0-3]))';
 	const days : string = '[1-7]';
 
