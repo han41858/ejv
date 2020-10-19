@@ -166,6 +166,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 		// additional check for type resolved
 		switch (typeResolved) {
 			case DataType.NUMBER:
+				const valueAsNumber : number = value as unknown as number;
+
 				if (definedTester(scheme.enum)) {
 					if (!arrayTester(scheme.enum)) {
 						throw new Error(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
@@ -177,7 +179,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.ENUM_SHOULD_BE_NUMBERS);
 					}
 
-					if (!enumTester(value, enumArr)) {
+					if (!enumTester(valueAsNumber, enumArr)) {
 						result = new EjvError(
 							ErrorType.ONE_OF,
 							ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumArr)),
@@ -190,7 +192,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 				}
 
 				if (definedTester(scheme.enumReverse)) {
-					const enumReverseArr : number[] | string[] = scheme.enumReverse as number[] | string[];
+					const enumReverseArr : number[] = scheme.enumReverse as number[];
 
 					if (!arrayTester(enumReverseArr)) {
 						throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
@@ -200,7 +202,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS);
 					}
 
-					if (enumTester(value, enumReverseArr)) {
+					if (enumTester(valueAsNumber, enumReverseArr)) {
 						result = new EjvError(
 							ErrorType.NOT_ONE_OF,
 							ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
@@ -223,7 +225,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						}
 
 						if (scheme.exclusiveMin === true) {
-							if (!exclusiveMinNumberTester(value, scheme.min as number)) {
+							if (!exclusiveMinNumberTester(valueAsNumber, scheme.min as number)) {
 								result = new EjvError(
 									ErrorType.GREATER_THAN,
 									ErrorMsg.GREATER_THAN.replace(ErrorMsgCursorA, '' + scheme.min),
@@ -234,7 +236,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								break;
 							}
 						} else {
-							if (!minNumberTester(value, scheme.min as number)) {
+							if (!minNumberTester(valueAsNumber, scheme.min as number)) {
 								result = new EjvError(
 									ErrorType.GREATER_THAN_OR_EQUAL,
 									ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.min),
@@ -246,7 +248,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							}
 						}
 					} else {
-						if (!minNumberTester(value, scheme.min as number)) {
+						if (!minNumberTester(valueAsNumber, scheme.min as number)) {
 							result = new EjvError(
 								ErrorType.GREATER_THAN_OR_EQUAL,
 								ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.min),
@@ -270,7 +272,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						}
 
 						if (scheme.exclusiveMax === true) {
-							if (!exclusiveMaxNumberTester(value, scheme.max as number)) {
+							if (!exclusiveMaxNumberTester(valueAsNumber, scheme.max as number)) {
 								result = new EjvError(
 									ErrorType.SMALLER_THAN,
 									ErrorMsg.SMALLER_THAN.replace(ErrorMsgCursorA, '' + scheme.max),
@@ -281,7 +283,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								break;
 							}
 						} else {
-							if (!maxNumberTester(value, scheme.max as number)) {
+							if (!maxNumberTester(valueAsNumber, scheme.max as number)) {
 								result = new EjvError(
 									ErrorType.SMALLER_THAN_OR_EQUAL,
 									ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.max),
@@ -293,7 +295,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							}
 						}
 					} else {
-						if (!maxNumberTester(value, scheme.max as number)) {
+						if (!maxNumberTester(valueAsNumber, scheme.max as number)) {
 							result = new EjvError(
 								ErrorType.SMALLER_THAN_OR_EQUAL,
 								ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + scheme.max),
@@ -371,6 +373,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 				break;
 
 			case DataType.STRING:
+				const valueAsString : string = value as unknown as string;
+
 				if (definedTester(scheme.enum)) {
 					if (!arrayTester(scheme.enum)) {
 						throw new Error(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
@@ -382,7 +386,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.ENUM_SHOULD_BE_STRINGS);
 					}
 
-					if (!enumTester(value, enumArr)) {
+					if (!enumTester(valueAsString, enumArr)) {
 						result = new EjvError(
 							ErrorType.ONE_OF,
 							ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.enum)),
@@ -405,7 +409,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS);
 					}
 
-					if (enumTester(value, enumReverseArr)) {
+					if (enumTester(valueAsString, enumReverseArr)) {
 						result = new EjvError(
 							ErrorType.NOT_ONE_OF,
 							ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
@@ -424,7 +428,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 					}
 
-					if (!minLengthTester(value, minLength)) {
+					if (!minLengthTester(valueAsString, minLength)) {
 						result = new EjvError(
 							ErrorType.MIN_LENGTH,
 							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
@@ -443,7 +447,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 					}
 
-					if (!maxLengthTester(value, maxLength)) {
+					if (!maxLengthTester(valueAsString, maxLength)) {
 						result = new EjvError(
 							ErrorType.MAX_LENGTH,
 							ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
@@ -609,7 +613,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						// check value
 						const regExp : RegExp = new RegExp(patternAsOne);
 
-						if (!stringRegExpTester(value, regExp)) {
+						if (!stringRegExpTester(valueAsString, regExp)) {
 							result = new EjvError(
 								ErrorType.PATTERN,
 								ErrorMsg.PATTERN.replace(ErrorMsgCursorA, patternToString(patternAsOne)),
@@ -624,12 +628,14 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 				break;
 
 			case DataType.OBJECT:
+				const valueAsObject = value as unknown as { [key : string] : any };
+
 				if (definedTester(scheme.allowNoProperty)) {
 					if (!booleanTester(scheme.allowNoProperty)) {
 						throw new Error(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
 					}
 
-					if (scheme.allowNoProperty !== true && !hasPropertyTester(value)) {
+					if (scheme.allowNoProperty !== true && !hasPropertyTester(valueAsObject)) {
 						result = new EjvError(
 							ErrorType.NO_PROPERTY,
 							ErrorMsg.NO_PROPERTY,
@@ -681,6 +687,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 				break;
 
 			case DataType.DATE:
+				const valueAsDate : Date = value as unknown as Date;
+
 				if (definedTester(scheme.min)) {
 					if (!(
 						(stringTester(scheme.min) && (dateFormatTester(scheme.min as string) || dateTimeFormatTester(scheme.min as string)))
@@ -704,7 +712,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					}
 
 					if (scheme.exclusiveMin !== true) {
-						if (!minDateTester(value, minDate)) {
+						if (!minDateTester(valueAsDate, minDate)) {
 							result = new EjvError(
 								ErrorType.AFTER_OR_SAME_DATE,
 								ErrorMsg.AFTER_OR_SAME_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
@@ -716,7 +724,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						}
 
 					} else {
-						if (!exclusiveMinDateTester(value, minDate)) {
+						if (!exclusiveMinDateTester(valueAsDate, minDate)) {
 							result = new EjvError(
 								ErrorType.AFTER_DATE,
 								ErrorMsg.AFTER_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
@@ -752,7 +760,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					}
 
 					if (scheme.exclusiveMax !== true) {
-						if (!maxDateTester(value, maxDate)) {
+						if (!maxDateTester(valueAsDate, maxDate)) {
 							result = new EjvError(
 								ErrorType.BEFORE_OR_SAME_DATE,
 								ErrorMsg.BEFORE_OR_SAME_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
@@ -764,7 +772,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						}
 
 					} else {
-						if (!exclusiveMaxDateTester(value, maxDate)) {
+						if (!exclusiveMaxDateTester(valueAsDate, maxDate)) {
 							result = new EjvError(
 								ErrorType.BEFORE_DATE,
 								ErrorMsg.BEFORE_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
@@ -779,6 +787,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 				break;
 
 			case DataType.ARRAY:
+				const valueAsArray : any[] = value as unknown as any[];
+
 				if (definedTester(scheme.minLength)) {
 					const minLength : number = scheme.minLength as number;
 
@@ -786,7 +796,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 					}
 
-					if (!minLengthTester(value, minLength)) {
+					if (!minLengthTester(valueAsArray, minLength)) {
 						result = new EjvError(
 							ErrorType.MIN_LENGTH,
 							ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
@@ -805,7 +815,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 					}
 
-					if (!maxLengthTester(value, maxLength)) {
+					if (!maxLengthTester(valueAsArray, maxLength)) {
 						result = new EjvError(
 							ErrorType.MAX_LENGTH,
 							ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
@@ -822,7 +832,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
 					}
 
-					if (scheme.unique === true && !uniqueItemsTester(value)) {
+					if (scheme.unique === true && !uniqueItemsTester(valueAsArray)) {
 						result = new EjvError(
 							ErrorType.UNIQUE_ITEMS,
 							ErrorMsg.UNIQUE_ITEMS,
@@ -836,8 +846,6 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 
 				if (definedTester(scheme.items)) {
 					// convert array to object
-					const valueAsArray : any[] = value as any[];
-
 					if (valueAsArray.length > 0) {
 						const now : Date = new Date;
 						const tempKeyArr : string[] = valueAsArray.map((value : any, i : number) => {
@@ -902,7 +910,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							const valueLength : number = valueAsArray.length;
 
 							for (let arrIndex = 0; arrIndex < valueLength; arrIndex++) {
-								const oneValue : any = value[arrIndex];
+								const oneValue : any = valueAsArray[arrIndex];
 
 								const partialData : AnyObject = {};
 								const partialSchemes : Scheme[] = [];

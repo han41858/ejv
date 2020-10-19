@@ -36,11 +36,11 @@ export const typeTester = (value : any, type : DataType) : boolean => {
 	return valid;
 };
 
-export const definedTester = (value : any) : boolean => {
+export const definedTester = (value : any) : value is boolean => {
 	return value !== undefined;
 };
 
-export const enumTester = <T>(value : T, arr : T[]) : boolean => {
+export const enumTester = <T> (value : T, arr : T[]) : boolean => {
 	return arr.includes(value);
 };
 
@@ -56,7 +56,7 @@ export const booleanTester = (value : any) : boolean => {
 	return typeof value === 'boolean';
 };
 
-export const numberTester = (value : any) : boolean => {
+export const numberTester = (value : any) : value is number => {
 	return typeof value === 'number';
 };
 
@@ -64,7 +64,7 @@ export const integerTester = (value : number) : boolean => {
 	return +value.toFixed(0) === value;
 };
 
-export const indexTester = (value : number) : boolean => {
+export const indexTester = (value : number) : value is number => {
 	return integerTester(value) && value >= 0;
 };
 
@@ -84,7 +84,7 @@ export const exclusiveMaxNumberTester = (value : number, max : number) : boolean
 	return value < max;
 };
 
-export const stringTester = (value : any) : boolean => {
+export const stringTester = (value : any) : value is string => {
 	return typeof value === 'string';
 };
 
@@ -95,7 +95,8 @@ export const stringRegExpTester = (value : string, regExp : string | RegExp) : b
 
 	if (regExpTester(regExp)) {
 		_regExp = regExp as RegExp;
-	} else if (stringTester(regExp)) {
+	}
+	else if (stringTester(regExp)) {
 		_regExp = new RegExp(regExp);
 	}
 
@@ -199,7 +200,8 @@ const iso8601DateTimeTester = (value : string) : boolean => {
 
 		if (time.endsWith('Z')) {
 			time = time.replace('Z', '');
-		} else {
+		}
+		else {
 			const timezoneStartIndex : number = time.includes('+') ? time.indexOf('+') : time.indexOf('-');
 
 			time = time.substr(0, timezoneStartIndex);
@@ -244,7 +246,7 @@ export const dateTimeFormatTester = (value : string) : boolean => {
 // 	return ipv4Tester(value) || ipv6Tester(value);
 // };
 
-export const objectTester = (value : any) : boolean => {
+export const objectTester = (value : any) : value is { [key : string] : any } => {
 	return typeof value === 'object';
 };
 
@@ -252,7 +254,7 @@ export const hasPropertyTester = (value : object) : boolean => {
 	return Object.keys(value).length > 0;
 };
 
-export const dateTester = (value : any) : boolean => {
+export const dateTester = (value : any) : value is Date => {
 	return objectTester(value)
 		&& value !== null
 		&& value.getFullYear !== undefined;
@@ -274,7 +276,7 @@ export const exclusiveMaxDateTester = (value : Date, max : Date) : boolean => {
 	return +value < +max;
 };
 
-export const arrayTester = (value : any) : boolean => {
+export const arrayTester = (value : any) : value is any[] => {
 	return objectTester(value)
 		&& value !== null
 		&& value.length !== undefined
@@ -293,6 +295,6 @@ export const uniqueItemsTester = (array : any[]) : boolean => {
 	});
 };
 
-export const regExpTester = (value : any) : boolean => {
+export const regExpTester = (value : any) : value is RegExp => {
 	return value instanceof RegExp;
 };
