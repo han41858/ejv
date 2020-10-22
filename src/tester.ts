@@ -257,7 +257,8 @@ export const hasPropertyTester = (value : object) : boolean => {
 export const dateTester = (value : any) : value is Date => {
 	return objectTester(value)
 		&& value !== null
-		&& value.getFullYear !== undefined;
+		&& typeof value.getFullYear === 'function'
+		&& !isNaN(value.getFullYear());
 };
 
 export const minDateTester = (value : Date, min : Date) : boolean => {
