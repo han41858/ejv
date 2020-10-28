@@ -278,10 +278,7 @@ export const exclusiveMaxDateTester = (value : Date, max : Date) : boolean => {
 };
 
 export const arrayTester = (value : any) : value is any[] => {
-	return objectTester(value)
-		&& value !== null
-		&& value.length !== undefined
-		&& value.push !== undefined;
+	return Array.isArray(value);
 };
 
 export const arrayTypeOfTester = (array : any[], type : DataType) : boolean => {
