@@ -19,6 +19,7 @@ import {
 	hasPropertyTester,
 	indexTester,
 	integerTester,
+	lengthTester,
 	maxDateTester,
 	maxLengthTester,
 	maxNumberTester,
@@ -59,6 +60,18 @@ describe('testers', function () {
 
 				expect(enumTester(1, [1, 2, 3])).to.be.true;
 				expect(enumTester(1, [2, 3])).to.be.false;
+			});
+		});
+
+		describe('lengthTester()', () => {
+			it('logic test', () => {
+				expect(lengthTester('abcd', 3)).to.be.false;
+				expect(lengthTester('abcd', 4)).to.be.true;
+				expect(lengthTester('abcd', 5)).to.be.false;
+
+				expect(lengthTester([1, 2, 3, 4], 3)).to.be.false;
+				expect(lengthTester([1, 2, 3, 4], 4)).to.be.true;
+				expect(lengthTester([1, 2, 3, 4], 5)).to.be.false;
 			});
 		});
 

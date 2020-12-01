@@ -24,6 +24,7 @@ export interface Scheme {
 	format? : string | string[] | NumberFormat | NumberFormat[] | StringFormat | StringFormat[];
 
 	// common - string & array
+	length? : number;
 	minLength? : number;
 	maxLength? : number;
 

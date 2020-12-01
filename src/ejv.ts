@@ -18,6 +18,7 @@ import {
 	hasPropertyTester,
 	indexTester,
 	integerTester,
+	lengthTester,
 	maxDateTester,
 	maxLengthTester,
 	maxNumberTester,
@@ -421,6 +422,25 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					}
 				}
 
+				if (definedTester(scheme.length)) {
+					const length : number = scheme.length as number;
+
+					if (!(numberTester(length) && integerTester(length))) {
+						throw new Error(ErrorMsg.LENGTH_SHOULD_BE_INTEGER);
+					}
+
+					if (!lengthTester(valueAsString, length)) {
+						result = new EjvError(
+							ErrorType.LENGTH,
+							ErrorMsg.LENGTH.replace(ErrorMsgCursorA, '' + length),
+							_options.path,
+							data,
+							value
+						);
+						break;
+					}
+				}
+
 				if (definedTester(scheme.minLength)) {
 					const minLength : number = scheme.minLength as number;
 
@@ -788,6 +808,25 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 
 			case DataType.ARRAY:
 				const valueAsArray : any[] = value as unknown as any[];
+
+				if (definedTester(scheme.length)) {
+					const length : number = scheme.length as number;
+
+					if (!(numberTester(length) && integerTester(length))) {
+						throw new Error(ErrorMsg.LENGTH_SHOULD_BE_INTEGER);
+					}
+
+					if (!lengthTester(valueAsArray, length)) {
+						result = new EjvError(
+							ErrorType.LENGTH,
+							ErrorMsg.LENGTH.replace(ErrorMsgCursorA, '' + length),
+							_options.path,
+							data,
+							value
+						);
+						break;
+					}
+				}
 
 				if (definedTester(scheme.minLength)) {
 					const minLength : number = scheme.minLength as number;

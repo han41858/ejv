@@ -44,6 +44,10 @@ export const enumTester = <T> (value : T, arr : T[]) : boolean => {
 	return arr.includes(value);
 };
 
+export const lengthTester = (value : string | any[], length : number) : boolean => {
+	return value.length === length;
+};
+
 export const minLengthTester = (value : string | any[], minLength : number) : boolean => {
 	return value.length >= minLength;
 };

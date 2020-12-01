@@ -47,6 +47,7 @@ export enum ErrorType {
 	SMALLER_THAN_OR_EQUAL = 'SMALLER_THAN_OR_EQUAL',
 	SMALLER_THAN = 'SMALLER_THAN',
 
+	LENGTH = 'LENGTH',
 	MIN_LENGTH = 'MIN_LENGTH',
 	MAX_LENGTH = 'MAX_LENGTH',
 
@@ -98,6 +99,7 @@ export enum ErrorMsg {
 	INVALID_STRING_FORMAT = 'invalid string format : <<A>>',
 	INVALID_STRING_PATTERN = 'invalid string pattern : <<A>>',
 
+	LENGTH_SHOULD_BE_INTEGER = 'length should be a integer',
 	MIN_LENGTH_SHOULD_BE_INTEGER = 'minLength should be a integer',
 	MAX_LENGTH_SHOULD_BE_INTEGER = 'maxLength should be a integer',
 
@@ -132,6 +134,7 @@ export enum ErrorMsg {
 	SMALLER_THAN_OR_EQUAL = 'the value should be smaller or equal than <<A>>', // max
 	SMALLER_THAN = 'the value should be smaller than <<A>>', // max
 
+	LENGTH = 'the value should be length of <<A>>', // length
 	MIN_LENGTH = 'the value should be longer than <<A>>', // minLength
 	MAX_LENGTH = 'the value should be shorter than <<A>>', // maxLength
 
