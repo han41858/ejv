@@ -61,7 +61,7 @@ export const booleanTester = (value : any) : boolean => {
 };
 
 export const numberTester = (value : any) : value is number => {
-	return typeof value === 'number';
+	return typeof value === 'number' && !isNaN(value);
 };
 
 export const integerTester = (value : number) : boolean => {

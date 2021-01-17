@@ -155,6 +155,8 @@ describe('testers', function () {
 
 				expect(numberTester('8')).to.be.false;
 				expect(numberTester('8.5')).to.be.false;
+
+				expect(numberTester(NaN)).to.be.false;
 			});
 		});
 
