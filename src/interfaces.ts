@@ -53,11 +53,17 @@ export interface InternalOptions extends Options {
 export class EjvError {
 	public path : string;
 
-	constructor (public type : ErrorType,
-	             public message : string,
-	             path : string[],
-	             public data : any,
-	             public errorData : any) {
+	constructor (
+		public type : ErrorType,
+		public message : string,
+		path : string[],
+		public data : unknown,
+		public errorData : unknown
+	) {
 		this.path = path.join('/');
 	}
+}
+
+export interface AnyObject {
+	[key : string] : unknown;
 }

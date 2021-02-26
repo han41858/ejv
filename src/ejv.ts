@@ -1,4 +1,4 @@
-import { EjvError, InternalOptions, Options, Scheme } from './interfaces';
+import { AnyObject, EjvError, InternalOptions, Options, Scheme } from './interfaces';
 import { DataType, ErrorMsg, ErrorMsgCursorA, ErrorType, NumberFormat, StringFormat } from './constants';
 
 import {
@@ -37,12 +37,7 @@ import {
 import { clone } from './util';
 
 
-interface AnyObject {
-	[key : string] : any;
-}
-
-
-const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
+const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions = {
 	path : []
 }) : null | EjvError => {
 	// check schemes
@@ -74,9 +69,9 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 		const scheme : Scheme = schemes[i];
 		const key : keyof T = scheme.key as keyof T;
 
-		let value : any;
+		let value : unknown;
 
-		if (!!key) {
+		if (key) {
 			value = data[key];
 
 			_options.path.push(key as string);
@@ -90,7 +85,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 
 		if (!arrayTester(scheme.type)) {
 			types = [scheme.type as DataType];
-		} else {
+		}
+		else {
 			types = scheme.type as DataType[];
 		}
 
@@ -101,7 +97,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 			return !(stringTester(type) && enumTester(type, allDataType));
 		});
 
-		if (!!errorType) {
+		if (errorType) {
 			throw new Error(ErrorMsg.SCHEMES_HAS_INVALID_TYPE.replace(ErrorMsgCursorA, errorType));
 		}
 
@@ -119,7 +115,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					value
 				);
 				break;
-			} else {
+			}
+			else {
 				continue;
 			}
 		}
@@ -134,7 +131,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					value
 				);
 				break;
-			} else {
+			}
+			else {
 				continue;
 			}
 		}
@@ -152,7 +150,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					data,
 					value
 				);
-			} else {
+			}
+			else {
 				result = new EjvError(
 					ErrorType.TYPE_MISMATCH_ONE_OF,
 					ErrorMsg.TYPE_MISMATCH_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.type)),
@@ -166,7 +165,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 
 		// additional check for type resolved
 		switch (typeResolved) {
-			case DataType.NUMBER:
+			case DataType.NUMBER: {
 				const valueAsNumber : number = value as unknown as number;
 
 				if (definedTester(scheme.enum)) {
@@ -225,7 +224,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							throw new Error(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
 						}
 
-						if (scheme.exclusiveMin === true) {
+						if (scheme.exclusiveMin) {
 							if (!exclusiveMinNumberTester(valueAsNumber, scheme.min as number)) {
 								result = new EjvError(
 									ErrorType.GREATER_THAN,
@@ -236,7 +235,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								);
 								break;
 							}
-						} else {
+						}
+						else {
 							if (!minNumberTester(valueAsNumber, scheme.min as number)) {
 								result = new EjvError(
 									ErrorType.GREATER_THAN_OR_EQUAL,
@@ -248,7 +248,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								break;
 							}
 						}
-					} else {
+					}
+					else {
 						if (!minNumberTester(valueAsNumber, scheme.min as number)) {
 							result = new EjvError(
 								ErrorType.GREATER_THAN_OR_EQUAL,
@@ -272,7 +273,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							throw new Error(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 						}
 
-						if (scheme.exclusiveMax === true) {
+						if (scheme.exclusiveMax) {
 							if (!exclusiveMaxNumberTester(valueAsNumber, scheme.max as number)) {
 								result = new EjvError(
 									ErrorType.SMALLER_THAN,
@@ -283,7 +284,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								);
 								break;
 							}
-						} else {
+						}
+						else {
 							if (!maxNumberTester(valueAsNumber, scheme.max as number)) {
 								result = new EjvError(
 									ErrorType.SMALLER_THAN_OR_EQUAL,
@@ -295,7 +297,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								break;
 							}
 						}
-					} else {
+					}
+					else {
 						if (!maxNumberTester(valueAsNumber, scheme.max as number)) {
 							result = new EjvError(
 								ErrorType.SMALLER_THAN_OR_EQUAL,
@@ -322,14 +325,15 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						}
 
 						formats = [scheme.format as NumberFormat];
-					} else {
+					}
+					else {
 						const formatAsArray : NumberFormat[] = scheme.format as NumberFormat[];
 
 						const errorFormat : string | undefined = formatAsArray.find(format => {
 							return !enumTester(format, allNumberFormat);
 						});
 
-						if (!!errorFormat) {
+						if (errorFormat) {
 							throw new Error(ErrorMsg.INVALID_NUMBER_FORMAT.replace(ErrorMsgCursorA, errorFormat));
 						}
 
@@ -337,15 +341,15 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					}
 
 					if (!formats.some(format => {
-						let valid : boolean = false;
+						let valid = false;
 
 						switch (format) {
 							case NumberFormat.INTEGER:
-								valid = integerTester(value);
+								valid = integerTester(valueAsNumber);
 								break;
 
 							case NumberFormat.INDEX:
-								valid = indexTester(value);
+								valid = indexTester(valueAsNumber);
 								break;
 						}
 
@@ -359,7 +363,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								data,
 								value
 							);
-						} else {
+						}
+						else {
 							result = new EjvError(
 								ErrorType.FORMAT_ONE_OF,
 								ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.format)),
@@ -372,8 +377,9 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					}
 				}
 				break;
+			}
 
-			case DataType.STRING:
+			case DataType.STRING: {
 				const valueAsString : string = value as unknown as string;
 
 				if (definedTester(scheme.enum)) {
@@ -492,13 +498,14 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						}
 
 						formats = [scheme.format] as StringFormat[];
-					} else {
+					}
+					else {
 						const formatAsArray : string[] = scheme.format as string[];
 						const errorFormat : string | undefined = formatAsArray.find(format => {
 							return !enumTester(format, allStringFormat);
 						});
 
-						if (!!errorFormat) {
+						if (errorFormat) {
 							throw new Error(ErrorMsg.INVALID_STRING_FORMAT.replace(ErrorMsgCursorA, errorFormat));
 						}
 
@@ -506,23 +513,23 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					}
 
 					if (!formats.some(format => {
-						let valid : boolean = false;
+						let valid = false;
 
 						switch (format) {
 							case StringFormat.EMAIL:
-								valid = emailTester(value);
+								valid = emailTester(valueAsString);
 								break;
 
 							case StringFormat.DATE:
-								valid = dateFormatTester(value);
+								valid = dateFormatTester(valueAsString);
 								break;
 
 							case StringFormat.TIME:
-								valid = timeFormatTester(value);
+								valid = timeFormatTester(valueAsString);
 								break;
 
 							case StringFormat.DATE_TIME:
-								valid = dateTimeFormatTester(value);
+								valid = dateTimeFormatTester(valueAsString);
 								break;
 						}
 
@@ -536,7 +543,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								data,
 								value
 							);
-						} else {
+						}
+						else {
 							result = new EjvError(
 								ErrorType.FORMAT_ONE_OF,
 								ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.format)),
@@ -566,13 +574,16 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 
 						if (pattern === null) {
 							regExpStr = '/null/';
-						} else if (stringTester(pattern)) {
+						}
+						else if (stringTester(pattern)) {
 							if (minLengthTester(pattern as string, 1)) {
 								regExpStr = new RegExp(pattern as string).toString();
-							} else {
+							}
+							else {
 								regExpStr = '//';
 							}
-						} else {
+						}
+						else {
 							regExpStr = pattern.toString();
 						}
 
@@ -609,7 +620,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 
 						// check value
 						if (!regExpPatterns.some((regexp : RegExp) => {
-							return stringRegExpTester(value, regexp);
+							return stringRegExpTester(valueAsString, regexp);
 						})) {
 							result = new EjvError(
 								ErrorType.PATTERN_ONE_OF,
@@ -622,7 +633,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							break;
 						}
 
-					} else {
+					}
+					else {
 						const patternAsOne : string | RegExp = scheme.pattern as string | RegExp;
 
 						if (!isValidPattern(patternAsOne)) {
@@ -631,7 +643,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						}
 
 						// check value
-						const regExp : RegExp = new RegExp(patternAsOne);
+						const regExp = new RegExp(patternAsOne);
 
 						if (!stringRegExpTester(valueAsString, regExp)) {
 							result = new EjvError(
@@ -646,16 +658,17 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					}
 				}
 				break;
+			}
 
-			case DataType.OBJECT:
-				const valueAsObject = value as unknown as { [key : string] : any };
+			case DataType.OBJECT: {
+				const valueAsObject = value as unknown as AnyObject;
 
 				if (definedTester(scheme.allowNoProperty)) {
 					if (!booleanTester(scheme.allowNoProperty)) {
 						throw new Error(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
 					}
 
-					if (scheme.allowNoProperty !== true && !hasPropertyTester(valueAsObject)) {
+					if (!scheme.allowNoProperty && !hasPropertyTester(valueAsObject)) {
 						result = new EjvError(
 							ErrorType.NO_PROPERTY,
 							ErrorMsg.NO_PROPERTY,
@@ -699,14 +712,15 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					// call recursively
 					result = _ejv(partialData, partialScheme, _options);
 
-					if (!!result) {
+					if (result) {
 						// inject original data
 						result.data = data;
 					}
 				}
 				break;
+			}
 
-			case DataType.DATE:
+			case DataType.DATE: {
 				const valueAsDate : Date = value as unknown as Date;
 
 				if (definedTester(scheme.min)) {
@@ -742,8 +756,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							);
 							break;
 						}
-
-					} else {
+					}
+					else {
 						if (!exclusiveMinDateTester(valueAsDate, minDate)) {
 							result = new EjvError(
 								ErrorType.AFTER_DATE,
@@ -791,7 +805,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							break;
 						}
 
-					} else {
+					}
+					else {
 						if (!exclusiveMaxDateTester(valueAsDate, maxDate)) {
 							result = new EjvError(
 								ErrorType.BEFORE_DATE,
@@ -805,9 +820,10 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					}
 				}
 				break;
+			}
 
-			case DataType.ARRAY:
-				const valueAsArray : any[] = value as unknown as any[];
+			case DataType.ARRAY: {
+				const valueAsArray : unknown[] = value as unknown as unknown[];
 
 				if (definedTester(scheme.length)) {
 					const length : number = scheme.length as number;
@@ -871,7 +887,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 						throw new Error(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
 					}
 
-					if (scheme.unique === true && !uniqueItemsTester(valueAsArray)) {
+					if (scheme.unique && !uniqueItemsTester(valueAsArray)) {
 						result = new EjvError(
 							ErrorType.UNIQUE_ITEMS,
 							ErrorMsg.UNIQUE_ITEMS,
@@ -887,7 +903,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 					// convert array to object
 					if (valueAsArray.length > 0) {
 						const now : Date = new Date;
-						const tempKeyArr : string[] = valueAsArray.map((value : any, i : number) => {
+						const tempKeyArr : string[] = valueAsArray.map((value : unknown, i : number) => {
 							return '' + (+now + i);
 						});
 
@@ -911,12 +927,13 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							const partialResult : EjvError | null = _ejv(partialData, partialSchemes, _options);
 
 							// convert new EjvError
-							if (!!partialResult) {
+							if (partialResult) {
 								let errorMsg : string;
 
 								if (arrayTester(scheme.items)) {
 									errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, JSON.stringify(itemTypes));
-								} else {
+								}
+								else {
 									errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, scheme.items as string);
 								}
 
@@ -938,7 +955,8 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								);
 							}
 							break;
-						} else if ((objectTester(scheme.items) && scheme.items !== null) // by Scheme
+						}
+						else if ((objectTester(scheme.items) && scheme.items !== null) // by Scheme
 							|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as Scheme[], DataType.OBJECT)) // by Scheme[]
 						) {
 							const itemsAsSchemes : Scheme[] = (arrayTester(scheme.items) ? scheme.items : [scheme.items]) as Scheme[];
@@ -949,7 +967,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 							const valueLength : number = valueAsArray.length;
 
 							for (let arrIndex = 0; arrIndex < valueLength; arrIndex++) {
-								const oneValue : any = valueAsArray[arrIndex];
+								const oneValue : unknown = valueAsArray[arrIndex];
 
 								const partialData : AnyObject = {};
 								const partialSchemes : Scheme[] = [];
@@ -970,7 +988,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 									// call recursively
 									const partialResult : EjvError | null = _ejv(partialData, [partialScheme], _options);
 
-									if (!!partialResult) {
+									if (partialResult) {
 										partialResult.path = partialResult.path.replace(tempKeyForThisValue, '' + arrIndex);
 									}
 
@@ -985,14 +1003,15 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								}
 							}
 
-							if (!!partialError) {
+							if (partialError) {
 								let errorType : ErrorType;
 								let errorMsg : string;
 
 								if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
 									errorType = ErrorType.ITEMS_SCHEMES;
 									errorMsg = ErrorMsg.ITEMS_SCHEMES.replace(ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
-								} else {
+								}
+								else {
 									errorType = partialError.type;
 									errorMsg = partialError.message;
 
@@ -1012,15 +1031,17 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 								);
 								break;
 							}
-						} else {
+						}
+						else {
 							throw new Error(ErrorMsg.INVALID_ITEMS_SCHEME.replace(ErrorMsgCursorA, JSON.stringify(scheme.items)));
 						}
 					}
 				}
 				break;
+			}
 		}
 
-		if (!!result) {
+		if (result) {
 			break;
 		}
 	}
@@ -1044,7 +1065,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 	return result;
 };
 
-export const ejv = (data : object, schemes : Scheme[], options? : Options) : null | EjvError => {
+export const ejv = (data : AnyObject, schemes : Scheme[], options? : Options) : null | EjvError => {
 	// check data itself
 	if (!definedTester(data) || !objectTester(data) || data === null) {
 		return new EjvError(ErrorType.REQUIRED, ErrorMsg.NO_DATA, ['/'], data, undefined);

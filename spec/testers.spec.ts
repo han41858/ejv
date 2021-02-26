@@ -313,8 +313,8 @@ describe('testers', function () {
 
 				expect(emailTester('a"b(c)d,e:f;g<h>i[j\\k]l@example.com')).to.be.false;
 				expect(emailTester('just"not"right@example.com')).to.be.false;
-				expect(emailTester('this is"not\allowed@example.com')).to.be.false;
-				expect(emailTester('this\ still\"not\\allowed@example.com')).to.be.false;
+				expect(emailTester('this is"notallowed@example.com')).to.be.false;
+				expect(emailTester('this still"not\\allowed@example.com')).to.be.false;
 				expect(emailTester('1234567890123456789012345678901234567890123456789012345678901234+x@example.com')).to.be.false;
 				expect(emailTester('john..doe@example.com')).to.be.false;
 				expect(emailTester('john.doe@example..com')).to.be.false;
@@ -823,9 +823,9 @@ describe('testers', function () {
 
 			it('logic test', () => {
 				expect(regExpTester(/\d/)).to.be.true;
-				expect(regExpTester(new RegExp('\d'))).to.be.true;
+				expect(regExpTester(new RegExp('d'))).to.be.true;
 
-				expect(regExpTester('\d')).to.be.false;
+				expect(regExpTester('d')).to.be.false;
 			});
 		});
 	});

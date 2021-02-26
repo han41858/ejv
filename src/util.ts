@@ -1,57 +1,82 @@
-export const clone = (obj : any) : any => {
-	let result : any = null;
+import { AnyObject } from './interfaces';
 
-	if (!!obj) {
-		let type : string = typeof obj;
+enum CloneDataType {
+	Boolean = 'boolean',
+	Number = 'number',
+	Function = 'function',
+	String = 'string',
+	Buffer = 'buffer',
+	Object = 'object',
+	Array = 'array',
+	Date = 'date',
+	RegExp = 'regexp'
+}
 
-		if (type === 'object') {
-			if (obj.push !== undefined && typeof obj.push === 'function') {
-				type = 'array';
-			} else if (obj.getFullYear !== undefined && typeof obj.getFullYear === 'function') {
-				type = 'date';
-			} else if (obj.byteLength !== undefined) {
-				type = 'buffer';
-			} else if (obj.exec !== undefined && obj.test !== undefined) {
-				type = 'regexp';
+// sanitize removes undefined & null fields from object. default false
+export const clone = <T> (obj : T, sanitize? : boolean) : T => {
+	let result ! : T;
+
+	if (obj) {
+		let type : CloneDataType = typeof obj as CloneDataType;
+
+		if (type === CloneDataType.Object) {
+			const objAsObject : AnyObject = obj as unknown as AnyObject;
+
+			if (Array.isArray(objAsObject)) {
+				type = CloneDataType.Array;
+			}
+			else if (objAsObject instanceof Date) {
+				type = CloneDataType.Date;
+			}
+			else if (objAsObject instanceof RegExp) {
+				type = CloneDataType.RegExp;
+			}
+			else if (objAsObject.byteLength
+				&& typeof objAsObject.byteLength === 'function') {
+				type = CloneDataType.Buffer;
 			}
 		}
 
 		switch (type) {
-			case 'boolean':
-			case 'number':
-			case 'function':
-			case 'string':
-			case 'buffer':
-				// ok with simple copy
-				result = obj;
+			case CloneDataType.Date: {
+				const objAsDate : Date = obj as unknown as Date;
+				result = new Date(objAsDate) as unknown as T;
 				break;
+			}
 
-			case 'regexp':
-				result = new RegExp(obj);
-				break;
-
-			case 'date':
-				result = new Date(obj);
-				break;
-
-			case 'array':
-				result = [...obj.map((one : any) => {
+			case  CloneDataType.Array: {
+				const objAsArray : unknown[] = obj as unknown as unknown[];
+				result = objAsArray.map(one => {
 					return clone(one);
-				})];
+				}) as unknown as T;
 				break;
+			}
 
-			case 'object':
+			case CloneDataType.Object: {
 				// sanitize default false
-				result = {};
+				result = {} as unknown as T;
 
-				Object.keys(obj)
-					.forEach(key => {
-						// recursively call
-						result[key] = clone(obj[key]);
+				const entries : [string, unknown][] = Object.entries(obj)
+					.filter(([, value]) => {
+						return sanitize
+							? value !== undefined && value !== null
+							: true;
 					});
+
+
+				for (const [key, value] of entries) {
+					// call recursively
+					(result as unknown as AnyObject)[key] = clone(value, sanitize);
+				}
 				break;
+			}
+
+			default:
+				// simple copy
+				result = obj;
 		}
-	} else {
+	}
+	else {
 		result = obj; // do not copy null & undefined
 	}
 

@@ -2,11 +2,11 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 import { ErrorMsg, ErrorMsgCursorA, ErrorType } from '../src/constants';
-import { EjvError, Scheme } from '../src/interfaces';
+import { AnyObject, EjvError, Scheme } from '../src/interfaces';
 
 const typeTester : {
 	type : string,
-	value : any
+	value : unknown
 }[] = [
 	{ type : 'boolean', value : true },
 	{ type : 'number', value : 123 },
@@ -61,7 +61,7 @@ describe('ejv()', () => {
 			it('invalid scheme object', () => {
 				expect(() => ejv({
 					a : 'hello'
-				}, ['string' as any as Scheme])).to.throw(ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
+				}, ['string' as unknown as Scheme])).to.throw(ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
 			});
 
 			it('no type', () => {
@@ -69,7 +69,7 @@ describe('ejv()', () => {
 					a : 'hello'
 				}, [{
 					key : 'a'
-				} as any as Scheme])).to.throw(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
+				} as unknown as Scheme])).to.throw(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
 			});
 
 			it('invalid type', () => {
@@ -101,7 +101,7 @@ describe('ejv()', () => {
 		describe('options', () => {
 			describe('customErrorMsg', () => {
 				it('override required error', () => {
-					const customErrorMsg : string = 'property \'a\' required';
+					const customErrorMsg = 'property \'a\' required';
 
 					const error : EjvError = ejv({
 						// empty
@@ -120,7 +120,7 @@ describe('ejv()', () => {
 				});
 
 				it('override type matching error', () => {
-					const customErrorMsg : string = 'property \'a\' should be a number';
+					const customErrorMsg = 'property \'a\' should be a number';
 
 					const error : EjvError = ejv({
 						a : 'a'
@@ -464,7 +464,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'number',
-						enum : 1 as any
+						enum : 1 as unknown as number[]
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
@@ -541,7 +541,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'number',
-						enumReverse : 1 as any
+						enumReverse : 1 as unknown as number[]
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
@@ -629,7 +629,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'number',
 						min : 3,
-						exclusiveMin : '3' as any
+						exclusiveMin : '3' as unknown as boolean
 					}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
 				});
 			});
@@ -791,7 +791,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'number',
 						max : 3,
-						exclusiveMax : '3' as any
+						exclusiveMax : '3' as unknown as boolean
 					}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 				});
 			});
@@ -1379,7 +1379,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						enum : 'a' as any
+						enum : 'a' as unknown as string[]
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
@@ -1456,7 +1456,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						enumReverse : 'a' as any
+						enumReverse : 'a' as unknown as string[]
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
@@ -1543,7 +1543,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						minLength : '1' as any
+						minLength : '1' as unknown as number
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -1625,7 +1625,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						maxLength : '1' as any
+						maxLength : '1' as unknown as number
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -2027,7 +2027,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						pattern : 1 as any
+						pattern : 1 as unknown as string
 					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '1'));
 				});
@@ -2071,7 +2071,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'string',
-						pattern : [1, 3] as any
+						pattern : [1, 3] as unknown as string[]
 					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[1, 3]'));
 				});
@@ -2293,7 +2293,8 @@ describe('ejv()', () => {
 	describe('object', () => {
 		describe('type', () => {
 			describe('mismatch', () => {
-				typeTester.filter(obj => {
+				typeTester
+					.filter(obj => {
 						return !['null', 'date', 'regexp', 'array', 'object'].includes(obj.type);
 					})
 					.forEach((obj) => {
@@ -2352,7 +2353,8 @@ describe('ejv()', () => {
 					}])).to.be.null;
 				});
 
-				typeTester.filter(obj => {
+				typeTester
+					.filter(obj => {
 						return ['null', 'date', 'regexp', 'array', 'object'].includes(obj.type);
 					})
 					.forEach((obj) => {
@@ -2435,7 +2437,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'object',
-						properties : 'b' as any
+						properties : 'b' as unknown as Scheme[]
 					}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
 				});
 
@@ -2459,7 +2461,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'object',
-						properties : ['b'] as any
+						properties : ['b'] as unknown as Scheme[]
 					}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
 				});
 			});
@@ -2746,12 +2748,14 @@ describe('ejv()', () => {
 			date : now
 		};
 
-		function padZero(value : number, digit : number = 2) : string {
+		function padZero (value : number, digit = 2) : string {
 			return ('' + value).padStart(digit, '0');
 		}
 
-		function getDateStr(year : number, month : number, date : number,
-		                    hours? : number, minutes? : number, seconds? : number, ms? : number) : string {
+		function getDateStr (
+			year : number, month : number, date : number,
+			hours? : number, minutes? : number, seconds? : number, ms? : number
+		) : string {
 			const tempDate : Date = hours !== undefined ?
 				new Date(year, month, date, hours, minutes, seconds, ms) :
 				new Date(year, month, date);
@@ -3980,7 +3984,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'array',
-						minLength : '1' as any
+						minLength : '1' as unknown as number
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -4063,7 +4067,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'array',
-						maxLength : '1' as any
+						maxLength : '1' as unknown as number
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -4136,7 +4140,7 @@ describe('ejv()', () => {
 					}, [{
 						key : 'a',
 						type : 'array',
-						unique : 'hello' as any
+						unique : 'hello' as unknown as boolean
 					}])).to.throw(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
 				});
 			});
@@ -4379,7 +4383,7 @@ describe('ejv()', () => {
 				// single scheme has it's original error type & message
 				describe('check parameter', () => {
 					it('invalid data type', () => {
-						const scheme : object = {
+						const scheme : AnyObject = {
 							type : 'invalidDataType'
 						};
 
@@ -4388,7 +4392,7 @@ describe('ejv()', () => {
 						}, [{
 							key : 'a',
 							type : 'array',
-							items : scheme as any
+							items : scheme as unknown as Scheme
 						}])).to.throw(); // error message by partial scheme
 					});
 				});
@@ -4499,7 +4503,7 @@ describe('ejv()', () => {
 			describe('multiple schemes', () => {
 				describe('check parameter', () => {
 					it('invalid data type', () => {
-						const scheme : object = {
+						const scheme : AnyObject = {
 							type : 'invalidDataType'
 						};
 
@@ -4508,7 +4512,7 @@ describe('ejv()', () => {
 						}, [{
 							key : 'a',
 							type : 'array',
-							items : [scheme] as any
+							items : [scheme] as unknown as Scheme[]
 						}])).to.throw(); // error message by partial scheme
 					});
 				});

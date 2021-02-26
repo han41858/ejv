@@ -27,7 +27,7 @@ export enum StringFormat {
 	// IPV6 = 'ipv6'
 }
 
-export const ErrorMsgCursorA : string = '<<A>>';
+export const ErrorMsgCursorA = '<<A>>';
 
 export enum ErrorType {
 	REQUIRED = 'REQUIRED',
