@@ -253,7 +253,7 @@ export const dateTimeFormatTester = (value : string) : boolean => {
 // 	return ipv4Tester(value) || ipv6Tester(value);
 // };
 
-export const objectTester = (value : unknown) : value is unknown => {
+export const objectTester = (value : unknown) : boolean => {
 	return typeof value === 'object';
 };
 

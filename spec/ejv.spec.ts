@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
-import { ErrorMsg, ErrorMsgCursorA, ErrorType } from '../src/constants';
+import { ErrorMsg, ErrorMsgCursorA, ErrorType, DataType } from '../src/constants';
 import { AnyObject, EjvError, Scheme } from '../src/interfaces';
 
 const typeTester : {
@@ -3876,7 +3876,7 @@ describe('ejv()', () => {
 				});
 			});
 
-			describe('has invalid type', () => {
+			describe('has invalid value', () => {
 				it('has undefined', () => {
 					const value = ['a', undefined];
 					const testObj = {
@@ -3886,7 +3886,7 @@ describe('ejv()', () => {
 					const error : EjvError = ejv(testObj, [
 						{ key : 'a', type : 'array', items : 'string' }
 					]);
-
+					
 					expect(error).to.be.instanceof(EjvError);
 					expect(error.type).to.be.eql(ErrorType.ITEMS_TYPE);
 					expect(error.message).to.be.eql(ErrorMsg.ITEMS_TYPE

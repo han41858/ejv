@@ -1,44 +1,79 @@
 import { DataType, ErrorType, NumberFormat, StringFormat } from './constants';
 
-// use common Scheme for multiple types
-export interface Scheme {
-	// common
+
+interface CommonScheme {
 	key? : string; // can be omitted in array items
 	type : string | string[] | DataType | DataType[];
+
 	optional? : boolean; // false
 	nullable? : boolean; // false
-	// reverse? not?
 
-	// common - number & Date (date string, Date)
-	min? : number | string | Date;
+	// TODO
+	// not? : Scheme | Scheme[];
+}
+
+// no additional rule
+export type BooleanScheme = CommonScheme;
+
+export interface NumberScheme extends CommonScheme {
+	min? : number;
 	exclusiveMin? : boolean; // false
 
-	max? : number | string | Date;
+	max? : number;
 	exclusiveMax? : boolean; // false
 
-	// common - number & string
-	enum? : number[] | string[];
-	enumReverse? : number[] | string[];
+	enum? : number[];
+	enumReverse? : number[]; // TODO: deprecate with not
 
-	// common - number & string
-	format? : string | string[] | NumberFormat | NumberFormat[] | StringFormat | StringFormat[];
+	format? : string | string[] | NumberFormat | NumberFormat[];
+}
 
-	// common - string & array
+export interface StringScheme extends CommonScheme {
+	enum? : string[];
+	enumReverse? : string[]; // TODO: deprecate with not
+
+	format? : string | string[] | StringFormat | StringFormat[];
+	pattern? : string | string[] | RegExp | RegExp[];
+
 	length? : number;
 	minLength? : number;
 	maxLength? : number;
+}
 
-	// string
-	pattern? : string | string[] | RegExp | RegExp[];
-
-	// object
+export interface ObjectScheme extends CommonScheme {
 	properties? : Scheme[];
 	allowNoProperty? : boolean; // true
+}
 
-	// array
+export interface DateScheme extends CommonScheme {
+	min? : number | string | Date; // string for date string
+	exclusiveMin? : boolean; // false
+
+	max? : number | string | Date; // string for date string
+	exclusiveMax? : boolean; // false
+}
+
+// no additional rule
+export type RegExpScheme = CommonScheme;
+
+export interface ArrayScheme extends CommonScheme {
 	unique? : boolean; // false
 	items? : string | string[] | DataType | DataType[] | Scheme | Scheme[];
+
+	length? : number;
+	minLength? : number;
+	maxLength? : number;
 }
+
+export type Scheme =
+	BooleanScheme
+	| NumberScheme
+	| StringScheme
+	| ObjectScheme
+	| DateScheme
+	| RegExpScheme
+	| ArrayScheme;
+
 
 export interface Options {
 	customErrorMsg? : {
