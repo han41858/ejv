@@ -86,16 +86,29 @@ export interface InternalOptions extends Options {
 }
 
 export class EjvError {
+	public type : ErrorType;
+	public message : string;
+
 	public path : string;
 
-	constructor (
-		public type : ErrorType,
-		public message : string,
+	public data : unknown;
+	// TODO: errorScheme : Scheme;
+	public errorData : unknown | undefined;
+
+	constructor (param : {
+		type : ErrorType,
+		message : string,
 		path : string[],
-		public data : unknown,
-		public errorData : unknown
-	) {
-		this.path = path.join('/');
+		data : unknown,
+		errorData? : unknown
+	}) {
+		this.type = param.type;
+		this.message = param.message;
+
+		this.path = param.path.join('/');
+
+		this.data = param.data;
+		this.errorData = param.errorData;
 	}
 }
 

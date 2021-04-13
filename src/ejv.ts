@@ -114,13 +114,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 
 			if (!definedTester(value)) {
 				if (scheme.optional !== true) {
-					result = new EjvError(
-						ErrorType.REQUIRED,
-						ErrorMsg.REQUIRED,
-						_options.path,
+					result = new EjvError({
+						type : ErrorType.REQUIRED,
+						message : ErrorMsg.REQUIRED,
+
+						path : _options.path,
+
 						data,
-						value
-					);
+						errorData : value
+					});
 					break;
 				}
 				else {
@@ -130,13 +132,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 
 			if (value === null) {
 				if (scheme.nullable !== true) {
-					result = new EjvError(
-						ErrorType.REQUIRED,
-						ErrorMsg.REQUIRED,
-						_options.path,
+					result = new EjvError({
+						type : ErrorType.REQUIRED,
+						message : ErrorMsg.REQUIRED,
+
+						path : _options.path,
+
 						data,
-						value
-					);
+						errorData : value
+					});
 					break;
 				}
 				else {
@@ -161,22 +165,26 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 				|| (!_options.positiveTrue && typeResolved && !hasAdditionalRule)
 			) {
 				if (!arrayTester(scheme.type)) {
-					result = new EjvError(
-						ErrorType.TYPE_MISMATCH,
-						ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, scheme.type as DataType),
-						_options.path,
+					result = new EjvError({
+						type : ErrorType.TYPE_MISMATCH,
+						message : ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, scheme.type as DataType),
+
+						path : _options.path,
+
 						data,
-						value
-					);
+						errorData : value
+					});
 				}
 				else {
-					result = new EjvError(
-						ErrorType.TYPE_MISMATCH_ONE_OF,
-						ErrorMsg.TYPE_MISMATCH_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.type)),
-						_options.path,
+					result = new EjvError({
+						type : ErrorType.TYPE_MISMATCH_ONE_OF,
+						message : ErrorMsg.TYPE_MISMATCH_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.type)),
+
+						path : _options.path,
+
 						data,
-						value
-					);
+						errorData : value
+					});
 				}
 
 				break;
@@ -200,13 +208,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!enumTester(valueAsNumber, enumArr)) {
-							result = new EjvError(
-								ErrorType.ONE_OF,
-								ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumArr)),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.ONE_OF,
+								message : ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumArr)),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -223,13 +233,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (enumTester(valueAsNumber, enumReverseArr)) {
-							result = new EjvError(
-								ErrorType.NOT_ONE_OF,
-								ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.NOT_ONE_OF,
+								message : ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -246,38 +258,44 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 
 							if (numberScheme.exclusiveMin) {
 								if (!exclusiveMinNumberTester(valueAsNumber, numberScheme.min)) {
-									result = new EjvError(
-										ErrorType.GREATER_THAN,
-										ErrorMsg.GREATER_THAN.replace(ErrorMsgCursorA, '' + numberScheme.min),
-										_options.path,
+									result = new EjvError({
+										type : ErrorType.GREATER_THAN,
+										message : ErrorMsg.GREATER_THAN.replace(ErrorMsgCursorA, '' + numberScheme.min),
+
+										path : _options.path,
+
 										data,
-										value
-									);
+										errorData : value
+									});
 									break;
 								}
 							}
 							else {
 								if (!minNumberTester(valueAsNumber, numberScheme.min)) {
-									result = new EjvError(
-										ErrorType.GREATER_THAN_OR_EQUAL,
-										ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.min),
-										_options.path,
+									result = new EjvError({
+										type : ErrorType.GREATER_THAN_OR_EQUAL,
+										message : ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.min),
+
+										path : _options.path,
+
 										data,
-										value
-									);
+										errorData : value
+									});
 									break;
 								}
 							}
 						}
 						else {
 							if (!minNumberTester(valueAsNumber, numberScheme.min)) {
-								result = new EjvError(
-									ErrorType.GREATER_THAN_OR_EQUAL,
-									ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.min),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.GREATER_THAN_OR_EQUAL,
+									message : ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.min),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 								break;
 							}
 						}
@@ -295,38 +313,44 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 
 							if (numberScheme.exclusiveMax) {
 								if (!exclusiveMaxNumberTester(valueAsNumber, numberScheme.max)) {
-									result = new EjvError(
-										ErrorType.SMALLER_THAN,
-										ErrorMsg.SMALLER_THAN.replace(ErrorMsgCursorA, '' + numberScheme.max),
-										_options.path,
+									result = new EjvError({
+										type : ErrorType.SMALLER_THAN,
+										message : ErrorMsg.SMALLER_THAN.replace(ErrorMsgCursorA, '' + numberScheme.max),
+
+										path : _options.path,
+
 										data,
-										value
-									);
+										errorData : value
+									});
 									break;
 								}
 							}
 							else {
 								if (!maxNumberTester(valueAsNumber, numberScheme.max)) {
-									result = new EjvError(
-										ErrorType.SMALLER_THAN_OR_EQUAL,
-										ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.max),
-										_options.path,
+									result = new EjvError({
+										type : ErrorType.SMALLER_THAN_OR_EQUAL,
+										message : ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.max),
+
+										path : _options.path,
+
 										data,
-										value
-									);
+										errorData : value
+									});
 									break;
 								}
 							}
 						}
 						else {
 							if (!maxNumberTester(valueAsNumber, numberScheme.max)) {
-								result = new EjvError(
-									ErrorType.SMALLER_THAN_OR_EQUAL,
-									ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.max),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.SMALLER_THAN_OR_EQUAL,
+									message : ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.max),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 								break;
 							}
 						}
@@ -376,22 +400,26 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 							return valid;
 						})) {
 							if (!arrayTester(numberScheme.format)) {
-								result = new EjvError(
-									ErrorType.FORMAT,
-									ErrorMsg.FORMAT.replace(ErrorMsgCursorA, numberScheme.format as NumberFormat),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.FORMAT,
+									message : ErrorMsg.FORMAT.replace(ErrorMsgCursorA, numberScheme.format as NumberFormat),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 							}
 							else {
-								result = new EjvError(
-									ErrorType.FORMAT_ONE_OF,
-									ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(numberScheme.format)),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.FORMAT_ONE_OF,
+									message : ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(numberScheme.format)),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 							}
 							break;
 						}
@@ -415,13 +443,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!enumTester(valueAsString, enumArr)) {
-							result = new EjvError(
-								ErrorType.ONE_OF,
-								ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(stringScheme.enum)),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.ONE_OF,
+								message : ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(stringScheme.enum)),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -438,13 +468,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (enumTester(valueAsString, enumReverseArr)) {
-							result = new EjvError(
-								ErrorType.NOT_ONE_OF,
-								ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.NOT_ONE_OF,
+								message : ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -457,13 +489,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!lengthTester(valueAsString, length)) {
-							result = new EjvError(
-								ErrorType.LENGTH,
-								ErrorMsg.LENGTH.replace(ErrorMsgCursorA, '' + length),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.LENGTH,
+								message : ErrorMsg.LENGTH.replace(ErrorMsgCursorA, '' + length),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -476,13 +510,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!minLengthTester(valueAsString, minLength)) {
-							result = new EjvError(
-								ErrorType.MIN_LENGTH,
-								ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.MIN_LENGTH,
+								message : ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -495,13 +531,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!maxLengthTester(valueAsString, maxLength)) {
-							result = new EjvError(
-								ErrorType.MAX_LENGTH,
-								ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.MAX_LENGTH,
+								message : ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -557,22 +595,26 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 							return valid;
 						})) {
 							if (!arrayTester(stringScheme.format)) {
-								result = new EjvError(
-									ErrorType.FORMAT,
-									ErrorMsg.FORMAT.replace(ErrorMsgCursorA, stringScheme.format as StringFormat),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.FORMAT,
+									message : ErrorMsg.FORMAT.replace(ErrorMsgCursorA, stringScheme.format as StringFormat),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 							}
 							else {
-								result = new EjvError(
-									ErrorType.FORMAT_ONE_OF,
-									ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(stringScheme.format)),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.FORMAT_ONE_OF,
+									message : ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(stringScheme.format)),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 							}
 							break;
 						}
@@ -643,14 +685,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 							if (!regExpPatterns.some((regexp : RegExp) => {
 								return stringRegExpTester(valueAsString, regexp);
 							})) {
-								result = new EjvError(
-									ErrorType.PATTERN_ONE_OF,
-									ErrorMsg.PATTERN_ONE_OF
-										.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.PATTERN_ONE_OF,
+									message : ErrorMsg.PATTERN_ONE_OF.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 								break;
 							}
 
@@ -667,13 +710,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 							const regExp = new RegExp(patternAsOne);
 
 							if (!stringRegExpTester(valueAsString, regExp)) {
-								result = new EjvError(
-									ErrorType.PATTERN,
-									ErrorMsg.PATTERN.replace(ErrorMsgCursorA, patternToString(patternAsOne)),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.PATTERN,
+									message : ErrorMsg.PATTERN.replace(ErrorMsgCursorA, patternToString(patternAsOne)),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 								break;
 							}
 						}
@@ -691,13 +736,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!objectScheme.allowNoProperty && !hasPropertyTester(valueAsObject)) {
-							result = new EjvError(
-								ErrorType.NO_PROPERTY,
-								ErrorMsg.NO_PROPERTY,
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.NO_PROPERTY,
+								message : ErrorMsg.NO_PROPERTY,
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -718,13 +765,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!objectTester(value)) {
-							result = new EjvError(
-								ErrorType.TYPE_MISMATCH,
-								ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, 'object'),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.TYPE_MISMATCH,
+								message : ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, 'object'),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 
@@ -775,25 +824,29 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 
 						if (dateScheme.exclusiveMin !== true) {
 							if (!minDateTester(valueAsDate, minDate)) {
-								result = new EjvError(
-									ErrorType.AFTER_OR_SAME_DATE,
-									ErrorMsg.AFTER_OR_SAME_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.AFTER_OR_SAME_DATE,
+									message : ErrorMsg.AFTER_OR_SAME_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 								break;
 							}
 						}
 						else {
 							if (!exclusiveMinDateTester(valueAsDate, minDate)) {
-								result = new EjvError(
-									ErrorType.AFTER_DATE,
-									ErrorMsg.AFTER_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.AFTER_DATE,
+									message : ErrorMsg.AFTER_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 								break;
 							}
 						}
@@ -828,26 +881,30 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 
 						if (dateScheme.exclusiveMax !== true) {
 							if (!maxDateTester(valueAsDate, maxDate)) {
-								result = new EjvError(
-									ErrorType.BEFORE_OR_SAME_DATE,
-									ErrorMsg.BEFORE_OR_SAME_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.BEFORE_OR_SAME_DATE,
+									message : ErrorMsg.BEFORE_OR_SAME_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 								break;
 							}
 
 						}
 						else {
 							if (!exclusiveMaxDateTester(valueAsDate, maxDate)) {
-								result = new EjvError(
-									ErrorType.BEFORE_DATE,
-									ErrorMsg.BEFORE_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
-									_options.path,
+								result = new EjvError({
+									type : ErrorType.BEFORE_DATE,
+									message : ErrorMsg.BEFORE_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
+
+									path : _options.path,
+
 									data,
-									value
-								);
+									errorData : value
+								});
 								break;
 							}
 						}
@@ -867,13 +924,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!lengthTester(valueAsArray, length)) {
-							result = new EjvError(
-								ErrorType.LENGTH,
-								ErrorMsg.LENGTH.replace(ErrorMsgCursorA, '' + length),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.LENGTH,
+								message : ErrorMsg.LENGTH.replace(ErrorMsgCursorA, '' + length),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -886,13 +945,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!minLengthTester(valueAsArray, minLength)) {
-							result = new EjvError(
-								ErrorType.MIN_LENGTH,
-								ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.MIN_LENGTH,
+								message : ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -905,13 +966,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (!maxLengthTester(valueAsArray, maxLength)) {
-							result = new EjvError(
-								ErrorType.MAX_LENGTH,
-								ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.MAX_LENGTH,
+								message : ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -922,13 +985,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						}
 
 						if (arrayScheme.unique && !uniqueItemsTester(valueAsArray)) {
-							result = new EjvError(
-								ErrorType.UNIQUE_ITEMS,
-								ErrorMsg.UNIQUE_ITEMS,
-								_options.path,
+							result = new EjvError({
+								type : ErrorType.UNIQUE_ITEMS,
+								message : ErrorMsg.UNIQUE_ITEMS,
+
+								path : _options.path,
+
 								data,
-								value
-							);
+								errorData : value
+							});
 							break;
 						}
 					}
@@ -983,13 +1048,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 
 									const partialKeyIndex : number = partialSchemes.indexOf(partialScheme);
 
-									result = new EjvError(
-										ErrorType.ITEMS_TYPE,
-										errorMsg,
-										[..._options.path, '' + partialKeyIndex],
+									result = new EjvError({
+										type : ErrorType.ITEMS_TYPE,
+										message : errorMsg,
+
+										path : [..._options.path, '' + partialKeyIndex],
+
 										data,
-										partialData[partialKey]
-									);
+										errorData : partialData[partialKey]
+									});
 								}
 								break;
 							}
@@ -1059,13 +1126,15 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 										}
 									}
 
-									result = new EjvError(
-										errorType,
-										errorMsg,
-										partialError.path.split('/'),
+									result = new EjvError({
+										type : errorType,
+										message : errorMsg,
+
+										path : partialError.path.split('/'),
+
 										data,
-										partialError.errorData
-									);
+										errorData : partialError.errorData
+									});
 									break;
 								}
 							}
@@ -1149,7 +1218,13 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 export const ejv = (data : AnyObject, schemes : Scheme[], options? : Options) : null | EjvError => {
 	// check data itself
 	if (!definedTester(data) || !objectTester(data) || data === null) {
-		return new EjvError(ErrorType.REQUIRED, ErrorMsg.NO_DATA, ['/'], data, undefined);
+		return new EjvError({
+			type : ErrorType.REQUIRED,
+			message : ErrorMsg.NO_DATA,
+
+			path : ['/'],
+			data
+		});
 	}
 
 	// check schemes itself
