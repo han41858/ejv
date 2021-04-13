@@ -80,6 +80,7 @@ export enum ErrorMsg {
 	SCHEMES_SHOULD_HAVE_TYPE = 'scheme should have type',
 	SCHEMES_HAS_INVALID_TYPE = 'schemes has invalid type : <<A>>',
 	SCHEMES_HAS_DUPLICATED_TYPE = 'schemes has duplicated type : <<A>>',
+	SCHEMES_HAS_RULES_CONTRARY = 'schemes has rules to the contrary', // TODO: for not
 
 	ENUM_SHOULD_BE_ARRAY = 'enum should be array',
 	ENUM_SHOULD_BE_NUMBERS = 'enum values should be numbers',

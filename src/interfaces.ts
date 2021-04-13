@@ -3,13 +3,12 @@ import { DataType, ErrorType, NumberFormat, StringFormat } from './constants';
 
 interface CommonScheme {
 	key? : string; // can be omitted in array items
-	type : string | string[] | DataType | DataType[];
+	type? : string | string[] | DataType | DataType[]; // optional for not
 
 	optional? : boolean; // false
 	nullable? : boolean; // false
 
-	// TODO
-	// not? : Scheme | Scheme[];
+	not? : Scheme | Scheme[];
 }
 
 // no additional rule
@@ -83,6 +82,7 @@ export interface Options {
 
 export interface InternalOptions extends Options {
 	path : string[];
+	positiveTrue : boolean; // true, for not
 }
 
 export class EjvError {

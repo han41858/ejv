@@ -1,7 +1,8 @@
+import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
-import { ErrorMsg, ErrorMsgCursorA, ErrorType, DataType } from '../src/constants';
+import { ErrorMsg, ErrorMsgCursorA, ErrorType } from '../src/constants';
 import { AnyObject, EjvError, Scheme } from '../src/interfaces';
 
 const typeTester : {
@@ -343,6 +344,127 @@ describe('ejv()', () => {
 				expect(error).to.be.null;
 			});
 		});
+
+		describe('not', () => {
+			xdescribe('error', () => {
+				it('same type in not', () => {
+					expect(ejv({
+						a : 'hello'
+					}, [{
+						key : 'a',
+						not : {
+							type : 'string'
+						}
+					}])).to.throw(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
+				});
+
+				it('same type in not array', () => {
+					expect(ejv({
+						a : 'hello'
+					}, [{
+						key : 'a',
+						not : {
+							type : ['string']
+						}
+					}])).to.throw(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
+				});
+
+				it('duplicated rule in not', () => {
+					expect(ejv({
+						a : 'hello'
+					}, [{
+						key : 'a',
+						type : 'string',
+						optional : true,
+						not : {
+							optional : true
+						}
+					}])).to.throw(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
+				});
+			});
+
+			it('with single type', () => {
+				const value = 'hello';
+
+				expect(ejv({
+					a : value
+				}, [{
+					key : 'a',
+					not : {
+						type : 'boolean'
+					}
+				}])).to.be.null;
+
+
+				const error : EjvError = ejv({
+					a : value
+				}, [{
+					key : 'a',
+					not : {
+						type : 'string'
+					}
+				}]);
+
+				expect(error).to.be.instanceOf(EjvError);
+				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
+				expect(error.path).to.be.eql('a');
+				expect(error.errorData).to.be.eql(value);
+			});
+
+			it('with single type - nested', () => {
+				expect(ejv({
+					a : 'hello'
+				}, [{
+					key : 'a',
+					not : {
+						not : {
+							type : 'string'
+						}
+					}
+				}])).to.be.null;
+			});
+
+			it('with type array', () => {
+				const value = 'hello';
+
+				expect(ejv({
+					a : value
+				}, [{
+					key : 'a',
+					not : {
+						type : ['boolean', 'number'] // not boolean & not number
+					}
+				}])).to.be.null;
+
+
+				const error : EjvError = ejv({
+					a : value
+				}, [{
+					key : 'a',
+					not : {
+						type : ['string', 'number'] // not string & not number
+					}
+				}]);
+
+				expect(error).to.be.instanceOf(EjvError);
+				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
+				expect(error.path).to.be.eql('a');
+				expect(error.errorData).to.be.eql(value);
+			});
+
+			it('with type array - nested', () => {
+				expect(ejv({
+					a : 'hello'
+				}, [{
+					key : 'a',
+					not : {
+						not : {
+							type : ['string']
+						}
+					}
+				}])).to.be.null;
+			});
+		});
 	});
 
 	describe('number', () => {
@@ -455,7 +577,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'number',
 						enum : null
-					}])).to.be.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
+					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
@@ -532,7 +654,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'number',
 						enumReverse : null
-					}])).to.be.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
@@ -933,7 +1055,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'number',
 						format : null
-					}])).to.be.throw(ErrorMsg.INVALID_NUMBER_FORMAT
+					}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
 						.replace(ErrorMsgCursorA, 'null'));
 				});
 
@@ -1370,7 +1492,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						enum : null
-					}])).to.be.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
+					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
@@ -1447,7 +1569,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						enumReverse : null
-					}])).to.be.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
@@ -1688,7 +1810,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						format : null
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_FORMAT
+					}])).to.throw(ErrorMsg.INVALID_STRING_FORMAT
 						.replace(ErrorMsgCursorA, 'null'));
 				});
 
@@ -2017,7 +2139,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : null
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, 'null'));
 				});
 
@@ -2028,7 +2150,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : 1 as unknown as string
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '1'));
 				});
 
@@ -2039,7 +2161,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : ''
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '//'));
 				});
 
@@ -2050,7 +2172,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : []
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[]'));
 				});
 
@@ -2061,7 +2183,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : [null, /ab/]
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[/null/, /ab/]'));
 				});
 
@@ -2072,7 +2194,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : [1, 3] as unknown as string[]
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[1, 3]'));
 				});
 
@@ -2083,7 +2205,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : ['']
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[//]'));
 				});
 
@@ -2094,7 +2216,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : new RegExp('')
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '//'));
 				});
 
@@ -2105,7 +2227,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : new RegExp(null)
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '/null/'));
 				});
 
@@ -2116,7 +2238,7 @@ describe('ejv()', () => {
 						key : 'a',
 						type : 'string',
 						pattern : [new RegExp('')]
-					}])).to.be.throw(ErrorMsg.INVALID_STRING_PATTERN
+					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[//]'));
 				});
 			});
@@ -3886,7 +4008,7 @@ describe('ejv()', () => {
 					const error : EjvError = ejv(testObj, [
 						{ key : 'a', type : 'array', items : 'string' }
 					]);
-					
+
 					expect(error).to.be.instanceof(EjvError);
 					expect(error.type).to.be.eql(ErrorType.ITEMS_TYPE);
 					expect(error.message).to.be.eql(ErrorMsg.ITEMS_TYPE
