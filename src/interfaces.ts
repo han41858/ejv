@@ -89,25 +89,29 @@ export class EjvError {
 	public type : ErrorType;
 	public message : string;
 
+	public data : unknown;
 	public path : string;
 
-	public data : unknown;
-	// TODO: errorScheme : Scheme;
-	public errorData : unknown | undefined;
+	public errorScheme? : Scheme;
+	public errorData? : unknown;
 
 	constructor (param : {
 		type : ErrorType,
 		message : string,
-		path : string[],
+
 		data : unknown,
+		path : string[],
+
+		errorScheme? : Scheme,
 		errorData? : unknown
 	}) {
 		this.type = param.type;
 		this.message = param.message;
 
+		this.data = param.data;
 		this.path = param.path.join('/');
 
-		this.data = param.data;
+		this.errorScheme = param.errorScheme;
 		this.errorData = param.errorData;
 	}
 }

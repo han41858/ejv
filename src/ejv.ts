@@ -118,9 +118,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						type : ErrorType.REQUIRED,
 						message : ErrorMsg.REQUIRED,
 
+						data,
 						path : _options.path,
 
-						data,
+						errorScheme : scheme,
 						errorData : value
 					});
 					break;
@@ -136,9 +137,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						type : ErrorType.REQUIRED,
 						message : ErrorMsg.REQUIRED,
 
+						data,
 						path : _options.path,
 
-						data,
+						errorScheme : scheme,
 						errorData : value
 					});
 					break;
@@ -169,9 +171,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						type : ErrorType.TYPE_MISMATCH,
 						message : ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, scheme.type as DataType),
 
+						data,
 						path : _options.path,
 
-						data,
+						errorScheme : scheme,
 						errorData : value
 					});
 				}
@@ -180,9 +183,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 						type : ErrorType.TYPE_MISMATCH_ONE_OF,
 						message : ErrorMsg.TYPE_MISMATCH_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(scheme.type)),
 
+						data,
 						path : _options.path,
 
-						data,
+						errorScheme : scheme,
 						errorData : value
 					});
 				}
@@ -212,9 +216,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.ONE_OF,
 								message : ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumArr)),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : numberScheme,
 								errorData : value
 							});
 							break;
@@ -237,9 +242,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.NOT_ONE_OF,
 								message : ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : numberScheme,
 								errorData : value
 							});
 							break;
@@ -262,9 +268,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 										type : ErrorType.GREATER_THAN,
 										message : ErrorMsg.GREATER_THAN.replace(ErrorMsgCursorA, '' + numberScheme.min),
 
+										data,
 										path : _options.path,
 
-										data,
+										errorScheme : numberScheme,
 										errorData : value
 									});
 									break;
@@ -276,9 +283,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 										type : ErrorType.GREATER_THAN_OR_EQUAL,
 										message : ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.min),
 
+										data,
 										path : _options.path,
 
-										data,
+										errorScheme : numberScheme,
 										errorData : value
 									});
 									break;
@@ -291,9 +299,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.GREATER_THAN_OR_EQUAL,
 									message : ErrorMsg.GREATER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.min),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : numberScheme,
 									errorData : value
 								});
 								break;
@@ -317,9 +326,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 										type : ErrorType.SMALLER_THAN,
 										message : ErrorMsg.SMALLER_THAN.replace(ErrorMsgCursorA, '' + numberScheme.max),
 
+										data,
 										path : _options.path,
 
-										data,
+										errorScheme : numberScheme,
 										errorData : value
 									});
 									break;
@@ -331,9 +341,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 										type : ErrorType.SMALLER_THAN_OR_EQUAL,
 										message : ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.max),
 
+										data,
 										path : _options.path,
 
-										data,
+										errorScheme : numberScheme,
 										errorData : value
 									});
 									break;
@@ -346,9 +357,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.SMALLER_THAN_OR_EQUAL,
 									message : ErrorMsg.SMALLER_THAN_OR_EQUAL.replace(ErrorMsgCursorA, '' + numberScheme.max),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : numberScheme,
 									errorData : value
 								});
 								break;
@@ -404,9 +416,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.FORMAT,
 									message : ErrorMsg.FORMAT.replace(ErrorMsgCursorA, numberScheme.format as NumberFormat),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : numberScheme,
 									errorData : value
 								});
 							}
@@ -415,9 +428,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.FORMAT_ONE_OF,
 									message : ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(numberScheme.format)),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : numberScheme,
 									errorData : value
 								});
 							}
@@ -447,9 +461,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.ONE_OF,
 								message : ErrorMsg.ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(stringScheme.enum)),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : stringScheme,
 								errorData : value
 							});
 							break;
@@ -472,9 +487,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.NOT_ONE_OF,
 								message : ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : stringScheme,
 								errorData : value
 							});
 							break;
@@ -493,9 +509,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.LENGTH,
 								message : ErrorMsg.LENGTH.replace(ErrorMsgCursorA, '' + length),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : stringScheme,
 								errorData : value
 							});
 							break;
@@ -514,9 +531,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.MIN_LENGTH,
 								message : ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : stringScheme,
 								errorData : value
 							});
 							break;
@@ -535,9 +553,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.MAX_LENGTH,
 								message : ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : stringScheme,
 								errorData : value
 							});
 							break;
@@ -599,9 +618,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.FORMAT,
 									message : ErrorMsg.FORMAT.replace(ErrorMsgCursorA, stringScheme.format as StringFormat),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : stringScheme,
 									errorData : value
 								});
 							}
@@ -610,9 +630,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.FORMAT_ONE_OF,
 									message : ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(stringScheme.format)),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : stringScheme,
 									errorData : value
 								});
 							}
@@ -689,9 +710,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.PATTERN_ONE_OF,
 									message : ErrorMsg.PATTERN_ONE_OF.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : stringScheme,
 									errorData : value
 								});
 								break;
@@ -714,9 +736,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.PATTERN,
 									message : ErrorMsg.PATTERN.replace(ErrorMsgCursorA, patternToString(patternAsOne)),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : stringScheme,
 									errorData : value
 								});
 								break;
@@ -740,9 +763,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.NO_PROPERTY,
 								message : ErrorMsg.NO_PROPERTY,
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : objectScheme,
 								errorData : value
 							});
 							break;
@@ -769,9 +793,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.TYPE_MISMATCH,
 								message : ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, 'object'),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : objectScheme,
 								errorData : value
 							});
 							break;
@@ -828,9 +853,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.AFTER_OR_SAME_DATE,
 									message : ErrorMsg.AFTER_OR_SAME_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : dateScheme,
 									errorData : value
 								});
 								break;
@@ -842,9 +868,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.AFTER_DATE,
 									message : ErrorMsg.AFTER_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : dateScheme,
 									errorData : value
 								});
 								break;
@@ -885,9 +912,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.BEFORE_OR_SAME_DATE,
 									message : ErrorMsg.BEFORE_OR_SAME_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : dateScheme,
 									errorData : value
 								});
 								break;
@@ -900,9 +928,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 									type : ErrorType.BEFORE_DATE,
 									message : ErrorMsg.BEFORE_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
 
+									data,
 									path : _options.path,
 
-									data,
+									errorScheme : dateScheme,
 									errorData : value
 								});
 								break;
@@ -928,9 +957,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.LENGTH,
 								message : ErrorMsg.LENGTH.replace(ErrorMsgCursorA, '' + length),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : arrayScheme,
 								errorData : value
 							});
 							break;
@@ -949,9 +979,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.MIN_LENGTH,
 								message : ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : arrayScheme,
 								errorData : value
 							});
 							break;
@@ -970,9 +1001,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.MAX_LENGTH,
 								message : ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : arrayScheme,
 								errorData : value
 							});
 							break;
@@ -989,9 +1021,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 								type : ErrorType.UNIQUE_ITEMS,
 								message : ErrorMsg.UNIQUE_ITEMS,
 
+								data,
 								path : _options.path,
 
-								data,
+								errorScheme : arrayScheme,
 								errorData : value
 							});
 							break;
@@ -1052,9 +1085,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 										type : ErrorType.ITEMS_TYPE,
 										message : errorMsg,
 
+										data,
 										path : [..._options.path, '' + partialKeyIndex],
 
-										data,
+										errorScheme : partialScheme,
 										errorData : partialData[partialKey]
 									});
 								}
@@ -1130,9 +1164,10 @@ const _ejv = <T> (data : T, schemes : Scheme[], options : InternalOptions) : nul
 										type : errorType,
 										message : errorMsg,
 
+										data,
 										path : partialError.path.split('/'),
 
-										data,
+										errorScheme : partialError.errorScheme,
 										errorData : partialError.errorData
 									});
 									break;
@@ -1222,8 +1257,8 @@ export const ejv = (data : AnyObject, schemes : Scheme[], options? : Options) : 
 			type : ErrorType.REQUIRED,
 			message : ErrorMsg.NO_DATA,
 
-			path : ['/'],
-			data
+			data,
+			path : ['/']
 		});
 	}
 
