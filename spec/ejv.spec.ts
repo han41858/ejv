@@ -5,24 +5,24 @@ import { ejv } from '../src/ejv';
 import { ErrorMsg, ErrorMsgCursorA, ErrorType } from '../src/constants';
 import { AnyObject, EjvError, Scheme } from '../src/interfaces';
 
-const typeTester : {
-	type : string,
-	value : unknown
+const typeTester: {
+	type: string,
+	value: unknown
 }[] = [
-	{ type : 'boolean', value : true },
-	{ type : 'number', value : 123 },
-	{ type : 'string', value : 'ejv' },
-	{ type : 'object', value : {} },
-	{ type : 'date', value : new Date },
-	{ type : 'regexp', value : new RegExp('ejv') },
-	{ type : 'array', value : [1, 2, 3] }
+	{ type: 'boolean', value: true },
+	{ type: 'number', value: 123 },
+	{ type: 'string', value: 'ejv' },
+	{ type: 'object', value: {} },
+	{ type: 'date', value: new Date },
+	{ type: 'regexp', value: new RegExp('ejv') },
+	{ type: 'array', value: [1, 2, 3] }
 ];
 
 describe('ejv()', () => {
 	describe('ejv() itself', () => {
 		describe('data', () => {
 			it('no data', () => {
-				const error : EjvError = ejv(undefined, undefined);
+				const error: EjvError = ejv(undefined, undefined);
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error).to.have.property('type', ErrorType.REQUIRED);
@@ -31,7 +31,7 @@ describe('ejv()', () => {
 			});
 
 			it('null data', () => {
-				const error : EjvError = ejv(null, undefined);
+				const error: EjvError = ejv(null, undefined);
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error).to.have.property('type', ErrorType.REQUIRED);
@@ -43,58 +43,58 @@ describe('ejv()', () => {
 		describe('scheme', () => {
 			it('no scheme', () => {
 				expect(() => ejv({
-					a : 'hello'
+					a: 'hello'
 				}, undefined)).to.throw(ErrorMsg.NO_SCHEME);
 			});
 
 			it('null scheme', () => {
 				expect(() => ejv({
-					a : 'hello'
+					a: 'hello'
 				}, null)).to.throw(ErrorMsg.NO_SCHEME);
 			});
 
 			it('empty scheme array', () => {
 				expect(() => ejv({
-					a : 'hello'
+					a: 'hello'
 				}, [])).to.throw(ErrorMsg.EMPTY_SCHEME);
 			});
 
 			it('invalid scheme object', () => {
 				expect(() => ejv({
-					a : 'hello'
+					a: 'hello'
 				}, ['string' as unknown as Scheme])).to.throw(ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
 			});
 
 			it('no type', () => {
 				expect(() => ejv({
-					a : 'hello'
+					a: 'hello'
 				}, [{
-					key : 'a'
+					key: 'a'
 				} as unknown as Scheme])).to.throw(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
 			});
 
 			it('invalid type', () => {
 				expect(() => ejv({
-					a : 'hello'
+					a: 'hello'
 				}, [{
-					key : 'a',
-					type : 'invalidType'
+					key: 'a',
+					type: 'invalidType'
 				}])).to.throw(ErrorMsg.SCHEMES_HAS_INVALID_TYPE.replace(ErrorMsgCursorA, 'invalidType'));
 
 				expect(() => ejv({
-					a : 'hello'
+					a: 'hello'
 				}, [{
-					key : 'a',
-					type : ['string', 'invalidType']
+					key: 'a',
+					type: ['string', 'invalidType']
 				}])).to.throw(ErrorMsg.SCHEMES_HAS_INVALID_TYPE.replace(ErrorMsgCursorA, 'invalidType'));
 			});
 
 			it('duplicated type', () => {
 				expect(() => ejv({
-					a : 'hello'
+					a: 'hello'
 				}, [{
-					key : 'a',
-					type : ['string', 'string']
+					key: 'a',
+					type: ['string', 'string']
 				}])).to.throw(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
 			});
 		});
@@ -104,14 +104,14 @@ describe('ejv()', () => {
 				it('override required error', () => {
 					const customErrorMsg = 'property \'a\' required';
 
-					const error : EjvError = ejv({
+					const error: EjvError = ejv({
 						// empty
 					}, [{
-						key : 'a',
-						type : 'number'
+						key: 'a',
+						type: 'number'
 					}], {
-						customErrorMsg : {
-							[ErrorType.REQUIRED] : customErrorMsg
+						customErrorMsg: {
+							[ErrorType.REQUIRED]: customErrorMsg
 						}
 					});
 
@@ -123,14 +123,14 @@ describe('ejv()', () => {
 				it('override type matching error', () => {
 					const customErrorMsg = 'property \'a\' should be a number';
 
-					const error : EjvError = ejv({
-						a : 'a'
+					const error: EjvError = ejv({
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'number'
+						key: 'a',
+						type: 'number'
 					}], {
-						customErrorMsg : {
-							[ErrorType.TYPE_MISMATCH] : customErrorMsg
+						customErrorMsg: {
+							[ErrorType.TYPE_MISMATCH]: customErrorMsg
 						}
 					});
 
@@ -147,12 +147,12 @@ describe('ejv()', () => {
 			describe('default', () => {
 				it('undefined value', () => {
 					const data = {
-						a : undefined
+						a: undefined
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string'
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string'
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -164,11 +164,11 @@ describe('ejv()', () => {
 				});
 
 				it('correct type', () => {
-					const error : EjvError = ejv({
-						a : 'abc'
+					const error: EjvError = ejv({
+						a: 'abc'
 					}, [{
-						key : 'a',
-						type : 'string'
+						key: 'a',
+						type: 'string'
 					}]);
 
 					expect(error).to.be.null;
@@ -176,12 +176,12 @@ describe('ejv()', () => {
 
 				it('incorrect type', () => {
 					const data = {
-						a : 123
+						a: 123
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string'
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string'
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -197,13 +197,13 @@ describe('ejv()', () => {
 			describe('optional === false', () => {
 				it('undefined value', () => {
 					const data = {
-						a : undefined
+						a: undefined
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						optional : false
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						optional: false
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -215,12 +215,12 @@ describe('ejv()', () => {
 				});
 
 				it('correct type', () => {
-					const error : EjvError = ejv({
-						a : 'abc'
+					const error: EjvError = ejv({
+						a: 'abc'
 					}, [{
-						key : 'a',
-						type : 'string',
-						optional : false
+						key: 'a',
+						type: 'string',
+						optional: false
 					}]);
 
 					expect(error).to.be.null;
@@ -228,13 +228,13 @@ describe('ejv()', () => {
 
 				it('incorrect type', () => {
 					const data = {
-						a : 123
+						a: 123
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						optional : false
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						optional: false
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -249,24 +249,24 @@ describe('ejv()', () => {
 
 			describe('optional === true', () => {
 				it('undefined value', () => {
-					const error : EjvError = ejv({
-						a : undefined
+					const error: EjvError = ejv({
+						a: undefined
 					}, [{
-						key : 'a',
-						type : 'string',
-						optional : true
+						key: 'a',
+						type: 'string',
+						optional: true
 					}]);
 
 					expect(error).to.be.null;
 				});
 
 				it('correct type', () => {
-					const error : EjvError = ejv({
-						a : 'abc'
+					const error: EjvError = ejv({
+						a: 'abc'
 					}, [{
-						key : 'a',
-						type : 'string',
-						optional : true
+						key: 'a',
+						type: 'string',
+						optional: true
 					}]);
 
 					expect(error).to.be.null;
@@ -274,13 +274,13 @@ describe('ejv()', () => {
 
 				it('incorrect type', () => {
 					const data = {
-						a : 123
+						a: 123
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						optional : true
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						optional: true
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -297,12 +297,12 @@ describe('ejv()', () => {
 		describe('nullable', () => {
 			it('default', () => {
 				const data = {
-					a : null
+					a: null
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string'
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string'
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -315,13 +315,13 @@ describe('ejv()', () => {
 
 			it('nullable === false', () => {
 				const data = {
-					a : null
+					a: null
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string',
-					nullable : false
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					nullable: false
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -333,12 +333,12 @@ describe('ejv()', () => {
 			});
 
 			it('nullable === true', () => {
-				const error : EjvError = ejv({
-					a : null
+				const error: EjvError = ejv({
+					a: null
 				}, [{
-					key : 'a',
-					type : 'string',
-					nullable : true
+					key: 'a',
+					type: 'string',
+					nullable: true
 				}]);
 
 				expect(error).to.be.null;
@@ -349,35 +349,35 @@ describe('ejv()', () => {
 			xdescribe('error', () => {
 				it('same type in not', () => {
 					expect(ejv({
-						a : 'hello'
+						a: 'hello'
 					}, [{
-						key : 'a',
-						not : {
-							type : 'string'
+						key: 'a',
+						not: {
+							type: 'string'
 						}
 					}])).to.throw(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
 				});
 
 				it('same type in not array', () => {
 					expect(ejv({
-						a : 'hello'
+						a: 'hello'
 					}, [{
-						key : 'a',
-						not : {
-							type : ['string']
+						key: 'a',
+						not: {
+							type: ['string']
 						}
 					}])).to.throw(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
 				});
 
 				it('duplicated rule in not', () => {
 					expect(ejv({
-						a : 'hello'
+						a: 'hello'
 					}, [{
-						key : 'a',
-						type : 'string',
-						optional : true,
-						not : {
-							optional : true
+						key: 'a',
+						type: 'string',
+						optional: true,
+						not: {
+							optional: true
 						}
 					}])).to.throw(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
 				});
@@ -387,21 +387,21 @@ describe('ejv()', () => {
 				const value = 'hello';
 
 				expect(ejv({
-					a : value
+					a: value
 				}, [{
-					key : 'a',
-					not : {
-						type : 'boolean'
+					key: 'a',
+					not: {
+						type: 'boolean'
 					}
 				}])).to.be.null;
 
 
-				const error : EjvError = ejv({
-					a : value
+				const error: EjvError = ejv({
+					a: value
 				}, [{
-					key : 'a',
-					not : {
-						type : 'string'
+					key: 'a',
+					not: {
+						type: 'string'
 					}
 				}]);
 
@@ -413,12 +413,12 @@ describe('ejv()', () => {
 
 			it('with single type - nested', () => {
 				expect(ejv({
-					a : 'hello'
+					a: 'hello'
 				}, [{
-					key : 'a',
-					not : {
-						not : {
-							type : 'string'
+					key: 'a',
+					not: {
+						not: {
+							type: 'string'
 						}
 					}
 				}])).to.be.null;
@@ -428,21 +428,21 @@ describe('ejv()', () => {
 				const value = 'hello';
 
 				expect(ejv({
-					a : value
+					a: value
 				}, [{
-					key : 'a',
-					not : {
-						type : ['boolean', 'number'] // not boolean & not number
+					key: 'a',
+					not: {
+						type: ['boolean', 'number'] // not boolean & not number
 					}
 				}])).to.be.null;
 
 
-				const error : EjvError = ejv({
-					a : value
+				const error: EjvError = ejv({
+					a: value
 				}, [{
-					key : 'a',
-					not : {
-						type : ['string', 'number'] // not string & not number
+					key: 'a',
+					not: {
+						type: ['string', 'number'] // not string & not number
 					}
 				}]);
 
@@ -454,12 +454,12 @@ describe('ejv()', () => {
 
 			it('with type array - nested', () => {
 				expect(ejv({
-					a : 'hello'
+					a: 'hello'
 				}, [{
-					key : 'a',
-					not : {
-						not : {
-							type : ['string']
+					key: 'a',
+					not: {
+						not: {
+							type: ['string']
 						}
 					}
 				}])).to.be.null;
@@ -473,13 +473,13 @@ describe('ejv()', () => {
 				typeTester.filter(obj => obj.type !== 'number')
 					.forEach((obj) => {
 						const data = {
-							a : obj.value
+							a: obj.value
 						};
 
 						it(obj.type, () => {
-							const error : EjvError = ejv(data, [{
-								key : 'a',
-								type : 'number'
+							const error: EjvError = ejv(data, [{
+								key: 'a',
+								type: 'number'
 							}]);
 
 							expect(error).to.be.instanceof(EjvError);
@@ -496,15 +496,15 @@ describe('ejv()', () => {
 
 				it('multiple types', () => {
 					const value = 123;
-					const typeArr : string[] = ['boolean', 'string'];
+					const typeArr: string[] = ['boolean', 'string'];
 
 					const data = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : typeArr
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: typeArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -521,38 +521,38 @@ describe('ejv()', () => {
 			describe('match', () => {
 				it('optional', () => {
 					expect(ejv({
-						a : undefined
+						a: undefined
 					}, [{
-						key : 'a',
-						type : 'number',
-						optional : true
+						key: 'a',
+						type: 'number',
+						optional: true
 					}])).to.be.null;
 				});
 
 				it('single type', () => {
 					expect(ejv({
-						a : 123
+						a: 123
 					}, [{
-						key : 'a',
-						type : 'number'
+						key: 'a',
+						type: 'number'
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : 123
+						a: 123
 					}, [{
-						key : 'a',
-						type : ['number', 'string']
+						key: 'a',
+						type: ['number', 'string']
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : 123
+						a: 123
 					}, [{
-						key : 'a',
-						type : ['string', 'number']
+						key: 'a',
+						type: ['string', 'number']
 					}])).to.be.null;
 				});
 			});
@@ -562,56 +562,56 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 1
+						a: 1
 					}, [{
-						key : 'a',
-						type : 'number',
-						enum : undefined
+						key: 'a',
+						type: 'number',
+						enum: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 1
+						a: 1
 					}, [{
-						key : 'a',
-						type : 'number',
-						enum : null
+						key: 'a',
+						type: 'number',
+						enum: null
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
 					expect(() => ejv({
-						a : 10
+						a: 10
 					}, [{
-						key : 'a',
-						type : 'number',
-						enum : 1 as unknown as number[]
+						key: 'a',
+						type: 'number',
+						enum: 1 as unknown as number[]
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
 				it('not number', () => {
 					expect(() => ejv({
-						a : 10
+						a: 10
 					}, [{
-						key : 'a',
-						type : 'number',
-						enum : ['10']
+						key: 'a',
+						type: 'number',
+						enum: ['10']
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_NUMBERS);
 				});
 			});
 
 			it('fail', () => {
-				const enumArr : number[] = [9, 11];
+				const enumArr: number[] = [9, 11];
 
 				const data = {
-					a : 10
+					a: 10
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'number',
-					enum : enumArr
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'number',
+					enum: enumArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -626,11 +626,11 @@ describe('ejv()', () => {
 
 			it('ok', () => {
 				expect(ejv({
-					a : 10
+					a: 10
 				}, [{
-					key : 'a',
-					type : 'number',
-					enum : [9, 10, 11]
+					key: 'a',
+					type: 'number',
+					enum: [9, 10, 11]
 				}])).to.be.null;
 			});
 		});
@@ -639,56 +639,56 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 1
+						a: 1
 					}, [{
-						key : 'a',
-						type : 'number',
-						enumReverse : undefined
+						key: 'a',
+						type: 'number',
+						enumReverse: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 1
+						a: 1
 					}, [{
-						key : 'a',
-						type : 'number',
-						enumReverse : null
+						key: 'a',
+						type: 'number',
+						enumReverse: null
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
 					expect(() => ejv({
-						a : 10
+						a: 10
 					}, [{
-						key : 'a',
-						type : 'number',
-						enumReverse : 1 as unknown as number[]
+						key: 'a',
+						type: 'number',
+						enumReverse: 1 as unknown as number[]
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
 				it('not number', () => {
 					expect(() => ejv({
-						a : 10
+						a: 10
 					}, [{
-						key : 'a',
-						type : 'number',
-						enumReverse : ['10']
+						key: 'a',
+						type: 'number',
+						enumReverse: ['10']
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS);
 				});
 			});
 
 			it('fail', () => {
-				const enumArr : number[] = [9, 10];
+				const enumArr: number[] = [9, 10];
 
 				const data = {
-					a : 10
+					a: 10
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'number',
-					enumReverse : enumArr
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'number',
+					enumReverse: enumArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -703,11 +703,11 @@ describe('ejv()', () => {
 
 			it('ok', () => {
 				expect(ejv({
-					a : 10
+					a: 10
 				}, [{
-					key : 'a',
-					type : 'number',
-					enumReverse : [9, 11]
+					key: 'a',
+					type: 'number',
+					enumReverse: [9, 11]
 				}])).to.be.null;
 			});
 		});
@@ -716,62 +716,62 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 1
+						a: 1
 					}, [{
-						key : 'a',
-						type : 'number',
-						min : undefined
+						key: 'a',
+						type: 'number',
+						min: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 3
+						a: 3
 					}, [{
-						key : 'a',
-						type : 'number',
-						min : null
+						key: 'a',
+						type: 'number',
+						min: null
 					}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
 				});
 
 				it('min type', () => {
 					expect(() => ejv({
-						a : 3
+						a: 3
 					}, [{
-						key : 'a',
-						type : 'number',
-						min : '3'
+						key: 'a',
+						type: 'number',
+						min: '3'
 					}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
 				});
 
 				it('exclusiveMin type', () => {
 					expect(() => ejv({
-						a : 3
+						a: 3
 					}, [{
-						key : 'a',
-						type : 'number',
-						min : 3,
-						exclusiveMin : '3' as unknown as boolean
+						key: 'a',
+						type: 'number',
+						min: 3,
+						exclusiveMin: '3' as unknown as boolean
 					}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
 				});
 			});
 
 			it('without exclusiveMin', () => {
 				expect(ejv({
-					a : 1
+					a: 1
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 1,
-					exclusiveMin : undefined
+					key: 'a',
+					type: 'number',
+					min: 1,
+					exclusiveMin: undefined
 				}])).to.be.null;
 
-				const error1 : EjvError = ejv({
-					a : 9
+				const error1: EjvError = ejv({
+					a: 9
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 10
+					key: 'a',
+					type: 'number',
+					min: 10
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
@@ -781,30 +781,30 @@ describe('ejv()', () => {
 				);
 
 				expect(ejv({
-					a : 10
+					a: 10
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 10
+					key: 'a',
+					type: 'number',
+					min: 10
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 11
+					a: 11
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 10
+					key: 'a',
+					type: 'number',
+					min: 10
 				}])).to.be.null;
 			});
 
 			it('exclusiveMin === true', () => {
-				const error1 : EjvError = ejv({
-					a : 9
+				const error1: EjvError = ejv({
+					a: 9
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 10,
-					exclusiveMin : true
+					key: 'a',
+					type: 'number',
+					min: 10,
+					exclusiveMin: true
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
@@ -813,13 +813,13 @@ describe('ejv()', () => {
 					.replace(ErrorMsgCursorA, '10')
 				);
 
-				const error2 : EjvError = ejv({
-					a : 10
+				const error2: EjvError = ejv({
+					a: 10
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 10,
-					exclusiveMin : true
+					key: 'a',
+					type: 'number',
+					min: 10,
+					exclusiveMin: true
 				}]);
 
 				expect(error2).to.be.instanceof(EjvError);
@@ -829,23 +829,23 @@ describe('ejv()', () => {
 				);
 
 				expect(ejv({
-					a : 11
+					a: 11
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 10,
-					exclusiveMin : true
+					key: 'a',
+					type: 'number',
+					min: 10,
+					exclusiveMin: true
 				}])).to.be.null;
 			});
 
 			it('exclusiveMin === false', () => {
-				const error1 : EjvError = ejv({
-					a : 9
+				const error1: EjvError = ejv({
+					a: 9
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 10,
-					exclusiveMin : false
+					key: 'a',
+					type: 'number',
+					min: 10,
+					exclusiveMin: false
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
@@ -855,21 +855,21 @@ describe('ejv()', () => {
 				);
 
 				expect(ejv({
-					a : 10
+					a: 10
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 10,
-					exclusiveMin : false
+					key: 'a',
+					type: 'number',
+					min: 10,
+					exclusiveMin: false
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 11
+					a: 11
 				}, [{
-					key : 'a',
-					type : 'number',
-					min : 10,
-					exclusiveMin : false
+					key: 'a',
+					type: 'number',
+					min: 10,
+					exclusiveMin: false
 				}])).to.be.null;
 			});
 		});
@@ -878,78 +878,78 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 1
+						a: 1
 					}, [{
-						key : 'a',
-						type : 'number',
-						max : undefined
+						key: 'a',
+						type: 'number',
+						max: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 3
+						a: 3
 					}, [{
-						key : 'a',
-						type : 'number',
-						max : null
+						key: 'a',
+						type: 'number',
+						max: null
 					}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
 				});
 
 				it('max type', () => {
 					expect(() => ejv({
-						a : 3
+						a: 3
 					}, [{
-						key : 'a',
-						type : 'number',
-						max : '3'
+						key: 'a',
+						type: 'number',
+						max: '3'
 					}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
 				});
 
 				it('exclusiveMax type', () => {
 					expect(() => ejv({
-						a : 3
+						a: 3
 					}, [{
-						key : 'a',
-						type : 'number',
-						max : 3,
-						exclusiveMax : '3' as unknown as boolean
+						key: 'a',
+						type: 'number',
+						max: 3,
+						exclusiveMax: '3' as unknown as boolean
 					}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 				});
 			});
 
 			it('without exclusiveMax', () => {
 				expect(ejv({
-					a : 1
+					a: 1
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 1,
-					exclusiveMax : undefined
+					key: 'a',
+					type: 'number',
+					max: 1,
+					exclusiveMax: undefined
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 9
+					a: 9
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 10
+					key: 'a',
+					type: 'number',
+					max: 10
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 10
+					a: 10
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 10
+					key: 'a',
+					type: 'number',
+					max: 10
 				}])).to.be.null;
 
-				const error1 : EjvError = ejv({
-					a : 11
+				const error1: EjvError = ejv({
+					a: 11
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 10
+					key: 'a',
+					type: 'number',
+					max: 10
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
@@ -961,21 +961,21 @@ describe('ejv()', () => {
 
 			it('exclusiveMax === true', () => {
 				expect(ejv({
-					a : 9
+					a: 9
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 10,
-					exclusiveMax : true
+					key: 'a',
+					type: 'number',
+					max: 10,
+					exclusiveMax: true
 				}])).to.be.null;
 
-				const error1 : EjvError = ejv({
-					a : 10
+				const error1: EjvError = ejv({
+					a: 10
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 10,
-					exclusiveMax : true
+					key: 'a',
+					type: 'number',
+					max: 10,
+					exclusiveMax: true
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
@@ -984,13 +984,13 @@ describe('ejv()', () => {
 					.replace(ErrorMsgCursorA, '10')
 				);
 
-				const error2 : EjvError = ejv({
-					a : 11
+				const error2: EjvError = ejv({
+					a: 11
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 10,
-					exclusiveMax : true
+					key: 'a',
+					type: 'number',
+					max: 10,
+					exclusiveMax: true
 				}]);
 
 				expect(error2).to.be.instanceof(EjvError);
@@ -1002,30 +1002,30 @@ describe('ejv()', () => {
 
 			it('exclusiveMax === false', () => {
 				expect(ejv({
-					a : 9
+					a: 9
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 10,
-					exclusiveMax : false
+					key: 'a',
+					type: 'number',
+					max: 10,
+					exclusiveMax: false
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 10
+					a: 10
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 10,
-					exclusiveMax : false
+					key: 'a',
+					type: 'number',
+					max: 10,
+					exclusiveMax: false
 				}])).to.be.null;
 
-				const error1 : EjvError = ejv({
-					a : 11
+				const error1: EjvError = ejv({
+					a: 11
 				}, [{
-					key : 'a',
-					type : 'number',
-					max : 10,
-					exclusiveMax : false
+					key: 'a',
+					type: 'number',
+					max: 10,
+					exclusiveMax: false
 				}]);
 
 				expect(error1).to.be.instanceof(EjvError);
@@ -1040,21 +1040,21 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 123.5
+						a: 123.5
 					}, [{
-						key : 'a',
-						type : 'number',
-						format : undefined
+						key: 'a',
+						type: 'number',
+						format: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 123.5
+						a: 123.5
 					}, [{
-						key : 'a',
-						type : 'number',
-						format : null
+						key: 'a',
+						type: 'number',
+						format: null
 					}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
 						.replace(ErrorMsgCursorA, 'null'));
 				});
@@ -1062,22 +1062,22 @@ describe('ejv()', () => {
 				describe('invalid number format', () => {
 					it('single', () => {
 						expect(() => ejv({
-							a : 1
+							a: 1
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : 'invalidNumberFormat'
+							key: 'a',
+							type: 'number',
+							format: 'invalidNumberFormat'
 						}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
 							.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
 					});
 
 					it('multiple', () => {
 						expect(() => ejv({
-							a : 1
+							a: 1
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['index', 'invalidNumberFormat']
+							key: 'a',
+							type: 'number',
+							format: ['index', 'invalidNumberFormat']
 						}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
 							.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
 					});
@@ -1087,12 +1087,12 @@ describe('ejv()', () => {
 			describe('integer', () => {
 				describe('single format', () => {
 					it('fail', () => {
-						const error : EjvError = ejv({
-							a : 123.5
+						const error: EjvError = ejv({
+							a: 123.5
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : 'integer'
+							key: 'a',
+							type: 'number',
+							format: 'integer'
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
@@ -1104,25 +1104,25 @@ describe('ejv()', () => {
 
 					it('ok', () => {
 						expect(ejv({
-							a : 123
+							a: 123
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : 'integer'
+							key: 'a',
+							type: 'number',
+							format: 'integer'
 						}])).to.be.null;
 					});
 				});
 
 				describe('multiple formats', () => {
 					it('fail', () => {
-						const formatArr : string[] = ['integer'];
+						const formatArr: string[] = ['integer'];
 
-						const error : EjvError = ejv({
-							a : 123.5
+						const error: EjvError = ejv({
+							a: 123.5
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : formatArr
+							key: 'a',
+							type: 'number',
+							format: formatArr
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
@@ -1134,79 +1134,79 @@ describe('ejv()', () => {
 
 					it('ok', () => {
 						expect(ejv({
-							a : -7
+							a: -7
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['integer']
+							key: 'a',
+							type: 'number',
+							format: ['integer']
 						}])).to.be.null;
 
 						expect(ejv({
-							a : 0
+							a: 0
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['integer']
+							key: 'a',
+							type: 'number',
+							format: ['integer']
 						}])).to.be.null;
 
 						expect(ejv({
-							a : 123
+							a: 123
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['integer']
-						}])).to.be.null;
-					});
-
-					it('ok - with others', () => {
-						expect(ejv({
-							a : -7
-						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['integer', 'index']
-						}])).to.be.null;
-
-						expect(ejv({
-							a : 0
-						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['integer', 'index']
-						}])).to.be.null;
-
-						expect(ejv({
-							a : 123
-						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['integer', 'index']
+							key: 'a',
+							type: 'number',
+							format: ['integer']
 						}])).to.be.null;
 					});
 
 					it('ok - with others', () => {
 						expect(ejv({
-							a : -7
+							a: -7
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['index', 'integer']
+							key: 'a',
+							type: 'number',
+							format: ['integer', 'index']
 						}])).to.be.null;
 
 						expect(ejv({
-							a : 0
+							a: 0
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['index', 'integer']
+							key: 'a',
+							type: 'number',
+							format: ['integer', 'index']
 						}])).to.be.null;
 
 						expect(ejv({
-							a : 123
+							a: 123
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['index', 'integer']
+							key: 'a',
+							type: 'number',
+							format: ['integer', 'index']
+						}])).to.be.null;
+					});
+
+					it('ok - with others', () => {
+						expect(ejv({
+							a: -7
+						}, [{
+							key: 'a',
+							type: 'number',
+							format: ['index', 'integer']
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 0
+						}, [{
+							key: 'a',
+							type: 'number',
+							format: ['index', 'integer']
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 123
+						}, [{
+							key: 'a',
+							type: 'number',
+							format: ['index', 'integer']
 						}])).to.be.null;
 					});
 				});
@@ -1215,12 +1215,12 @@ describe('ejv()', () => {
 			describe('index', () => {
 				describe('single format', () => {
 					it('fail', () => {
-						const error1 : EjvError = ejv({
-							a : 1.5
+						const error1: EjvError = ejv({
+							a: 1.5
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : 'index'
+							key: 'a',
+							type: 'number',
+							format: 'index'
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
@@ -1229,12 +1229,12 @@ describe('ejv()', () => {
 							.replace(ErrorMsgCursorA, 'index')
 						);
 
-						const error2 : EjvError = ejv({
-							a : -1
+						const error2: EjvError = ejv({
+							a: -1
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : 'index'
+							key: 'a',
+							type: 'number',
+							format: 'index'
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
@@ -1243,12 +1243,12 @@ describe('ejv()', () => {
 							.replace(ErrorMsgCursorA, 'index')
 						);
 
-						const error3 : EjvError = ejv({
-							a : -1.6
+						const error3: EjvError = ejv({
+							a: -1.6
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : 'index'
+							key: 'a',
+							type: 'number',
+							format: 'index'
 						}]);
 
 						expect(error3).to.be.instanceof(EjvError);
@@ -1260,33 +1260,33 @@ describe('ejv()', () => {
 
 					it('ok', () => {
 						expect(ejv({
-							a : 0
+							a: 0
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : 'index'
+							key: 'a',
+							type: 'number',
+							format: 'index'
 						}])).to.be.null;
 
 						expect(ejv({
-							a : 6
+							a: 6
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : 'index'
+							key: 'a',
+							type: 'number',
+							format: 'index'
 						}])).to.be.null;
 					});
 				});
 
 				describe('multiple formats', () => {
 					it('fail', () => {
-						const formatArr : string[] = ['index'];
+						const formatArr: string[] = ['index'];
 
-						const error1 : EjvError = ejv({
-							a : 1.5
+						const error1: EjvError = ejv({
+							a: 1.5
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : formatArr
+							key: 'a',
+							type: 'number',
+							format: formatArr
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
@@ -1295,12 +1295,12 @@ describe('ejv()', () => {
 							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 						);
 
-						const error2 : EjvError = ejv({
-							a : -1
+						const error2: EjvError = ejv({
+							a: -1
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : formatArr
+							key: 'a',
+							type: 'number',
+							format: formatArr
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
@@ -1309,12 +1309,12 @@ describe('ejv()', () => {
 							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
 						);
 
-						const error3 : EjvError = ejv({
-							a : -1.6
+						const error3: EjvError = ejv({
+							a: -1.6
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : formatArr
+							key: 'a',
+							type: 'number',
+							format: formatArr
 						}]);
 
 						expect(error3).to.be.instanceof(EjvError);
@@ -1326,55 +1326,55 @@ describe('ejv()', () => {
 
 					it('ok', () => {
 						expect(ejv({
-							a : 0
+							a: 0
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['index']
+							key: 'a',
+							type: 'number',
+							format: ['index']
 						}])).to.be.null;
 
 						expect(ejv({
-							a : 6
+							a: 6
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['index']
-						}])).to.be.null;
-					});
-
-					it('ok - with others', () => {
-						expect(ejv({
-							a : 0
-						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['index', 'integer']
-						}])).to.be.null;
-
-						expect(ejv({
-							a : 6
-						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['index', 'integer']
+							key: 'a',
+							type: 'number',
+							format: ['index']
 						}])).to.be.null;
 					});
 
 					it('ok - with others', () => {
 						expect(ejv({
-							a : 0
+							a: 0
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['integer', 'index']
+							key: 'a',
+							type: 'number',
+							format: ['index', 'integer']
 						}])).to.be.null;
 
 						expect(ejv({
-							a : 6
+							a: 6
 						}, [{
-							key : 'a',
-							type : 'number',
-							format : ['integer', 'index']
+							key: 'a',
+							type: 'number',
+							format: ['index', 'integer']
+						}])).to.be.null;
+					});
+
+					it('ok - with others', () => {
+						expect(ejv({
+							a: 0
+						}, [{
+							key: 'a',
+							type: 'number',
+							format: ['integer', 'index']
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 6
+						}, [{
+							key: 'a',
+							type: 'number',
+							format: ['integer', 'index']
 						}])).to.be.null;
 					});
 				});
@@ -1388,13 +1388,13 @@ describe('ejv()', () => {
 				typeTester.filter(obj => obj.type !== 'string')
 					.forEach((obj) => {
 						const data = {
-							a : obj.value
+							a: obj.value
 						};
 
 						it(obj.type, () => {
-							const error : EjvError = ejv(data, [{
-								key : 'a',
-								type : 'string'
+							const error: EjvError = ejv(data, [{
+								key: 'a',
+								type: 'string'
 							}]);
 
 							expect(error).to.be.instanceof(EjvError);
@@ -1411,15 +1411,15 @@ describe('ejv()', () => {
 
 				it('multiple types', () => {
 					const value = 'ejv';
-					const typeArr : string[] = ['boolean', 'number'];
+					const typeArr: string[] = ['boolean', 'number'];
 
 					const data = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : typeArr
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: typeArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -1436,38 +1436,38 @@ describe('ejv()', () => {
 			describe('match', () => {
 				it('optional', () => {
 					expect(ejv({
-						a : undefined
+						a: undefined
 					}, [{
-						key : 'a',
-						type : 'string',
-						optional : true
+						key: 'a',
+						type: 'string',
+						optional: true
 					}])).to.be.null;
 				});
 
 				it('single type', () => {
 					expect(ejv({
-						a : 'ejv'
+						a: 'ejv'
 					}, [{
-						key : 'a',
-						type : 'string'
+						key: 'a',
+						type: 'string'
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : 'ejv'
+						a: 'ejv'
 					}, [{
-						key : 'a',
-						type : ['string', 'number']
+						key: 'a',
+						type: ['string', 'number']
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : 'ejv'
+						a: 'ejv'
 					}, [{
-						key : 'a',
-						type : ['number', 'string']
+						key: 'a',
+						type: ['number', 'string']
 					}])).to.be.null;
 				});
 			});
@@ -1477,56 +1477,56 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						enum : undefined
+						key: 'a',
+						type: 'string',
+						enum: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						enum : null
+						key: 'a',
+						type: 'string',
+						enum: null
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						enum : 'a' as unknown as string[]
+						key: 'a',
+						type: 'string',
+						enum: 'a' as unknown as string[]
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
 				});
 
 				it('not string', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						enum : [10]
+						key: 'a',
+						type: 'string',
+						enum: [10]
 					}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_STRINGS);
 				});
 			});
 
 			it('fail', () => {
-				const enumArr : string[] = ['b', 'c'];
+				const enumArr: string[] = ['b', 'c'];
 
 				const data = {
-					a : 'a'
+					a: 'a'
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string',
-					enum : enumArr
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					enum: enumArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -1541,11 +1541,11 @@ describe('ejv()', () => {
 
 			it('ok', () => {
 				expect(ejv({
-					a : 'a'
+					a: 'a'
 				}, [{
-					key : 'a',
-					type : 'string',
-					enum : ['a', 'b', 'c']
+					key: 'a',
+					type: 'string',
+					enum: ['a', 'b', 'c']
 				}])).to.be.null;
 			});
 		});
@@ -1554,56 +1554,56 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						enumReverse : undefined
+						key: 'a',
+						type: 'string',
+						enumReverse: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						enumReverse : null
+						key: 'a',
+						type: 'string',
+						enumReverse: null
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						enumReverse : 'a' as unknown as string[]
+						key: 'a',
+						type: 'string',
+						enumReverse: 'a' as unknown as string[]
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
 				});
 
 				it('not string', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						enumReverse : [10]
+						key: 'a',
+						type: 'string',
+						enumReverse: [10]
 					}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS);
 				});
 			});
 
 			it('fail', () => {
-				const enumArr : string[] = ['a', 'c'];
+				const enumArr: string[] = ['a', 'c'];
 
 				const data = {
-					a : 'a'
+					a: 'a'
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string',
-					enumReverse : enumArr
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					enumReverse: enumArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -1618,11 +1618,11 @@ describe('ejv()', () => {
 
 			it('ok', () => {
 				expect(ejv({
-					a : 'a'
+					a: 'a'
 				}, [{
-					key : 'a',
-					type : 'string',
-					enumReverse : ['b', 'c']
+					key: 'a',
+					type: 'string',
+					enumReverse: ['b', 'c']
 				}])).to.be.null;
 			});
 		});
@@ -1631,54 +1631,54 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 'ejv'
+						a: 'ejv'
 					}, [{
-						key : 'a',
-						type : 'string',
-						minLength : undefined
+						key: 'a',
+						type: 'string',
+						minLength: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						minLength : null
+						key: 'a',
+						type: 'string',
+						minLength: null
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('float number', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						minLength : 1.5
+						key: 'a',
+						type: 'string',
+						minLength: 1.5
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('string', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						minLength : '1' as unknown as number
+						key: 'a',
+						type: 'string',
+						minLength: '1' as unknown as number
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
 
 			it('fail', () => {
 				const data = {
-					a : 'ejv'
+					a: 'ejv'
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string',
-					minLength : 4
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					minLength: 4
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -1692,19 +1692,19 @@ describe('ejv()', () => {
 
 			it('ok', () => {
 				expect(ejv({
-					a : 'ejv'
+					a: 'ejv'
 				}, [{
-					key : 'a',
-					type : 'string',
-					minLength : 2
+					key: 'a',
+					type: 'string',
+					minLength: 2
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 'ejv'
+					a: 'ejv'
 				}, [{
-					key : 'a',
-					type : 'string',
-					minLength : 3
+					key: 'a',
+					type: 'string',
+					minLength: 3
 				}])).to.be.null;
 			});
 		});
@@ -1713,54 +1713,54 @@ describe('ejv()', () => {
 			it('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 'ejv'
+						a: 'ejv'
 					}, [{
-						key : 'a',
-						type : 'string',
-						maxLength : undefined
+						key: 'a',
+						type: 'string',
+						maxLength: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						maxLength : null
+						key: 'a',
+						type: 'string',
+						maxLength: null
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('float number', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						maxLength : 1.5
+						key: 'a',
+						type: 'string',
+						maxLength: 1.5
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('string', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						maxLength : '1' as unknown as number
+						key: 'a',
+						type: 'string',
+						maxLength: '1' as unknown as number
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
 
 			it('fail', () => {
 				const data = {
-					a : 'ejv'
+					a: 'ejv'
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string',
-					maxLength : 2
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					maxLength: 2
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -1774,19 +1774,19 @@ describe('ejv()', () => {
 
 			it('ok', () => {
 				expect(ejv({
-					a : 'ejv'
+					a: 'ejv'
 				}, [{
-					key : 'a',
-					type : 'string',
-					maxLength : 3
+					key: 'a',
+					type: 'string',
+					maxLength: 3
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 'ejv'
+					a: 'ejv'
 				}, [{
-					key : 'a',
-					type : 'string',
-					maxLength : 4
+					key: 'a',
+					type: 'string',
+					maxLength: 4
 				}])).to.be.null;
 			});
 		});
@@ -1795,21 +1795,21 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : undefined
+						key: 'a',
+						type: 'string',
+						format: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : null
+						key: 'a',
+						type: 'string',
+						format: null
 					}])).to.throw(ErrorMsg.INVALID_STRING_FORMAT
 						.replace(ErrorMsgCursorA, 'null'));
 				});
@@ -1817,22 +1817,22 @@ describe('ejv()', () => {
 				describe('invalid string format', () => {
 					it('single format', () => {
 						expect(() => ejv({
-							a : 'a'
+							a: 'a'
 						}, [{
-							key : 'a',
-							type : 'string',
-							format : 'invalidStringFormat'
+							key: 'a',
+							type: 'string',
+							format: 'invalidStringFormat'
 						}])).to.throw(ErrorMsg.INVALID_STRING_FORMAT
 							.replace(ErrorMsgCursorA, 'invalidStringFormat'));
 					});
 
 					it('multiple format', () => {
 						expect(() => ejv({
-							a : 'a'
+							a: 'a'
 						}, [{
-							key : 'a',
-							type : 'string',
-							format : ['invalidStringFormat']
+							key: 'a',
+							type: 'string',
+							format: ['invalidStringFormat']
 						}])).to.throw(ErrorMsg.INVALID_STRING_FORMAT
 							.replace(ErrorMsgCursorA, 'invalidStringFormat'));
 					});
@@ -1842,13 +1842,13 @@ describe('ejv()', () => {
 			describe('email', () => {
 				it('single format', () => {
 					const data = {
-						a : 'ejv'
+						a: 'ejv'
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						format : 'email'
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: 'email'
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -1861,25 +1861,25 @@ describe('ejv()', () => {
 					expect(error.errorData).to.be.eql('ejv');
 
 					expect(ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : 'email'
+						key: 'a',
+						type: 'string',
+						format: 'email'
 					}])).to.be.null;
 				});
 
 				it('multiple format', () => {
-					const formatArr : string[] = ['email', 'date'];
+					const formatArr: string[] = ['email', 'date'];
 
 					const data = {
-						a : 'ejv'
+						a: 'ejv'
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -1892,11 +1892,11 @@ describe('ejv()', () => {
 					expect(error.errorData).to.be.eql('ejv');
 
 					expect(ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}])).to.be.null;
 				});
 			});
@@ -1904,13 +1904,13 @@ describe('ejv()', () => {
 			describe('date', () => {
 				it('single format', () => {
 					const data = {
-						a : 'ejv'
+						a: 'ejv'
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						format : 'date'
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: 'date'
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -1923,25 +1923,25 @@ describe('ejv()', () => {
 					expect(error.errorData).to.be.eql('ejv');
 
 					expect(ejv({
-						a : '2018-12-19'
+						a: '2018-12-19'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : 'date'
+						key: 'a',
+						type: 'string',
+						format: 'date'
 					}])).to.be.null;
 				});
 
 				it('multiple format', () => {
-					const formatArr : string[] = ['date'];
+					const formatArr: string[] = ['date'];
 
 					const data = {
-						a : 'ejv'
+						a: 'ejv'
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -1954,11 +1954,11 @@ describe('ejv()', () => {
 					expect(error.errorData).to.be.eql('ejv');
 
 					expect(ejv({
-						a : '2018-12-19'
+						a: '2018-12-19'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}])).to.be.null;
 				});
 			});
@@ -1966,13 +1966,13 @@ describe('ejv()', () => {
 			describe('time', () => {
 				it('single format', () => {
 					const data = {
-						a : 'ejv'
+						a: 'ejv'
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						format : 'time'
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: 'time'
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -1985,25 +1985,25 @@ describe('ejv()', () => {
 					expect(error.errorData).to.be.eql('ejv');
 
 					expect(ejv({
-						a : '00:27:35.123'
+						a: '00:27:35.123'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : 'time'
+						key: 'a',
+						type: 'string',
+						format: 'time'
 					}])).to.be.null;
 				});
 
 				it('multiple format', () => {
-					const formatArr : string[] = ['time'];
+					const formatArr: string[] = ['time'];
 
 					const data = {
-						a : 'ejv'
+						a: 'ejv'
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -2016,11 +2016,11 @@ describe('ejv()', () => {
 					expect(error.errorData).to.be.eql('ejv');
 
 					expect(ejv({
-						a : '00:27:35.123'
+						a: '00:27:35.123'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}])).to.be.null;
 				});
 			});
@@ -2028,13 +2028,13 @@ describe('ejv()', () => {
 			describe('date-time', () => {
 				it('single format', () => {
 					const data = {
-						a : 'ejv'
+						a: 'ejv'
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						format : 'date-time'
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: 'date-time'
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -2047,41 +2047,41 @@ describe('ejv()', () => {
 					expect(error.errorData).to.be.eql('ejv');
 
 					expect(ejv({
-						a : '2018-12-19T00:27:35.123Z'
+						a: '2018-12-19T00:27:35.123Z'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : 'date-time'
+						key: 'a',
+						type: 'string',
+						format: 'date-time'
 					}])).to.be.null;
 
 					expect(ejv({
-						a : '2018-12-19T00:27:35+00:00'
+						a: '2018-12-19T00:27:35+00:00'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : 'date-time'
+						key: 'a',
+						type: 'string',
+						format: 'date-time'
 					}])).to.be.null;
 
 					expect(ejv({
-						a : '20181219T002735Z'
+						a: '20181219T002735Z'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : 'date-time'
+						key: 'a',
+						type: 'string',
+						format: 'date-time'
 					}])).to.be.null;
 				});
 
 				it('multiple format', () => {
-					const formatArr : string[] = ['date-time'];
+					const formatArr: string[] = ['date-time'];
 
 					const data = {
-						a : 'ejv'
+						a: 'ejv'
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -2094,27 +2094,27 @@ describe('ejv()', () => {
 					expect(error.errorData).to.be.eql('ejv');
 
 					expect(ejv({
-						a : '2018-12-19T00:27:35.123Z'
+						a: '2018-12-19T00:27:35.123Z'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}])).to.be.null;
 
 					expect(ejv({
-						a : '2018-12-19T00:27:35+00:00'
+						a: '2018-12-19T00:27:35+00:00'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}])).to.be.null;
 
 					expect(ejv({
-						a : '20181219T002735Z'
+						a: '20181219T002735Z'
 					}, [{
-						key : 'a',
-						type : 'string',
-						format : formatArr
+						key: 'a',
+						type: 'string',
+						format: formatArr
 					}])).to.be.null;
 				});
 			});
@@ -2124,120 +2124,120 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : undefined
+						key: 'a',
+						type: 'string',
+						pattern: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : null
+						key: 'a',
+						type: 'string',
+						pattern: null
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, 'null'));
 				});
 
 				it('number', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : 1 as unknown as string
+						key: 'a',
+						type: 'string',
+						pattern: 1 as unknown as string
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '1'));
 				});
 
 				it('empty string', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : ''
+						key: 'a',
+						type: 'string',
+						pattern: ''
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '//'));
 				});
 
 				it('empty array', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : []
+						key: 'a',
+						type: 'string',
+						pattern: []
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[]'));
 				});
 
 				it('null array', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : [null, /ab/]
+						key: 'a',
+						type: 'string',
+						pattern: [null, /ab/]
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[/null/, /ab/]'));
 				});
 
 				it('number array', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : [1, 3] as unknown as string[]
+						key: 'a',
+						type: 'string',
+						pattern: [1, 3] as unknown as string[]
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[1, 3]'));
 				});
 
 				it('empty string array', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : ['']
+						key: 'a',
+						type: 'string',
+						pattern: ['']
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[//]'));
 				});
 
 				it('empty reg exp', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : new RegExp('')
+						key: 'a',
+						type: 'string',
+						pattern: new RegExp('')
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '//'));
 				});
 
 				it('null reg exp', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : new RegExp(null)
+						key: 'a',
+						type: 'string',
+						pattern: new RegExp(null)
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '/null/'));
 				});
 
 				it('empty reg exp array', () => {
 					expect(() => ejv({
-						a : 'ejv@ejv.com'
+						a: 'ejv@ejv.com'
 					}, [{
-						key : 'a',
-						type : 'string',
-						pattern : [new RegExp('')]
+						key: 'a',
+						type: 'string',
+						pattern: [new RegExp('')]
 					}])).to.throw(ErrorMsg.INVALID_STRING_PATTERN
 						.replace(ErrorMsgCursorA, '[//]'));
 				});
@@ -2245,21 +2245,21 @@ describe('ejv()', () => {
 
 			it('by string', () => {
 				expect(ejv({
-					a : 'abc'
+					a: 'abc'
 				}, [{
-					key : 'a',
-					type : 'string',
-					pattern : 'ab+c'
+					key: 'a',
+					type: 'string',
+					pattern: 'ab+c'
 				}])).to.be.null;
 
 				const data = {
-					a : 'abc'
+					a: 'abc'
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string',
-					pattern : 'ac'
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: 'ac'
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -2273,37 +2273,37 @@ describe('ejv()', () => {
 
 			it('by string[]', () => {
 				expect(ejv({
-					a : 'abc'
+					a: 'abc'
 				}, [{
-					key : 'a',
-					type : 'string',
-					pattern : ['ab+c']
+					key: 'a',
+					type: 'string',
+					pattern: ['ab+c']
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 'abc'
+					a: 'abc'
 				}, [{
-					key : 'a',
-					type : 'string',
-					pattern : ['ac', 'ab+c']
+					key: 'a',
+					type: 'string',
+					pattern: ['ac', 'ab+c']
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 'abc'
+					a: 'abc'
 				}, [{
-					key : 'a',
-					type : 'string',
-					pattern : ['ab+c', 'ac']
+					key: 'a',
+					type: 'string',
+					pattern: ['ab+c', 'ac']
 				}])).to.be.null;
 
 				const data = {
-					a : 'abc'
+					a: 'abc'
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string',
-					pattern : ['abcc', 'ac']
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: ['abcc', 'ac']
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -2317,21 +2317,21 @@ describe('ejv()', () => {
 
 			it('by RegExp', () => {
 				expect(ejv({
-					a : 'abc'
+					a: 'abc'
 				}, [{
-					key : 'a',
-					type : 'string',
-					pattern : /ab+c/
+					key: 'a',
+					type: 'string',
+					pattern: /ab+c/
 				}])).to.be.null;
 
 				const data = {
-					a : 'abc'
+					a: 'abc'
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string',
-					pattern : /ac/
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: /ac/
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -2345,37 +2345,37 @@ describe('ejv()', () => {
 
 			it('by RegExp[]', () => {
 				expect(ejv({
-					a : 'abc'
+					a: 'abc'
 				}, [{
-					key : 'a',
-					type : 'string',
-					pattern : /ab+c/
+					key: 'a',
+					type: 'string',
+					pattern: /ab+c/
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 'abc'
+					a: 'abc'
 				}, [{
-					key : 'a',
-					type : 'string',
-					pattern : [/ac/, /ab+c/]
+					key: 'a',
+					type: 'string',
+					pattern: [/ac/, /ab+c/]
 				}])).to.be.null;
 
 				expect(ejv({
-					a : 'abc'
+					a: 'abc'
 				}, [{
-					key : 'a',
-					type : 'string',
-					pattern : [/ab+c/, /ac/]
+					key: 'a',
+					type: 'string',
+					pattern: [/ab+c/, /ac/]
 				}])).to.be.null;
 
 				const data = {
-					a : 'abc'
+					a: 'abc'
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'string',
-					pattern : [/abcc/, /ac/]
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: [/abcc/, /ac/]
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -2389,19 +2389,19 @@ describe('ejv()', () => {
 
 			describe('special case', () => {
 				it('array of object has string', () => {
-					const error : EjvError = ejv({
-						a : [{
-							b : 'ejv'
+					const error: EjvError = ejv({
+						a: [{
+							b: 'ejv'
 						}]
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : [{
-							type : 'object',
-							properties : [{
-								key : 'b',
-								type : 'string',
-								pattern : /ejv/
+						key: 'a',
+						type: 'array',
+						items: [{
+							type: 'object',
+							properties: [{
+								key: 'b',
+								type: 'string',
+								pattern: /ejv/
 							}]
 						}]
 					}]);
@@ -2421,13 +2421,13 @@ describe('ejv()', () => {
 					})
 					.forEach((obj) => {
 						const data = {
-							a : obj.value
+							a: obj.value
 						};
 
 						it(obj.type, () => {
-							const error : EjvError = ejv(data, [{
-								key : 'a',
-								type : 'object'
+							const error: EjvError = ejv(data, [{
+								key: 'a',
+								type: 'object'
 							}]);
 
 							expect(error).to.be.instanceof(EjvError);
@@ -2443,15 +2443,15 @@ describe('ejv()', () => {
 
 				it('multiple types', () => {
 					const value = {};
-					const typeArr : string[] = ['boolean', 'number'];
+					const typeArr: string[] = ['boolean', 'number'];
 
 					const data = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : typeArr
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: typeArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -2467,11 +2467,11 @@ describe('ejv()', () => {
 			describe('match', () => {
 				it('optional', () => {
 					expect(ejv({
-						a : undefined
+						a: undefined
 					}, [{
-						key : 'a',
-						type : 'object',
-						optional : true
+						key: 'a',
+						type: 'object',
+						optional: true
 					}])).to.be.null;
 				});
 
@@ -2482,44 +2482,44 @@ describe('ejv()', () => {
 					.forEach((obj) => {
 						it(obj.type, () => {
 							expect(ejv({
-								a : obj.value
+								a: obj.value
 							}, [{
-								key : 'a',
-								type : 'object'
+								key: 'a',
+								type: 'object'
 							}])).to.be.null;
 						});
 					});
 
 				it('single type', () => {
 					expect(ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object'
+						key: 'a',
+						type: 'object'
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : ['object', 'number']
+						key: 'a',
+						type: ['object', 'number']
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : ['number', 'object']
+						key: 'a',
+						type: ['number', 'object']
 					}])).to.be.null;
 				});
 			});
@@ -2529,76 +2529,76 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object',
-						properties : undefined
+						key: 'a',
+						type: 'object',
+						properties: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object',
-						properties : null
+						key: 'a',
+						type: 'object',
+						properties: null
 					}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
 				});
 
 				it('not array', () => {
 					expect(() => ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object',
-						properties : 'b' as unknown as Scheme[]
+						key: 'a',
+						type: 'object',
+						properties: 'b' as unknown as Scheme[]
 					}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
 				});
 
 				it('empty array', () => {
 					expect(() => ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object',
-						properties : []
+						key: 'a',
+						type: 'object',
+						properties: []
 					}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS);
 				});
 
 				it('not object array', () => {
 					expect(() => ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object',
-						properties : ['b'] as unknown as Scheme[]
+						key: 'a',
+						type: 'object',
+						properties: ['b'] as unknown as Scheme[]
 					}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
 				});
 			});
 
 			it('with single type', () => {
-				const undefinedError : EjvError = ejv({
-					a : {
-						b : undefined
+				const undefinedError: EjvError = ejv({
+					a: {
+						b: undefined
 					}
 				}, [{
-					key : 'a',
-					type : 'object',
-					properties : [{
-						key : 'b',
-						type : 'string'
+					key: 'a',
+					type: 'object',
+					properties: [{
+						key: 'b',
+						type: 'string'
 					}]
 				}]);
 
@@ -2607,14 +2607,14 @@ describe('ejv()', () => {
 				expect(undefinedError.message).to.be.eql(ErrorMsg.REQUIRED);
 				expect(undefinedError.path).to.be.eql('a/b');
 
-				const nullError : EjvError = ejv({
-					a : null
+				const nullError: EjvError = ejv({
+					a: null
 				}, [{
-					key : 'a',
-					type : 'object',
-					properties : [{
-						key : 'b',
-						type : 'string'
+					key: 'a',
+					type: 'object',
+					properties: [{
+						key: 'b',
+						type: 'string'
 					}]
 				}]);
 
@@ -2624,17 +2624,17 @@ describe('ejv()', () => {
 				expect(nullError.path).to.be.eql('a');
 
 				const data = {
-					a : {
-						b : 1
+					a: {
+						b: 1
 					}
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'object',
-					properties : [{
-						key : 'b',
-						type : 'string'
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'object',
+					properties: [{
+						key: 'b',
+						type: 'string'
 					}]
 				}]);
 
@@ -2647,32 +2647,32 @@ describe('ejv()', () => {
 				expect(error.errorData).to.be.eql(1);
 
 				expect(ejv({
-					a : {
-						b : 1
+					a: {
+						b: 1
 					}
 				}, [{
-					key : 'a',
-					type : 'object',
-					properties : [{
-						key : 'b',
-						type : 'number'
+					key: 'a',
+					type: 'object',
+					properties: [{
+						key: 'b',
+						type: 'number'
 					}]
 				}])).to.be.null;
 			});
 
 			it('with multiple types', () => {
-				const typeArr : string[] = ['string', 'boolean'];
+				const typeArr: string[] = ['string', 'boolean'];
 
-				const undefinedError : EjvError = ejv({
-					a : {
-						b : undefined
+				const undefinedError: EjvError = ejv({
+					a: {
+						b: undefined
 					}
 				}, [{
-					key : 'a',
-					type : 'object',
-					properties : [{
-						key : 'b',
-						type : typeArr
+					key: 'a',
+					type: 'object',
+					properties: [{
+						key: 'b',
+						type: typeArr
 					}]
 				}]);
 
@@ -2682,17 +2682,17 @@ describe('ejv()', () => {
 				expect(undefinedError.path).to.be.eql('a/b');
 
 				const data = {
-					a : {
-						b : 1
+					a: {
+						b: 1
 					}
 				};
 
-				const error : EjvError = ejv(data, [{
-					key : 'a',
-					type : 'object',
-					properties : [{
-						key : 'b',
-						type : typeArr
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'object',
+					properties: [{
+						key: 'b',
+						type: typeArr
 					}]
 				}]);
 
@@ -2705,28 +2705,28 @@ describe('ejv()', () => {
 				expect(error.errorData).to.be.eql(1);
 
 				expect(ejv({
-					a : {
-						b : 1
+					a: {
+						b: 1
 					}
 				}, [{
-					key : 'a',
-					type : 'object',
-					properties : [{
-						key : 'b',
-						type : ['number', 'string']
+					key: 'a',
+					type: 'object',
+					properties: [{
+						key: 'b',
+						type: ['number', 'string']
 					}]
 				}])).to.be.null;
 
 				expect(ejv({
-					a : {
-						b : 1
+					a: {
+						b: 1
 					}
 				}, [{
-					key : 'a',
-					type : 'object',
-					properties : [{
-						key : 'b',
-						type : ['string', 'number']
+					key: 'a',
+					type: 'object',
+					properties: [{
+						key: 'b',
+						type: ['string', 'number']
 					}]
 				}])).to.be.null;
 			});
@@ -2736,49 +2736,49 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object',
-						allowNoProperty : undefined
+						key: 'a',
+						type: 'object',
+						allowNoProperty: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : {
-							b : 1
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object',
-						allowNoProperty : null
+						key: 'a',
+						type: 'object',
+						allowNoProperty: null
 					}])).to.throw(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
 				});
 			});
 
 			describe('default', () => {
 				it('empty object', () => {
-					const error : EjvError = ejv({
-						a : {}
+					const error: EjvError = ejv({
+						a: {}
 					}, [{
-						key : 'a',
-						type : 'object'
+						key: 'a',
+						type: 'object'
 					}]);
 
 					expect(error).to.be.null;
 				});
 
 				it('object has property', () => {
-					const error : EjvError = ejv({
-						a : {
-							b : 1
+					const error: EjvError = ejv({
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object'
+						key: 'a',
+						type: 'object'
 					}]);
 
 					expect(error).to.be.null;
@@ -2787,12 +2787,12 @@ describe('ejv()', () => {
 
 			describe('allowNoProperty === false', () => {
 				it('empty object', () => {
-					const error : EjvError = ejv({
-						a : {}
+					const error: EjvError = ejv({
+						a: {}
 					}, [{
-						key : 'a',
-						type : 'object',
-						allowNoProperty : false
+						key: 'a',
+						type: 'object',
+						allowNoProperty: false
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -2803,14 +2803,14 @@ describe('ejv()', () => {
 				});
 
 				it('object has property', () => {
-					const error : EjvError = ejv({
-						a : {
-							b : 1
+					const error: EjvError = ejv({
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object',
-						allowNoProperty : false
+						key: 'a',
+						type: 'object',
+						allowNoProperty: false
 					}]);
 
 					expect(error).to.be.null;
@@ -2819,26 +2819,26 @@ describe('ejv()', () => {
 
 			describe('allowNoProperty === true', () => {
 				it('empty object', () => {
-					const error : EjvError = ejv({
-						a : {}
+					const error: EjvError = ejv({
+						a: {}
 					}, [{
-						key : 'a',
-						type : 'object',
-						allowNoProperty : true
+						key: 'a',
+						type: 'object',
+						allowNoProperty: true
 					}]);
 
 					expect(error).to.be.null;
 				});
 
 				it('object has property', () => {
-					const error : EjvError = ejv({
-						a : {
-							b : 1
+					const error: EjvError = ejv({
+						a: {
+							b: 1
 						}
 					}, [{
-						key : 'a',
-						type : 'object',
-						allowNoProperty : true
+						key: 'a',
+						type: 'object',
+						allowNoProperty: true
 					}]);
 
 					expect(error).to.be.null;
@@ -2848,47 +2848,47 @@ describe('ejv()', () => {
 	});
 
 	describe('date', () => {
-		const now : Date = new Date();
+		const now: Date = new Date();
 
-		const year : number = now.getFullYear();
-		const month : number = now.getMonth();
-		const date : number = now.getDate();
+		const year: number = now.getFullYear();
+		const month: number = now.getMonth();
+		const date: number = now.getDate();
 
-		const hours : number = now.getHours();
-		const minutes : number = now.getMinutes();
-		const seconds : number = now.getSeconds();
-		const ms : number = now.getMilliseconds();
+		const hours: number = now.getHours();
+		const minutes: number = now.getMinutes();
+		const seconds: number = now.getSeconds();
+		const ms: number = now.getMilliseconds();
 
-		const nowOnlyDate : Date = new Date();
+		const nowOnlyDate: Date = new Date();
 		nowOnlyDate.setHours(0, 0, 0, 0);
 
 		const dateTestData = {
-			date : nowOnlyDate
+			date: nowOnlyDate
 		};
 
 		const dateTimeTestData = {
-			date : now
+			date: now
 		};
 
-		function padZero (value : number, digit = 2) : string {
+		function padZero (value: number, digit = 2): string {
 			return ('' + value).padStart(digit, '0');
 		}
 
 		function getDateStr (
-			year : number, month : number, date : number,
-			hours? : number, minutes? : number, seconds? : number, ms? : number
-		) : string {
-			const tempDate : Date = hours !== undefined ?
+			year: number, month: number, date: number,
+			hours?: number, minutes?: number, seconds?: number, ms?: number
+		): string {
+			const tempDate: Date = hours !== undefined ?
 				new Date(year, month, date, hours, minutes, seconds, ms) :
 				new Date(year, month, date);
 
-			const dateStr : string = [
+			const dateStr: string = [
 				tempDate.getFullYear(),
 				padZero(tempDate.getMonth() + 1),
 				padZero(tempDate.getDate())
 			].join('-');
 
-			const hoursStr : string = hours !== undefined ?
+			const hoursStr: string = hours !== undefined ?
 				[
 					'T',
 					[
@@ -2910,13 +2910,13 @@ describe('ejv()', () => {
 				typeTester.filter(obj => obj.type !== 'date')
 					.forEach((obj) => {
 						const data = {
-							a : obj.value
+							a: obj.value
 						};
 
 						it(obj.type, () => {
-							const error : EjvError = ejv(data, [{
-								key : 'a',
-								type : 'date'
+							const error: EjvError = ejv(data, [{
+								key: 'a',
+								type: 'date'
 							}]);
 
 							expect(error).to.be.instanceof(EjvError);
@@ -2932,15 +2932,15 @@ describe('ejv()', () => {
 
 				it('multiple types', () => {
 					const value = 'ejv';
-					const typeArr : string[] = ['boolean', 'date'];
+					const typeArr: string[] = ['boolean', 'date'];
 
 					const data = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : typeArr
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: typeArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -2956,38 +2956,38 @@ describe('ejv()', () => {
 			describe('match', () => {
 				it('optional', () => {
 					expect(ejv({
-						a : undefined
+						a: undefined
 					}, [{
-						key : 'a',
-						type : 'date',
-						optional : true
+						key: 'a',
+						type: 'date',
+						optional: true
 					}])).to.be.null;
 				});
 
 				it('single type', () => {
 					expect(ejv({
-						a : new Date
+						a: new Date
 					}, [{
-						key : 'a',
-						type : 'date'
+						key: 'a',
+						type: 'date'
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : new Date
+						a: new Date
 					}, [{
-						key : 'a',
-						type : ['date', 'number']
+						key: 'a',
+						type: ['date', 'number']
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : new Date
+						a: new Date
 					}, [{
-						key : 'a',
-						type : ['number', 'date']
+						key: 'a',
+						type: ['number', 'date']
 					}])).to.be.null;
 				});
 			});
@@ -2997,22 +2997,22 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('min === null', () => {
 					expect(() => ejv({
-						date : new Date
+						date: new Date
 					}, [{
-						key : 'date',
-						type : 'date',
-						min : null
+						key: 'date',
+						type: 'date',
+						min: null
 					}])).to.throw(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING);
 				});
 
 				it('exclusiveMin === null', () => {
 					expect(() => ejv({
-						date : new Date
+						date: new Date
 					}, [{
-						key : 'date',
-						type : 'date',
-						min : new Date,
-						exclusiveMin : null
+						key: 'date',
+						type: 'date',
+						min: new Date,
+						exclusiveMin: null
 					}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
 				});
 			});
@@ -3021,21 +3021,21 @@ describe('ejv()', () => {
 
 				it('without exclusiveMin', () => {
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date - 1)
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date - 1)
 					}])).to.be.null;
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date)
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date)
 					}])).to.be.null;
 
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date + 1)
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date + 1)
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3048,21 +3048,21 @@ describe('ejv()', () => {
 
 					// with time
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date, hours, minutes, seconds, ms - 1)
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date, hours, minutes, seconds, ms - 1)
 					}])).to.be.null;
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date, hours, minutes, seconds, ms)
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date, hours, minutes, seconds, ms)
 					}])).to.be.null;
 
-					const error2 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date, hours, minutes, seconds, ms + 1)
+					const error2: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date, hours, minutes, seconds, ms + 1)
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3076,24 +3076,24 @@ describe('ejv()', () => {
 
 				it('exclusiveMin === false', () => {
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date - 1),
-						exclusiveMin : false
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date - 1),
+						exclusiveMin: false
 					}])).to.be.null;
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date),
-						exclusiveMin : false
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date),
+						exclusiveMin: false
 					}])).to.be.null;
 
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date + 1),
-						exclusiveMin : false
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date + 1),
+						exclusiveMin: false
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3106,24 +3106,24 @@ describe('ejv()', () => {
 
 					// with time
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date, hours, minutes, seconds, ms - 1),
-						exclusiveMin : false
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date, hours, minutes, seconds, ms - 1),
+						exclusiveMin: false
 					}])).to.be.null;
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date, hours, minutes, seconds, ms),
-						exclusiveMin : false
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date, hours, minutes, seconds, ms),
+						exclusiveMin: false
 					}])).to.be.null;
 
-					const error2 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date, hours, minutes, seconds, ms + 1),
-						exclusiveMin : false
+					const error2: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date, hours, minutes, seconds, ms + 1),
+						exclusiveMin: false
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3137,17 +3137,17 @@ describe('ejv()', () => {
 
 				it('exclusiveMin === true', () => {
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date - 1),
-						exclusiveMin : true
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date - 1),
+						exclusiveMin: true
 					}])).to.be.null;
 
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date),
-						exclusiveMin : true
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date),
+						exclusiveMin: true
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3158,11 +3158,11 @@ describe('ejv()', () => {
 					expect(error1.data).to.be.deep.equal(dateTestData);
 					expect(error1.errorData).to.be.instanceof(Date);
 
-					const error2 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date + 1),
-						exclusiveMin : true
+					const error2: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date + 1),
+						exclusiveMin: true
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3175,17 +3175,17 @@ describe('ejv()', () => {
 
 					// with time
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date, hours, minutes, seconds, ms - 1),
-						exclusiveMin : true
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date, hours, minutes, seconds, ms - 1),
+						exclusiveMin: true
 					}])).to.be.null;
 
-					const error3 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date, hours, minutes, seconds, ms),
-						exclusiveMin : true
+					const error3: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date, hours, minutes, seconds, ms),
+						exclusiveMin: true
 					}]);
 
 					expect(error3).to.be.instanceof(EjvError);
@@ -3196,11 +3196,11 @@ describe('ejv()', () => {
 					expect(error3.data).to.be.deep.equal(dateTimeTestData);
 					expect(error3.errorData).to.be.instanceof(Date);
 
-					const error4 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : new Date(year, month, date, hours, minutes, seconds, ms + 1),
-						exclusiveMin : true
+					const error4: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						min: new Date(year, month, date, hours, minutes, seconds, ms + 1),
+						exclusiveMin: true
 					}]);
 
 					expect(error4).to.be.instanceof(EjvError);
@@ -3216,21 +3216,21 @@ describe('ejv()', () => {
 			describe('by date string', () => {
 				it('without exclusiveMin', () => {
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date - 1)
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date - 1)
 					}])).to.be.null;
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date)
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date)
 					}])).to.be.null;
 
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date + 1)
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date + 1)
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3243,21 +3243,21 @@ describe('ejv()', () => {
 
 					// with time
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date, hours, minutes, seconds, ms - 1)
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date, hours, minutes, seconds, ms - 1)
 					}])).to.be.null;
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date, hours, minutes, seconds, ms)
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date, hours, minutes, seconds, ms)
 					}])).to.be.null;
 
-					const error2 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date, hours, minutes, seconds, ms + 1)
+					const error2: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date, hours, minutes, seconds, ms + 1)
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3271,24 +3271,24 @@ describe('ejv()', () => {
 
 				it('exclusiveMin === false', () => {
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date - 1),
-						exclusiveMin : false
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date - 1),
+						exclusiveMin: false
 					}])).to.be.null;
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date),
-						exclusiveMin : false
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date),
+						exclusiveMin: false
 					}])).to.be.null;
 
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date + 1),
-						exclusiveMin : false
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date + 1),
+						exclusiveMin: false
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3301,24 +3301,24 @@ describe('ejv()', () => {
 
 					// with time
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date, hours, minutes, seconds, ms - 1),
-						exclusiveMin : false
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date, hours, minutes, seconds, ms - 1),
+						exclusiveMin: false
 					}])).to.be.null;
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date, hours, minutes, seconds, ms),
-						exclusiveMin : false
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date, hours, minutes, seconds, ms),
+						exclusiveMin: false
 					}])).to.be.null;
 
-					const error2 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date, hours, minutes, seconds, ms + 1),
-						exclusiveMin : false
+					const error2: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date, hours, minutes, seconds, ms + 1),
+						exclusiveMin: false
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3332,17 +3332,17 @@ describe('ejv()', () => {
 
 				it('exclusiveMin === true', () => {
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date - 1),
-						exclusiveMin : true
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date - 1),
+						exclusiveMin: true
 					}])).to.be.null;
 
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date),
-						exclusiveMin : true
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date),
+						exclusiveMin: true
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3353,11 +3353,11 @@ describe('ejv()', () => {
 					expect(error1.data).to.be.deep.equal(dateTestData);
 					expect(error1.errorData).to.be.instanceof(Date);
 
-					const error2 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date + 1),
-						exclusiveMin : true
+					const error2: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date + 1),
+						exclusiveMin: true
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3370,17 +3370,17 @@ describe('ejv()', () => {
 
 					// with time
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date, hours, minutes, seconds, ms - 1),
-						exclusiveMin : true
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date, hours, minutes, seconds, ms - 1),
+						exclusiveMin: true
 					}])).to.be.null;
 
-					const error3 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date, hours, minutes, seconds, ms),
-						exclusiveMin : true
+					const error3: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date, hours, minutes, seconds, ms),
+						exclusiveMin: true
 					}]);
 
 					expect(error3).to.be.instanceof(EjvError);
@@ -3391,11 +3391,11 @@ describe('ejv()', () => {
 					expect(error3.data).to.be.deep.equal(dateTimeTestData);
 					expect(error3.errorData).to.be.instanceof(Date);
 
-					const error4 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						min : getDateStr(year, month, date, hours, minutes, seconds, ms + 1),
-						exclusiveMin : true
+					const error4: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						min: getDateStr(year, month, date, hours, minutes, seconds, ms + 1),
+						exclusiveMin: true
 					}]);
 
 					expect(error4).to.be.instanceof(EjvError);
@@ -3413,28 +3413,28 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('max === null', () => {
 					expect(() => ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : null
+						key: 'date',
+						type: 'date',
+						max: null
 					}])).to.throw(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING);
 				});
 
 				it('exclusiveMax === null', () => {
 					expect(() => ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date,
-						exclusiveMax : null
+						key: 'date',
+						type: 'date',
+						max: new Date,
+						exclusiveMax: null
 					}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 				});
 			});
 
 			describe('by date', () => {
 				it('without exclusiveMax', () => {
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date - 1)
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date - 1)
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3446,22 +3446,22 @@ describe('ejv()', () => {
 					expect(error1.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date)
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date)
 					}])).to.be.null;
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date + 1)
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date + 1)
 					}])).to.be.null;
 
 					// with time
-					const error2 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date, hours, minutes, seconds, ms - 1)
+					const error2: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date, hours, minutes, seconds, ms - 1)
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3473,24 +3473,24 @@ describe('ejv()', () => {
 					expect(error2.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date, hours, minutes, seconds, ms)
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date, hours, minutes, seconds, ms)
 					}])).to.be.null;
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date, hours, minutes, seconds, ms + 1)
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date, hours, minutes, seconds, ms + 1)
 					}])).to.be.null;
 				});
 
 				it('exclusiveMax === false', () => {
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date - 1),
-						exclusiveMax : false
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date - 1),
+						exclusiveMax: false
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3502,25 +3502,25 @@ describe('ejv()', () => {
 					expect(error1.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date),
-						exclusiveMax : false
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date),
+						exclusiveMax: false
 					}])).to.be.null;
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date + 1),
-						exclusiveMax : false
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date + 1),
+						exclusiveMax: false
 					}])).to.be.null;
 
 					// with time
-					const error2 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date, hours, minutes, seconds, ms - 1),
-						exclusiveMax : false
+					const error2: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date, hours, minutes, seconds, ms - 1),
+						exclusiveMax: false
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3532,26 +3532,26 @@ describe('ejv()', () => {
 					expect(error2.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date, hours, minutes, seconds, ms),
-						exclusiveMax : false
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date, hours, minutes, seconds, ms),
+						exclusiveMax: false
 					}])).to.be.null;
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date, hours, minutes, seconds, ms + 1),
-						exclusiveMax : false
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date, hours, minutes, seconds, ms + 1),
+						exclusiveMax: false
 					}])).to.be.null;
 				});
 
 				it('exclusiveMax === true', () => {
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date - 1),
-						exclusiveMax : true
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date - 1),
+						exclusiveMax: true
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3562,11 +3562,11 @@ describe('ejv()', () => {
 					expect(error1.data).to.be.deep.equal(dateTestData);
 					expect(error1.errorData).to.be.instanceof(Date);
 
-					const error2 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date),
-						exclusiveMax : true
+					const error2: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date),
+						exclusiveMax: true
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3578,18 +3578,18 @@ describe('ejv()', () => {
 					expect(error2.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date + 1),
-						exclusiveMax : true
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date + 1),
+						exclusiveMax: true
 					}])).to.be.null;
 
 					// with time
-					const error3 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date, hours, minutes, seconds, ms - 1),
-						exclusiveMax : true
+					const error3: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date, hours, minutes, seconds, ms - 1),
+						exclusiveMax: true
 					}]);
 
 					expect(error3).to.be.instanceof(EjvError);
@@ -3600,11 +3600,11 @@ describe('ejv()', () => {
 					expect(error3.data).to.be.deep.equal(dateTimeTestData);
 					expect(error3.errorData).to.be.instanceof(Date);
 
-					const error4 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date, hours, minutes, seconds, ms),
-						exclusiveMax : true
+					const error4: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date, hours, minutes, seconds, ms),
+						exclusiveMax: true
 					}]);
 
 					expect(error4).to.be.instanceof(EjvError);
@@ -3616,20 +3616,20 @@ describe('ejv()', () => {
 					expect(error4.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : new Date(year, month, date, hours, minutes, seconds, ms + 1),
-						exclusiveMax : true
+						key: 'date',
+						type: 'date',
+						max: new Date(year, month, date, hours, minutes, seconds, ms + 1),
+						exclusiveMax: true
 					}])).to.be.null;
 				});
 			});
 
 			describe('by date string', () => {
 				it('without exclusiveMax', () => {
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date - 1)
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date - 1)
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3641,22 +3641,22 @@ describe('ejv()', () => {
 					expect(error1.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date)
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date)
 					}])).to.be.null;
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date + 1)
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date + 1)
 					}])).to.be.null;
 
 					// with time
-					const error2 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date, hours, minutes, seconds, ms - 1)
+					const error2: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date, hours, minutes, seconds, ms - 1)
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3668,24 +3668,24 @@ describe('ejv()', () => {
 					expect(error2.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date, hours, minutes, seconds, ms)
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date, hours, minutes, seconds, ms)
 					}])).to.be.null;
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date, hours, minutes, seconds, ms + 1)
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date, hours, minutes, seconds, ms + 1)
 					}])).to.be.null;
 				});
 
 				it('exclusiveMax === false', () => {
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date - 1),
-						exclusiveMax : false
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date - 1),
+						exclusiveMax: false
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3697,25 +3697,25 @@ describe('ejv()', () => {
 					expect(error1.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date),
-						exclusiveMax : false
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date),
+						exclusiveMax: false
 					}])).to.be.null;
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date + 1),
-						exclusiveMax : false
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date + 1),
+						exclusiveMax: false
 					}])).to.be.null;
 
 					// with time
-					const error2 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date, hours, minutes, seconds, ms - 1),
-						exclusiveMax : false
+					const error2: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date, hours, minutes, seconds, ms - 1),
+						exclusiveMax: false
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3727,26 +3727,26 @@ describe('ejv()', () => {
 					expect(error2.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date, hours, minutes, seconds, ms),
-						exclusiveMax : false
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date, hours, minutes, seconds, ms),
+						exclusiveMax: false
 					}])).to.be.null;
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date, hours, minutes, seconds, ms + 1),
-						exclusiveMax : false
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date, hours, minutes, seconds, ms + 1),
+						exclusiveMax: false
 					}])).to.be.null;
 				});
 
 				it('exclusiveMax === true', () => {
-					const error1 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date - 1),
-						exclusiveMax : true
+					const error1: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date - 1),
+						exclusiveMax: true
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -3757,11 +3757,11 @@ describe('ejv()', () => {
 					expect(error1.data).to.be.deep.equal(dateTestData);
 					expect(error1.errorData).to.be.instanceof(Date);
 
-					const error2 : EjvError = ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date),
-						exclusiveMax : true
+					const error2: EjvError = ejv(dateTestData, [{
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date),
+						exclusiveMax: true
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
@@ -3772,18 +3772,18 @@ describe('ejv()', () => {
 					expect(error2.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date + 1),
-						exclusiveMax : true
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date + 1),
+						exclusiveMax: true
 					}])).to.be.null;
 
 					// with time
-					const error3 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date, hours, minutes, seconds, ms - 1),
-						exclusiveMax : true
+					const error3: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date, hours, minutes, seconds, ms - 1),
+						exclusiveMax: true
 					}]);
 
 					expect(error3).to.be.instanceof(EjvError);
@@ -3794,11 +3794,11 @@ describe('ejv()', () => {
 					expect(error3.data).to.be.deep.equal(dateTimeTestData);
 					expect(error3.errorData).to.be.instanceof(Date);
 
-					const error4 : EjvError = ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date, hours, minutes, seconds, ms),
-						exclusiveMax : true
+					const error4: EjvError = ejv(dateTimeTestData, [{
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date, hours, minutes, seconds, ms),
+						exclusiveMax: true
 					}]);
 
 					expect(error4).to.be.instanceof(EjvError);
@@ -3810,10 +3810,10 @@ describe('ejv()', () => {
 					expect(error4.errorData).to.be.instanceof(Date);
 
 					expect(ejv(dateTimeTestData, [{
-						key : 'date',
-						type : 'date',
-						max : getDateStr(year, month, date, hours, minutes, seconds, ms + 1),
-						exclusiveMax : true
+						key: 'date',
+						type: 'date',
+						max: getDateStr(year, month, date, hours, minutes, seconds, ms + 1),
+						exclusiveMax: true
 					}])).to.be.null;
 				});
 			});
@@ -3827,12 +3827,12 @@ describe('ejv()', () => {
 					.forEach((obj) => {
 						it(obj.type, () => {
 							const testData = {
-								a : obj.value
+								a: obj.value
 							};
 
-							const error : EjvError = ejv(testData, [{
-								key : 'a',
-								type : 'regexp'
+							const error: EjvError = ejv(testData, [{
+								key: 'a',
+								type: 'regexp'
 							}]);
 
 							expect(error).to.be.instanceof(EjvError);
@@ -3848,15 +3848,15 @@ describe('ejv()', () => {
 
 				it('multiple types', () => {
 					const value = 'ejv';
-					const typeArr : string[] = ['boolean', 'regexp'];
+					const typeArr: string[] = ['boolean', 'regexp'];
 
 					const testData = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(testData, [{
-						key : 'a',
-						type : typeArr
+					const error: EjvError = ejv(testData, [{
+						key: 'a',
+						type: typeArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -3872,38 +3872,38 @@ describe('ejv()', () => {
 			describe('match', () => {
 				it('optional', () => {
 					expect(ejv({
-						a : undefined
+						a: undefined
 					}, [{
-						key : 'a',
-						type : 'regexp',
-						optional : true
+						key: 'a',
+						type: 'regexp',
+						optional: true
 					}])).to.be.null;
 				});
 
 				it('single type', () => {
 					expect(ejv({
-						a : /./
+						a: /./
 					}, [{
-						key : 'a',
-						type : 'regexp'
+						key: 'a',
+						type: 'regexp'
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : /./
+						a: /./
 					}, [{
-						key : 'a',
-						type : ['regexp', 'number']
+						key: 'a',
+						type: ['regexp', 'number']
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : /./
+						a: /./
 					}, [{
-						key : 'a',
-						type : ['number', 'regexp']
+						key: 'a',
+						type: ['number', 'regexp']
 					}])).to.be.null;
 				});
 			});
@@ -3917,12 +3917,12 @@ describe('ejv()', () => {
 					.forEach((obj) => {
 						it(obj.type, () => {
 							const testObj = {
-								a : obj.value
+								a: obj.value
 							};
 
-							const error : EjvError = ejv(testObj, [{
-								key : 'a',
-								type : 'array'
+							const error: EjvError = ejv(testObj, [{
+								key: 'a',
+								type: 'array'
 							}]);
 
 							expect(error).to.be.instanceof(EjvError);
@@ -3938,15 +3938,15 @@ describe('ejv()', () => {
 
 				it('multiple types', () => {
 					const value = 'ejv';
-					const typeArr : string[] = ['boolean', 'array'];
+					const typeArr: string[] = ['boolean', 'array'];
 
 					const testObj = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(testObj, [{
-						key : 'a',
-						type : typeArr
+					const error: EjvError = ejv(testObj, [{
+						key: 'a',
+						type: typeArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -3962,38 +3962,38 @@ describe('ejv()', () => {
 			describe('match', () => {
 				it('optional', () => {
 					expect(ejv({
-						a : undefined
+						a: undefined
 					}, [{
-						key : 'a',
-						type : 'array',
-						optional : true
+						key: 'a',
+						type: 'array',
+						optional: true
 					}])).to.be.null;
 				});
 
 				it('single type', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array'
+						key: 'a',
+						type: 'array'
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : ['array', 'number']
+						key: 'a',
+						type: ['array', 'number']
 					}])).to.be.null;
 				});
 
 				it('multiple types', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : ['number', 'array']
+						key: 'a',
+						type: ['number', 'array']
 					}])).to.be.null;
 				});
 			});
@@ -4002,11 +4002,11 @@ describe('ejv()', () => {
 				it('has undefined', () => {
 					const value = ['a', undefined];
 					const testObj = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(testObj, [
-						{ key : 'a', type : 'array', items : 'string' }
+					const error: EjvError = ejv(testObj, [
+						{ key: 'a', type: 'array', items: 'string' }
 					]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -4021,13 +4021,13 @@ describe('ejv()', () => {
 				it('has undefined, but optional', () => {
 					const value = ['a', undefined];
 					const testObj = {
-						a : value
+						a: value
 					};
 
 					expect(ejv(testObj, [
 						{
-							key : 'a', type : 'array', items : [
-								{ type : 'string', optional : true }
+							key: 'a', type: 'array', items: [
+								{ type: 'string', optional: true }
 							]
 						}
 					])).to.be.null;
@@ -4036,11 +4036,11 @@ describe('ejv()', () => {
 				it('has null', () => {
 					const value = ['a', null];
 					const testObj = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(testObj, [
-						{ key : 'a', type : 'array', items : 'string' }
+					const error: EjvError = ejv(testObj, [
+						{ key: 'a', type: 'array', items: 'string' }
 					]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -4056,11 +4056,11 @@ describe('ejv()', () => {
 					const value = ['a', null];
 
 					expect(ejv({
-						a : value
+						a: value
 					}, [
 						{
-							key : 'a', type : 'array', items : [
-								{ type : 'string', nullable : true }
+							key: 'a', type: 'array', items: [
+								{ type: 'string', nullable: true }
 							]
 						}
 					])).to.be.null;
@@ -4072,41 +4072,41 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						minLength : undefined
+						key: 'a',
+						type: 'array',
+						minLength: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						minLength : null
+						key: 'a',
+						type: 'array',
+						minLength: null
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('float number', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						minLength : 1.5
+						key: 'a',
+						type: 'string',
+						minLength: 1.5
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('string', () => {
 					expect(() => ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						minLength : '1' as unknown as number
+						key: 'a',
+						type: 'array',
+						minLength: '1' as unknown as number
 					}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -4114,13 +4114,13 @@ describe('ejv()', () => {
 			it('fail', () => {
 				const value = [1, 2, 3];
 				const testData = {
-					a : value
+					a: value
 				};
 
-				const error : EjvError = ejv(testData, [{
-					key : 'a',
-					type : 'array',
-					minLength : 4
+				const error: EjvError = ejv(testData, [{
+					key: 'a',
+					type: 'array',
+					minLength: 4
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -4134,19 +4134,19 @@ describe('ejv()', () => {
 
 			it('ok', () => {
 				expect(ejv({
-					a : [1, 2, 3]
+					a: [1, 2, 3]
 				}, [{
-					key : 'a',
-					type : 'array',
-					minLength : 2
+					key: 'a',
+					type: 'array',
+					minLength: 2
 				}])).to.be.null;
 
 				expect(ejv({
-					a : [1, 2, 3]
+					a: [1, 2, 3]
 				}, [{
-					key : 'a',
-					type : 'array',
-					minLength : 3
+					key: 'a',
+					type: 'array',
+					minLength: 3
 				}])).to.be.null;
 			});
 		});
@@ -4155,41 +4155,41 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						maxLength : undefined
+						key: 'a',
+						type: 'array',
+						maxLength: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						maxLength : null
+						key: 'a',
+						type: 'array',
+						maxLength: null
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('float number', () => {
 					expect(() => ejv({
-						a : 'a'
+						a: 'a'
 					}, [{
-						key : 'a',
-						type : 'string',
-						maxLength : 1.5
+						key: 'a',
+						type: 'string',
+						maxLength: 1.5
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 
 				it('string', () => {
 					expect(() => ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						maxLength : '1' as unknown as number
+						key: 'a',
+						type: 'array',
+						maxLength: '1' as unknown as number
 					}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 				});
 			});
@@ -4197,13 +4197,13 @@ describe('ejv()', () => {
 			it('fail', () => {
 				const value = [1, 2, 3];
 				const testData = {
-					a : value
+					a: value
 				};
 
-				const error : EjvError = ejv(testData, [{
-					key : 'a',
-					type : 'array',
-					maxLength : 2
+				const error: EjvError = ejv(testData, [{
+					key: 'a',
+					type: 'array',
+					maxLength: 2
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -4217,19 +4217,19 @@ describe('ejv()', () => {
 
 			it('ok', () => {
 				expect(ejv({
-					a : [1, 2, 3]
+					a: [1, 2, 3]
 				}, [{
-					key : 'a',
-					type : 'array',
-					maxLength : 3
+					key: 'a',
+					type: 'array',
+					maxLength: 3
 				}])).to.be.null;
 
 				expect(ejv({
-					a : [1, 2, 3]
+					a: [1, 2, 3]
 				}, [{
-					key : 'a',
-					type : 'array',
-					maxLength : 4
+					key: 'a',
+					type: 'array',
+					maxLength: 4
 				}])).to.be.null;
 			});
 		});
@@ -4238,52 +4238,52 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						unique : undefined
+						key: 'a',
+						type: 'array',
+						unique: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						unique : null
+						key: 'a',
+						type: 'array',
+						unique: null
 					}])).to.throw(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
 				});
 
 				it('not boolean', () => {
 					expect(() => ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						unique : 'hello' as unknown as boolean
+						key: 'a',
+						type: 'array',
+						unique: 'hello' as unknown as boolean
 					}])).to.throw(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
 				});
 			});
 
 			it('default', () => {
-				const error : EjvError = ejv({
-					a : [1, 2, 3],
-					b : [1, 1, 1],
-					c : ['a', 'a', 'a']
+				const error: EjvError = ejv({
+					a: [1, 2, 3],
+					b: [1, 1, 1],
+					c: ['a', 'a', 'a']
 				}, [{
-					key : 'a',
-					type : 'array'
+					key: 'a',
+					type: 'array'
 				}, {
-					key : 'b',
-					type : 'array'
+					key: 'b',
+					type: 'array'
 				}, {
-					key : 'c',
-					type : 'array',
-					items : {
-						type : 'string',
-						minLength : 1
+					key: 'c',
+					type: 'array',
+					items: {
+						type: 'string',
+						minLength: 1
 					}
 				}]);
 
@@ -4291,25 +4291,25 @@ describe('ejv()', () => {
 			});
 
 			it('false', () => {
-				const error : EjvError = ejv({
-					a : [1, 2, 3],
-					b : [1, 1, 1],
-					c : ['a', 'a', 'a']
+				const error: EjvError = ejv({
+					a: [1, 2, 3],
+					b: [1, 1, 1],
+					c: ['a', 'a', 'a']
 				}, [{
-					key : 'a',
-					type : 'array',
-					unique : false
+					key: 'a',
+					type: 'array',
+					unique: false
 				}, {
-					key : 'b',
-					type : 'array',
-					unique : false
+					key: 'b',
+					type: 'array',
+					unique: false
 				}, {
-					key : 'c',
-					type : 'array',
-					unique : false,
-					items : {
-						type : 'string',
-						minLength : 1
+					key: 'c',
+					type: 'array',
+					unique: false,
+					items: {
+						type: 'string',
+						minLength: 1
 					}
 				}]);
 
@@ -4319,18 +4319,18 @@ describe('ejv()', () => {
 			it('true', () => {
 				const numberValue = [1, 1, 1];
 				const numberTestObj = {
-					a : [1, 2, 3],
-					b : numberValue
+					a: [1, 2, 3],
+					b: numberValue
 				};
 
-				const error : EjvError = ejv(numberTestObj, [{
-					key : 'a',
-					type : 'array',
-					unique : true
+				const error: EjvError = ejv(numberTestObj, [{
+					key: 'a',
+					type: 'array',
+					unique: true
 				}, {
-					key : 'b',
-					type : 'array',
-					unique : true
+					key: 'b',
+					type: 'array',
+					unique: true
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
@@ -4342,16 +4342,16 @@ describe('ejv()', () => {
 
 				const stringValue = ['a', 'a', 'a'];
 				const stringTestObj = {
-					a : stringValue
+					a: stringValue
 				};
 
-				const stringsError : EjvError = ejv(stringTestObj, [{
-					key : 'a',
-					type : 'array',
-					unique : true,
-					items : {
-						type : 'string',
-						minLength : 1
+				const stringsError: EjvError = ejv(stringTestObj, [{
+					key: 'a',
+					type: 'array',
+					unique: true,
+					items: {
+						type: 'string',
+						minLength: 1
 					}
 				}]);
 
@@ -4368,21 +4368,21 @@ describe('ejv()', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : undefined
+						key: 'a',
+						type: 'array',
+						items: undefined
 					}])).to.be.null;
 				});
 
 				it('null', () => {
 					expect(() => ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : null
+						key: 'a',
+						type: 'array',
+						items: null
 					}])).to.throw(ErrorMsg.INVALID_ITEMS_SCHEME
 						.replace(ErrorMsgCursorA, 'null'));
 				});
@@ -4392,11 +4392,11 @@ describe('ejv()', () => {
 				describe('check parameter', () => {
 					it('invalid data type', () => {
 						expect(() => ejv({
-							a : [1, 2, 3]
+							a: [1, 2, 3]
 						}, [{
-							key : 'a',
-							type : 'array',
-							items : 'invalidDataType'
+							key: 'a',
+							type: 'array',
+							items: 'invalidDataType'
 						}])).to.throw(); // error message by partial scheme
 					});
 				});
@@ -4404,13 +4404,13 @@ describe('ejv()', () => {
 				it('fail', () => {
 					const value = [1, 2, 3];
 					const testObj = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(testObj, [{
-						key : 'a',
-						type : 'array',
-						items : 'string'
+					const error: EjvError = ejv(testObj, [{
+						key: 'a',
+						type: 'array',
+						items: 'string'
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -4424,21 +4424,21 @@ describe('ejv()', () => {
 
 				it('ok', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : 'number'
+						key: 'a',
+						type: 'array',
+						items: 'number'
 					}])).to.be.null;
 				});
 
 				it('ok - empty array', () => {
-					const error : EjvError = ejv({
-						a : []
+					const error: EjvError = ejv({
+						a: []
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : 'object'
+						key: 'a',
+						type: 'array',
+						items: 'object'
 					}]);
 
 					expect(error).to.be.null;
@@ -4449,28 +4449,28 @@ describe('ejv()', () => {
 				describe('check parameter', () => {
 					it('invalid data type', () => {
 						expect(() => ejv({
-							a : [1, 2, 3]
+							a: [1, 2, 3]
 						}, [{
-							key : 'a',
-							type : 'array',
-							items : ['number', 'invalidDataType']
+							key: 'a',
+							type: 'array',
+							items: ['number', 'invalidDataType']
 						}])).to.throw(); // error message by partial scheme
 					});
 				});
 
 				it('fail', () => {
-					const enumArr : string[] = ['boolean', 'string'];
+					const enumArr: string[] = ['boolean', 'string'];
 
 					const value = [1, 2, 2];
 					const testObj = {
-						a : [1, 2, 3],
-						b : [1, 2, 2]
+						a: [1, 2, 3],
+						b: [1, 2, 2]
 					};
 
-					const error : EjvError = ejv(testObj, [{
-						key : 'a',
-						type : 'array',
-						items : enumArr
+					const error: EjvError = ejv(testObj, [{
+						key: 'a',
+						type: 'array',
+						items: enumArr
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -4484,19 +4484,19 @@ describe('ejv()', () => {
 
 				it('ok', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : ['string', 'number']
+						key: 'a',
+						type: 'array',
+						items: ['string', 'number']
 					}])).to.be.null;
 
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : ['number', 'string']
+						key: 'a',
+						type: 'array',
+						items: ['number', 'string']
 					}])).to.be.null;
 				});
 			});
@@ -4505,35 +4505,35 @@ describe('ejv()', () => {
 				// single scheme has it's original error type & message
 				describe('check parameter', () => {
 					it('invalid data type', () => {
-						const scheme : AnyObject = {
-							type : 'invalidDataType'
+						const scheme: AnyObject = {
+							type: 'invalidDataType'
 						};
 
 						expect(() => ejv({
-							a : [1, 2, 3]
+							a: [1, 2, 3]
 						}, [{
-							key : 'a',
-							type : 'array',
-							items : scheme as unknown as Scheme
+							key: 'a',
+							type: 'array',
+							items: scheme as unknown as Scheme
 						}])).to.throw(); // error message by partial scheme
 					});
 				});
 
 				it('fail', () => {
-					const itemScheme : Scheme = {
-						type : 'number',
-						min : 2
+					const itemScheme: Scheme = {
+						type: 'number',
+						min: 2
 					};
 
 					const value = [1, 2, 3];
 					const testObj = {
-						a : value
+						a: value
 					};
 
-					const error : EjvError = ejv(testObj, [{
-						key : 'a',
-						type : 'array',
-						items : itemScheme
+					const error: EjvError = ejv(testObj, [{
+						key: 'a',
+						type: 'array',
+						items: itemScheme
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -4547,33 +4547,33 @@ describe('ejv()', () => {
 
 				it('ok', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : {
-							type : 'number',
-							min : 1,
-							max : 3
+						key: 'a',
+						type: 'array',
+						items: {
+							type: 'number',
+							min: 1,
+							max: 3
 						}
 					}])).to.be.null;
 				});
 
 				it('fail - array of object', () => {
 					const data = {
-						a : [
-							{ number : 2 },
-							{ number : 3 },
-							{ number : 4 },
-							{ number : 5 }
+						a: [
+							{ number: 2 },
+							{ number: 3 },
+							{ number: 4 },
+							{ number: 5 }
 						]
 					};
 
-					const error : EjvError = ejv(data, [
+					const error: EjvError = ejv(data, [
 						{
-							key : 'a', type : 'array', items : [{
-								type : 'object', properties : [
-									{ key : 'number', type : 'number', min : 4 }
+							key: 'a', type: 'array', items: [{
+								type: 'object', properties: [
+									{ key: 'number', type: 'number', min: 4 }
 								]
 							}]
 						}
@@ -4590,21 +4590,21 @@ describe('ejv()', () => {
 
 				it('fail - array of deep object', () => {
 					const data = {
-						a : [
-							{ b : { c : { d : { number : 2 } } } },
-							{ b : { c : { d : { number : 3 } } } },
-							{ b : { c : { d : { number : 4 } } } },
-							{ b : { c : { d : { number : 5 } } } }
+						a: [
+							{ b: { c: { d: { number: 2 } } } },
+							{ b: { c: { d: { number: 3 } } } },
+							{ b: { c: { d: { number: 4 } } } },
+							{ b: { c: { d: { number: 5 } } } }
 						]
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a', type : 'array', items : [{
-							type : 'object', properties : [{
-								key : 'b', type : 'object', properties : [{
-									key : 'c', type : 'object', properties : [{
-										key : 'd', type : 'object', properties : [
-											{ key : 'number', type : 'number', min : 4 }
+					const error: EjvError = ejv(data, [{
+						key: 'a', type: 'array', items: [{
+							type: 'object', properties: [{
+								key: 'b', type: 'object', properties: [{
+									key: 'c', type: 'object', properties: [{
+										key: 'd', type: 'object', properties: [
+											{ key: 'number', type: 'number', min: 4 }
 										]
 									}]
 								}]
@@ -4625,41 +4625,41 @@ describe('ejv()', () => {
 			describe('multiple schemes', () => {
 				describe('check parameter', () => {
 					it('invalid data type', () => {
-						const scheme : AnyObject = {
-							type : 'invalidDataType'
+						const scheme: AnyObject = {
+							type: 'invalidDataType'
 						};
 
 						expect(() => ejv({
-							a : [1, 2, 3]
+							a: [1, 2, 3]
 						}, [{
-							key : 'a',
-							type : 'array',
-							items : [scheme] as unknown as Scheme[]
+							key: 'a',
+							type: 'array',
+							items: [scheme] as unknown as Scheme[]
 						}])).to.throw(); // error message by partial scheme
 					});
 				});
 
 				it('fail', () => {
-					const itemScheme1 : Scheme = {
-						type : 'number',
-						min : 2
+					const itemScheme1: Scheme = {
+						type: 'number',
+						min: 2
 					};
 
-					const itemScheme2 : Scheme = {
-						type : 'number',
-						min : 3
+					const itemScheme2: Scheme = {
+						type: 'number',
+						min: 3
 					};
 
-					const allSchemes : Scheme[] = [itemScheme1, itemScheme2];
+					const allSchemes: Scheme[] = [itemScheme1, itemScheme2];
 
 					const data = {
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					};
 
-					const error : EjvError = ejv(data, [{
-						key : 'a',
-						type : 'array',
-						items : allSchemes
+					const error: EjvError = ejv(data, [{
+						key: 'a',
+						type: 'array',
+						items: allSchemes
 					}]);
 
 					expect(error).to.be.instanceof(EjvError);
@@ -4673,47 +4673,47 @@ describe('ejv()', () => {
 
 				it('ok', () => {
 					expect(ejv({
-						a : [1, 2, 3]
+						a: [1, 2, 3]
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : [{
-							type : 'number',
-							min : 1,
-							max : 3
+						key: 'a',
+						type: 'array',
+						items: [{
+							type: 'number',
+							min: 1,
+							max: 3
 						}]
 					}])).to.be.null;
 
 					// multiple schemes
 					expect(ejv({
-						a : [1]
+						a: [1]
 					}, [{
-						key : 'a',
-						type : 'array',
-						items : [{
-							type : 'number',
-							min : 1
+						key: 'a',
+						type: 'array',
+						items: [{
+							type: 'number',
+							min: 1
 						}, {
-							type : 'string'
+							type: 'string'
 						}]
 					}])).to.be.null;
 				});
 
 				it('nested array - single scheme', () => {
-					const arr : string[] = ['ok', null];
+					const arr: string[] = ['ok', null];
 					const testObj = {
-						a : [{
-							b : arr
+						a: [{
+							b: arr
 						}]
 					};
 
-					const itemScheme : Scheme = { type : 'string', minLength : 1 };
+					const itemScheme: Scheme = { type: 'string', minLength: 1 };
 
-					const error : EjvError = ejv(testObj, [{
-						key : 'a', type : 'array', items : {
-							type : 'object', properties : [{
-								key : 'b', type : 'array', unique : true, minLength : 1, optional : true,
-								items : itemScheme
+					const error: EjvError = ejv(testObj, [{
+						key: 'a', type: 'array', items: {
+							type: 'object', properties: [{
+								key: 'b', type: 'array', unique: true, minLength: 1, optional: true,
+								items: itemScheme
 							}]
 						}
 					}]);
@@ -4728,20 +4728,20 @@ describe('ejv()', () => {
 				});
 
 				it('nested array - multiple chemes', () => {
-					const arr : string[] = ['ok', null];
+					const arr: string[] = ['ok', null];
 					const testObj = {
-						a : [{
-							b : arr
+						a: [{
+							b: arr
 						}]
 					};
 
-					const itemScheme : Scheme[] = [{ type : 'string', minLength : 1 }];
+					const itemScheme: Scheme[] = [{ type: 'string', minLength: 1 }];
 
-					const error : EjvError = ejv(testObj, [{
-						key : 'a', type : 'array', items : {
-							type : 'object', properties : [{
-								key : 'b', type : 'array', unique : true, minLength : 1, optional : true,
-								items : itemScheme
+					const error: EjvError = ejv(testObj, [{
+						key: 'a', type: 'array', items: {
+							type: 'object', properties: [{
+								key: 'b', type: 'array', unique: true, minLength: 1, optional: true,
+								items: itemScheme
 							}]
 						}
 					}]);

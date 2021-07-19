@@ -13,14 +13,14 @@ enum CloneDataType {
 }
 
 // sanitize removes undefined & null fields from object. default false
-export const clone = <T> (obj : T, sanitize? : boolean) : T => {
-	let result ! : T;
+export const clone = <T> (obj: T, sanitize?: boolean): T => {
+	let result !: T;
 
 	if (obj) {
-		let type : CloneDataType = typeof obj as CloneDataType;
+		let type: CloneDataType = typeof obj as CloneDataType;
 
 		if (type === CloneDataType.Object) {
-			const objAsObject : AnyObject = obj as unknown as AnyObject;
+			const objAsObject: AnyObject = obj as unknown as AnyObject;
 
 			if (Array.isArray(objAsObject)) {
 				type = CloneDataType.Array;
@@ -39,13 +39,13 @@ export const clone = <T> (obj : T, sanitize? : boolean) : T => {
 
 		switch (type) {
 			case CloneDataType.Date: {
-				const objAsDate : Date = obj as unknown as Date;
+				const objAsDate: Date = obj as unknown as Date;
 				result = new Date(objAsDate) as unknown as T;
 				break;
 			}
 
 			case  CloneDataType.Array: {
-				const objAsArray : unknown[] = obj as unknown as unknown[];
+				const objAsArray: unknown[] = obj as unknown as unknown[];
 				result = objAsArray.map(one => {
 					return clone(one);
 				}) as unknown as T;
@@ -56,7 +56,7 @@ export const clone = <T> (obj : T, sanitize? : boolean) : T => {
 				// sanitize default false
 				result = {} as unknown as T;
 
-				const entries : [string, unknown][] = Object.entries(obj)
+				const entries: [string, unknown][] = Object.entries(obj)
 					.filter(([, value]) => {
 						return sanitize
 							? value !== undefined && value !== null

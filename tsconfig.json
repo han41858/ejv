@@ -1,19 +1,19 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "sourceMap": true,
-    "strict": true,
-    "outDir": "build",
-    "declaration": true,
-    "declarationDir": "build",
-    "lib": [
-      "es2018",
-      "dom"
-    ]
-  },
-  "exclude": [
-    "node_modules",
-    "spec"
-  ]
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es5",
+		"sourceMap": true,
+		"strict": true,
+		"outDir": "build",
+		"declaration": true,
+		"declarationDir": "build",
+		"lib": [
+			"es2018",
+			"dom"
+		]
+	},
+	"exclude": [
+		"node_modules",
+		"spec"
+	]
 }

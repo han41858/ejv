@@ -610,29 +610,29 @@ describe('testers', function () {
 			it('logic test', () => {
 				expect(objectTester(null)).to.be.true;
 				expect(objectTester({})).to.be.true;
-				expect(objectTester({ a : 1 })).to.be.true;
+				expect(objectTester({ a: 1 })).to.be.true;
 			});
 		});
 
 		describe('hasPropertyTester()', () => {
 			it('logic test', () => {
 				expect(hasPropertyTester({})).to.be.false;
-				expect(hasPropertyTester({ a : 1 })).to.be.true;
+				expect(hasPropertyTester({ a: 1 })).to.be.true;
 			});
 		});
 	});
 
 	describe('date', () => {
-		const now : Date = new Date();
+		const now: Date = new Date();
 
-		const year : number = now.getFullYear();
-		const month : number = now.getMonth();
-		const date : number = now.getDate();
+		const year: number = now.getFullYear();
+		const month: number = now.getMonth();
+		const date: number = now.getDate();
 
-		const hours : number = now.getHours();
-		const minutes : number = now.getMinutes();
-		const seconds : number = now.getSeconds();
-		const ms : number = now.getMilliseconds();
+		const hours: number = now.getHours();
+		const minutes: number = now.getMinutes();
+		const seconds: number = now.getSeconds();
+		const ms: number = now.getMilliseconds();
 
 		describe('dateTester()', () => {
 			it('common test', () => {
