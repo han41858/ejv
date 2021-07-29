@@ -119,7 +119,7 @@ function _isNotSchemeEffective (scheme: Scheme[] | Scheme): boolean {
 		: _isNotSchemeEffectiveAtom(scheme);
 }
 
-function _extendsNotScheme (key: string, parentScheme: Scheme, notScheme: Scheme, optionsForNot: InternalOptions): Scheme {
+function _extendsNotScheme (key: string, parentScheme: Scheme, notScheme: Scheme): Scheme {
 	// check duplicated rule
 	_checkSchemeWithNot(parentScheme, notScheme);
 
@@ -1445,11 +1445,11 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 			if (arrayTester(scheme.not)) {
 				newSchemes = scheme.not.map((one: Scheme): Scheme => {
-					return _extendsNotScheme(tempKey, scheme, one, optionsForNot);
+					return _extendsNotScheme(tempKey, scheme, one);
 				});
 			}
 			else {
-				newSchemes = [_extendsNotScheme(tempKey, scheme, scheme.not, optionsForNot)];
+				newSchemes = [_extendsNotScheme(tempKey, scheme, scheme.not)];
 			}
 
 			result = _ejv({
