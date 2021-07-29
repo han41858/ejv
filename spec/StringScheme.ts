@@ -216,7 +216,7 @@ describe('StringScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'string',
-					enumReverse: [10]
+					enumReverse: [10 as unknown as string]
 				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS));
 			});
 		});

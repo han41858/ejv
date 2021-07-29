@@ -9,7 +9,7 @@ import { createErrorMsg } from '../src/util';
 import { typeTester } from './common-test-runner';
 
 
-describe('NumberScheme', () => {
+describe.only('NumberScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
 			typeTester.filter(obj => obj.type !== 'number')
@@ -102,194 +102,168 @@ describe('NumberScheme', () => {
 	});
 
 	describe('enum', () => {
-		describe('check parameter', () => {
-			it('undefined is ok', () => {
+		describe('normal', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 1
+					}, [{
+						key: 'a',
+						type: 'number',
+						enum: undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 1
+					}, [{
+						key: 'a',
+						type: 'number',
+						enum: null
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				});
+
+				it('not array', () => {
+					expect(() => ejv({
+						a: 10
+					}, [{
+						key: 'a',
+						type: 'number',
+						enum: 1 as unknown as number[]
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				});
+
+				it('not number', () => {
+					expect(() => ejv({
+						a: 10
+					}, [{
+						key: 'a',
+						type: 'number',
+						enum: ['10']
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_NUMBERS));
+				});
+			});
+
+			it('fail', () => {
+				const enumArr: number[] = [9, 11];
+
+				const data = {
+					a: 10
+				};
+
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'number',
+					enum: enumArr
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.type).to.be.eql(ErrorType.ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
+					placeholders: [JSON.stringify(enumArr)]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(10);
+			});
+
+			it('ok', () => {
 				expect(ejv({
-					a: 1
+					a: 10
 				}, [{
 					key: 'a',
 					type: 'number',
-					enum: undefined
+					enum: [9, 10, 11]
 				}])).to.be.null;
 			});
+		});
 
-			it('null', () => {
-				expect(() => ejv({
-					a: 1
-				}, [{
-					key: 'a',
-					type: 'number',
-					enum: null
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+		describe('not', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 1
+					}, [{
+						key: 'a',
+						type: 'number',
+						not: {
+							enum: undefined
+						}
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 1
+					}, [{
+						key: 'a',
+						type: 'number',
+						not: {
+							enum: null
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				});
+
+				it('not array', () => {
+					expect(() => ejv({
+						a: 10
+					}, [{
+						key: 'a',
+						type: 'number',
+						not: {
+							enum: 1 as unknown as number[]
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				});
+
+				it('not number', () => {
+					expect(() => ejv({
+						a: 10
+					}, [{
+						key: 'a',
+						type: 'number',
+						enum: ['10']
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_NUMBERS));
+				});
 			});
 
-			it('not array', () => {
-				expect(() => ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					enum: 1 as unknown as number[]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
-			});
+			it('ok', () => {
+				const enumArr: number[] = [9, 11];
 
-			it('not number', () => {
-				expect(() => ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					enum: ['10']
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_NUMBERS));
-			});
-		});
-
-		it('fail', () => {
-			const enumArr: number[] = [9, 11];
-
-			const data = {
-				a: 10
-			};
-
-			const error: EjvError = ejv(data, [{
-				key: 'a',
-				type: 'number',
-				enum: enumArr
-			}]);
-
-			expect(error).to.be.instanceof(EjvError);
-			expect(error.type).to.be.eql(ErrorType.ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
-				placeholders: [JSON.stringify(enumArr)]
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql(10);
-		});
-
-		it('ok', () => {
-			expect(ejv({
-				a: 10
-			}, [{
-				key: 'a',
-				type: 'number',
-				enum: [9, 10, 11]
-			}])).to.be.null;
-		});
-
-		it('not', () => {
-			const enumArr: number[] = [9, 11];
-
-			expect(ejv({
-				a: 10
-			}, [{
-				key: 'a',
-				type: 'number',
-				not: {
-					enum: enumArr
-				}
-			}])).to.be.null;
-
-
-			const data = {
-				a: 9
-			};
-
-			const error: EjvError = ejv(data, [{
-				key: 'a',
-				type: 'number',
-				not: {
-					enum: enumArr
-				}
-			}]);
-
-			expect(error).to.be.instanceof(EjvError);
-			expect(error.type).to.be.eql(ErrorType.ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
-				reverse: true,
-				placeholders: [JSON.stringify(enumArr)]
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql(9);
-		});
-	});
-
-	// TODO: deprecate
-	describe('enumReverse', () => {
-		describe('check parameter', () => {
-			it('undefined is ok', () => {
 				expect(ejv({
-					a: 1
+					a: 10
 				}, [{
 					key: 'a',
 					type: 'number',
-					enumReverse: undefined
+					not: {
+						enum: enumArr
+					}
 				}])).to.be.null;
-			});
 
-			it('null', () => {
-				expect(() => ejv({
-					a: 1
-				}, [{
+
+				const data = {
+					a: 9
+				};
+
+				const error: EjvError = ejv(data, [{
 					key: 'a',
 					type: 'number',
-					enumReverse: null
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
+					not: {
+						enum: enumArr
+					}
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.type).to.be.eql(ErrorType.ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
+					reverse: true,
+					placeholders: [JSON.stringify(enumArr)]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(9);
 			});
-
-			it('not array', () => {
-				expect(() => ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					enumReverse: 1 as unknown as number[]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
-			});
-
-			it('not number', () => {
-				expect(() => ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					enumReverse: ['10']
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS));
-			});
-		});
-
-		it('fail', () => {
-			const enumArr: number[] = [9, 10];
-
-			const data = {
-				a: 10
-			};
-
-			const error: EjvError = ejv(data, [{
-				key: 'a',
-				type: 'number',
-				enumReverse: enumArr
-			}]);
-
-			expect(error).to.be.instanceof(EjvError);
-			expect(error.type).to.be.eql(ErrorType.NOT_ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.NOT_ONE_OF, {
-				placeholders: [JSON.stringify(enumArr)]
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql(10);
-		});
-
-		it('ok', () => {
-			expect(ejv({
-				a: 10
-			}, [{
-				key: 'a',
-				type: 'number',
-				enumReverse: [9, 11]
-			}])).to.be.null;
 		});
 	});
 

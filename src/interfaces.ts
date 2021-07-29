@@ -26,7 +26,6 @@ export interface NumberScheme extends CommonScheme {
 	exclusiveMax?: boolean; // false
 
 	enum?: number[];
-	enumReverse?: number[]; // TODO: deprecate with not
 
 	format?: string | string[] | NumberFormat | NumberFormat[];
 }

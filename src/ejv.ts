@@ -369,36 +369,6 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						}
 					}
 
-					// TODO: deprecate
-					if (definedTester(numberScheme.enumReverse)) {
-						const enumReverseArr: number[] = numberScheme.enumReverse;
-
-						if (!arrayTester(enumReverseArr)) {
-							throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
-						}
-
-						if (!arrayTypeOfTester(enumReverseArr, DataType.NUMBER)) {
-							throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS);
-						}
-
-						if (enumTester(valueAsNumber, enumReverseArr)) {
-							result = new EjvError({
-								type: ErrorType.NOT_ONE_OF,
-								message: createErrorMsg(ErrorMsg.NOT_ONE_OF, {
-									reverse: _options.reverse,
-									placeholders: [JSON.stringify(enumReverseArr)]
-								}),
-
-								data,
-								path: _options.path,
-
-								errorScheme: numberScheme,
-								errorData: value
-							});
-							break;
-						}
-					}
-
 					if (definedTester(numberScheme.min)
 						|| definedTester((_options.parentScheme as NumberScheme)?.min)) {
 						const effectiveMin: number = numberScheme.min || (_options?.parentScheme as NumberScheme)?.min as number;
