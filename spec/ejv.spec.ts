@@ -33,25 +33,25 @@ describe('ejv()', () => {
 			it('no scheme', () => {
 				expect(() => ejv({
 					a: 'hello'
-				}, undefined)).to.throw(ErrorMsg.NO_SCHEME);
+				}, undefined)).to.throw(createErrorMsg(ErrorMsg.NO_SCHEME));
 			});
 
 			it('null scheme', () => {
 				expect(() => ejv({
 					a: 'hello'
-				}, null)).to.throw(ErrorMsg.NO_SCHEME);
+				}, null)).to.throw(createErrorMsg(ErrorMsg.NO_SCHEME));
 			});
 
 			it('empty scheme array', () => {
 				expect(() => ejv({
 					a: 'hello'
-				}, [])).to.throw(ErrorMsg.EMPTY_SCHEME);
+				}, [])).to.throw(createErrorMsg(ErrorMsg.EMPTY_SCHEME));
 			});
 
 			it('invalid scheme object', () => {
 				expect(() => ejv({
 					a: 'hello'
-				}, ['string' as unknown as Scheme])).to.throw(ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
+				}, ['string' as unknown as Scheme])).to.throw(createErrorMsg(ErrorMsg.NO_OBJECT_ARRAY_SCHEME));
 			});
 
 			it('no type', () => {
@@ -59,7 +59,7 @@ describe('ejv()', () => {
 					a: 'hello'
 				}, [{
 					key: 'a'
-				} as unknown as Scheme])).to.throw(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
+				} as unknown as Scheme])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE));
 			});
 
 			it('invalid type', () => {
@@ -88,7 +88,7 @@ describe('ejv()', () => {
 				}, [{
 					key: 'a',
 					type: ['string', 'string']
-				}])).to.throw(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
+				}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE));
 			});
 		});
 

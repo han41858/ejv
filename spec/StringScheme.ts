@@ -120,7 +120,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					enum: null
-				}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
 			});
 
 			it('not array', () => {
@@ -130,7 +130,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					enum: 'a' as unknown as string[]
-				}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
 			});
 
 			it('not string', () => {
@@ -140,7 +140,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					enum: [10]
-				}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_STRINGS);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS));
 			});
 		});
 
@@ -197,7 +197,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					enumReverse: null
-				}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
 			});
 
 			it('not array', () => {
@@ -207,7 +207,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					enumReverse: 'a' as unknown as string[]
-				}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
 			});
 
 			it('not string', () => {
@@ -217,7 +217,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					enumReverse: [10]
-				}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS));
 			});
 		});
 
@@ -274,7 +274,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					minLength: null
-				}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 			});
 
 			it('float number', () => {
@@ -284,7 +284,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					minLength: 1.5
-				}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 			});
 
 			it('string', () => {
@@ -294,7 +294,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					minLength: '1' as unknown as number
-				}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 			});
 		});
 
@@ -357,7 +357,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					maxLength: null
-				}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 			});
 
 			it('float number', () => {
@@ -367,7 +367,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					maxLength: 1.5
-				}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 			});
 
 			it('string', () => {
@@ -377,7 +377,7 @@ describe('StringScheme', () => {
 					key: 'a',
 					type: 'string',
 					maxLength: '1' as unknown as number
-				}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 			});
 		});
 

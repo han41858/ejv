@@ -165,7 +165,7 @@ describe('DateScheme', () => {
 					key: 'date',
 					type: 'date',
 					min: null
-				}])).to.throw(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING);
+				}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
 			});
 
 			it('exclusiveMin === null', () => {
@@ -176,7 +176,7 @@ describe('DateScheme', () => {
 					type: 'date',
 					min: new Date,
 					exclusiveMin: null
-				}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+				}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
 			});
 		});
 
@@ -595,7 +595,7 @@ describe('DateScheme', () => {
 					key: 'date',
 					type: 'date',
 					max: null
-				}])).to.throw(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING);
+				}])).to.throw(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
 			});
 
 			it('exclusiveMax === null', () => {
@@ -604,7 +604,7 @@ describe('DateScheme', () => {
 					type: 'date',
 					max: new Date,
 					exclusiveMax: null
-				}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+				}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
 			});
 		});
 

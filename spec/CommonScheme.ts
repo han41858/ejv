@@ -289,7 +289,7 @@ describe('CommonScheme', () => {
 						not: {
 							optional: true
 						}
-					}])).to.throw(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
+					}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY));
 				});
 
 				it('in object array', () => {
@@ -302,7 +302,7 @@ describe('CommonScheme', () => {
 						not: [{
 							optional: true
 						}]
-					}])).to.throw(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
+					}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY));
 				});
 
 				it('in object array', () => {
@@ -317,7 +317,7 @@ describe('CommonScheme', () => {
 						}, {
 							optional: true
 						}]
-					}])).to.throw(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
+					}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY));
 				});
 			});
 		});

@@ -146,7 +146,7 @@ describe('ObjectScheme', () => {
 					key: 'a',
 					type: 'object',
 					properties: null
-				}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY));
 			});
 
 			it('not array', () => {
@@ -158,7 +158,7 @@ describe('ObjectScheme', () => {
 					key: 'a',
 					type: 'object',
 					properties: 'b' as unknown as Scheme[]
-				}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY));
 			});
 
 			it('empty array', () => {
@@ -170,7 +170,7 @@ describe('ObjectScheme', () => {
 					key: 'a',
 					type: 'object',
 					properties: []
-				}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS);
+				}])).to.throw(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS));
 			});
 
 			it('not object array', () => {
@@ -182,7 +182,7 @@ describe('ObjectScheme', () => {
 					key: 'a',
 					type: 'object',
 					properties: ['b'] as unknown as Scheme[]
-				}])).to.throw(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
+				}])).to.throw(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT));
 			});
 		});
 
@@ -355,7 +355,7 @@ describe('ObjectScheme', () => {
 					key: 'a',
 					type: 'object',
 					allowNoProperty: null
-				}])).to.throw(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
+				}])).to.throw(createErrorMsg(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN));
 			});
 		});
 

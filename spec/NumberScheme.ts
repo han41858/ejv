@@ -120,7 +120,7 @@ describe('NumberScheme', () => {
 					key: 'a',
 					type: 'number',
 					enum: null
-				}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
 			});
 
 			it('not array', () => {
@@ -130,7 +130,7 @@ describe('NumberScheme', () => {
 					key: 'a',
 					type: 'number',
 					enum: 1 as unknown as number[]
-				}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
 			});
 
 			it('not number', () => {
@@ -140,7 +140,7 @@ describe('NumberScheme', () => {
 					key: 'a',
 					type: 'number',
 					enum: ['10']
-				}])).to.throw(ErrorMsg.ENUM_SHOULD_BE_NUMBERS);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_NUMBERS));
 			});
 		});
 
@@ -235,7 +235,7 @@ describe('NumberScheme', () => {
 					key: 'a',
 					type: 'number',
 					enumReverse: null
-				}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
 			});
 
 			it('not array', () => {
@@ -245,7 +245,7 @@ describe('NumberScheme', () => {
 					key: 'a',
 					type: 'number',
 					enumReverse: 1 as unknown as number[]
-				}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
 			});
 
 			it('not number', () => {
@@ -255,7 +255,7 @@ describe('NumberScheme', () => {
 					key: 'a',
 					type: 'number',
 					enumReverse: ['10']
-				}])).to.throw(ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS);
+				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_NUMBERS));
 			});
 		});
 
@@ -314,7 +314,7 @@ describe('NumberScheme', () => {
 							key: 'a',
 							type: 'number',
 							min: null
-						}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
+						}])).to.throw(createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER));
 					});
 
 					it('min type', () => {
@@ -324,7 +324,7 @@ describe('NumberScheme', () => {
 							key: 'a',
 							type: 'number',
 							min: '3'
-						}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
+						}])).to.throw(createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER));
 					});
 				});
 
@@ -384,7 +384,7 @@ describe('NumberScheme', () => {
 							not: {
 								min: null
 							}
-						}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
+						}])).to.throw(createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER));
 					});
 
 					it('min type', () => {
@@ -396,7 +396,7 @@ describe('NumberScheme', () => {
 							not: {
 								min: '3'
 							}
-						}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
+						}])).to.throw(createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER));
 					});
 				});
 
@@ -459,7 +459,7 @@ describe('NumberScheme', () => {
 							type: 'number',
 							min: 3,
 							exclusiveMin: '3' as unknown as boolean
-						}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
 					});
 				});
 
@@ -552,7 +552,7 @@ describe('NumberScheme', () => {
 							not: {
 								exclusiveMin: '3' as unknown as boolean
 							}
-						}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
 					});
 				});
 
@@ -711,7 +711,7 @@ describe('NumberScheme', () => {
 							key: 'a',
 							type: 'number',
 							max: null
-						}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+						}])).to.throw(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
 					});
 
 					it('max type', () => {
@@ -721,7 +721,7 @@ describe('NumberScheme', () => {
 							key: 'a',
 							type: 'number',
 							max: '3'
-						}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+						}])).to.throw(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
 					});
 				});
 
@@ -781,7 +781,7 @@ describe('NumberScheme', () => {
 							not: {
 								max: null
 							}
-						}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+						}])).to.throw(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
 					});
 
 					it('max type', () => {
@@ -793,7 +793,7 @@ describe('NumberScheme', () => {
 							not: {
 								max: '3'
 							}
-						}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+						}])).to.throw(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
 					});
 				});
 
@@ -856,7 +856,7 @@ describe('NumberScheme', () => {
 							type: 'number',
 							max: 3,
 							exclusiveMax: '3' as unknown as boolean
-						}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
 					});
 				});
 
@@ -949,7 +949,7 @@ describe('NumberScheme', () => {
 							not: {
 								exclusiveMax: '3' as unknown as boolean
 							}
-						}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
 					});
 				});
 

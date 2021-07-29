@@ -189,7 +189,7 @@ describe('ArrayScheme', () => {
 					key: 'a',
 					type: 'array',
 					minLength: null
-				}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 			});
 
 			it('float number', () => {
@@ -199,7 +199,7 @@ describe('ArrayScheme', () => {
 					key: 'a',
 					type: 'string',
 					minLength: 1.5
-				}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 			});
 
 			it('string', () => {
@@ -209,7 +209,7 @@ describe('ArrayScheme', () => {
 					key: 'a',
 					type: 'array',
 					minLength: '1' as unknown as number
-				}])).to.throw(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 			});
 		});
 
@@ -273,7 +273,7 @@ describe('ArrayScheme', () => {
 					key: 'a',
 					type: 'array',
 					maxLength: null
-				}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 			});
 
 			it('float number', () => {
@@ -283,7 +283,7 @@ describe('ArrayScheme', () => {
 					key: 'a',
 					type: 'string',
 					maxLength: 1.5
-				}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 			});
 
 			it('string', () => {
@@ -293,7 +293,7 @@ describe('ArrayScheme', () => {
 					key: 'a',
 					type: 'array',
 					maxLength: '1' as unknown as number
-				}])).to.throw(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 			});
 		});
 
@@ -357,7 +357,7 @@ describe('ArrayScheme', () => {
 					key: 'a',
 					type: 'array',
 					unique: null
-				}])).to.throw(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
+				}])).to.throw(createErrorMsg(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN));
 			});
 
 			it('not boolean', () => {
@@ -367,7 +367,7 @@ describe('ArrayScheme', () => {
 					key: 'a',
 					type: 'array',
 					unique: 'hello' as unknown as boolean
-				}])).to.throw(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
+				}])).to.throw(createErrorMsg(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN));
 			});
 		});
 
