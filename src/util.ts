@@ -1,4 +1,6 @@
-import { AnyObject } from './interfaces';
+import { AnyObject, Scheme } from './interfaces';
+import { ErrorMsg, ErrorMsgCursorA, ErrorMsgCursorNot } from './constants';
+
 
 enum CloneDataType {
 	Boolean = 'boolean',
@@ -81,4 +83,36 @@ export const clone = <T> (obj: T, sanitize?: boolean): T => {
 	}
 
 	return result;
+};
+
+export const createErrorMsg = (errorMsg: ErrorMsg, param?: {
+	reverse?: boolean // default false
+	placeholderA?: string, // TODO: string[]
+}): string => {
+	let result: string = errorMsg;
+
+	if (param?.placeholderA) {
+		result = result.replace(ErrorMsgCursorA, param.placeholderA);
+	}
+
+	result = result.replace(ErrorMsgCursorNot, param?.reverse ? 'not ' : '');
+
+	return result;
+};
+
+export const xor = (a: boolean, b: boolean): boolean => {
+	return a ? !b : b;
+};
+
+export const getBothKeys = (a: Scheme, b: Scheme): string[] => {
+	const aKeys: string[] = Object.keys(a);
+	const bKeys: string[] = Object.keys(b);
+
+	return [...aKeys, ...bKeys].reduce((acc: string[], key: string): string[] => {
+		if (!acc.includes(key) && aKeys.includes(key) && bKeys.includes(key)) {
+			acc.push(key);
+		}
+
+		return acc;
+	}, []);
 };

@@ -1,9 +1,11 @@
 import { DataType, ErrorType, NumberFormat, StringFormat } from './constants';
 
+export type AllDataType = string | string[] | DataType | DataType[];
+
 
 interface CommonScheme {
 	key?: string; // can be omitted in array items
-	type?: string | string[] | DataType | DataType[]; // optional for not
+	type?: AllDataType; // optional for not
 
 	optional?: boolean; // false
 	nullable?: boolean; // false
@@ -15,6 +17,8 @@ interface CommonScheme {
 export type BooleanScheme = CommonScheme;
 
 export interface NumberScheme extends CommonScheme {
+	value?: number; // TODO
+
 	min?: number;
 	exclusiveMin?: boolean; // false
 
@@ -28,6 +32,8 @@ export interface NumberScheme extends CommonScheme {
 }
 
 export interface StringScheme extends CommonScheme {
+	value?: string; // TODO
+
 	enum?: string[];
 	enumReverse?: string[]; // TODO: deprecate with not
 
@@ -57,7 +63,7 @@ export type RegExpScheme = CommonScheme;
 
 export interface ArrayScheme extends CommonScheme {
 	unique?: boolean; // false
-	items?: string | string[] | DataType | DataType[] | Scheme | Scheme[];
+	items?: AllDataType | Scheme | Scheme[];
 
 	length?: number;
 	minLength?: number;
@@ -82,7 +88,9 @@ export interface Options {
 
 export interface InternalOptions extends Options {
 	path: string[];
-	positiveTrue: boolean; // true, for not
+	reverse: boolean; // default false, for not
+
+	parentScheme?: Scheme;
 }
 
 export class EjvError {
@@ -92,8 +100,8 @@ export class EjvError {
 	public data: unknown;
 	public path: string;
 
-	public errorScheme?: Scheme;
-	public errorData?: unknown;
+	public errorScheme: Scheme;
+	public errorData: unknown;
 
 	constructor (param: {
 		type: ErrorType,
@@ -102,8 +110,8 @@ export class EjvError {
 		data: unknown,
 		path: string[],
 
-		errorScheme?: Scheme,
-		errorData?: unknown
+		errorScheme: Scheme,
+		errorData: unknown
 	}) {
 		this.type = param.type;
 		this.message = param.message;

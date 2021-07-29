@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { ejv } from '../src/ejv';
 import { ErrorMsg, ErrorMsgCursorA, ErrorType } from '../src/constants';
 import { AnyObject, EjvError, Scheme } from '../src/interfaces';
+import { createErrorMsg } from '../src/util';
 
 const typeTester: {
 	type: string,
@@ -157,7 +158,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 					expect(error.type).to.be.eql(ErrorType.REQUIRED);
-					expect(error.message).to.be.eql(ErrorMsg.REQUIRED);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.deep.equal(data);
 					expect(error.errorData).to.be.undefined;
@@ -186,13 +187,16 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
-						.replace(ErrorMsgCursorA, 'string'));
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+						placeholderA: 'string'
+					}));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.deep.equal(data);
 					expect(error.errorData).to.be.eql(123);
 				});
 			});
+
+			// TODO: not
 
 			describe('optional === false', () => {
 				it('undefined value', () => {
@@ -208,7 +212,7 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 					expect(error.type).to.be.eql(ErrorType.REQUIRED);
-					expect(error.message).to.be.eql(ErrorMsg.REQUIRED);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.deep.equal(data);
 					expect(error.errorData).to.be.undefined;
@@ -239,8 +243,9 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
-						.replace(ErrorMsgCursorA, 'string'));
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+						placeholderA: 'string'
+					}));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.deep.equal(data);
 					expect(error.errorData).to.be.eql(123);
@@ -285,8 +290,9 @@ describe('ejv()', () => {
 
 					expect(error).to.be.instanceof(EjvError);
 					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
-						.replace(ErrorMsgCursorA, 'string'));
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+						placeholderA: 'string'
+					}));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.deep.equal(data);
 					expect(error.errorData).to.be.eql(123);
@@ -307,11 +313,13 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error.type).to.be.eql(ErrorType.REQUIRED);
-				expect(error.message).to.be.eql(ErrorMsg.REQUIRED);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
 				expect(error.errorData).to.be.null;
 			});
+
+			// TODO: not
 
 			it('nullable === false', () => {
 				const data = {
@@ -326,7 +334,7 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error.type).to.be.eql(ErrorType.REQUIRED);
-				expect(error.message).to.be.eql(ErrorMsg.REQUIRED);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
 				expect(error.errorData).to.be.null;
@@ -346,123 +354,228 @@ describe('ejv()', () => {
 		});
 
 		describe('not', () => {
-			xdescribe('error', () => {
-				it('same type in not', () => {
+			describe('error', () => {
+				describe('same type in not', () => {
+					it('single & single', () => {
+						expect(() => ejv({
+							a: 'hello'
+						}, [{
+							key: 'a',
+							type: 'string',
+							not: {
+								type: 'string'
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE, {
+							placeholderA: 'string'
+						}));
+					});
+
+					it('single & array', () => {
+						expect(() => ejv({
+							a: 'hello'
+						}, [{
+							key: 'a',
+							type: 'string',
+							not: {
+								type: ['string']
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE, {
+							placeholderA: 'string'
+						}));
+					});
+
+					it('array & single', () => {
+						expect(() => ejv({
+							a: 'hello'
+						}, [{
+							key: 'a',
+							type: ['string'],
+							not: {
+								type: 'string'
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE, {
+							placeholderA: 'string'
+						}));
+					});
+
+					it('array & array', () => {
+						expect(() => ejv({
+							a: 'hello'
+						}, [{
+							key: 'a',
+							type: ['string'],
+							not: {
+								type: ['string']
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE, {
+							placeholderA: 'string'
+						}));
+					});
+				});
+
+				describe('duplicated rule in not', () => {
+					it('in object', () => {
+						expect(() => ejv({
+							a: 'hello'
+						}, [{
+							key: 'a',
+							type: 'string',
+							optional: true,
+							not: {
+								optional: true
+							}
+						}])).to.throw(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
+					});
+
+					it('in object array', () => {
+						expect(() => ejv({
+							a: 'hello'
+						}, [{
+							key: 'a',
+							type: 'string',
+							optional: true,
+							not: [{
+								optional: true
+							}]
+						}])).to.throw(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
+					});
+
+					it('in object array', () => {
+						expect(() => ejv({
+							a: 'hello'
+						}, [{
+							key: 'a',
+							type: 'string',
+							optional: true,
+							not: [{
+								nullable: true
+							}, {
+								optional: true
+							}]
+						}])).to.throw(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
+					});
+				});
+			});
+
+			describe('check types', () => {
+				it('with single type', () => {
+					const value = 'hello';
+
 					expect(ejv({
-						a: 'hello'
+						a: value
+					}, [{
+						key: 'a',
+						not: {
+							type: 'boolean'
+						}
+					}])).to.be.null;
+
+
+					const error: EjvError = ejv({
+						a: value
 					}, [{
 						key: 'a',
 						not: {
 							type: 'string'
 						}
-					}])).to.throw(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
+					}]);
+
+					expect(error).to.be.instanceOf(EjvError);
+					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
+					expect(error.path).to.be.eql('a');
+					expect(error.errorData).to.be.eql(value);
 				});
 
-				it('same type in not array', () => {
+				it('with single type - nested', () => {
+					const value = 'hello';
+
 					expect(ejv({
-						a: 'hello'
+						a: value
 					}, [{
 						key: 'a',
 						not: {
-							type: ['string']
+							not: {
+								type: 'string'
+							}
 						}
-					}])).to.throw(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
-				});
+					}])).to.be.null;
 
-				it('duplicated rule in not', () => {
-					expect(ejv({
-						a: 'hello'
+					const error: EjvError = ejv({
+						a: value
 					}, [{
 						key: 'a',
-						type: 'string',
-						optional: true,
 						not: {
-							optional: true
+							not: {
+								type: 'number'
+							}
 						}
-					}])).to.throw(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
+					}]);
+
+					expect(error).to.be.instanceOf(EjvError);
+					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
+					expect(error.path).to.be.eql('a');
+					expect(error.errorData).to.be.eql(value);
 				});
-			});
 
-			it('with single type', () => {
-				const value = 'hello';
+				it('with type array', () => {
+					const value = 'hello';
 
-				expect(ejv({
-					a: value
-				}, [{
-					key: 'a',
-					not: {
-						type: 'boolean'
-					}
-				}])).to.be.null;
-
-
-				const error: EjvError = ejv({
-					a: value
-				}, [{
-					key: 'a',
-					not: {
-						type: 'string'
-					}
-				}]);
-
-				expect(error).to.be.instanceOf(EjvError);
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-				expect(error.path).to.be.eql('a');
-				expect(error.errorData).to.be.eql(value);
-			});
-
-			it('with single type - nested', () => {
-				expect(ejv({
-					a: 'hello'
-				}, [{
-					key: 'a',
-					not: {
+					expect(ejv({
+						a: value
+					}, [{
+						key: 'a',
 						not: {
-							type: 'string'
+							type: ['boolean', 'number'] // not boolean & not number
 						}
-					}
-				}])).to.be.null;
-			});
-
-			it('with type array', () => {
-				const value = 'hello';
-
-				expect(ejv({
-					a: value
-				}, [{
-					key: 'a',
-					not: {
-						type: ['boolean', 'number'] // not boolean & not number
-					}
-				}])).to.be.null;
+					}])).to.be.null;
 
 
-				const error: EjvError = ejv({
-					a: value
-				}, [{
-					key: 'a',
-					not: {
-						type: ['string', 'number'] // not string & not number
-					}
-				}]);
-
-				expect(error).to.be.instanceOf(EjvError);
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
-				expect(error.path).to.be.eql('a');
-				expect(error.errorData).to.be.eql(value);
-			});
-
-			it('with type array - nested', () => {
-				expect(ejv({
-					a: 'hello'
-				}, [{
-					key: 'a',
-					not: {
+					const error: EjvError = ejv({
+						a: value
+					}, [{
+						key: 'a',
 						not: {
-							type: ['string']
+							type: ['string', 'number'] // not string & not number
 						}
-					}
-				}])).to.be.null;
+					}]);
+
+					expect(error).to.be.instanceOf(EjvError);
+					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
+					expect(error.path).to.be.eql('a');
+					expect(error.errorData).to.be.eql(value);
+				});
+
+				it('with type array - nested', () => {
+					const value = 'hello';
+
+					expect(ejv({
+						a: value
+					}, [{
+						key: 'a',
+						not: {
+							not: {
+								type: ['string']
+							}
+						}
+					}])).to.be.null;
+
+
+					const error: EjvError = ejv({
+						a: value
+					}, [{
+						key: 'a',
+						not: {
+							not: {
+								type: ['number', 'boolean'] // number | boolean
+							}
+						}
+					}]);
+
+					expect(error).to.be.instanceOf(EjvError);
+					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
+					expect(error.path).to.be.eql('a');
+					expect(error.errorData).to.be.eql(value);
+				});
 			});
 		});
 	});
@@ -485,9 +598,9 @@ describe('ejv()', () => {
 							expect(error).to.be.instanceof(EjvError);
 
 							expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-							expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
-								.replace(ErrorMsgCursorA, 'number')
-							);
+							expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+								placeholderA: 'number'
+							}));
 							expect(error.path).to.be.eql('a');
 							expect(error.data).to.be.deep.equal(data);
 							expect(error.errorData).to.be.eql(obj.value);
@@ -510,8 +623,9 @@ describe('ejv()', () => {
 					expect(error).to.be.instanceof(EjvError);
 
 					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
-					expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
-						.replace(ErrorMsgCursorA, JSON.stringify(typeArr)));
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
+						placeholderA: JSON.stringify(typeArr)
+					}));
 					expect(error.path).to.be.eql('a');
 					expect(error.data).to.be.deep.equal(data);
 					expect(error.errorData).to.be.eql(value);
@@ -616,9 +730,9 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error.type).to.be.eql(ErrorType.ONE_OF);
-				expect(error.message).to.be.eql(ErrorMsg.ONE_OF
-					.replace(ErrorMsgCursorA, JSON.stringify(enumArr))
-				);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
+					placeholderA: JSON.stringify(enumArr)
+				}));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
 				expect(error.errorData).to.be.eql(10);
@@ -633,8 +747,46 @@ describe('ejv()', () => {
 					enum: [9, 10, 11]
 				}])).to.be.null;
 			});
+
+			it('not', () => {
+				const enumArr: number[] = [9, 11];
+
+				expect(ejv({
+					a: 10
+				}, [{
+					key: 'a',
+					type: 'number',
+					not: {
+						enum: enumArr
+					}
+				}])).to.be.null;
+
+
+				const data = {
+					a: 9
+				};
+
+				const error: EjvError = ejv(data, [{
+					key: 'a',
+					type: 'number',
+					not: {
+						enum: enumArr
+					}
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error.type).to.be.eql(ErrorType.ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
+					reverse: true,
+					placeholderA: JSON.stringify(enumArr)
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(9);
+			});
 		});
 
+		// TODO: deprecate
 		describe('enumReverse', () => {
 			describe('check parameter', () => {
 				it('undefined is ok', () => {
@@ -713,669 +865,1641 @@ describe('ejv()', () => {
 		});
 
 		describe('min & exclusiveMin', () => {
-			describe('check parameter', () => {
-				it('undefined is ok', () => {
-					expect(ejv({
-						a: 1
-					}, [{
-						key: 'a',
-						type: 'number',
-						min: undefined
-					}])).to.be.null;
+			describe('min only', () => {
+				describe('normal', () => {
+					describe('check parameter', () => {
+						it('undefined is ok', () => {
+							expect(ejv({
+								a: 1
+							}, [{
+								key: 'a',
+								type: 'number',
+								min: undefined
+							}])).to.be.null;
+						});
+
+						it('null', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								min: null
+							}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
+						});
+
+						it('min type', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								min: '3'
+							}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
+						});
+					});
+
+					it('ok', () => {
+						const error1: EjvError = ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+							placeholderA: '10'
+						}));
+
+						expect(ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10
+						}])).to.be.null;
+					});
 				});
 
-				it('null', () => {
-					expect(() => ejv({
-						a: 3
-					}, [{
-						key: 'a',
-						type: 'number',
-						min: null
-					}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
-				});
+				describe('not', () => {
+					describe('check parameter', () => {
+						it('undefined is ok', () => {
+							expect(ejv({
+								a: 1
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									min: undefined
+								}
+							}])).to.be.null;
+						});
 
-				it('min type', () => {
-					expect(() => ejv({
-						a: 3
-					}, [{
-						key: 'a',
-						type: 'number',
-						min: '3'
-					}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
-				});
+						it('null', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									min: null
+								}
+							}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
+						});
 
-				it('exclusiveMin type', () => {
-					expect(() => ejv({
-						a: 3
-					}, [{
-						key: 'a',
-						type: 'number',
-						min: 3,
-						exclusiveMin: '3' as unknown as boolean
-					}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+						it('min type', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									min: '3'
+								}
+							}])).to.throw(ErrorMsg.MIN_SHOULD_BE_NUMBER);
+						});
+					});
+
+					it('ok', () => {
+						expect(ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							not: {
+								min: 10
+							}
+						}])).to.be.null;
+
+						const error1: EjvError = ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							not: {
+								min: 10
+							}
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+							reverse: true,
+							placeholderA: '10'
+						}));
+
+						const error2: EjvError = ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							not: {
+								min: 10
+							}
+						}]);
+
+						expect(error2).to.be.instanceof(EjvError);
+						expect(error2.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
+						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+							reverse: true,
+							placeholderA: '10'
+						}));
+					});
 				});
 			});
 
-			it('without exclusiveMin', () => {
-				expect(ejv({
-					a: 1
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 1,
-					exclusiveMin: undefined
-				}])).to.be.null;
+			describe('exclusiveMin', () => {
+				describe('normal', () => {
+					describe('check parameter', () => {
+						it('exclusiveMin type', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								min: 3,
+								exclusiveMin: '3' as unknown as boolean
+							}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+						});
+					});
 
-				const error1: EjvError = ejv({
-					a: 9
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 10
-				}]);
+					it('exclusiveMin === true', () => {
+						const error1: EjvError = ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							exclusiveMin: true
+						}]);
 
-				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-				expect(error1.message).to.be.eql(ErrorMsg.GREATER_THAN_OR_EQUAL
-					.replace(ErrorMsgCursorA, '10')
-				);
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.GREATER_THAN);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
+							placeholderA: '10'
+						}));
 
-				expect(ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 10
-				}])).to.be.null;
+						const error2: EjvError = ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							exclusiveMin: true
+						}]);
 
-				expect(ejv({
-					a: 11
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 10
-				}])).to.be.null;
-			});
+						expect(error2).to.be.instanceof(EjvError);
+						expect(error2.type).to.be.eql(ErrorType.GREATER_THAN);
+						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
+							placeholderA: '10'
+						}));
 
-			it('exclusiveMin === true', () => {
-				const error1: EjvError = ejv({
-					a: 9
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 10,
-					exclusiveMin: true
-				}]);
+						expect(ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							exclusiveMin: true
+						}])).to.be.null;
+					});
 
-				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.type).to.be.eql(ErrorType.GREATER_THAN);
-				expect(error1.message).to.be.eql(ErrorMsg.GREATER_THAN
-					.replace(ErrorMsgCursorA, '10')
-				);
+					it('exclusiveMin === false', () => {
+						const error1: EjvError = ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							exclusiveMin: false
+						}]);
 
-				const error2: EjvError = ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 10,
-					exclusiveMin: true
-				}]);
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+							placeholderA: '10'
+						}));
 
-				expect(error2).to.be.instanceof(EjvError);
-				expect(error2.type).to.be.eql(ErrorType.GREATER_THAN);
-				expect(error2.message).to.be.eql(ErrorMsg.GREATER_THAN
-					.replace(ErrorMsgCursorA, '10')
-				);
+						expect(ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							exclusiveMin: false
+						}])).to.be.null;
 
-				expect(ejv({
-					a: 11
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 10,
-					exclusiveMin: true
-				}])).to.be.null;
-			});
+						expect(ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							exclusiveMin: false
+						}])).to.be.null;
+					});
+				});
 
-			it('exclusiveMin === false', () => {
-				const error1: EjvError = ejv({
-					a: 9
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 10,
-					exclusiveMin: false
-				}]);
+				describe('not', () => {
+					describe('check parameter', () => {
+						it('exclusiveMin type', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								min: 3,
+								not: {
+									exclusiveMin: '3' as unknown as boolean
+								}
+							}])).to.throw(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+						});
+					});
 
-				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-				expect(error1.message).to.be.eql(ErrorMsg.GREATER_THAN_OR_EQUAL
-					.replace(ErrorMsgCursorA, '10')
-				);
+					it('without exclusiveMin', () => {
+						const error1: EjvError = ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							not: {
+								exclusiveMin: undefined
+							}
+						}]);
 
-				expect(ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 10,
-					exclusiveMin: false
-				}])).to.be.null;
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+							reverse: false, // undefined
+							placeholderA: '10'
+						}));
 
-				expect(ejv({
-					a: 11
-				}, [{
-					key: 'a',
-					type: 'number',
-					min: 10,
-					exclusiveMin: false
-				}])).to.be.null;
+						expect(ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							not: {
+								exclusiveMin: undefined
+							}
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							not: {
+								exclusiveMin: undefined
+							}
+						}])).to.be.null;
+					});
+
+					it('exclusiveMin === true', () => {
+						const error1: EjvError = ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							not: {
+								exclusiveMin: true
+							}
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+							placeholderA: '10'
+						}));
+
+						expect(ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							not: {
+								exclusiveMin: true
+							}
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							not: {
+								exclusiveMin: true
+							}
+						}])).to.be.null;
+					});
+
+					it('exclusiveMin === false', () => {
+						const error1: EjvError = ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							not: {
+								exclusiveMin: false
+							}
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.GREATER_THAN);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
+							placeholderA: '10'
+						}));
+
+						const error2: EjvError = ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							not: {
+								exclusiveMin: false
+							}
+						}]);
+
+						expect(error2).to.be.instanceof(EjvError);
+						expect(error2.type).to.be.eql(ErrorType.GREATER_THAN);
+						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
+							placeholderA: '10'
+						}));
+
+						expect(ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							min: 10,
+							not: {
+								exclusiveMin: false
+							}
+						}])).to.be.null;
+					});
+				});
+
 			});
 		});
 
 		describe('max & exclusiveMax', () => {
-			describe('check parameter', () => {
-				it('undefined is ok', () => {
-					expect(ejv({
-						a: 1
-					}, [{
-						key: 'a',
-						type: 'number',
-						max: undefined
-					}])).to.be.null;
+			describe('max only', () => {
+				describe('normal', () => {
+					describe('check parameter', () => {
+						it('undefined is ok', () => {
+							expect(ejv({
+								a: 1
+							}, [{
+								key: 'a',
+								type: 'number',
+								max: undefined
+							}])).to.be.null;
+						});
+
+						it('null', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								max: null
+							}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+						});
+
+						it('max type', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								max: '3'
+							}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+						});
+					});
+
+					it('ok', () => {
+						expect(ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10
+						}])).to.be.null;
+
+						const error1: EjvError = ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+							placeholderA: '10'
+						}));
+					});
 				});
 
-				it('null', () => {
-					expect(() => ejv({
-						a: 3
-					}, [{
-						key: 'a',
-						type: 'number',
-						max: null
-					}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
-				});
+				describe('not', () => {
+					describe('check parameter', () => {
+						it('undefined is ok', () => {
+							expect(ejv({
+								a: 1
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									max: undefined
+								}
+							}])).to.be.null;
+						});
 
-				it('max type', () => {
-					expect(() => ejv({
-						a: 3
-					}, [{
-						key: 'a',
-						type: 'number',
-						max: '3'
-					}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
-				});
+						it('null', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									max: null
+								}
+							}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+						});
 
-				it('exclusiveMax type', () => {
-					expect(() => ejv({
-						a: 3
-					}, [{
-						key: 'a',
-						type: 'number',
-						max: 3,
-						exclusiveMax: '3' as unknown as boolean
-					}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+						it('max type', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									max: '3'
+								}
+							}])).to.throw(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+						});
+					});
+
+					it('ok', () => {
+						const error1: EjvError = ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							not: {
+								max: 10
+							}
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+							reverse: true,
+							placeholderA: '10'
+						}));
+
+						const error2: EjvError = ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							not: {
+								max: 10
+							}
+						}]);
+
+						expect(error2).to.be.instanceof(EjvError);
+						expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
+						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+							reverse: true,
+							placeholderA: '10'
+						}));
+
+						expect(ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							not: {
+								max: 10
+							}
+						}])).to.be.null;
+					});
 				});
 			});
 
-			it('without exclusiveMax', () => {
-				expect(ejv({
-					a: 1
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 1,
-					exclusiveMax: undefined
-				}])).to.be.null;
+			describe('exclusiveMax', () => {
+				describe('normal', () => {
+					describe('check parameter', () => {
+						it('exclusiveMax type', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								max: 3,
+								exclusiveMax: '3' as unknown as boolean
+							}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+						});
+					});
 
-				expect(ejv({
-					a: 9
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 10
-				}])).to.be.null;
+					it('exclusiveMax === true', () => {
+						expect(ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							exclusiveMax: true
+						}])).to.be.null;
 
-				expect(ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 10
-				}])).to.be.null;
+						const error1: EjvError = ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							exclusiveMax: true
+						}]);
 
-				const error1: EjvError = ejv({
-					a: 11
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 10
-				}]);
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
+							placeholderA: '10'
+						}));
 
-				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
-				expect(error1.message).to.be.eql(ErrorMsg.SMALLER_THAN_OR_EQUAL
-					.replace(ErrorMsgCursorA, '10')
-				);
+						const error2: EjvError = ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							exclusiveMax: true
+						}]);
+
+						expect(error2).to.be.instanceof(EjvError);
+						expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN);
+						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
+							placeholderA: '10'
+						}));
+					});
+
+					it('exclusiveMax === false', () => {
+						expect(ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							exclusiveMax: false
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							exclusiveMax: false
+						}])).to.be.null;
+
+						const error1: EjvError = ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							exclusiveMax: false
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+							placeholderA: '10'
+						}));
+					});
+				});
+
+				describe('not', () => {
+					describe('check parameter', () => {
+						it('exclusiveMax type', () => {
+							expect(() => ejv({
+								a: 3
+							}, [{
+								key: 'a',
+								type: 'number',
+								max: 3,
+								not: {
+									exclusiveMax: '3' as unknown as boolean
+								}
+							}])).to.throw(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+						});
+					});
+
+					it('without exclusiveMax', () => {
+						expect(ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							not: {
+								exclusiveMax: undefined
+							}
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							not: {
+								exclusiveMax: undefined
+							}
+						}])).to.be.null;
+
+						const error1: EjvError = ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							not: {
+								exclusiveMax: undefined
+							}
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+							placeholderA: '10'
+						}));
+					});
+
+					it('exclusiveMax === true', () => {
+						expect(ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							not: {
+								exclusiveMax: true
+							}
+						}])).to.be.null;
+
+						expect(ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							not: {
+								exclusiveMax: true
+							}
+						}])).to.be.null;
+
+						const error1: EjvError = ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							not: {
+								exclusiveMax: true
+							}
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+							placeholderA: '10'
+						}));
+					});
+
+					it('exclusiveMax === false', () => {
+						expect(ejv({
+							a: 9
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							not: {
+								exclusiveMax: false
+							}
+						}])).to.be.null;
+
+						const error1: EjvError = ejv({
+							a: 10
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							not: {
+								exclusiveMax: false
+							}
+						}]);
+
+						expect(error1).to.be.instanceof(EjvError);
+						expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN);
+						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
+							placeholderA: '10'
+						}));
+
+						const error2: EjvError = ejv({
+							a: 11
+						}, [{
+							key: 'a',
+							type: 'number',
+							max: 10,
+							not: {
+								exclusiveMax: false
+							}
+						}]);
+
+						expect(error2).to.be.instanceof(EjvError);
+						expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN);
+						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
+							placeholderA: '10'
+						}));
+					});
+				});
 			});
 
-			it('exclusiveMax === true', () => {
-				expect(ejv({
-					a: 9
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 10,
-					exclusiveMax: true
-				}])).to.be.null;
 
-				const error1: EjvError = ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 10,
-					exclusiveMax: true
-				}]);
-
-				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN);
-				expect(error1.message).to.be.eql(ErrorMsg.SMALLER_THAN
-					.replace(ErrorMsgCursorA, '10')
-				);
-
-				const error2: EjvError = ejv({
-					a: 11
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 10,
-					exclusiveMax: true
-				}]);
-
-				expect(error2).to.be.instanceof(EjvError);
-				expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN);
-				expect(error2.message).to.be.eql(ErrorMsg.SMALLER_THAN
-					.replace(ErrorMsgCursorA, '10')
-				);
-			});
-
-			it('exclusiveMax === false', () => {
-				expect(ejv({
-					a: 9
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 10,
-					exclusiveMax: false
-				}])).to.be.null;
-
-				expect(ejv({
-					a: 10
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 10,
-					exclusiveMax: false
-				}])).to.be.null;
-
-				const error1: EjvError = ejv({
-					a: 11
-				}, [{
-					key: 'a',
-					type: 'number',
-					max: 10,
-					exclusiveMax: false
-				}]);
-
-				expect(error1).to.be.instanceof(EjvError);
-				expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
-				expect(error1.message).to.be.eql(ErrorMsg.SMALLER_THAN_OR_EQUAL
-					.replace(ErrorMsgCursorA, '10')
-				);
-			});
 		});
 
 		describe('format', () => {
 			describe('check parameter', () => {
-				it('undefined is ok', () => {
-					expect(ejv({
-						a: 123.5
-					}, [{
-						key: 'a',
-						type: 'number',
-						format: undefined
-					}])).to.be.null;
-				});
-
-				it('null', () => {
-					expect(() => ejv({
-						a: 123.5
-					}, [{
-						key: 'a',
-						type: 'number',
-						format: null
-					}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
-						.replace(ErrorMsgCursorA, 'null'));
-				});
-
-				describe('invalid number format', () => {
-					it('single', () => {
-						expect(() => ejv({
-							a: 1
+				describe('normal', () => {
+					it('undefined is ok', () => {
+						expect(ejv({
+							a: 123.5
 						}, [{
 							key: 'a',
 							type: 'number',
-							format: 'invalidNumberFormat'
-						}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
-							.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
+							format: undefined
+						}])).to.be.null;
 					});
 
-					it('multiple', () => {
+					it('null', () => {
 						expect(() => ejv({
-							a: 1
+							a: 123.5
 						}, [{
 							key: 'a',
 							type: 'number',
-							format: ['index', 'invalidNumberFormat']
+							format: null
 						}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
-							.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
+							.replace(ErrorMsgCursorA, 'null'));
+					});
+
+					describe('invalid number format', () => {
+						it('single', () => {
+							expect(() => ejv({
+								a: 1
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: 'invalidNumberFormat'
+							}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
+								.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
+						});
+
+						it('multiple', () => {
+							expect(() => ejv({
+								a: 1
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['index', 'invalidNumberFormat']
+							}])).to.throw(ErrorMsg.INVALID_NUMBER_FORMAT
+								.replace(ErrorMsgCursorA, 'invalidNumberFormat'));
+						});
+					});
+				});
+
+				describe('not', () => {
+					it('undefined is ok', () => {
+						expect(ejv({
+							a: 123.5
+						}, [{
+							key: 'a',
+							type: 'number',
+							not: {
+								format: undefined
+							}
+						}])).to.be.null;
+					});
+
+					it('null', () => {
+						expect(() => ejv({
+							a: 123.5
+						}, [{
+							key: 'a',
+							type: 'number',
+							not: {
+								format: null
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+							placeholderA: 'null'
+						}));
+					});
+
+					describe('invalid number format', () => {
+						it('single', () => {
+							expect(() => ejv({
+								a: 1
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: 'invalidNumberFormat'
+								}
+							}])).to.throw(createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+								placeholderA: 'invalidNumberFormat'
+							}));
+						});
+
+						it('multiple', () => {
+							expect(() => ejv({
+								a: 1
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: ['index', 'invalidNumberFormat']
+								}
+							}])).to.throw(createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+								placeholderA: 'invalidNumberFormat'
+							}));
+						});
 					});
 				});
 			});
 
 			describe('integer', () => {
 				describe('single format', () => {
-					it('fail', () => {
-						const error: EjvError = ejv({
-							a: 123.5
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: 'integer'
-						}]);
+					describe('normal', () => {
+						it('fail', () => {
+							const error: EjvError = ejv({
+								a: 123.5
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: 'integer'
+							}]);
 
-						expect(error).to.be.instanceof(EjvError);
-						expect(error.type).to.be.eql(ErrorType.FORMAT);
-						expect(error.message).to.be.eql(ErrorMsg.FORMAT
-							.replace(ErrorMsgCursorA, 'integer')
-						);
+							expect(error).to.be.instanceof(EjvError);
+							expect(error.type).to.be.eql(ErrorType.FORMAT);
+							expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+								placeholderA: 'integer'
+							}));
+						});
+
+						it('ok', () => {
+							expect(ejv({
+								a: 123
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: 'integer'
+							}])).to.be.null;
+						});
 					});
 
-					it('ok', () => {
-						expect(ejv({
-							a: 123
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: 'integer'
-						}])).to.be.null;
+					describe('not', () => {
+						it('ok', () => {
+							expect(ejv({
+								a: 123.5
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: 'integer'
+								}
+							}])).to.be.null;
+						});
+
+						it('fail', () => {
+							const error : EjvError= ejv({
+								a: 123
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: 'integer'
+								}
+							}]);
+
+							expect(error).to.be.instanceof(EjvError);
+							expect(error.type).to.be.eql(ErrorType.FORMAT);
+							expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+								reverse: true,
+								placeholderA: 'integer'
+							}));
+						});
 					});
 				});
 
 				describe('multiple formats', () => {
-					it('fail', () => {
-						const formatArr: string[] = ['integer'];
+					describe('normal', () => {
+						it('fail', () => {
+							const formatArr: string[] = ['integer'];
 
-						const error: EjvError = ejv({
-							a: 123.5
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: formatArr
-						}]);
+							const error: EjvError = ejv({
+								a: 123.5
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: formatArr
+							}]);
 
-						expect(error).to.be.instanceof(EjvError);
-						expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-						expect(error.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
-							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
-						);
+							expect(error).to.be.instanceof(EjvError);
+							expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								placeholderA: JSON.stringify(formatArr)
+							}));
+						});
+
+						it('ok', () => {
+							expect(ejv({
+								a: -7
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['integer']
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['integer']
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 123
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['integer']
+							}])).to.be.null;
+						});
+
+						it('ok - with others', () => {
+							expect(ejv({
+								a: -7
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['integer', 'index']
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['integer', 'index']
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 123
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['integer', 'index']
+							}])).to.be.null;
+						});
+
+						it('ok - with others', () => {
+							expect(ejv({
+								a: -7
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['index', 'integer']
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['index', 'integer']
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 123
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['index', 'integer']
+							}])).to.be.null;
+						});
 					});
 
-					it('ok', () => {
-						expect(ejv({
-							a: -7
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['integer']
-						}])).to.be.null;
+					describe('not', () => {
+						it('ok', () => {
+							const formatArr: string[] = ['integer'];
 
-						expect(ejv({
-							a: 0
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['integer']
-						}])).to.be.null;
+							expect(ejv({
+								a: 123.5
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}])).to.be.null;
+						});
 
-						expect(ejv({
-							a: 123
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['integer']
-						}])).to.be.null;
-					});
+						it('failed', () => {
+							const formatArr: string[] = ['integer'];
 
-					it('ok - with others', () => {
-						expect(ejv({
-							a: -7
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['integer', 'index']
-						}])).to.be.null;
+							const error1: EjvError = ejv({
+								a: -7
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
 
-						expect(ejv({
-							a: 0
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['integer', 'index']
-						}])).to.be.null;
+							expect(error1).to.be.instanceof(EjvError);
+							expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
 
-						expect(ejv({
-							a: 123
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['integer', 'index']
-						}])).to.be.null;
-					});
+							const error2: EjvError = ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
 
-					it('ok - with others', () => {
-						expect(ejv({
-							a: -7
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['index', 'integer']
-						}])).to.be.null;
+							expect(error2).to.be.instanceof(EjvError);
+							expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
 
-						expect(ejv({
-							a: 0
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['index', 'integer']
-						}])).to.be.null;
+							const error3: EjvError = ejv({
+								a: 123
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
 
-						expect(ejv({
-							a: 123
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['index', 'integer']
-						}])).to.be.null;
+							expect(error3).to.be.instanceof(EjvError);
+							expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+						});
+
+						it('failed - with others', () => {
+							const formatArr: string[] = ['index', 'integer'];
+
+							const error1: EjvError = ejv({
+								a: -7
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error1).to.be.instanceof(EjvError);
+							expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+
+							const error2: EjvError = ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error2).to.be.instanceof(EjvError);
+							expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+
+							const error3: EjvError = ejv({
+								a: 123
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error3).to.be.instanceof(EjvError);
+							expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+						});
+
+						it('failed - with others', () => {
+							const formatArr: string[] = ['index', 'integer'];
+
+							const error1: EjvError = ejv({
+								a: -7
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error1).to.be.instanceof(EjvError);
+							expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+
+							const error2: EjvError = ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error2).to.be.instanceof(EjvError);
+							expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+
+							const error3: EjvError = ejv({
+								a: 123
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error3).to.be.instanceof(EjvError);
+							expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+						});
 					});
 				});
 			});
 
 			describe('index', () => {
 				describe('single format', () => {
-					it('fail', () => {
-						const error1: EjvError = ejv({
-							a: 1.5
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: 'index'
-						}]);
+					describe('normal', () => {
+						it('fail', () => {
+							const error1: EjvError = ejv({
+								a: 1.5
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: 'index'
+							}]);
 
-						expect(error1).to.be.instanceof(EjvError);
-						expect(error1.type).to.be.eql(ErrorType.FORMAT);
-						expect(error1.message).to.be.eql(ErrorMsg.FORMAT
-							.replace(ErrorMsgCursorA, 'index')
-						);
+							expect(error1).to.be.instanceof(EjvError);
+							expect(error1.type).to.be.eql(ErrorType.FORMAT);
+							expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+								placeholderA: 'index'
+							}));
 
-						const error2: EjvError = ejv({
-							a: -1
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: 'index'
-						}]);
+							const error2: EjvError = ejv({
+								a: -1
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: 'index'
+							}]);
 
-						expect(error2).to.be.instanceof(EjvError);
-						expect(error2.type).to.be.eql(ErrorType.FORMAT);
-						expect(error2.message).to.be.eql(ErrorMsg.FORMAT
-							.replace(ErrorMsgCursorA, 'index')
-						);
+							expect(error2).to.be.instanceof(EjvError);
+							expect(error2.type).to.be.eql(ErrorType.FORMAT);
+							expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+								placeholderA: 'index'
+							}));
 
-						const error3: EjvError = ejv({
-							a: -1.6
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: 'index'
-						}]);
+							const error3: EjvError = ejv({
+								a: -1.6
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: 'index'
+							}]);
 
-						expect(error3).to.be.instanceof(EjvError);
-						expect(error3.type).to.be.eql(ErrorType.FORMAT);
-						expect(error3.message).to.be.eql(ErrorMsg.FORMAT
-							.replace(ErrorMsgCursorA, 'index')
-						);
+							expect(error3).to.be.instanceof(EjvError);
+							expect(error3.type).to.be.eql(ErrorType.FORMAT);
+							expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+								placeholderA: 'index'
+							}));
+						});
+
+						it('ok', () => {
+							expect(ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: 'index'
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 6
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: 'index'
+							}])).to.be.null;
+						});
 					});
 
-					it('ok', () => {
-						expect(ejv({
-							a: 0
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: 'index'
-						}])).to.be.null;
+					describe('not', () => {
+						it('ok', () => {
+							expect(ejv({
+								a: 1.5
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: 'index'
+								}
+							}])).to.be.null;
 
-						expect(ejv({
-							a: 6
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: 'index'
-						}])).to.be.null;
+							expect(ejv({
+								a: -1
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: 'index'
+								}
+							}])).to.be.null;
+
+							expect(ejv({
+								a: -1.6
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: 'index'
+								}
+							}])).to.be.null;
+						});
+
+						it('fail', () => {
+							const error1: EjvError = ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: 'index'
+								}
+							}]);
+
+							expect(error1).to.be.instanceof(EjvError);
+							expect(error1.type).to.be.eql(ErrorType.FORMAT);
+							expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+								reverse: true,
+								placeholderA: 'index'
+							}));
+
+							const error2 : EjvError = ejv({
+								a: 6
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: 'index'
+								}
+							}]);
+
+							expect(error2).to.be.instanceof(EjvError);
+							expect(error2.type).to.be.eql(ErrorType.FORMAT);
+							expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+								reverse: true,
+								placeholderA: 'index'
+							}));
+						});
 					});
 				});
 
 				describe('multiple formats', () => {
-					it('fail', () => {
-						const formatArr: string[] = ['index'];
+					describe('normal', () => {
+						it('fail', () => {
+							const formatArr: string[] = ['index'];
 
-						const error1: EjvError = ejv({
-							a: 1.5
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: formatArr
-						}]);
+							const error1: EjvError = ejv({
+								a: 1.5
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: formatArr
+							}]);
 
-						expect(error1).to.be.instanceof(EjvError);
-						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-						expect(error1.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
-							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
-						);
+							expect(error1).to.be.instanceof(EjvError);
+							expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								placeholderA: JSON.stringify(formatArr)
+							}));
 
-						const error2: EjvError = ejv({
-							a: -1
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: formatArr
-						}]);
+							const error2: EjvError = ejv({
+								a: -1
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: formatArr
+							}]);
 
-						expect(error2).to.be.instanceof(EjvError);
-						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-						expect(error2.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
-							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
-						);
+							expect(error2).to.be.instanceof(EjvError);
+							expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								placeholderA: JSON.stringify(formatArr)
+							}));
 
-						const error3: EjvError = ejv({
-							a: -1.6
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: formatArr
-						}]);
+							const error3: EjvError = ejv({
+								a: -1.6
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: formatArr
+							}]);
 
-						expect(error3).to.be.instanceof(EjvError);
-						expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-						expect(error3.message).to.be.eql(ErrorMsg.FORMAT_ONE_OF
-							.replace(ErrorMsgCursorA, JSON.stringify(formatArr))
-						);
+							expect(error3).to.be.instanceof(EjvError);
+							expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								placeholderA: JSON.stringify(formatArr)
+							}));
+						});
+
+						it('ok', () => {
+							expect(ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['index']
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 6
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['index']
+							}])).to.be.null;
+						});
+
+						it('ok - with others', () => {
+							expect(ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['index', 'integer']
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 6
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['index', 'integer']
+							}])).to.be.null;
+						});
+
+						it('ok - with others', () => {
+							expect(ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['integer', 'index']
+							}])).to.be.null;
+
+							expect(ejv({
+								a: 6
+							}, [{
+								key: 'a',
+								type: 'number',
+								format: ['integer', 'index']
+							}])).to.be.null;
+						});
 					});
 
-					it('ok', () => {
-						expect(ejv({
-							a: 0
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['index']
-						}])).to.be.null;
+					describe('not', () => {
+						it('ok', () => {
+							const formatArr: string[] = ['index'];
 
-						expect(ejv({
-							a: 6
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['index']
-						}])).to.be.null;
-					});
+							expect(ejv({
+								a: 1.5
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}])).to.be.null;
 
-					it('ok - with others', () => {
-						expect(ejv({
-							a: 0
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['index', 'integer']
-						}])).to.be.null;
+							expect(ejv({
+								a: -1
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}])).to.be.null;
 
-						expect(ejv({
-							a: 6
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['index', 'integer']
-						}])).to.be.null;
-					});
+							expect(ejv({
+								a: -1.6
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}])).to.be.null;
+						});
 
-					it('ok - with others', () => {
-						expect(ejv({
-							a: 0
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['integer', 'index']
-						}])).to.be.null;
+						it('failed', () => {
+							const formatArr: string[] = ['index'];
 
-						expect(ejv({
-							a: 6
-						}, [{
-							key: 'a',
-							type: 'number',
-							format: ['integer', 'index']
-						}])).to.be.null;
+							const error1: EjvError = ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error1).to.be.instanceof(EjvError);
+							expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+
+							const error2: EjvError = ejv({
+								a: 6
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error2).to.be.instanceof(EjvError);
+							expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+						});
+
+						it('failed - with others', () => {
+							const formatArr: string[] = ['index', 'integer'];
+
+							const error1: EjvError = ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error1).to.be.instanceof(EjvError);
+							expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+
+							const error2: EjvError = ejv({
+								a: 6
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error2).to.be.instanceof(EjvError);
+							expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+						});
+
+						it('failed - with others', () => {
+							const formatArr: string[] = ['integer', 'index'];
+
+							const error1: EjvError = ejv({
+								a: 0
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error1).to.be.instanceof(EjvError);
+							expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+
+							const error2: EjvError = ejv({
+								a: 6
+							}, [{
+								key: 'a',
+								type: 'number',
+								not: {
+									format: formatArr
+								}
+							}]);
+
+							expect(error2).to.be.instanceof(EjvError);
+							expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+							expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+								reverse: true,
+								placeholderA: JSON.stringify(formatArr)
+							}));
+						});
 					});
 				});
 			});
@@ -2640,8 +3764,9 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-				expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH
-					.replace(ErrorMsgCursorA, 'string'));
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+					placeholderA: 'string'
+				}));
 				expect(error.path).to.be.eql('a/b');
 				expect(error.data).to.be.deep.equal(data);
 				expect(error.errorData).to.be.eql(1);
@@ -2698,8 +3823,9 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
-				expect(error.message).to.be.eql(ErrorMsg.TYPE_MISMATCH_ONE_OF
-					.replace(ErrorMsgCursorA, JSON.stringify(typeArr)));
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
+					placeholderA: JSON.stringify(typeArr)
+				}));
 				expect(error.path).to.be.eql('a/b');
 				expect(error.data).to.be.deep.equal(data);
 				expect(error.errorData).to.be.eql(1);
