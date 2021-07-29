@@ -17,7 +17,7 @@ interface CommonScheme {
 export type BooleanScheme = CommonScheme;
 
 export interface NumberScheme extends CommonScheme {
-	value?: number; // TODO
+	value?: number; // TODO: need to add
 
 	min?: number;
 	exclusiveMin?: boolean; // false
@@ -31,7 +31,7 @@ export interface NumberScheme extends CommonScheme {
 }
 
 export interface StringScheme extends CommonScheme {
-	value?: string; // TODO
+	value?: string; // TODO: need to add
 
 	enum?: string[];
 	enumReverse?: string[]; // TODO: deprecate with not
