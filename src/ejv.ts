@@ -11,7 +11,7 @@ import {
 	Scheme,
 	StringScheme
 } from './interfaces';
-import { DataType, ErrorMsg, ErrorMsgCursorA, ErrorType, NumberFormat, StringFormat } from './constants';
+import { DataType, ErrorMsg, ErrorType, NumberFormat, StringFormat } from './constants';
 
 import {
 	arrayTester,
@@ -62,17 +62,17 @@ function _checkSchemeWithNot (parentScheme: Scheme, notScheme: Scheme): void {
 
 		parentTypes.forEach((parentType: string): void => {
 			if (notTypes.includes(parentType)) {
-				throw new Error(
-					ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE.replace(ErrorMsgCursorA, parentType)
-				);
+				throw new Error(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE, {
+					placeholders: [parentType]
+				}));
 			}
 		});
 
 		notTypes.forEach((notType: string): void => {
 			if (parentTypes.includes(notType)) {
-				throw new Error(
-					ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE.replace(ErrorMsgCursorA, notType)
-				);
+				throw new Error(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE, {
+					placeholders: [notType]
+				}));
 			}
 		});
 	}
@@ -199,7 +199,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 			});
 
 			if (typeError) {
-				throw new Error(ErrorMsg.SCHEMES_HAS_INVALID_TYPE.replace(ErrorMsgCursorA, typeError));
+				throw new Error(createErrorMsg(ErrorMsg.SCHEMES_HAS_INVALID_TYPE, {
+					placeholders: [typeError]
+				}));
 			}
 
 			if (!uniqueItemsTester(types)) {
@@ -259,7 +261,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							type: ErrorType.TYPE_MISMATCH,
 							message: createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 								reverse: _options.reverse,
-								placeholderA: scheme.type
+								placeholders: [scheme.type]
 							}),
 
 							data,
@@ -274,7 +276,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							type: ErrorType.TYPE_MISMATCH_ONE_OF,
 							message: createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
 								reverse: _options.reverse,
-								placeholderA: JSON.stringify(scheme.type)
+								placeholders: [JSON.stringify(scheme.type)]
 							}),
 
 							data,
@@ -302,7 +304,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							type: ErrorType.TYPE_MISMATCH,
 							message: createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 								reverse: _options.reverse,
-								placeholderA: typesForMsg
+								placeholders: [typesForMsg]
 							}),
 
 							data,
@@ -317,7 +319,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							type: ErrorType.TYPE_MISMATCH_ONE_OF,
 							message: createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
 								reverse: _options.reverse,
-								placeholderA: JSON.stringify(typesForMsg)
+								placeholders: [JSON.stringify(typesForMsg)]
 							}),
 
 							data,
@@ -354,7 +356,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								type: ErrorType.ONE_OF,
 								message: createErrorMsg(ErrorMsg.ONE_OF, {
 									reverse: _options.reverse,
-									placeholderA: JSON.stringify(enumArr)
+									placeholders: [JSON.stringify(enumArr)]
 								}),
 
 								data,
@@ -384,7 +386,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								type: ErrorType.NOT_ONE_OF,
 								message: createErrorMsg(ErrorMsg.NOT_ONE_OF, {
 									reverse: _options.reverse,
-									placeholderA: JSON.stringify(enumReverseArr)
+									placeholders: [JSON.stringify(enumReverseArr)]
 								}),
 
 								data,
@@ -418,7 +420,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										type: ErrorType.GREATER_THAN,
 										message: createErrorMsg(ErrorMsg.GREATER_THAN, {
 											// no reverse because of effectiveExclusive
-											placeholderA: '' + effectiveMin
+											placeholders: ['' + effectiveMin]
 										}),
 
 										data,
@@ -436,7 +438,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										type: ErrorType.GREATER_THAN_OR_EQUAL,
 										message: createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 											// no reverse because of effectiveExclusive
-											placeholderA: '' + effectiveMin
+											placeholders: ['' + effectiveMin]
 										}),
 
 										data,
@@ -455,7 +457,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									type: ErrorType.GREATER_THAN_OR_EQUAL,
 									message: createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 										reverse: _options.reverse,
-										placeholderA: '' + numberScheme.min
+										placeholders: ['' + numberScheme.min]
 									}),
 
 									data,
@@ -490,7 +492,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										type: ErrorType.SMALLER_THAN,
 										message: createErrorMsg(ErrorMsg.SMALLER_THAN, {
 											// no reverse because of effectiveExclusive
-											placeholderA: '' + effectiveMax
+											placeholders: ['' + effectiveMax]
 										}),
 
 										data,
@@ -508,7 +510,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										type: ErrorType.SMALLER_THAN_OR_EQUAL,
 										message: createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 											// no reverse because of effectiveExclusive
-											placeholderA: '' + effectiveMax
+											placeholders: ['' + effectiveMax]
 										}),
 
 										data,
@@ -527,7 +529,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									type: ErrorType.SMALLER_THAN_OR_EQUAL,
 									message: createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 										reverse: _options.reverse,
-										placeholderA: '' + numberScheme.max
+										placeholders: ['' + numberScheme.max]
 									}),
 
 									data,
@@ -550,7 +552,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							const formatAsString: NumberFormat = numberScheme.format as NumberFormat;
 
 							if (!enumTester(formatAsString, allNumberFormat)) {
-								throw new Error(ErrorMsg.INVALID_NUMBER_FORMAT.replace(ErrorMsgCursorA, formatAsString));
+								throw new Error(createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+									placeholders: [formatAsString]
+								}));
 							}
 
 							formats = [numberScheme.format as NumberFormat];
@@ -563,7 +567,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							});
 
 							if (errorFormat) {
-								throw new Error(ErrorMsg.INVALID_NUMBER_FORMAT.replace(ErrorMsgCursorA, errorFormat));
+								throw new Error(createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+									placeholders: [errorFormat]
+								}));
 							}
 
 							formats = numberScheme.format as NumberFormat[];
@@ -591,7 +597,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									type: ErrorType.FORMAT,
 									message: createErrorMsg(ErrorMsg.FORMAT, {
 										reverse: _options.reverse,
-										placeholderA: numberScheme.format
+										placeholders: [numberScheme.format]
 									}),
 
 									data,
@@ -606,7 +612,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									type: ErrorType.FORMAT_ONE_OF,
 									message: createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 										reverse: _options.reverse,
-										placeholderA: JSON.stringify(numberScheme.format)
+										placeholders: [JSON.stringify(numberScheme.format)]
 									}),
 
 									data,
@@ -642,7 +648,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								type: ErrorType.ONE_OF,
 								message: createErrorMsg(ErrorMsg.ONE_OF, {
 									reverse: _options.reverse,
-									placeholderA: JSON.stringify(stringScheme.enum)
+									placeholders: [JSON.stringify(stringScheme.enum)]
 								}),
 
 								data,
@@ -670,7 +676,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						if (enumTester(valueAsString, enumReverseArr)) {
 							result = new EjvError({
 								type: ErrorType.NOT_ONE_OF,
-								message: ErrorMsg.NOT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(enumReverseArr)),
+								message: createErrorMsg(ErrorMsg.NOT_ONE_OF, {
+									placeholders: [JSON.stringify(enumReverseArr)]
+								}),
 
 								data,
 								path: _options.path,
@@ -694,7 +702,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								type: ErrorType.LENGTH,
 								message: createErrorMsg(ErrorMsg.LENGTH, {
 									reverse: _options.reverse,
-									placeholderA: '' + length
+									placeholders: ['' + length]
 								}),
 
 								data,
@@ -719,7 +727,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								type: ErrorType.MIN_LENGTH,
 								message: createErrorMsg(ErrorMsg.MIN_LENGTH, {
 									reverse: _options.reverse,
-									placeholderA: '' + minLength
+									placeholders: ['' + minLength]
 								}),
 
 								data,
@@ -744,7 +752,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								type: ErrorType.MAX_LENGTH,
 								message: createErrorMsg(ErrorMsg.MAX_LENGTH, {
 									reverse: _options.reverse,
-									placeholderA: '' + maxLength
+									placeholders: ['' + maxLength]
 								}),
 
 								data,
@@ -766,7 +774,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							const formatAsString: string = stringScheme.format;
 
 							if (!enumTester(formatAsString, allStringFormat)) {
-								throw new Error(ErrorMsg.INVALID_STRING_FORMAT.replace(ErrorMsgCursorA, formatAsString));
+								throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+									placeholders: [formatAsString]
+								}));
 							}
 
 							formats = [stringScheme.format] as StringFormat[];
@@ -778,7 +788,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							});
 
 							if (errorFormat) {
-								throw new Error(ErrorMsg.INVALID_STRING_FORMAT.replace(ErrorMsgCursorA, errorFormat));
+								throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+									placeholders: [errorFormat]
+								}));
 							}
 
 							formats = stringScheme.format as StringFormat[];
@@ -810,7 +822,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							if (!arrayTester(stringScheme.format)) {
 								result = new EjvError({
 									type: ErrorType.FORMAT,
-									message: ErrorMsg.FORMAT.replace(ErrorMsgCursorA, stringScheme.format as StringFormat),
+									message: createErrorMsg(ErrorMsg.FORMAT, {
+										placeholders: [stringScheme.format as StringFormat]
+									}),
 
 									data,
 									path: _options.path,
@@ -822,7 +836,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							else {
 								result = new EjvError({
 									type: ErrorType.FORMAT_ONE_OF,
-									message: ErrorMsg.FORMAT_ONE_OF.replace(ErrorMsgCursorA, JSON.stringify(stringScheme.format)),
+									message: createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+										placeholders: [JSON.stringify(stringScheme.format)]
+									}),
 
 									data,
 									path: _options.path,
@@ -838,8 +854,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					if (definedTester(stringScheme.pattern)) {
 						// check parameter
 						if (stringScheme.pattern === null) {
-							throw new Error(ErrorMsg.INVALID_STRING_PATTERN
-								.replace(ErrorMsgCursorA, 'null'));
+							throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+								placeholders: ['null']
+							}));
 						}
 
 						const isValidPattern = (pattern: string | RegExp): boolean => {
@@ -883,14 +900,16 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							const patternsAsArray: (string | RegExp)[] = stringScheme.pattern as (string | RegExp)[];
 
 							if (!minLengthTester(patternsAsArray, 1)) { // empty array
-								throw new Error(ErrorMsg.INVALID_STRING_PATTERN
-									.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)));
+								throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+									placeholders: [createArrayErrorMsg(patternsAsArray)]
+								}));
 							}
 
 							const regExpPatterns: RegExp[] = patternsAsArray.map(pattern => {
 								if (!isValidPattern(pattern)) {
-									throw new Error(ErrorMsg.INVALID_STRING_PATTERN
-										.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)));
+									throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+										placeholders: [createArrayErrorMsg(patternsAsArray)]
+									}));
 								}
 
 								return new RegExp(pattern);
@@ -902,7 +921,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							})) {
 								result = new EjvError({
 									type: ErrorType.PATTERN_ONE_OF,
-									message: ErrorMsg.PATTERN_ONE_OF.replace(ErrorMsgCursorA, createArrayErrorMsg(patternsAsArray)),
+									message: createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+										placeholders: [createArrayErrorMsg(patternsAsArray)]
+									}),
 
 									data,
 									path: _options.path,
@@ -918,8 +939,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							const patternAsOne: string | RegExp = stringScheme.pattern as string | RegExp;
 
 							if (!isValidPattern(patternAsOne)) {
-								throw new Error(ErrorMsg.INVALID_STRING_PATTERN
-									.replace(ErrorMsgCursorA, patternToString(patternAsOne)));
+								throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+									placeholders: [patternToString(patternAsOne)]
+								}));
 							}
 
 							// check value
@@ -928,7 +950,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							if (!stringRegExpTester(valueAsString, regExp)) {
 								result = new EjvError({
 									type: ErrorType.PATTERN,
-									message: ErrorMsg.PATTERN.replace(ErrorMsgCursorA, patternToString(patternAsOne)),
+									message: createErrorMsg(ErrorMsg.PATTERN, {
+										placeholders: [patternToString(patternAsOne)]
+									}),
 
 									data,
 									path: _options.path,
@@ -985,7 +1009,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						if (!objectTester(value)) {
 							result = new EjvError({
 								type: ErrorType.TYPE_MISMATCH,
-								message: ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, 'object'),
+								message: createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+									placeholders: ['object']
+								}),
 
 								data,
 								path: _options.path,
@@ -1046,7 +1072,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							if (!minDateTester(valueAsDate, minDate)) {
 								result = new EjvError({
 									type: ErrorType.AFTER_OR_SAME_DATE,
-									message: ErrorMsg.AFTER_OR_SAME_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
+									message: createErrorMsg(ErrorMsg.AFTER_OR_SAME_DATE, {
+										placeholders: [minDate.toISOString()]
+									}),
 
 									data,
 									path: _options.path,
@@ -1061,7 +1089,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							if (!exclusiveMinDateTester(valueAsDate, minDate)) {
 								result = new EjvError({
 									type: ErrorType.AFTER_DATE,
-									message: ErrorMsg.AFTER_DATE.replace(ErrorMsgCursorA, minDate.toISOString()),
+									message: createErrorMsg(ErrorMsg.AFTER_DATE, {
+										placeholders: [minDate.toISOString()]
+									}),
 
 									data,
 									path: _options.path,
@@ -1105,7 +1135,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							if (!maxDateTester(valueAsDate, maxDate)) {
 								result = new EjvError({
 									type: ErrorType.BEFORE_OR_SAME_DATE,
-									message: ErrorMsg.BEFORE_OR_SAME_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
+									message: createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
+										placeholders: [maxDate.toISOString()]
+									}),
 
 									data,
 									path: _options.path,
@@ -1121,7 +1153,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							if (!exclusiveMaxDateTester(valueAsDate, maxDate)) {
 								result = new EjvError({
 									type: ErrorType.BEFORE_DATE,
-									message: ErrorMsg.BEFORE_DATE.replace(ErrorMsgCursorA, maxDate.toISOString()),
+									message: createErrorMsg(ErrorMsg.BEFORE_DATE, {
+										placeholders: [maxDate.toISOString()]
+									}),
 
 									data,
 									path: _options.path,
@@ -1150,7 +1184,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						if (!lengthTester(valueAsArray, length)) {
 							result = new EjvError({
 								type: ErrorType.LENGTH,
-								message: ErrorMsg.LENGTH.replace(ErrorMsgCursorA, '' + length),
+								message: createErrorMsg(ErrorMsg.LENGTH, {
+									placeholders: ['' + length]
+								}),
 
 								data,
 								path: _options.path,
@@ -1172,7 +1208,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						if (!minLengthTester(valueAsArray, minLength)) {
 							result = new EjvError({
 								type: ErrorType.MIN_LENGTH,
-								message: ErrorMsg.MIN_LENGTH.replace(ErrorMsgCursorA, '' + minLength),
+								message: createErrorMsg(ErrorMsg.MIN_LENGTH, {
+									placeholders: ['' + minLength]
+								}),
 
 								data,
 								path: _options.path,
@@ -1194,7 +1232,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						if (!maxLengthTester(valueAsArray, maxLength)) {
 							result = new EjvError({
 								type: ErrorType.MAX_LENGTH,
-								message: ErrorMsg.MAX_LENGTH.replace(ErrorMsgCursorA, '' + maxLength),
+								message: createErrorMsg(ErrorMsg.MAX_LENGTH, {
+									placeholders: ['' + maxLength]
+								}),
 
 								data,
 								path: _options.path,
@@ -1263,10 +1303,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									let errorMsg: string;
 
 									if (arrayTester(arrayScheme.items)) {
-										errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, JSON.stringify(itemTypes));
+										errorMsg = createErrorMsg(ErrorMsg.ITEMS_TYPE, {
+											placeholders: [JSON.stringify(itemTypes)]
+										});
 									}
 									else {
-										errorMsg = ErrorMsg.ITEMS_TYPE.replace(ErrorMsgCursorA, arrayScheme.items as string);
+										errorMsg = createErrorMsg(ErrorMsg.ITEMS_TYPE, {
+											placeholders: [arrayScheme.items as string]
+										});
 									}
 
 									const partialKeys: string[] = partialResult.path.split('/');
@@ -1344,7 +1388,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 									if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
 										errorType = ErrorType.ITEMS_SCHEMES;
-										errorMsg = ErrorMsg.ITEMS_SCHEMES.replace(ErrorMsgCursorA, JSON.stringify(itemsAsSchemes));
+										errorMsg = createErrorMsg(ErrorMsg.ITEMS_SCHEMES, {
+											placeholders: [JSON.stringify(itemsAsSchemes)]
+										});
 									}
 									else {
 										errorType = partialError.type;
@@ -1353,7 +1399,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										if (errorType === ErrorType.REQUIRED) {
 											// REQUIRED in array is TYPE_MISMATCH except with nullable === true
 											errorType = ErrorType.TYPE_MISMATCH;
-											errorMsg = ErrorMsg.TYPE_MISMATCH.replace(ErrorMsgCursorA, JSON.stringify(arrayScheme.items));
+											errorMsg = createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+												placeholders: [JSON.stringify(arrayScheme.items)]
+											});
 										}
 									}
 
@@ -1371,7 +1419,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								}
 							}
 							else {
-								throw new Error(ErrorMsg.INVALID_ITEMS_SCHEME.replace(ErrorMsgCursorA, JSON.stringify(arrayScheme.items)));
+								throw new Error(createErrorMsg(ErrorMsg.INVALID_ITEMS_SCHEME, {
+									placeholders: [JSON.stringify(arrayScheme.items)]
+								}));
 							}
 						}
 					}
