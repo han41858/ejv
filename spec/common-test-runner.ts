@@ -17,3 +17,16 @@ export const commonTestRunner = (
 		&& testFnc([1, 2, 3]) === arrayResult
 		&& testFnc({ a: 1 }) === objectResult;
 };
+
+export const typeTester: {
+	type: string,
+	value: unknown
+}[] = [
+	{ type: 'boolean', value: true },
+	{ type: 'number', value: 123 },
+	{ type: 'string', value: 'ejv' },
+	{ type: 'object', value: {} },
+	{ type: 'date', value: new Date },
+	{ type: 'regexp', value: new RegExp('ejv') },
+	{ type: 'array', value: [1, 2, 3] }
+];
