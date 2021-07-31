@@ -97,7 +97,7 @@ function _checkSchemeWithNot (parentScheme: Scheme, notScheme: Scheme): void {
 			&& !!notScheme[key]
 			&& parentScheme[key] === notScheme[key]; // should be different
 	})) {
-		throw new Error(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY);
+		throw new Error(createErrorMsg(ErrorMsg.SCHEMES_HAS_RULES_CONTRARY));
 	}
 }
 
@@ -153,15 +153,15 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 	// check schemes
 	if (!arrayTester(schemes)) {
-		throw new Error(ErrorMsg.NO_ARRAY_SCHEME);
+		throw new Error(createErrorMsg(ErrorMsg.NO_ARRAY_SCHEME));
 	}
 
 	if (!arrayTypeOfTester(schemes, DataType.OBJECT)) {
-		throw new Error(ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
+		throw new Error(createErrorMsg(ErrorMsg.NO_OBJECT_ARRAY_SCHEME));
 	}
 
 	if (!minLengthTester(schemes, 1)) {
-		throw new Error(ErrorMsg.EMPTY_SCHEME);
+		throw new Error(createErrorMsg(ErrorMsg.EMPTY_SCHEME));
 	}
 
 	// check data by schemes
@@ -186,7 +186,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 			const types: DataType[] | undefined = _getEffectiveTypes(scheme, _options);
 
 			if (!definedTester(types)) {
-				throw new Error(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
+				throw new Error(createErrorMsg(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE));
 			}
 
 
@@ -205,7 +205,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 			}
 
 			if (!uniqueItemsTester(types)) {
-				throw new Error(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE);
+				throw new Error(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE));
 			}
 
 			if (!definedTester(value)) {
@@ -374,12 +374,12 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const effectiveMin: number = numberScheme.min || (_options?.parentScheme as NumberScheme)?.min as number;
 
 						if (!numberTester(effectiveMin)) {
-							throw new Error(ErrorMsg.MIN_SHOULD_BE_NUMBER);
+							throw new Error(createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER));
 						}
 
 						if (definedTester(numberScheme.exclusiveMin)) {
 							if (!booleanTester(numberScheme.exclusiveMin)) {
-								throw new Error(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+								throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
 							}
 
 							const effectiveExclusive: boolean = xor(_options.reverse, numberScheme.exclusiveMin);
@@ -446,12 +446,12 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const effectiveMax: number = numberScheme.max || (_options?.parentScheme as NumberScheme)?.max as number;
 
 						if (!numberTester(effectiveMax)) {
-							throw new Error(ErrorMsg.MAX_SHOULD_BE_NUMBER);
+							throw new Error(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
 						}
 
 						if (definedTester(numberScheme.exclusiveMax)) {
 							if (!booleanTester(numberScheme.exclusiveMax)) {
-								throw new Error(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+								throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
 							}
 
 							const effectiveExclusive: boolean = xor(_options.reverse, numberScheme.exclusiveMax);
@@ -604,13 +604,13 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 					if (definedTester(stringScheme.enum)) {
 						if (!arrayTester(stringScheme.enum)) {
-							throw new Error(ErrorMsg.ENUM_SHOULD_BE_ARRAY);
+							throw new Error(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
 						}
 
 						const enumArr: string[] = stringScheme.enum;
 
 						if (!arrayTypeOfTester(enumArr, DataType.STRING)) {
-							throw new Error(ErrorMsg.ENUM_SHOULD_BE_STRINGS);
+							throw new Error(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS));
 						}
 
 						if (xor(!enumTester(valueAsString, enumArr), _options.reverse)) {
@@ -634,13 +634,13 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					// TODO: deprecate
 					if (definedTester(stringScheme.enumReverse)) {
 						if (!arrayTester(stringScheme.enumReverse)) {
-							throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY);
+							throw new Error(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
 						}
 
 						const enumReverseArr: string[] = stringScheme.enumReverse;
 
 						if (!arrayTypeOfTester(enumReverseArr, DataType.STRING)) {
-							throw new Error(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS);
+							throw new Error(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS));
 						}
 
 						if (enumTester(valueAsString, enumReverseArr)) {
@@ -664,7 +664,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const length: number = stringScheme.length;
 
 						if (!(numberTester(length) && integerTester(length))) {
-							throw new Error(ErrorMsg.LENGTH_SHOULD_BE_INTEGER);
+							throw new Error(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
 						}
 
 						if (xor(lengthTester(valueAsString, length), _options.reverse)) {
@@ -689,7 +689,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const minLength: number = stringScheme.minLength;
 
 						if (!(numberTester(minLength) && integerTester(minLength))) {
-							throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+							throw new Error(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 						}
 
 						if (xor(!minLengthTester(valueAsString, minLength), _options.reverse)) {
@@ -714,7 +714,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const maxLength: number = stringScheme.maxLength;
 
 						if (!(numberTester(maxLength) && integerTester(maxLength))) {
-							throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+							throw new Error(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 						}
 
 						if (xor(!maxLengthTester(valueAsString, maxLength), _options.reverse)) {
@@ -943,7 +943,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 					if (definedTester(objectScheme.allowNoProperty)) {
 						if (!booleanTester(objectScheme.allowNoProperty)) {
-							throw new Error(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
+							throw new Error(createErrorMsg(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN));
 						}
 
 						if (!objectScheme.allowNoProperty && !hasPropertyTester(valueAsObject)) {
@@ -963,17 +963,17 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 					if (definedTester(objectScheme.properties)) {
 						if (!arrayTester(objectScheme.properties)) {
-							throw new Error(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY);
+							throw new Error(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY));
 						}
 
 						const properties: Scheme[] = objectScheme.properties as Scheme[];
 
 						if (!minLengthTester(properties, 1)) {
-							throw new Error(ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS);
+							throw new Error(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS));
 						}
 
 						if (!arrayTypeOfTester(properties, DataType.OBJECT)) {
-							throw new Error(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
+							throw new Error(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT));
 						}
 
 						if (!objectTester(value)) {
@@ -1021,11 +1021,11 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							)
 							|| dateTester(dateScheme.min)
 						)) {
-							throw new Error(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING);
+							throw new Error(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
 						}
 
 						if (definedTester(dateScheme.exclusiveMin) && !booleanTester(dateScheme.exclusiveMin)) {
-							throw new Error(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN);
+							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
 						}
 
 						let minDate: Date = new Date(dateScheme.min as string | Date);
@@ -1084,11 +1084,11 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							)
 							|| dateTester(dateScheme.max)
 						)) {
-							throw new Error(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING);
+							throw new Error(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
 						}
 
 						if (definedTester(dateScheme.exclusiveMax) && !booleanTester(dateScheme.exclusiveMax)) {
-							throw new Error(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
+							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
 						}
 
 						let maxDate: Date = new Date(dateScheme.max as string | Date);
@@ -1148,7 +1148,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const length: number = arrayScheme.length;
 
 						if (!(numberTester(length) && integerTester(length))) {
-							throw new Error(ErrorMsg.LENGTH_SHOULD_BE_INTEGER);
+							throw new Error(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
 						}
 
 						if (!lengthTester(valueAsArray, length)) {
@@ -1172,7 +1172,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const minLength: number = arrayScheme.minLength;
 
 						if (!(numberTester(arrayScheme.minLength) && integerTester(minLength))) {
-							throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
+							throw new Error(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 						}
 
 						if (!minLengthTester(valueAsArray, minLength)) {
@@ -1196,7 +1196,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const maxLength: number = arrayScheme.maxLength;
 
 						if (!(numberTester(arrayScheme.maxLength) && integerTester(maxLength))) {
-							throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
+							throw new Error(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 						}
 
 						if (!maxLengthTester(valueAsArray, maxLength)) {
@@ -1218,7 +1218,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 					if (definedTester(arrayScheme.unique)) {
 						if (!booleanTester(arrayScheme.unique)) {
-							throw new Error(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN);
+							throw new Error(createErrorMsg(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN));
 						}
 
 						if (arrayScheme.unique && !uniqueItemsTester(valueAsArray)) {
@@ -1479,19 +1479,19 @@ export const ejv = (data: AnyObject, schemes: Scheme[], options?: Options): null
 
 	// check schemes itself
 	if (!definedTester(schemes) || schemes === null) {
-		throw new Error(ErrorMsg.NO_SCHEME);
+		throw new Error(createErrorMsg(ErrorMsg.NO_SCHEME));
 	}
 
 	if (!arrayTester(schemes)) {
-		throw new Error(ErrorMsg.NO_ARRAY_SCHEME);
+		throw new Error(createErrorMsg(ErrorMsg.NO_ARRAY_SCHEME));
 	}
 
 	if (!arrayTypeOfTester(schemes, DataType.OBJECT)) {
-		throw new Error(ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
+		throw new Error(createErrorMsg(ErrorMsg.NO_OBJECT_ARRAY_SCHEME));
 	}
 
 	if (!minLengthTester(schemes, 1)) {
-		throw new Error(ErrorMsg.EMPTY_SCHEME);
+		throw new Error(createErrorMsg(ErrorMsg.EMPTY_SCHEME));
 	}
 
 
