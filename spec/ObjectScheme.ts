@@ -202,7 +202,7 @@ describe('ObjectScheme', () => {
 
 			expect(undefinedError).to.be.instanceof(EjvError);
 			expect(undefinedError.type).to.be.eql(ErrorType.REQUIRED);
-			expect(undefinedError.message).to.be.eql(ErrorMsg.REQUIRED);
+			expect(undefinedError.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 			expect(undefinedError.path).to.be.eql('a/b');
 
 			const nullError: EjvError = ejv({
@@ -218,7 +218,7 @@ describe('ObjectScheme', () => {
 
 			expect(nullError).to.be.instanceof(EjvError);
 			expect(nullError.type).to.be.eql(ErrorType.REQUIRED);
-			expect(nullError.message).to.be.eql(ErrorMsg.REQUIRED);
+			expect(nullError.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 			expect(nullError.path).to.be.eql('a');
 
 			const data = {
@@ -277,7 +277,7 @@ describe('ObjectScheme', () => {
 
 			expect(undefinedError).to.be.instanceof(EjvError);
 			expect(undefinedError.type).to.be.eql(ErrorType.REQUIRED);
-			expect(undefinedError.message).to.be.eql(ErrorMsg.REQUIRED);
+			expect(undefinedError.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 			expect(undefinedError.path).to.be.eql('a/b');
 
 			const data = {

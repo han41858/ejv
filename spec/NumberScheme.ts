@@ -9,7 +9,7 @@ import { createErrorMsg } from '../src/util';
 import { typeTester } from './common-test-runner';
 
 
-describe.only('NumberScheme', () => {
+describe('NumberScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
 			typeTester.filter(obj => obj.type !== 'number')

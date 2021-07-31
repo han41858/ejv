@@ -595,7 +595,7 @@ describe('DateScheme', () => {
 					key: 'date',
 					type: 'date',
 					max: null
-				}])).to.throw(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
+				}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
 			});
 
 			it('exclusiveMax === null', () => {

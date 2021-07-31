@@ -613,7 +613,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							throw new Error(ErrorMsg.ENUM_SHOULD_BE_STRINGS);
 						}
 
-						if (xor(enumTester(valueAsString, enumArr), _options.reverse)) {
+						if (xor(!enumTester(valueAsString, enumArr), _options.reverse)) {
 							result = new EjvError({
 								type: ErrorType.ONE_OF,
 								message: createErrorMsg(ErrorMsg.ONE_OF, {
@@ -692,7 +692,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							throw new Error(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER);
 						}
 
-						if (xor(minLengthTester(valueAsString, minLength), _options.reverse)) {
+						if (xor(!minLengthTester(valueAsString, minLength), _options.reverse)) {
 							result = new EjvError({
 								type: ErrorType.MIN_LENGTH,
 								message: createErrorMsg(ErrorMsg.MIN_LENGTH, {
@@ -717,7 +717,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							throw new Error(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER);
 						}
 
-						if (xor(maxLengthTester(valueAsString, maxLength), _options.reverse)) {
+						if (xor(!maxLengthTester(valueAsString, maxLength), _options.reverse)) {
 							result = new EjvError({
 								type: ErrorType.MAX_LENGTH,
 								message: createErrorMsg(ErrorMsg.MAX_LENGTH, {
