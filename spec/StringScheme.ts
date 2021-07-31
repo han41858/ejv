@@ -111,166 +111,186 @@ describe('StringScheme', () => {
 	});
 
 	describe('enum', () => {
-		describe('check parameter', () => {
-			it('undefined is ok', () => {
+		describe('normal', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 'a'
+					}, [{
+						key: 'a',
+						type: 'string',
+						enum: undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 'a'
+					}, [{
+						key: 'a',
+						type: 'string',
+						enum: null as unknown as string[]
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				});
+
+				it('not array', () => {
+					expect(() => ejv({
+						a: 'a'
+					}, [{
+						key: 'a',
+						type: 'string',
+						enum: 'a' as unknown as string[]
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				});
+
+				it('not string', () => {
+					expect(() => ejv({
+						a: 'a'
+					}, [{
+						key: 'a',
+						type: 'string',
+						enum: [10]
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS));
+				});
+			});
+
+			it('fail', () => {
+				const enumArr: string[] = ['b', 'c'];
+
+				const data = {
+					a: 'a'
+				};
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					enum: enumArr
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ErrorType.ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
+					placeholders: [JSON.stringify(enumArr)]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql('a');
+			});
+
+			it('ok', () => {
 				expect(ejv({
 					a: 'a'
 				}, [{
 					key: 'a',
 					type: 'string',
-					enum: undefined
+					enum: ['a', 'b', 'c']
+				}])).to.be.null;
+			});
+		});
+
+		describe('not', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 'a'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							enum: undefined
+						}
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 'a'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							enum: null as unknown as string[]
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				});
+
+				it('not array', () => {
+					expect(() => ejv({
+						a: 'a'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							enum: 'a' as unknown as string[]
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				});
+
+				it('not string', () => {
+					expect(() => ejv({
+						a: 'a'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							enum: [10]
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS));
+				});
+			});
+
+			it('ok', () => {
+				const enumArr: string[] = ['b', 'c'];
+
+				const data = {
+					a: 'a'
+				};
+
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						enum: enumArr
+					}
 				}])).to.be.null;
 			});
 
-			it('null', () => {
-				expect(() => ejv({
+			it('fail', () => {
+				const data = {
 					a: 'a'
-				}, [{
+				};
+
+				const enumArr: string[] = ['a', 'b', 'c'];
+
+
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
-					enum: null as unknown as string[]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+					not: {
+						enum: enumArr
+					}
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ErrorType.ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
+					reverse: true,
+					placeholders: [JSON.stringify(enumArr)]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql('a');
 			});
-
-			it('not array', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
-					key: 'a',
-					type: 'string',
-					enum: 'a' as unknown as string[]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
-			});
-
-			it('not string', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
-					key: 'a',
-					type: 'string',
-					enum: [10]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS));
-			});
-		});
-
-		it('fail', () => {
-			const enumArr: string[] = ['b', 'c'];
-
-			const data = {
-				a: 'a'
-			};
-
-			const error: EjvError | null = ejv(data, [{
-				key: 'a',
-				type: 'string',
-				enum: enumArr
-			}]);
-
-			expect(error).to.be.instanceof(EjvError);
-
-			if (!error) {
-				throw new Error('spec failed');
-			}
-
-			expect(error.type).to.be.eql(ErrorType.ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
-				placeholders: [JSON.stringify(enumArr)]
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql('a');
-		});
-
-		it('ok', () => {
-			expect(ejv({
-				a: 'a'
-			}, [{
-				key: 'a',
-				type: 'string',
-				enum: ['a', 'b', 'c']
-			}])).to.be.null;
-		});
-	});
-
-	describe('enumReverse', () => {
-		describe('check parameter', () => {
-			it('undefined is ok', () => {
-				expect(ejv({
-					a: 'a'
-				}, [{
-					key: 'a',
-					type: 'string',
-					enumReverse: undefined
-				}])).to.be.null;
-			});
-
-			it('null', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
-					key: 'a',
-					type: 'string',
-					enumReverse: null as unknown as string[]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
-			});
-
-			it('not array', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
-					key: 'a',
-					type: 'string',
-					enumReverse: 'a' as unknown as string[]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
-			});
-
-			it('not string', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
-					key: 'a',
-					type: 'string',
-					enumReverse: [10 as unknown as string]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS));
-			});
-		});
-
-		it('fail', () => {
-			const enumArr: string[] = ['a', 'c'];
-
-			const data = {
-				a: 'a'
-			};
-
-			const error: EjvError | null = ejv(data, [{
-				key: 'a',
-				type: 'string',
-				enumReverse: enumArr
-			}]);
-
-			expect(error).to.be.instanceof(EjvError);
-
-			if (!error) {
-				throw new Error('spec failed');
-			}
-
-			expect(error.type).to.be.eql(ErrorType.NOT_ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.NOT_ONE_OF, {
-				placeholders: [JSON.stringify(enumArr)]
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql('a');
-		});
-
-		it('ok', () => {
-			expect(ejv({
-				a: 'a'
-			}, [{
-				key: 'a',
-				type: 'string',
-				enumReverse: ['b', 'c']
-			}])).to.be.null;
 		});
 	});
 

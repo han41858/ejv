@@ -34,7 +34,6 @@ export interface StringScheme extends CommonScheme {
 	value?: string; // TODO: need to add
 
 	enum?: string[];
-	enumReverse?: string[]; // TODO: deprecate with not
 
 	format?: string | string[] | StringFormat | StringFormat[];
 	pattern?: string | string[] | RegExp | RegExp[];

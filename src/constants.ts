@@ -36,7 +36,6 @@ export enum ErrorType {
 	TYPE_MISMATCH_ONE_OF = 'TYPE_MISMATCH_ONE_OF',
 
 	ONE_OF = 'ONE_OF',
-	NOT_ONE_OF = 'NOT_ONE_OF',
 
 	FORMAT = 'FORMAT',
 	FORMAT_ONE_OF = 'FORMAT_ONE_OF',
@@ -124,7 +123,6 @@ export enum ErrorMsg {
 	TYPE_MISMATCH_ONE_OF = 'the value should <<not>>be one of <<1>>',
 
 	ONE_OF = 'the value should <<not>>be one of <<1>>', // enum
-	NOT_ONE_OF = 'the value should be not one of <<1>>', // enumReverse // TODO: deprecate
 
 	FORMAT = 'the value should <<not>>be a form of <<1>>', // format
 	FORMAT_ONE_OF = 'the value should <<not>>be form of one of <<1>>',

@@ -631,35 +631,6 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						}
 					}
 
-					// TODO: deprecate
-					if (definedTester(stringScheme.enumReverse)) {
-						if (!arrayTester(stringScheme.enumReverse)) {
-							throw new Error(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
-						}
-
-						const enumReverseArr: string[] = stringScheme.enumReverse;
-
-						if (!arrayTypeOfTester(enumReverseArr, DataType.STRING)) {
-							throw new Error(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_STRINGS));
-						}
-
-						if (enumTester(valueAsString, enumReverseArr)) {
-							result = new EjvError({
-								type: ErrorType.NOT_ONE_OF,
-								message: createErrorMsg(ErrorMsg.NOT_ONE_OF, {
-									placeholders: [JSON.stringify(enumReverseArr)]
-								}),
-
-								data,
-								path: _options.path,
-
-								errorScheme: stringScheme,
-								errorData: value
-							});
-							break;
-						}
-					}
-
 					if (definedTester(stringScheme.length)) {
 						const length: number = stringScheme.length;
 
