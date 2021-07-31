@@ -20,12 +20,16 @@ describe('NumberScheme', () => {
 					};
 
 					it(obj.type, () => {
-						const error: EjvError = ejv(data, [{
+						const error: EjvError | null = ejv(data, [{
 							key: 'a',
 							type: 'number'
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
 
 						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
@@ -45,12 +49,16 @@ describe('NumberScheme', () => {
 					a: value
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: typeArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
 
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
@@ -121,7 +129,7 @@ describe('NumberScheme', () => {
 					}, [{
 						key: 'a',
 						type: 'number',
-						enum: null
+						enum: null as unknown as number[]
 					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
 				});
 
@@ -153,13 +161,18 @@ describe('NumberScheme', () => {
 					a: 10
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'number',
 					enum: enumArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
 					placeholders: [JSON.stringify(enumArr)]
@@ -201,7 +214,7 @@ describe('NumberScheme', () => {
 						key: 'a',
 						type: 'number',
 						not: {
-							enum: null
+							enum: null as unknown as number[]
 						}
 					}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
 				});
@@ -247,7 +260,7 @@ describe('NumberScheme', () => {
 					a: 9
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'number',
 					not: {
@@ -256,6 +269,11 @@ describe('NumberScheme', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
 					reverse: true,
@@ -288,7 +306,7 @@ describe('NumberScheme', () => {
 						}, [{
 							key: 'a',
 							type: 'number',
-							min: null
+							min: null as unknown as number
 						}])).to.throw(createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER));
 					});
 
@@ -304,7 +322,7 @@ describe('NumberScheme', () => {
 				});
 
 				it('ok', () => {
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 9
 					}, [{
 						key: 'a',
@@ -313,6 +331,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 						placeholders: ['10']
@@ -357,7 +380,7 @@ describe('NumberScheme', () => {
 							key: 'a',
 							type: 'number',
 							not: {
-								min: null
+								min: null as unknown as number
 							}
 						}])).to.throw(createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER));
 					});
@@ -386,7 +409,7 @@ describe('NumberScheme', () => {
 						}
 					}])).to.be.null;
 
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 10
 					}, [{
 						key: 'a',
@@ -397,13 +420,18 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 						reverse: true,
 						placeholders: ['10']
 					}));
 
-					const error2: EjvError = ejv({
+					const error2: EjvError | null = ejv({
 						a: 11
 					}, [{
 						key: 'a',
@@ -414,6 +442,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
+
+					if (!error2) {
+						throw new Error('spec failed');
+					}
+
 					expect(error2.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 						reverse: true,
@@ -439,7 +472,7 @@ describe('NumberScheme', () => {
 				});
 
 				it('exclusiveMin === true', () => {
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 9
 					}, [{
 						key: 'a',
@@ -449,12 +482,17 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
 						placeholders: ['10']
 					}));
 
-					const error2: EjvError = ejv({
+					const error2: EjvError | null = ejv({
 						a: 10
 					}, [{
 						key: 'a',
@@ -464,6 +502,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
+
+					if (!error2) {
+						throw new Error('spec failed');
+					}
+
 					expect(error2.type).to.be.eql(ErrorType.GREATER_THAN);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
 						placeholders: ['10']
@@ -480,7 +523,7 @@ describe('NumberScheme', () => {
 				});
 
 				it('exclusiveMin === false', () => {
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 9
 					}, [{
 						key: 'a',
@@ -490,6 +533,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 						placeholders: ['10']
@@ -532,7 +580,7 @@ describe('NumberScheme', () => {
 				});
 
 				it('without exclusiveMin', () => {
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 9
 					}, [{
 						key: 'a',
@@ -544,6 +592,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 						reverse: false, // undefined
@@ -574,7 +627,7 @@ describe('NumberScheme', () => {
 				});
 
 				it('exclusiveMin === true', () => {
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 9
 					}, [{
 						key: 'a',
@@ -586,6 +639,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 						placeholders: ['10']
@@ -615,7 +673,7 @@ describe('NumberScheme', () => {
 				});
 
 				it('exclusiveMin === false', () => {
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 9
 					}, [{
 						key: 'a',
@@ -627,12 +685,17 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
 						placeholders: ['10']
 					}));
 
-					const error2: EjvError = ejv({
+					const error2: EjvError | null = ejv({
 						a: 10
 					}, [{
 						key: 'a',
@@ -644,6 +707,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
+
+					if (!error2) {
+						throw new Error('spec failed');
+					}
+
 					expect(error2.type).to.be.eql(ErrorType.GREATER_THAN);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
 						placeholders: ['10']
@@ -685,7 +753,7 @@ describe('NumberScheme', () => {
 						}, [{
 							key: 'a',
 							type: 'number',
-							max: null
+							max: null as unknown as number
 						}])).to.throw(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
 					});
 
@@ -717,7 +785,7 @@ describe('NumberScheme', () => {
 						max: 10
 					}])).to.be.null;
 
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 11
 					}, [{
 						key: 'a',
@@ -726,6 +794,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 						placeholders: ['10']
@@ -754,7 +827,7 @@ describe('NumberScheme', () => {
 							key: 'a',
 							type: 'number',
 							not: {
-								max: null
+								max: null as unknown as number
 							}
 						}])).to.throw(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
 					});
@@ -773,7 +846,7 @@ describe('NumberScheme', () => {
 				});
 
 				it('ok', () => {
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 9
 					}, [{
 						key: 'a',
@@ -784,13 +857,18 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 						reverse: true,
 						placeholders: ['10']
 					}));
 
-					const error2: EjvError = ejv({
+					const error2: EjvError | null = ejv({
 						a: 10
 					}, [{
 						key: 'a',
@@ -801,6 +879,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
+
+					if (!error2) {
+						throw new Error('spec failed');
+					}
+
 					expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 						reverse: true,
@@ -845,7 +928,7 @@ describe('NumberScheme', () => {
 						exclusiveMax: true
 					}])).to.be.null;
 
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 10
 					}, [{
 						key: 'a',
@@ -855,12 +938,17 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
 						placeholders: ['10']
 					}));
 
-					const error2: EjvError = ejv({
+					const error2: EjvError | null = ejv({
 						a: 11
 					}, [{
 						key: 'a',
@@ -870,6 +958,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
+
+					if (!error2) {
+						throw new Error('spec failed');
+					}
+
 					expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
 						placeholders: ['10']
@@ -895,7 +988,7 @@ describe('NumberScheme', () => {
 						exclusiveMax: false
 					}])).to.be.null;
 
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 11
 					}, [{
 						key: 'a',
@@ -905,6 +998,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 						placeholders: ['10']
@@ -951,7 +1049,7 @@ describe('NumberScheme', () => {
 						}
 					}])).to.be.null;
 
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 11
 					}, [{
 						key: 'a',
@@ -963,6 +1061,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 						placeholders: ['10']
@@ -992,7 +1095,7 @@ describe('NumberScheme', () => {
 						}
 					}])).to.be.null;
 
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 11
 					}, [{
 						key: 'a',
@@ -1004,6 +1107,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 						placeholders: ['10']
@@ -1022,7 +1130,7 @@ describe('NumberScheme', () => {
 						}
 					}])).to.be.null;
 
-					const error1: EjvError = ejv({
+					const error1: EjvError | null = ejv({
 						a: 10
 					}, [{
 						key: 'a',
@@ -1034,12 +1142,17 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
 						placeholders: ['10']
 					}));
 
-					const error2: EjvError = ejv({
+					const error2: EjvError | null = ejv({
 						a: 11
 					}, [{
 						key: 'a',
@@ -1051,6 +1164,11 @@ describe('NumberScheme', () => {
 					}]);
 
 					expect(error2).to.be.instanceof(EjvError);
+
+					if (!error2) {
+						throw new Error('spec failed');
+					}
+
 					expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
 						placeholders: ['10']
@@ -1081,7 +1199,7 @@ describe('NumberScheme', () => {
 					}, [{
 						key: 'a',
 						type: 'number',
-						format: null
+						format: null as unknown as string
 					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
 						placeholders: ['null']
 					}));
@@ -1134,7 +1252,7 @@ describe('NumberScheme', () => {
 						key: 'a',
 						type: 'number',
 						not: {
-							format: null
+							format: null as unknown as string
 						}
 					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
 						placeholders: ['null']
@@ -1177,7 +1295,7 @@ describe('NumberScheme', () => {
 			describe('single format', () => {
 				describe('normal', () => {
 					it('fail', () => {
-						const error: EjvError = ejv({
+						const error: EjvError | null = ejv({
 							a: 123.5
 						}, [{
 							key: 'a',
@@ -1186,6 +1304,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
+
 						expect(error.type).to.be.eql(ErrorType.FORMAT);
 						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 							placeholders: ['integer']
@@ -1217,7 +1340,7 @@ describe('NumberScheme', () => {
 					});
 
 					it('fail', () => {
-						const error: EjvError = ejv({
+						const error: EjvError | null = ejv({
 							a: 123
 						}, [{
 							key: 'a',
@@ -1228,6 +1351,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
+
 						expect(error.type).to.be.eql(ErrorType.FORMAT);
 						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 							reverse: true,
@@ -1242,7 +1370,7 @@ describe('NumberScheme', () => {
 					it('fail', () => {
 						const formatArr: string[] = ['integer'];
 
-						const error: EjvError = ejv({
+						const error: EjvError | null = ejv({
 							a: 123.5
 						}, [{
 							key: 'a',
@@ -1251,6 +1379,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
+
 						expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							placeholders: [JSON.stringify(formatArr)]
@@ -1354,7 +1487,7 @@ describe('NumberScheme', () => {
 					it('failed', () => {
 						const formatArr: string[] = ['integer'];
 
-						const error1: EjvError = ejv({
+						const error1: EjvError | null = ejv({
 							a: -7
 						}, [{
 							key: 'a',
@@ -1365,13 +1498,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
+
+						if (!error1) {
+							throw new Error('spec failed');
+						}
+
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error2: EjvError = ejv({
+						const error2: EjvError | null = ejv({
 							a: 0
 						}, [{
 							key: 'a',
@@ -1382,13 +1520,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
+
+						if (!error2) {
+							throw new Error('spec failed');
+						}
+
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error3: EjvError = ejv({
+						const error3: EjvError | null = ejv({
 							a: 123
 						}, [{
 							key: 'a',
@@ -1399,6 +1542,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error3).to.be.instanceof(EjvError);
+
+						if (!error3) {
+							throw new Error('spec failed');
+						}
+
 						expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
@@ -1409,7 +1557,7 @@ describe('NumberScheme', () => {
 					it('failed - with others', () => {
 						const formatArr: string[] = ['index', 'integer'];
 
-						const error1: EjvError = ejv({
+						const error1: EjvError | null = ejv({
 							a: -7
 						}, [{
 							key: 'a',
@@ -1420,13 +1568,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
+
+						if (!error1) {
+							throw new Error('spec failed');
+						}
+
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error2: EjvError = ejv({
+						const error2: EjvError | null = ejv({
 							a: 0
 						}, [{
 							key: 'a',
@@ -1437,13 +1590,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
+
+						if (!error2) {
+							throw new Error('spec failed');
+						}
+
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error3: EjvError = ejv({
+						const error3: EjvError | null = ejv({
 							a: 123
 						}, [{
 							key: 'a',
@@ -1454,6 +1612,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error3).to.be.instanceof(EjvError);
+
+						if (!error3) {
+							throw new Error('spec failed');
+						}
+
 						expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
@@ -1464,7 +1627,7 @@ describe('NumberScheme', () => {
 					it('failed - with others', () => {
 						const formatArr: string[] = ['index', 'integer'];
 
-						const error1: EjvError = ejv({
+						const error1: EjvError | null = ejv({
 							a: -7
 						}, [{
 							key: 'a',
@@ -1475,13 +1638,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
+
+						if (!error1) {
+							throw new Error('spec failed');
+						}
+
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error2: EjvError = ejv({
+						const error2: EjvError | null = ejv({
 							a: 0
 						}, [{
 							key: 'a',
@@ -1492,13 +1660,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
+
+						if (!error2) {
+							throw new Error('spec failed');
+						}
+
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error3: EjvError = ejv({
+						const error3: EjvError | null = ejv({
 							a: 123
 						}, [{
 							key: 'a',
@@ -1509,6 +1682,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error3).to.be.instanceof(EjvError);
+
+						if (!error3) {
+							throw new Error('spec failed');
+						}
+
 						expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
@@ -1523,7 +1701,7 @@ describe('NumberScheme', () => {
 			describe('single format', () => {
 				describe('normal', () => {
 					it('fail', () => {
-						const error1: EjvError = ejv({
+						const error1: EjvError | null = ejv({
 							a: 1.5
 						}, [{
 							key: 'a',
@@ -1532,12 +1710,17 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
+
+						if (!error1) {
+							throw new Error('spec failed');
+						}
+
 						expect(error1.type).to.be.eql(ErrorType.FORMAT);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 							placeholders: ['index']
 						}));
 
-						const error2: EjvError = ejv({
+						const error2: EjvError | null = ejv({
 							a: -1
 						}, [{
 							key: 'a',
@@ -1546,12 +1729,17 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
+
+						if (!error2) {
+							throw new Error('spec failed');
+						}
+
 						expect(error2.type).to.be.eql(ErrorType.FORMAT);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 							placeholders: ['index']
 						}));
 
-						const error3: EjvError = ejv({
+						const error3: EjvError | null = ejv({
 							a: -1.6
 						}, [{
 							key: 'a',
@@ -1560,6 +1748,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error3).to.be.instanceof(EjvError);
+
+						if (!error3) {
+							throw new Error('spec failed');
+						}
+
 						expect(error3.type).to.be.eql(ErrorType.FORMAT);
 						expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 							placeholders: ['index']
@@ -1619,7 +1812,7 @@ describe('NumberScheme', () => {
 					});
 
 					it('fail', () => {
-						const error1: EjvError = ejv({
+						const error1: EjvError | null = ejv({
 							a: 0
 						}, [{
 							key: 'a',
@@ -1630,13 +1823,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
+
+						if (!error1) {
+							throw new Error('spec failed');
+						}
+
 						expect(error1.type).to.be.eql(ErrorType.FORMAT);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 							reverse: true,
 							placeholders: ['index']
 						}));
 
-						const error2: EjvError = ejv({
+						const error2: EjvError | null = ejv({
 							a: 6
 						}, [{
 							key: 'a',
@@ -1647,6 +1845,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
+
+						if (!error2) {
+							throw new Error('spec failed');
+						}
+
 						expect(error2.type).to.be.eql(ErrorType.FORMAT);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 							reverse: true,
@@ -1661,7 +1864,7 @@ describe('NumberScheme', () => {
 					it('fail', () => {
 						const formatArr: string[] = ['index'];
 
-						const error1: EjvError = ejv({
+						const error1: EjvError | null = ejv({
 							a: 1.5
 						}, [{
 							key: 'a',
@@ -1670,12 +1873,17 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
+
+						if (!error1) {
+							throw new Error('spec failed');
+						}
+
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error2: EjvError = ejv({
+						const error2: EjvError | null = ejv({
 							a: -1
 						}, [{
 							key: 'a',
@@ -1684,12 +1892,17 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
+
+						if (!error2) {
+							throw new Error('spec failed');
+						}
+
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error3: EjvError = ejv({
+						const error3: EjvError | null = ejv({
 							a: -1.6
 						}, [{
 							key: 'a',
@@ -1698,6 +1911,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error3).to.be.instanceof(EjvError);
+
+						if (!error3) {
+							throw new Error('spec failed');
+						}
+
 						expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							placeholders: [JSON.stringify(formatArr)]
@@ -1797,7 +2015,7 @@ describe('NumberScheme', () => {
 					it('failed', () => {
 						const formatArr: string[] = ['index'];
 
-						const error1: EjvError = ejv({
+						const error1: EjvError | null = ejv({
 							a: 0
 						}, [{
 							key: 'a',
@@ -1808,13 +2026,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
+
+						if (!error1) {
+							throw new Error('spec failed');
+						}
+
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error2: EjvError = ejv({
+						const error2: EjvError | null = ejv({
 							a: 6
 						}, [{
 							key: 'a',
@@ -1825,6 +2048,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
+
+						if (!error2) {
+							throw new Error('spec failed');
+						}
+
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
@@ -1835,7 +2063,7 @@ describe('NumberScheme', () => {
 					it('failed - with others', () => {
 						const formatArr: string[] = ['index', 'integer'];
 
-						const error1: EjvError = ejv({
+						const error1: EjvError | null = ejv({
 							a: 0
 						}, [{
 							key: 'a',
@@ -1846,13 +2074,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
+
+						if (!error1) {
+							throw new Error('spec failed');
+						}
+
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error2: EjvError = ejv({
+						const error2: EjvError | null = ejv({
 							a: 6
 						}, [{
 							key: 'a',
@@ -1863,6 +2096,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
+
+						if (!error2) {
+							throw new Error('spec failed');
+						}
+
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
@@ -1873,7 +2111,7 @@ describe('NumberScheme', () => {
 					it('failed - with others', () => {
 						const formatArr: string[] = ['integer', 'index'];
 
-						const error1: EjvError = ejv({
+						const error1: EjvError | null = ejv({
 							a: 0
 						}, [{
 							key: 'a',
@@ -1884,13 +2122,18 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error1).to.be.instanceof(EjvError);
+
+						if (!error1) {
+							throw new Error('spec failed');
+						}
+
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,
 							placeholders: [JSON.stringify(formatArr)]
 						}));
 
-						const error2: EjvError = ejv({
+						const error2: EjvError | null = ejv({
 							a: 6
 						}, [{
 							key: 'a',
@@ -1901,6 +2144,11 @@ describe('NumberScheme', () => {
 						}]);
 
 						expect(error2).to.be.instanceof(EjvError);
+
+						if (!error2) {
+							throw new Error('spec failed');
+						}
+
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 							reverse: true,

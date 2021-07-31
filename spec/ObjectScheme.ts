@@ -22,12 +22,17 @@ describe('ObjectScheme', () => {
 					};
 
 					it(obj.type, () => {
-						const error: EjvError = ejv(data, [{
+						const error: EjvError | null = ejv(data, [{
 							key: 'a',
 							type: 'object'
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
+
 						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 							placeholders: ['object']
@@ -46,12 +51,17 @@ describe('ObjectScheme', () => {
 					a: value
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: typeArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
 					placeholders: [JSON.stringify(typeArr)]
@@ -145,7 +155,7 @@ describe('ObjectScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'object',
-					properties: null
+					properties: null as unknown as Scheme[]
 				}])).to.throw(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY));
 			});
 
@@ -187,7 +197,7 @@ describe('ObjectScheme', () => {
 		});
 
 		it('with single type', () => {
-			const undefinedError: EjvError = ejv({
+			const undefinedError: EjvError | null = ejv({
 				a: {
 					b: undefined
 				}
@@ -201,11 +211,16 @@ describe('ObjectScheme', () => {
 			}]);
 
 			expect(undefinedError).to.be.instanceof(EjvError);
+
+			if (!undefinedError) {
+				throw new Error('spec failed');
+			}
+
 			expect(undefinedError.type).to.be.eql(ErrorType.REQUIRED);
 			expect(undefinedError.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 			expect(undefinedError.path).to.be.eql('a/b');
 
-			const nullError: EjvError = ejv({
+			const nullError: EjvError | null = ejv({
 				a: null
 			}, [{
 				key: 'a',
@@ -217,6 +232,11 @@ describe('ObjectScheme', () => {
 			}]);
 
 			expect(nullError).to.be.instanceof(EjvError);
+
+			if (!nullError) {
+				throw new Error('spec failed');
+			}
+
 			expect(nullError.type).to.be.eql(ErrorType.REQUIRED);
 			expect(nullError.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 			expect(nullError.path).to.be.eql('a');
@@ -227,7 +247,7 @@ describe('ObjectScheme', () => {
 				}
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'object',
 				properties: [{
@@ -237,6 +257,11 @@ describe('ObjectScheme', () => {
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 				placeholders: ['string']
@@ -262,7 +287,7 @@ describe('ObjectScheme', () => {
 		it('with multiple types', () => {
 			const typeArr: string[] = ['string', 'boolean'];
 
-			const undefinedError: EjvError = ejv({
+			const undefinedError: EjvError | null = ejv({
 				a: {
 					b: undefined
 				}
@@ -276,6 +301,11 @@ describe('ObjectScheme', () => {
 			}]);
 
 			expect(undefinedError).to.be.instanceof(EjvError);
+
+			if (!undefinedError) {
+				throw new Error('spec failed');
+			}
+
 			expect(undefinedError.type).to.be.eql(ErrorType.REQUIRED);
 			expect(undefinedError.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 			expect(undefinedError.path).to.be.eql('a/b');
@@ -286,7 +316,7 @@ describe('ObjectScheme', () => {
 				}
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'object',
 				properties: [{
@@ -296,6 +326,11 @@ describe('ObjectScheme', () => {
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
 				placeholders: [JSON.stringify(typeArr)]
@@ -354,14 +389,14 @@ describe('ObjectScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'object',
-					allowNoProperty: null
+					allowNoProperty: null as unknown as boolean
 				}])).to.throw(createErrorMsg(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN));
 			});
 		});
 
 		describe('default', () => {
 			it('empty object', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: {}
 				}, [{
 					key: 'a',
@@ -372,7 +407,7 @@ describe('ObjectScheme', () => {
 			});
 
 			it('object has property', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: {
 						b: 1
 					}
@@ -387,7 +422,7 @@ describe('ObjectScheme', () => {
 
 		describe('allowNoProperty === false', () => {
 			it('empty object', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: {}
 				}, [{
 					key: 'a',
@@ -396,6 +431,11 @@ describe('ObjectScheme', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.NO_PROPERTY);
 				expect(error.message).to.be.eql(ErrorMsg.NO_PROPERTY);
 				expect(error.path).to.be.eql('a');
@@ -403,7 +443,7 @@ describe('ObjectScheme', () => {
 			});
 
 			it('object has property', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: {
 						b: 1
 					}
@@ -419,7 +459,7 @@ describe('ObjectScheme', () => {
 
 		describe('allowNoProperty === true', () => {
 			it('empty object', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: {}
 				}, [{
 					key: 'a',
@@ -431,7 +471,7 @@ describe('ObjectScheme', () => {
 			});
 
 			it('object has property', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: {
 						b: 1
 					}

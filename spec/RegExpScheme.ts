@@ -20,12 +20,17 @@ describe('RegExpScheme', () => {
 							a: obj.value
 						};
 
-						const error: EjvError = ejv(testData, [{
+						const error: EjvError | null = ejv(testData, [{
 							key: 'a',
 							type: 'regexp'
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
+
 						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 							placeholders: ['regexp']
@@ -44,12 +49,17 @@ describe('RegExpScheme', () => {
 					a: value
 				};
 
-				const error: EjvError = ejv(testData, [{
+				const error: EjvError | null = ejv(testData, [{
 					key: 'a',
 					type: typeArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
 					placeholders: [JSON.stringify(typeArr)]

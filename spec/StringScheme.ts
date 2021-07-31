@@ -20,12 +20,16 @@ describe('StringScheme', () => {
 					};
 
 					it(obj.type, () => {
-						const error: EjvError = ejv(data, [{
+						const error: EjvError | null = ejv(data, [{
 							key: 'a',
 							type: 'string'
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
 
 						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
@@ -45,12 +49,16 @@ describe('StringScheme', () => {
 					a: value
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: typeArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
 
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
@@ -120,7 +128,7 @@ describe('StringScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'string',
-					enum: null
+					enum: null as unknown as string[]
 				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
 			});
 
@@ -152,13 +160,18 @@ describe('StringScheme', () => {
 				a: 'a'
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string',
 				enum: enumArr
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.ONE_OF);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
 				placeholders: [JSON.stringify(enumArr)]
@@ -197,7 +210,7 @@ describe('StringScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'string',
-					enumReverse: null
+					enumReverse: null as unknown as string[]
 				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_REVERSE_SHOULD_BE_ARRAY));
 			});
 
@@ -229,13 +242,18 @@ describe('StringScheme', () => {
 				a: 'a'
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string',
 				enumReverse: enumArr
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.NOT_ONE_OF);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.NOT_ONE_OF, {
 				placeholders: [JSON.stringify(enumArr)]
@@ -274,7 +292,7 @@ describe('StringScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'string',
-					minLength: null
+					minLength: null as unknown as number
 				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 			});
 
@@ -304,13 +322,18 @@ describe('StringScheme', () => {
 				a: 'ejv'
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string',
 				minLength: 4
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.MIN_LENGTH);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MIN_LENGTH, {
 				placeholders: ['4']
@@ -357,7 +380,7 @@ describe('StringScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'string',
-					maxLength: null
+					maxLength: null as unknown as number
 				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 			});
 
@@ -387,13 +410,18 @@ describe('StringScheme', () => {
 				a: 'ejv'
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string',
 				maxLength: 2
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.MAX_LENGTH);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MAX_LENGTH, {
 				placeholders: ['2']
@@ -440,7 +468,7 @@ describe('StringScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'string',
-					format: null
+					format: null as unknown as string
 				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
 					placeholders: ['null']
 				}));
@@ -479,13 +507,18 @@ describe('StringScheme', () => {
 					a: 'ejv'
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					format: 'email'
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.FORMAT);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 					placeholders: ['email']
@@ -510,13 +543,18 @@ describe('StringScheme', () => {
 					a: 'ejv'
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					format: formatArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 					placeholders: [JSON.stringify(formatArr)]
@@ -541,13 +579,18 @@ describe('StringScheme', () => {
 					a: 'ejv'
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					format: 'date'
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.FORMAT);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 					placeholders: ['date']
@@ -572,13 +615,18 @@ describe('StringScheme', () => {
 					a: 'ejv'
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					format: formatArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 					placeholders: [JSON.stringify(formatArr)]
@@ -603,13 +651,18 @@ describe('StringScheme', () => {
 					a: 'ejv'
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					format: 'time'
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.FORMAT);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 					placeholders: ['time']
@@ -634,13 +687,18 @@ describe('StringScheme', () => {
 					a: 'ejv'
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					format: formatArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 					placeholders: [JSON.stringify(formatArr)]
@@ -665,13 +723,18 @@ describe('StringScheme', () => {
 					a: 'ejv'
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					format: 'date-time'
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.FORMAT);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
 					placeholders: ['date-time']
@@ -712,13 +775,18 @@ describe('StringScheme', () => {
 					a: 'ejv'
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					format: formatArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
 					placeholders: [JSON.stringify(formatArr)]
@@ -772,7 +840,7 @@ describe('StringScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'string',
-					pattern: null
+					pattern: null as unknown as string
 				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['null']
 				}));
@@ -820,7 +888,7 @@ describe('StringScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'string',
-					pattern: [null, /ab/]
+					pattern: [null as unknown as RegExp, /ab/]
 				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['[/null/, /ab/]']
 				}));
@@ -868,7 +936,7 @@ describe('StringScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'string',
-					pattern: new RegExp(null)
+					pattern: new RegExp(null as unknown as string)
 				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['/null/']
 				}));
@@ -900,13 +968,18 @@ describe('StringScheme', () => {
 				a: 'abc'
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string',
 				pattern: 'ac'
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.PATTERN);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
 				placeholders: ['/ac/']
@@ -945,13 +1018,18 @@ describe('StringScheme', () => {
 				a: 'abc'
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string',
 				pattern: ['abcc', 'ac']
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
 				placeholders: ['[/abcc/, /ac/]']
@@ -974,13 +1052,18 @@ describe('StringScheme', () => {
 				a: 'abc'
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string',
 				pattern: /ac/
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.PATTERN);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
 				placeholders: [/ac/.toString()]
@@ -1019,13 +1102,18 @@ describe('StringScheme', () => {
 				a: 'abc'
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string',
 				pattern: [/abcc/, /ac/]
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
 				placeholders: ['[/abcc/, /ac/]']
@@ -1037,7 +1125,7 @@ describe('StringScheme', () => {
 
 		describe('special case', () => {
 			it('array of object has string', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: [{
 						b: 'ejv'
 					}]

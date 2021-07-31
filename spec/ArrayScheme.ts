@@ -20,12 +20,17 @@ describe('ArrayScheme', () => {
 							a: obj.value
 						};
 
-						const error: EjvError = ejv(testObj, [{
+						const error: EjvError | null = ejv(testObj, [{
 							key: 'a',
 							type: 'array'
 						}]);
 
 						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
+
 						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 							placeholders: ['array']
@@ -44,12 +49,17 @@ describe('ArrayScheme', () => {
 					a: value
 				};
 
-				const error: EjvError = ejv(testObj, [{
+				const error: EjvError | null = ejv(testObj, [{
 					key: 'a',
 					type: typeArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
 					placeholders: [JSON.stringify(typeArr)]
@@ -106,11 +116,16 @@ describe('ArrayScheme', () => {
 					a: value
 				};
 
-				const error: EjvError = ejv(testObj, [
+				const error: EjvError | null = ejv(testObj, [
 					{ key: 'a', type: 'array', items: 'string' }
 				]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.ITEMS_TYPE);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ITEMS_TYPE, {
 					placeholders: ['string']
@@ -141,11 +156,16 @@ describe('ArrayScheme', () => {
 					a: value
 				};
 
-				const error: EjvError = ejv(testObj, [
+				const error: EjvError | null = ejv(testObj, [
 					{ key: 'a', type: 'array', items: 'string' }
 				]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.ITEMS_TYPE);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ITEMS_TYPE, {
 					placeholders: ['string']
@@ -189,7 +209,7 @@ describe('ArrayScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'array',
-					minLength: null
+					minLength: null as unknown as number
 				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
 			});
 
@@ -220,13 +240,18 @@ describe('ArrayScheme', () => {
 				a: value
 			};
 
-			const error: EjvError = ejv(testData, [{
+			const error: EjvError | null = ejv(testData, [{
 				key: 'a',
 				type: 'array',
 				minLength: 4
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.MIN_LENGTH);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MIN_LENGTH, {
 				placeholders: ['4']
@@ -273,7 +298,7 @@ describe('ArrayScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'array',
-					maxLength: null
+					maxLength: null as unknown as number
 				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
 			});
 
@@ -304,13 +329,18 @@ describe('ArrayScheme', () => {
 				a: value
 			};
 
-			const error: EjvError = ejv(testData, [{
+			const error: EjvError | null = ejv(testData, [{
 				key: 'a',
 				type: 'array',
 				maxLength: 2
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.MAX_LENGTH);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MAX_LENGTH, {
 				placeholders: ['2']
@@ -357,7 +387,7 @@ describe('ArrayScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'array',
-					unique: null
+					unique: null as unknown as boolean
 				}])).to.throw(createErrorMsg(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN));
 			});
 
@@ -373,7 +403,7 @@ describe('ArrayScheme', () => {
 		});
 
 		it('default', () => {
-			const error: EjvError = ejv({
+			const error: EjvError | null = ejv({
 				a: [1, 2, 3],
 				b: [1, 1, 1],
 				c: ['a', 'a', 'a']
@@ -396,7 +426,7 @@ describe('ArrayScheme', () => {
 		});
 
 		it('false', () => {
-			const error: EjvError = ejv({
+			const error: EjvError | null = ejv({
 				a: [1, 2, 3],
 				b: [1, 1, 1],
 				c: ['a', 'a', 'a']
@@ -428,7 +458,7 @@ describe('ArrayScheme', () => {
 				b: numberValue
 			};
 
-			const error: EjvError = ejv(numberTestObj, [{
+			const error: EjvError | null = ejv(numberTestObj, [{
 				key: 'a',
 				type: 'array',
 				unique: true
@@ -439,6 +469,11 @@ describe('ArrayScheme', () => {
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.UNIQUE_ITEMS);
 			expect(error.message).to.be.eql(ErrorMsg.UNIQUE_ITEMS);
 			expect(error.path).to.be.eql('b');
@@ -450,7 +485,7 @@ describe('ArrayScheme', () => {
 				a: stringValue
 			};
 
-			const stringsError: EjvError = ejv(stringTestObj, [{
+			const stringsError: EjvError | null = ejv(stringTestObj, [{
 				key: 'a',
 				type: 'array',
 				unique: true,
@@ -461,6 +496,11 @@ describe('ArrayScheme', () => {
 			}]);
 
 			expect(stringsError).to.be.instanceof(EjvError);
+
+			if (!stringsError) {
+				throw new Error('spec failed');
+			}
+
 			expect(stringsError.type).to.be.eql(ErrorType.UNIQUE_ITEMS);
 			expect(stringsError.message).to.be.eql(ErrorMsg.UNIQUE_ITEMS);
 			expect(stringsError.path).to.be.eql('a');
@@ -487,7 +527,7 @@ describe('ArrayScheme', () => {
 				}, [{
 					key: 'a',
 					type: 'array',
-					items: null
+					items: null as unknown as string[]
 				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_ITEMS_SCHEME, {
 					placeholders: ['null']
 				}));
@@ -513,13 +553,18 @@ describe('ArrayScheme', () => {
 					a: value
 				};
 
-				const error: EjvError = ejv(testObj, [{
+				const error: EjvError | null = ejv(testObj, [{
 					key: 'a',
 					type: 'array',
 					items: 'string'
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.ITEMS_TYPE);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ITEMS_TYPE, {
 					placeholders: ['string']
@@ -540,7 +585,7 @@ describe('ArrayScheme', () => {
 			});
 
 			it('ok - empty array', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: []
 				}, [{
 					key: 'a',
@@ -574,13 +619,18 @@ describe('ArrayScheme', () => {
 					b: [1, 2, 2]
 				};
 
-				const error: EjvError = ejv(testObj, [{
+				const error: EjvError | null = ejv(testObj, [{
 					key: 'a',
 					type: 'array',
 					items: enumArr
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.ITEMS_TYPE);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ITEMS_TYPE, {
 					placeholders: [JSON.stringify(enumArr)]
@@ -638,13 +688,18 @@ describe('ArrayScheme', () => {
 					a: value
 				};
 
-				const error: EjvError = ejv(testObj, [{
+				const error: EjvError | null = ejv(testObj, [{
 					key: 'a',
 					type: 'array',
 					items: itemScheme
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 					placeholders: ['' + 2]
@@ -678,7 +733,7 @@ describe('ArrayScheme', () => {
 					]
 				};
 
-				const error: EjvError = ejv(data, [
+				const error: EjvError | null = ejv(data, [
 					{
 						key: 'a', type: 'array', items: [{
 							type: 'object', properties: [
@@ -689,6 +744,11 @@ describe('ArrayScheme', () => {
 				]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 					placeholders: ['' + 4]
@@ -708,7 +768,7 @@ describe('ArrayScheme', () => {
 					]
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a', type: 'array', items: [{
 						type: 'object', properties: [{
 							key: 'b', type: 'object', properties: [{
@@ -723,6 +783,11 @@ describe('ArrayScheme', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 					placeholders: ['' + 4]
@@ -767,13 +832,18 @@ describe('ArrayScheme', () => {
 					a: [1, 2, 3]
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'array',
 					items: allSchemes
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.ITEMS_SCHEMES);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ITEMS_SCHEMES, {
 					placeholders: [JSON.stringify(allSchemes)]
@@ -812,7 +882,7 @@ describe('ArrayScheme', () => {
 			});
 
 			it('nested array - single scheme', () => {
-				const arr: string[] = ['ok', null];
+				const arr: string[] = ['ok', null as unknown as string];
 				const testObj = {
 					a: [{
 						b: arr
@@ -821,7 +891,7 @@ describe('ArrayScheme', () => {
 
 				const itemScheme: Scheme = { type: 'string', minLength: 1 };
 
-				const error: EjvError = ejv(testObj, [{
+				const error: EjvError | null = ejv(testObj, [{
 					key: 'a', type: 'array', items: {
 						type: 'object', properties: [{
 							key: 'b', type: 'array', unique: true, minLength: 1, optional: true,
@@ -831,6 +901,11 @@ describe('ArrayScheme', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 					placeholders: [JSON.stringify(itemScheme)]
@@ -841,7 +916,7 @@ describe('ArrayScheme', () => {
 			});
 
 			it('nested array - multiple chemes', () => {
-				const arr: string[] = ['ok', null];
+				const arr: string[] = ['ok', null as unknown as string];
 				const testObj = {
 					a: [{
 						b: arr
@@ -850,7 +925,7 @@ describe('ArrayScheme', () => {
 
 				const itemScheme: Scheme[] = [{ type: 'string', minLength: 1 }];
 
-				const error: EjvError = ejv(testObj, [{
+				const error: EjvError | null = ejv(testObj, [{
 					key: 'a', type: 'array', items: {
 						type: 'object', properties: [{
 							key: 'b', type: 'array', unique: true, minLength: 1, optional: true,
@@ -860,6 +935,11 @@ describe('ArrayScheme', () => {
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 					placeholders: [JSON.stringify(itemScheme)]

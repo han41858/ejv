@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 import { ErrorMsg, ErrorType } from '../src/constants';
-import { EjvError, Scheme } from '../src/interfaces';
+import { AnyObject, EjvError, Scheme } from '../src/interfaces';
 import { createErrorMsg } from '../src/util';
 
 
@@ -11,7 +11,10 @@ describe('ejv()', () => {
 	describe('ejv() itself', () => {
 		describe('data', () => {
 			it('no data', () => {
-				const error: EjvError = ejv(undefined, undefined);
+				const error: EjvError | null = ejv(
+					undefined as unknown as AnyObject,
+					undefined as unknown as Scheme[]
+				);
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error).to.have.property('type', ErrorType.REQUIRED);
@@ -20,7 +23,10 @@ describe('ejv()', () => {
 			});
 
 			it('null data', () => {
-				const error: EjvError = ejv(null, undefined);
+				const error: EjvError | null = ejv(
+					null as unknown as AnyObject,
+					undefined as unknown as Scheme[]
+				);
 
 				expect(error).to.be.instanceof(EjvError);
 				expect(error).to.have.property('type', ErrorType.REQUIRED);
@@ -33,13 +39,13 @@ describe('ejv()', () => {
 			it('no scheme', () => {
 				expect(() => ejv({
 					a: 'hello'
-				}, undefined)).to.throw(createErrorMsg(ErrorMsg.NO_SCHEME));
+				}, undefined as unknown as Scheme[])).to.throw(createErrorMsg(ErrorMsg.NO_SCHEME));
 			});
 
 			it('null scheme', () => {
 				expect(() => ejv({
 					a: 'hello'
-				}, null)).to.throw(createErrorMsg(ErrorMsg.NO_SCHEME));
+				}, null as unknown as Scheme[])).to.throw(createErrorMsg(ErrorMsg.NO_SCHEME));
 			});
 
 			it('empty scheme array', () => {
@@ -97,7 +103,7 @@ describe('ejv()', () => {
 				it('override required error', () => {
 					const customErrorMsg = 'property \'a\' required';
 
-					const error: EjvError = ejv({
+					const error: EjvError | null = ejv({
 						// empty
 					}, [{
 						key: 'a',
@@ -109,6 +115,11 @@ describe('ejv()', () => {
 					});
 
 					expect(error).to.be.instanceof(EjvError);
+
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
 					expect(error.type).to.be.eql(ErrorType.REQUIRED);
 					expect(error.message).to.be.eql(customErrorMsg);
 				});
@@ -116,7 +127,7 @@ describe('ejv()', () => {
 				it('override type matching error', () => {
 					const customErrorMsg = 'property \'a\' should be a number';
 
-					const error: EjvError = ejv({
+					const error: EjvError | null = ejv({
 						a: 'a'
 					}, [{
 						key: 'a',
@@ -128,6 +139,11 @@ describe('ejv()', () => {
 					});
 
 					expect(error).to.be.instanceof(EjvError);
+
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
 					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 					expect(error.message).to.be.eql(customErrorMsg);
 				});

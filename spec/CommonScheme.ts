@@ -16,12 +16,17 @@ describe('CommonScheme', () => {
 					a: undefined
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string'
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.REQUIRED);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 				expect(error.path).to.be.eql('a');
@@ -30,7 +35,7 @@ describe('CommonScheme', () => {
 			});
 
 			it('correct type', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: 'abc'
 				}, [{
 					key: 'a',
@@ -45,12 +50,17 @@ describe('CommonScheme', () => {
 					a: 123
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string'
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 					placeholders: ['string']
@@ -69,13 +79,18 @@ describe('CommonScheme', () => {
 					a: undefined
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					optional: false
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.REQUIRED);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 				expect(error.path).to.be.eql('a');
@@ -84,7 +99,7 @@ describe('CommonScheme', () => {
 			});
 
 			it('correct type', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: 'abc'
 				}, [{
 					key: 'a',
@@ -100,13 +115,18 @@ describe('CommonScheme', () => {
 					a: 123
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					optional: false
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 					placeholders: ['string']
@@ -119,7 +139,7 @@ describe('CommonScheme', () => {
 
 		describe('optional === true', () => {
 			it('undefined value', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: undefined
 				}, [{
 					key: 'a',
@@ -131,7 +151,7 @@ describe('CommonScheme', () => {
 			});
 
 			it('correct type', () => {
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: 'abc'
 				}, [{
 					key: 'a',
@@ -147,13 +167,18 @@ describe('CommonScheme', () => {
 					a: 123
 				};
 
-				const error: EjvError = ejv(data, [{
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
 					optional: true
 				}]);
 
 				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
 					placeholders: ['string']
@@ -171,12 +196,17 @@ describe('CommonScheme', () => {
 				a: null
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string'
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.REQUIRED);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 			expect(error.path).to.be.eql('a');
@@ -191,13 +221,18 @@ describe('CommonScheme', () => {
 				a: null
 			};
 
-			const error: EjvError = ejv(data, [{
+			const error: EjvError | null = ejv(data, [{
 				key: 'a',
 				type: 'string',
 				nullable: false
 			}]);
 
 			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
 			expect(error.type).to.be.eql(ErrorType.REQUIRED);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
 			expect(error.path).to.be.eql('a');
@@ -206,7 +241,7 @@ describe('CommonScheme', () => {
 		});
 
 		it('nullable === true', () => {
-			const error: EjvError = ejv({
+			const error: EjvError | null = ejv({
 				a: null
 			}, [{
 				key: 'a',
@@ -336,7 +371,7 @@ describe('CommonScheme', () => {
 				}])).to.be.null;
 
 
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: value
 				}, [{
 					key: 'a',
@@ -346,6 +381,11 @@ describe('CommonScheme', () => {
 				}]);
 
 				expect(error).to.be.instanceOf(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 				expect(error.path).to.be.eql('a');
 				expect(error.errorData).to.be.eql(value);
@@ -365,7 +405,7 @@ describe('CommonScheme', () => {
 					}
 				}])).to.be.null;
 
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: value
 				}, [{
 					key: 'a',
@@ -377,6 +417,11 @@ describe('CommonScheme', () => {
 				}]);
 
 				expect(error).to.be.instanceOf(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
 				expect(error.path).to.be.eql('a');
 				expect(error.errorData).to.be.eql(value);
@@ -395,7 +440,7 @@ describe('CommonScheme', () => {
 				}])).to.be.null;
 
 
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: value
 				}, [{
 					key: 'a',
@@ -405,6 +450,11 @@ describe('CommonScheme', () => {
 				}]);
 
 				expect(error).to.be.instanceOf(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
 				expect(error.path).to.be.eql('a');
 				expect(error.errorData).to.be.eql(value);
@@ -425,7 +475,7 @@ describe('CommonScheme', () => {
 				}])).to.be.null;
 
 
-				const error: EjvError = ejv({
+				const error: EjvError | null = ejv({
 					a: value
 				}, [{
 					key: 'a',
@@ -437,6 +487,11 @@ describe('CommonScheme', () => {
 				}]);
 
 				expect(error).to.be.instanceOf(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
 				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
 				expect(error.path).to.be.eql('a');
 				expect(error.errorData).to.be.eql(value);
