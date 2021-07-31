@@ -102,11 +102,11 @@ function _checkSchemeWithNot (parentScheme: Scheme, notScheme: Scheme): void {
 }
 
 function _isNotSchemeEffective (scheme: Scheme[] | Scheme): boolean {
-	function _isNotSchemeEffectiveAtom (scheme: Scheme): boolean {
-		const keys: (keyof Scheme)[] = Object.keys(scheme) as (keyof Scheme)[];
+	function _isNotSchemeEffectiveAtom (_scheme: Scheme): boolean {
+		const keys: (keyof Scheme)[] = Object.keys(_scheme) as (keyof Scheme)[];
 
 		const effectiveKeys: (keyof Scheme)[] = keys.filter((key: keyof Scheme): boolean => {
-			return scheme[key] !== undefined;
+			return _scheme[key] !== undefined;
 		});
 
 		return effectiveKeys.length > 0;
@@ -192,7 +192,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 			const allDataType: DataType[] = Object.values(DataType);
 
-			const typeError: string | undefined = types.find(type => {
+			const typeError: string | undefined = types.find((type: DataType): boolean => {
 				return !definedTester(type)
 					|| !stringTester(type)
 					|| !enumTester(type, allDataType);
@@ -532,7 +532,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						else {
 							const formatAsArray: NumberFormat[] = numberScheme.format as NumberFormat[];
 
-							const errorFormat: string | undefined = formatAsArray.find(format => {
+							const errorFormat: string | undefined = formatAsArray.find((format: NumberFormat): boolean => {
 								return !enumTester(format, allNumberFormat);
 							});
 
@@ -545,7 +545,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							formats = numberScheme.format as NumberFormat[];
 						}
 
-						const someFormatIsWrong: boolean = formats.some(format => {
+						const someFormatIsWrong: boolean = formats.some((format: NumberFormat): boolean => {
 							let valid = false;
 
 							switch (format) {
@@ -753,7 +753,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						}
 						else {
 							const formatAsArray: string[] = stringScheme.format;
-							const errorFormat: string | undefined = formatAsArray.find(format => {
+							const errorFormat: string | undefined = formatAsArray.find((format: string): boolean => {
 								return !enumTester(format, allStringFormat);
 							});
 
@@ -766,7 +766,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							formats = stringScheme.format as StringFormat[];
 						}
 
-						if (!formats.some(format => {
+						if (!formats.some((format: StringFormat): boolean => {
 							let valid = false;
 
 							switch (format) {
@@ -861,7 +861,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						};
 
 						const createArrayErrorMsg = (patternsAsArray: (string | RegExp)[]): string => {
-							return '[' + patternsAsArray.map(onePattern => {
+							return '[' + patternsAsArray.map((onePattern: string | RegExp): string => {
 								return patternToString(onePattern);
 							}).join(', ') + ']';
 						};
@@ -875,7 +875,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								}));
 							}
 
-							const regExpPatterns: RegExp[] = patternsAsArray.map(pattern => {
+							const regExpPatterns: RegExp[] = patternsAsArray.map((pattern: string | RegExp): RegExp => {
 								if (!isValidPattern(pattern)) {
 									throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 										placeholders: [createArrayErrorMsg(patternsAsArray)]
@@ -886,7 +886,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							}) as RegExp[];
 
 							// check value
-							if (!regExpPatterns.some((regexp: RegExp) => {
+							if (!regExpPatterns.some((regexp: RegExp): boolean => {
 								return stringRegExpTester(valueAsString, regexp);
 							})) {
 								result = new EjvError({
@@ -1240,22 +1240,21 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						// convert array to object
 						if (valueAsArray.length > 0) {
 							const now: Date = new Date;
-							const tempKeyArr: string[] = valueAsArray.map((value: unknown, i: number) => {
+							const tempKeyArr: string[] = valueAsArray.map((_value: unknown, i: number): string => {
 								return '' + (+now + i);
 							});
 
 							if (stringTester(arrayScheme.items) // by DataType
 								|| (arrayTester(arrayScheme.items) && arrayTypeOfTester(arrayScheme.items as DataType[], DataType.STRING)) // by DataType[]
 							) {
-								// const itemTypes : DataType[] = (arrayTester(arrayScheme.items)
-								// 	? arrayScheme.items
-								// 	: [arrayScheme.items]) as DataType[];
-								const itemTypes: DataType[] = (arrayTester(arrayScheme.items) ? arrayScheme.items : [arrayScheme.items]) as DataType[];
+								const itemTypes: DataType[] = (arrayTester(arrayScheme.items)
+									? arrayScheme.items
+									: [arrayScheme.items]) as DataType[];
 
 								const partialData: AnyObject = {};
 								const partialSchemes: Scheme[] = [];
 
-								tempKeyArr.forEach((tempKey: string, i: number) => {
+								tempKeyArr.forEach((tempKey: string, i: number): void => {
 									partialData[tempKey] = valueAsArray[i];
 									partialSchemes.push({
 										key: tempKey,
@@ -1286,8 +1285,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									const partialKeys: string[] = partialResult.path.split('/');
 									const partialKey: string = partialKeys[partialKeys.length - 1];
 
-									const partialScheme: Scheme = partialSchemes.find((scheme: Scheme) => {
-										return scheme.key === partialKey;
+									const partialScheme: Scheme = partialSchemes.find((_scheme: Scheme): boolean => {
+										return _scheme.key === partialKey;
 									}) as Scheme;
 
 									const partialKeyIndex: number = partialSchemes.indexOf(partialScheme);
@@ -1308,7 +1307,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							else if ((objectTester(arrayScheme.items) && arrayScheme.items !== null) // by Scheme
 								|| (arrayTester(arrayScheme.items) && arrayTypeOfTester(arrayScheme.items as Scheme[], DataType.OBJECT)) // by Scheme[]
 							) {
-								const itemsAsSchemes: Scheme[] = (arrayTester(arrayScheme.items) ? arrayScheme.items : [arrayScheme.items]) as Scheme[];
+								const itemsAsSchemes: Scheme[] = arrayTester(arrayScheme.items)
+									? arrayScheme.items
+									: [arrayScheme.items] as Scheme[];
 
 								let partialError: EjvError | null | undefined = null;
 
@@ -1325,7 +1326,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 									partialData[tempKeyForThisValue] = oneValue;
 
-									partialSchemes.push(...itemsAsSchemes.map((oneScheme: Scheme) => {
+									partialSchemes.push(...itemsAsSchemes.map((oneScheme: Scheme): Scheme => {
 										const newScheme: Scheme = clone(oneScheme); // divide instance
 
 										newScheme.key = tempKeyForThisValue;
@@ -1333,7 +1334,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										return newScheme;
 									}));
 
-									const partialResults: (EjvError | null)[] = partialSchemes.map((partialScheme: Scheme) => {
+									const partialResults: (EjvError | null)[] = partialSchemes.map((partialScheme: Scheme): EjvError | null => {
 										// call recursively
 										const partialResult: EjvError | null = _ejv(partialData, [partialScheme], _options);
 
@@ -1344,8 +1345,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										return partialResult;
 									});
 
-									if (!partialResults.some(oneResult => oneResult === null)) {
-										partialError = partialResults.find(oneResult => {
+									if (!partialResults.some((oneResult: EjvError | null): boolean => oneResult === null)) {
+										partialError = partialResults.find((oneResult: EjvError | null): boolean => {
 											return !!oneResult;
 										});
 										break;

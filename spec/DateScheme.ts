@@ -6,7 +6,7 @@ import { ejv } from '../src/ejv';
 import { EjvError } from '../src/interfaces';
 import { ErrorMsg, ErrorType } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { typeTester } from './common-test-runner';
+import { TypeTester, typeTesterArr } from './common-test-runner';
 
 
 describe('DateScheme', () => {
@@ -37,12 +37,12 @@ describe('DateScheme', () => {
 	}
 
 	function getDateStr (
-		year: number, month: number, date: number,
-		hours?: number, minutes?: number, seconds?: number, ms?: number
+		_year: number, _month: number, _date: number,
+		_hours?: number, _minutes?: number, _seconds?: number, _ms?: number
 	): string {
-		const tempDate: Date = hours !== undefined ?
-			new Date(year, month, date, hours, minutes, seconds, ms) :
-			new Date(year, month, date);
+		const tempDate: Date = _hours !== undefined
+			? new Date(_year, _month, _date, _hours, _minutes, _seconds, _ms)
+			: new Date(_year, _month, _date);
 
 		const dateStr: string = [
 			tempDate.getFullYear(),
@@ -50,27 +50,28 @@ describe('DateScheme', () => {
 			padZero(tempDate.getDate())
 		].join('-');
 
-		const hoursStr: string = hours !== undefined ?
-			[
+		const hoursStr: string = _hours !== undefined
+			? [
 				'T',
 				[
-					padZero(hours),
-					padZero(minutes),
-					padZero(seconds)
+					padZero(_hours),
+					padZero(_minutes),
+					padZero(_seconds)
 				].join(':'),
 				'.',
-				padZero(ms, 3),
+				padZero(_ms, 3),
 				'Z'
-			].join('') :
-			'';
+			].join('')
+			: '';
 
 		return dateStr + hoursStr;
 	}
 
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTester.filter(obj => obj.type !== 'date')
-				.forEach((obj) => {
+			typeTesterArr
+				.filter((obj: TypeTester): boolean => obj.type !== 'date')
+				.forEach((obj: TypeTester): void => {
 					const data = {
 						a: obj.value
 					};

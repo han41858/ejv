@@ -18,10 +18,12 @@ export const commonTestRunner = (
 		&& testFnc({ a: 1 }) === objectResult;
 };
 
-export const typeTester: {
-	type: string,
-	value: unknown
-}[] = [
+export interface TypeTester {
+	type: string;
+	value: unknown;
+}
+
+export const typeTesterArr: TypeTester[] = [
 	{ type: 'boolean', value: true },
 	{ type: 'number', value: 123 },
 	{ type: 'string', value: 'ejv' },

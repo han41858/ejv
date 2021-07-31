@@ -48,7 +48,7 @@ export const clone = <T> (obj: T, sanitize?: boolean): T => {
 
 			case  CloneDataType.Array: {
 				const objAsArray: unknown[] = obj as unknown as unknown[];
-				result = objAsArray.map(one => {
+				result = objAsArray.map((one: unknown): unknown => {
 					return clone(one);
 				}) as unknown as T;
 				break;
@@ -59,7 +59,7 @@ export const clone = <T> (obj: T, sanitize?: boolean): T => {
 				result = {} as unknown as T;
 
 				const entries: [string, unknown][] = Object.entries(obj)
-					.filter(([, value]) => {
+					.filter(([, value]): boolean => {
 						return sanitize
 							? value !== undefined && value !== null
 							: true;

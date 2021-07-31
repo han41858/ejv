@@ -6,14 +6,15 @@ import { ejv } from '../src/ejv';
 import { EjvError } from '../src/interfaces';
 import { ErrorMsg, ErrorType } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { typeTester } from './common-test-runner';
+import { TypeTester, typeTesterArr } from './common-test-runner';
 
 
 describe('RegExpScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTester.filter(obj => obj.type !== 'regexp')
-				.forEach((obj) => {
+			typeTesterArr
+				.filter((obj: TypeTester): boolean => obj.type !== 'regexp')
+				.forEach((obj: TypeTester): void => {
 					it(obj.type, () => {
 						const testData = {
 							a: obj.value

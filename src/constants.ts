@@ -78,8 +78,8 @@ export enum ErrorMsg {
 
 	EMPTY_SCHEME = 'scheme should not be empty',
 	SCHEMES_SHOULD_HAVE_TYPE = 'scheme should have type',
-	SCHEMES_HAS_INVALID_TYPE = 'schemes has invalid type : <<1>>',
-	SCHEMES_HAS_DUPLICATED_TYPE = 'schemes has duplicated type : <<1>>',
+	SCHEMES_HAS_INVALID_TYPE = 'schemes has invalid type: <<1>>',
+	SCHEMES_HAS_DUPLICATED_TYPE = 'schemes has duplicated type: <<1>>',
 	SCHEMES_HAS_RULES_CONTRARY = 'schemes has rules to the contrary', // TODO: for not
 
 	ENUM_SHOULD_BE_ARRAY = 'enum should be array',
@@ -96,9 +96,9 @@ export enum ErrorMsg {
 	MAX_SHOULD_BE_NUMBER = 'max should be number',
 	EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN = 'exclusiveMax should be a boolean',
 
-	INVALID_NUMBER_FORMAT = 'invalid number format : <<1>>',
-	INVALID_STRING_FORMAT = 'invalid string format : <<1>>',
-	INVALID_STRING_PATTERN = 'invalid string pattern : <<1>>',
+	INVALID_NUMBER_FORMAT = 'invalid number format: <<1>>',
+	INVALID_STRING_FORMAT = 'invalid string format: <<1>>',
+	INVALID_STRING_PATTERN = 'invalid string pattern: <<1>>',
 
 	LENGTH_SHOULD_BE_INTEGER = 'length should be a integer',
 	MIN_LENGTH_SHOULD_BE_INTEGER = 'minLength should be a integer',
@@ -115,7 +115,7 @@ export enum ErrorMsg {
 
 	UNIQUE_SHOULD_BE_BOOLEAN = 'unique should be a boolean',
 
-	INVALID_ITEMS_SCHEME = 'invalid schemes of array items : <<1>>',
+	INVALID_ITEMS_SCHEME = 'invalid schemes of array items: <<1>>',
 
 	// about EjvError
 	REQUIRED = 'value is <<not>>required',

@@ -6,17 +6,17 @@ import { ejv } from '../src/ejv';
 import { EjvError, Scheme } from '../src/interfaces';
 import { ErrorMsg, ErrorType } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { typeTester } from './common-test-runner';
+import { TypeTester, typeTesterArr } from './common-test-runner';
 
 
 describe('ObjectScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTester
-				.filter(obj => {
+			typeTesterArr
+				.filter((obj: TypeTester): boolean => {
 					return !['null', 'date', 'regexp', 'array', 'object'].includes(obj.type);
 				})
-				.forEach((obj) => {
+				.forEach((obj: TypeTester): void => {
 					const data = {
 						a: obj.value
 					};
@@ -73,11 +73,11 @@ describe('ObjectScheme', () => {
 				}])).to.be.null;
 			});
 
-			typeTester
-				.filter(obj => {
+			typeTesterArr
+				.filter((obj: TypeTester): boolean => {
 					return ['null', 'date', 'regexp', 'array', 'object'].includes(obj.type);
 				})
-				.forEach((obj) => {
+				.forEach((obj: TypeTester): void => {
 					it(obj.type, () => {
 						expect(ejv({
 							a: obj.value

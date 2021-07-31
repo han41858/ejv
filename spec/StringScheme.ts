@@ -6,14 +6,15 @@ import { ejv } from '../src/ejv';
 import { EjvError } from '../src/interfaces';
 import { ErrorMsg, ErrorType } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { typeTester } from './common-test-runner';
+import { TypeTester, typeTesterArr } from './common-test-runner';
 
 
 describe('StringScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTester.filter(obj => obj.type !== 'string')
-				.forEach((obj) => {
+			typeTesterArr
+				.filter((obj: TypeTester): boolean => obj.type !== 'string')
+				.forEach((obj: TypeTester): void => {
 					const data = {
 						a: obj.value
 					};
