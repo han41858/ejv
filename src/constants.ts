@@ -85,10 +85,6 @@ export enum ErrorMsg {
 	ENUM_SHOULD_BE_NUMBERS = 'enum values should be numbers',
 	ENUM_SHOULD_BE_STRINGS = 'enum values should be strings',
 
-	ENUM_REVERSE_SHOULD_BE_ARRAY = 'enumReverse should be array',
-	ENUM_REVERSE_SHOULD_BE_NUMBERS = 'enumReverse values should be numbers',
-	ENUM_REVERSE_SHOULD_BE_STRINGS = 'enumReverse values should be strings',
-
 	MIN_SHOULD_BE_NUMBER = 'min should be number',
 	EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN = 'exclusiveMin should be a boolean',
 
