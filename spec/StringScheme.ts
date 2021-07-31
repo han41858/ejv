@@ -382,6 +382,182 @@ describe('StringScheme', () => {
 		});
 	});
 
+	describe('length', () => {
+		describe('normal', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 'ejv'
+					}, [{
+						key: 'a',
+						type: 'string',
+						length: undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 'ejv'
+					}, [{
+						key: 'a',
+						type: 'string',
+						length: null as unknown as number
+					}])).to.throw(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				});
+
+				it('length type', () => {
+					expect(() => ejv({
+						a: 'ejv'
+					}, [{
+						key: 'a',
+						type: 'string',
+						length: '3' as unknown as number
+					}])).to.throw(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				});
+
+				it('length type', () => {
+					expect(() => ejv({
+						a: 'ejv'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							length: 3.5
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				});
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a: 'ejv'
+				}, [{
+					key: 'a',
+					type: 'string',
+					length: 3
+				}])).to.be.null;
+			});
+
+			it('fail', () => {
+				const str: string = 'ejv';
+				const data = {
+					a: str
+				};
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					length: 4
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ErrorType.LENGTH);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.LENGTH));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(str);
+			});
+		});
+
+		describe('not', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 'ejv'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							length: undefined
+						}
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 'ejv'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							length: null as unknown as number
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				});
+
+				it('length type', () => {
+					expect(() => ejv({
+						a: 'ejv'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							length: '3' as unknown as number
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				});
+
+				it('length type', () => {
+					expect(() => ejv({
+						a: 'ejv'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							length: 3.5
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				});
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a: 'ejv'
+				}, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						length: 4
+					}
+				}])).to.be.null;
+			});
+
+			it('fail', () => {
+				const str: string = 'ejv';
+				const data = {
+					a: str
+				};
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						length: 3
+					}
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ErrorType.LENGTH);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.LENGTH, {
+					reverse: true
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(str);
+			});
+		});
+	});
+
 	describe('maxLength', () => {
 		it('check parameter', () => {
 			it('undefined is ok', () => {

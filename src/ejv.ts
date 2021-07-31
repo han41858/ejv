@@ -638,7 +638,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							throw new Error(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
 						}
 
-						if (xor(lengthTester(valueAsString, length), _options.reverse)) {
+						if (xor(!lengthTester(valueAsString, length), _options.reverse)) {
 							result = new EjvError({
 								type: ErrorType.LENGTH,
 								message: createErrorMsg(ErrorMsg.LENGTH, {
