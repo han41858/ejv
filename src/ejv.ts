@@ -737,7 +737,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							formats = stringScheme.format as StringFormat[];
 						}
 
-						if (!formats.some((format: StringFormat): boolean => {
+						const foundFormatMatching: boolean = formats.some((format: StringFormat): boolean => {
 							let valid = false;
 
 							switch (format) {
@@ -759,11 +759,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							}
 
 							return valid;
-						})) {
+						});
+
+						if (xor(!foundFormatMatching, _options.reverse)) {
 							if (!arrayTester(stringScheme.format)) {
 								result = new EjvError({
 									type: ErrorType.FORMAT,
 									message: createErrorMsg(ErrorMsg.FORMAT, {
+										reverse: _options.reverse,
 										placeholders: [stringScheme.format as StringFormat]
 									}),
 
@@ -778,6 +781,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								result = new EjvError({
 									type: ErrorType.FORMAT_ONE_OF,
 									message: createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+										reverse: _options.reverse,
 										placeholders: [JSON.stringify(stringScheme.format)]
 									}),
 

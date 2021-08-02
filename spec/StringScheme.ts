@@ -821,372 +821,915 @@ describe('StringScheme', () => {
 
 	describe('format', () => {
 		describe('check parameter', () => {
-			it('undefined is ok', () => {
-				expect(ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: undefined
-				}])).to.be.null;
-			});
-
-			it('null', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: null as unknown as string
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
-					placeholders: ['null']
-				}));
-			});
-
-			describe('invalid string format', () => {
-				it('single format', () => {
-					expect(() => ejv({
-						a: 'a'
+			describe('normal', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 'ejv@ejv.com'
 					}, [{
 						key: 'a',
 						type: 'string',
-						format: 'invalidStringFormat'
+						format: undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: null as unknown as string
 					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
-						placeholders: ['invalidStringFormat']
+						placeholders: ['null']
 					}));
 				});
 
-				it('multiple format', () => {
-					expect(() => ejv({
-						a: 'a'
+				describe('invalid string format', () => {
+					it('single format', () => {
+						expect(() => ejv({
+							a: 'a'
+						}, [{
+							key: 'a',
+							type: 'string',
+							format: 'invalidStringFormat'
+						}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+							placeholders: ['invalidStringFormat']
+						}));
+					});
+
+					it('multiple format', () => {
+						expect(() => ejv({
+							a: 'a'
+						}, [{
+							key: 'a',
+							type: 'string',
+							format: ['invalidStringFormat']
+						}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+							placeholders: ['invalidStringFormat']
+						}));
+					});
+				});
+			});
+
+			describe('not', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 'ejv@ejv.com'
 					}, [{
 						key: 'a',
 						type: 'string',
-						format: ['invalidStringFormat']
+						not: {
+							format: undefined
+						}
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: null as unknown as string
+						}
 					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
-						placeholders: ['invalidStringFormat']
+						placeholders: ['null']
 					}));
+				});
+
+				describe('invalid string format', () => {
+					it('single format', () => {
+						expect(() => ejv({
+							a: 'a'
+						}, [{
+							key: 'a',
+							type: 'string',
+							not: {
+								format: 'invalidStringFormat'
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+							placeholders: ['invalidStringFormat']
+						}));
+					});
+
+					it('multiple format', () => {
+						expect(() => ejv({
+							a: 'a'
+						}, [{
+							key: 'a',
+							type: 'string',
+							not: {
+								format: ['invalidStringFormat']
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+							placeholders: ['invalidStringFormat']
+						}));
+					});
 				});
 			});
 		});
 
 		describe('email', () => {
-			it('single format', () => {
-				const data = {
-					a: 'ejv'
-				};
+			describe('normal', () => {
+				it('single format', () => {
+					const data = {
+						a: 'ejv'
+					};
 
-				const error: EjvError | null = ejv(data, [{
-					key: 'a',
-					type: 'string',
-					format: 'email'
-				}]);
+					const error: EjvError | null = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: 'email'
+					}]);
 
-				expect(error).to.be.instanceof(EjvError);
+					expect(error).to.be.instanceof(EjvError);
 
-				if (!error) {
-					throw new Error('spec failed');
-				}
+					if (!error) {
+						throw new Error('spec failed');
+					}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
-					placeholders: ['email']
-				}));
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.deep.equal(data);
-				expect(error.errorData).to.be.eql('ejv');
+					expect(error.type).to.be.eql(ErrorType.FORMAT);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						placeholders: ['email']
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(data);
+					expect(error.errorData).to.be.eql('ejv');
 
-				expect(ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: 'email'
-				}])).to.be.null;
+					expect(ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: 'email'
+					}])).to.be.null;
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = ['email', 'date'];
+
+					const data = {
+						a: 'ejv'
+					};
+
+					const error: EjvError | null = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(data);
+					expect(error.errorData).to.be.eql('ejv');
+
+					expect(ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}])).to.be.null;
+				});
 			});
 
-			it('multiple format', () => {
-				const formatArr: string[] = ['email', 'date'];
+			describe('not', () => {
+				it('single format', () => {
+					const str: string = 'ejv';
+					const data = {
+						a: str
+					};
 
-				const data = {
-					a: 'ejv'
-				};
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'email'
+						}
+					}])).to.be.null;
 
-				const error: EjvError | null = ejv(data, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}]);
 
-				expect(error).to.be.instanceof(EjvError);
+					const email: string = 'ejv@ejv.com';
+					const emailData = {
+						a: email
+					};
 
-				if (!error) {
-					throw new Error('spec failed');
-				}
+					const error: EjvError | null = ejv(emailData, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'email'
+						}
+					}]);
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-					placeholders: [JSON.stringify(formatArr)]
-				}));
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.deep.equal(data);
-				expect(error.errorData).to.be.eql('ejv');
+					expect(error).to.be.instanceof(EjvError);
 
-				expect(ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}])).to.be.null;
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						reverse: true,
+						placeholders: ['email']
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(emailData);
+					expect(error.errorData).to.be.eql(email);
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = ['email', 'date'];
+
+					const str: string = 'ejv';
+					const data = {
+						a: str
+					};
+
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}])).to.be.null;
+
+
+					const email: string = 'ejv@ejv.com';
+					const emailData = {
+						a: email
+					};
+
+					const error: EjvError | null = ejv(emailData, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						reverse: true,
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(emailData);
+					expect(error.errorData).to.be.eql(email);
+				});
 			});
 		});
 
+
 		describe('date', () => {
-			it('single format', () => {
-				const data = {
-					a: 'ejv'
-				};
+			describe('normal', () => {
+				it('single format', () => {
+					const data = {
+						a: 'ejv'
+					};
 
-				const error: EjvError | null = ejv(data, [{
-					key: 'a',
-					type: 'string',
-					format: 'date'
-				}]);
+					const error: EjvError | null = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: 'date'
+					}]);
 
-				expect(error).to.be.instanceof(EjvError);
+					expect(error).to.be.instanceof(EjvError);
 
-				if (!error) {
-					throw new Error('spec failed');
-				}
+					if (!error) {
+						throw new Error('spec failed');
+					}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
-					placeholders: ['date']
-				}));
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.deep.equal(data);
-				expect(error.errorData).to.be.eql('ejv');
+					expect(error.type).to.be.eql(ErrorType.FORMAT);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						placeholders: ['date']
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(data);
+					expect(error.errorData).to.be.eql('ejv');
 
-				expect(ejv({
-					a: '2018-12-19'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: 'date'
-				}])).to.be.null;
+					expect(ejv({
+						a: '2018-12-19'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: 'date'
+					}])).to.be.null;
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = ['date'];
+
+					const data = {
+						a: 'ejv'
+					};
+
+					const error: EjvError | null = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(data);
+					expect(error.errorData).to.be.eql('ejv');
+
+					expect(ejv({
+						a: '2018-12-19'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}])).to.be.null;
+				});
 			});
 
-			it('multiple format', () => {
-				const formatArr: string[] = ['date'];
+			describe('not', () => {
+				it('single format', () => {
+					const str: string = 'ejv';
+					const data = {
+						a: str
+					};
 
-				const data = {
-					a: 'ejv'
-				};
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'date'
+						}
+					}])).to.be.null;
 
-				const error: EjvError | null = ejv(data, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}]);
 
-				expect(error).to.be.instanceof(EjvError);
+					const dateStr: string = '2018-12-19';
+					const dateData = {
+						a: dateStr
+					};
 
-				if (!error) {
-					throw new Error('spec failed');
-				}
+					const error: EjvError | null = ejv(dateData, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'date'
+						}
+					}]);
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-					placeholders: [JSON.stringify(formatArr)]
-				}));
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.deep.equal(data);
-				expect(error.errorData).to.be.eql('ejv');
+					expect(error).to.be.instanceof(EjvError);
 
-				expect(ejv({
-					a: '2018-12-19'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}])).to.be.null;
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						reverse: true,
+						placeholders: ['date']
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(dateData);
+					expect(error.errorData).to.be.eql(dateStr);
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = ['date'];
+
+					const data = {
+						a: 'ejv'
+					};
+
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}])).to.be.null;
+
+
+					const dateStr: string = '2018-12-19';
+					const dateData = {
+						a: dateStr
+					};
+
+					const error: EjvError | null = ejv(dateData, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						reverse: true,
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(dateData);
+					expect(error.errorData).to.be.eql(dateStr);
+				});
 			});
 		});
 
 		describe('time', () => {
-			it('single format', () => {
-				const data = {
-					a: 'ejv'
-				};
+			describe('normal', () => {
+				it('single format', () => {
+					const data = {
+						a: 'ejv'
+					};
 
-				const error: EjvError | null = ejv(data, [{
-					key: 'a',
-					type: 'string',
-					format: 'time'
-				}]);
+					const error: EjvError | null = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: 'time'
+					}]);
 
-				expect(error).to.be.instanceof(EjvError);
+					expect(error).to.be.instanceof(EjvError);
 
-				if (!error) {
-					throw new Error('spec failed');
-				}
+					if (!error) {
+						throw new Error('spec failed');
+					}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
-					placeholders: ['time']
-				}));
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.deep.equal(data);
-				expect(error.errorData).to.be.eql('ejv');
+					expect(error.type).to.be.eql(ErrorType.FORMAT);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						placeholders: ['time']
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(data);
+					expect(error.errorData).to.be.eql('ejv');
 
-				expect(ejv({
-					a: '00:27:35.123'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: 'time'
-				}])).to.be.null;
+					expect(ejv({
+						a: '00:27:35.123'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: 'time'
+					}])).to.be.null;
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = ['time'];
+
+					const data = {
+						a: 'ejv'
+					};
+
+					const error: EjvError | null = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(data);
+					expect(error.errorData).to.be.eql('ejv');
+
+					expect(ejv({
+						a: '00:27:35.123'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}])).to.be.null;
+				});
 			});
 
-			it('multiple format', () => {
-				const formatArr: string[] = ['time'];
+			describe('not', () => {
+				it('single format', () => {
+					const data = {
+						a: 'ejv'
+					};
 
-				const data = {
-					a: 'ejv'
-				};
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'time'
+						}
+					}])).to.be.null;
 
-				const error: EjvError | null = ejv(data, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}]);
 
-				expect(error).to.be.instanceof(EjvError);
+					const timeStr: string = '00:27:35.123';
+					const timeData = {
+						a: timeStr
+					};
 
-				if (!error) {
-					throw new Error('spec failed');
-				}
+					const error: EjvError | null = ejv(timeData, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'time'
+						}
+					}]);
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-					placeholders: [JSON.stringify(formatArr)]
-				}));
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.deep.equal(data);
-				expect(error.errorData).to.be.eql('ejv');
+					expect(error).to.be.instanceof(EjvError);
 
-				expect(ejv({
-					a: '00:27:35.123'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}])).to.be.null;
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						reverse: true,
+						placeholders: ['time']
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(timeData);
+					expect(error.errorData).to.be.eql(timeStr);
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = ['time'];
+
+					const data = {
+						a: 'ejv'
+					};
+
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}])).to.be.null;
+
+
+					const timeStr: string = '00:27:35.123';
+					const timeData = {
+						a: '00:27:35.123'
+					};
+					const error: EjvError | null = ejv(timeData, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						reverse: true,
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(timeData);
+					expect(error.errorData).to.be.eql(timeStr);
+				});
 			});
 		});
 
 		describe('date-time', () => {
-			it('single format', () => {
-				const data = {
-					a: 'ejv'
-				};
+			describe('normal', () => {
+				it('single format', () => {
+					const data = {
+						a: 'ejv'
+					};
 
-				const error: EjvError | null = ejv(data, [{
-					key: 'a',
-					type: 'string',
-					format: 'date-time'
-				}]);
+					const error: EjvError | null = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: 'date-time'
+					}]);
 
-				expect(error).to.be.instanceof(EjvError);
+					expect(error).to.be.instanceof(EjvError);
 
-				if (!error) {
-					throw new Error('spec failed');
-				}
+					if (!error) {
+						throw new Error('spec failed');
+					}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
-					placeholders: ['date-time']
-				}));
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.deep.equal(data);
-				expect(error.errorData).to.be.eql('ejv');
+					expect(error.type).to.be.eql(ErrorType.FORMAT);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						placeholders: ['date-time']
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(data);
+					expect(error.errorData).to.be.eql('ejv');
 
-				expect(ejv({
-					a: '2018-12-19T00:27:35.123Z'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: 'date-time'
-				}])).to.be.null;
+					expect(ejv({
+						a: '2018-12-19T00:27:35.123Z'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: 'date-time'
+					}])).to.be.null;
 
-				expect(ejv({
-					a: '2018-12-19T00:27:35+00:00'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: 'date-time'
-				}])).to.be.null;
+					expect(ejv({
+						a: '2018-12-19T00:27:35+00:00'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: 'date-time'
+					}])).to.be.null;
 
-				expect(ejv({
-					a: '20181219T002735Z'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: 'date-time'
-				}])).to.be.null;
+					expect(ejv({
+						a: '20181219T002735Z'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: 'date-time'
+					}])).to.be.null;
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = ['date-time'];
+
+					const data = {
+						a: 'ejv'
+					};
+
+					const error: EjvError | null = ejv(data, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}]);
+
+					expect(error).to.be.instanceof(EjvError);
+
+					if (!error) {
+						throw new Error('spec failed');
+					}
+
+					expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error.path).to.be.eql('a');
+					expect(error.data).to.be.deep.equal(data);
+					expect(error.errorData).to.be.eql('ejv');
+
+					expect(ejv({
+						a: '2018-12-19T00:27:35.123Z'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}])).to.be.null;
+
+					expect(ejv({
+						a: '2018-12-19T00:27:35+00:00'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}])).to.be.null;
+
+					expect(ejv({
+						a: '20181219T002735Z'
+					}, [{
+						key: 'a',
+						type: 'string',
+						format: formatArr
+					}])).to.be.null;
+				});
 			});
 
-			it('multiple format', () => {
-				const formatArr: string[] = ['date-time'];
+			describe('not', () => {
+				it('single format', () => {
+					const data = {
+						a: 'ejv'
+					};
 
-				const data = {
-					a: 'ejv'
-				};
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'date-time'
+						}
+					}])).to.be.null;
 
-				const error: EjvError | null = ejv(data, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}]);
 
-				expect(error).to.be.instanceof(EjvError);
+					const timeDateStr1: string = '2018-12-19T00:27:35.123Z';
+					const timeDateData1 = {
+						a: timeDateStr1
+					};
 
-				if (!error) {
-					throw new Error('spec failed');
-				}
+					const error1: EjvError | null = ejv(timeDateData1, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'date-time'
+						}
+					}]);
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-					placeholders: [JSON.stringify(formatArr)]
-				}));
-				expect(error.path).to.be.eql('a');
-				expect(error.data).to.be.deep.equal(data);
-				expect(error.errorData).to.be.eql('ejv');
+					expect(error1).to.be.instanceof(EjvError);
 
-				expect(ejv({
-					a: '2018-12-19T00:27:35.123Z'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}])).to.be.null;
+					if (!error1) {
+						throw new Error('spec failed');
+					}
 
-				expect(ejv({
-					a: '2018-12-19T00:27:35+00:00'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}])).to.be.null;
+					expect(error1.type).to.be.eql(ErrorType.FORMAT);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						reverse: true,
+						placeholders: ['date-time']
+					}));
+					expect(error1.path).to.be.eql('a');
+					expect(error1.data).to.be.deep.equal(timeDateData1);
+					expect(error1.errorData).to.be.eql(timeDateStr1);
 
-				expect(ejv({
-					a: '20181219T002735Z'
-				}, [{
-					key: 'a',
-					type: 'string',
-					format: formatArr
-				}])).to.be.null;
+
+					const timeDateStr2: string = '2018-12-19T00:27:35+00:00';
+					const timeDateData2 = {
+						a: timeDateStr2
+					};
+
+					const error2: EjvError | null = ejv(timeDateData2, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'date-time'
+						}
+					}]);
+
+					expect(error2).to.be.instanceof(EjvError);
+
+					if (!error2) {
+						throw new Error('spec failed');
+					}
+
+					expect(error2.type).to.be.eql(ErrorType.FORMAT);
+					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						reverse: true,
+						placeholders: ['date-time']
+					}));
+					expect(error2.path).to.be.eql('a');
+					expect(error2.data).to.be.deep.equal(timeDateData2);
+					expect(error2.errorData).to.be.eql(timeDateStr2);
+
+
+					const timeDateStr3: string = '20181219T002735Z';
+					const timeDateData3 = {
+						a: timeDateStr3
+					};
+
+					const error3: EjvError | null = ejv(timeDateData3, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: 'date-time'
+						}
+					}]);
+
+					expect(error3).to.be.instanceof(EjvError);
+
+					if (!error3) {
+						throw new Error('spec failed');
+					}
+
+					expect(error3.type).to.be.eql(ErrorType.FORMAT);
+					expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+						reverse: true,
+						placeholders: ['date-time']
+					}));
+					expect(error3.path).to.be.eql('a');
+					expect(error3.data).to.be.deep.equal(timeDateData3);
+					expect(error3.errorData).to.be.eql(timeDateStr3);
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = ['date-time'];
+
+					const data = {
+						a: 'ejv'
+					};
+
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}])).to.be.null;
+
+
+					const dateTimeStr1: string = '2018-12-19T00:27:35.123Z';
+					const dateTimeData1 = {
+						a: dateTimeStr1
+					};
+
+					const error1: EjvError | null = ejv(dateTimeData1, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}]);
+
+					expect(error1).to.be.instanceof(EjvError);
+
+					if (!error1) {
+						throw new Error('spec failed');
+					}
+
+					expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						reverse: true,
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error1.path).to.be.eql('a');
+					expect(error1.data).to.be.deep.equal(dateTimeData1);
+					expect(error1.errorData).to.be.eql(dateTimeStr1);
+
+
+					const dateTimeStr2: string = '2018-12-19T00:27:35+00:00';
+					const dateTimeData2 = {
+						a: dateTimeStr2
+					};
+
+					const error2: EjvError | null = ejv(dateTimeData2, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}]);
+
+					if (!error2) {
+						throw new Error('spec failed');
+					}
+
+					expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						reverse: true,
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error2.path).to.be.eql('a');
+					expect(error2.data).to.be.deep.equal(dateTimeData2);
+					expect(error2.errorData).to.be.eql(dateTimeStr2);
+
+
+					const dateTimeStr3: string = '20181219T002735Z';
+					const dateTimeData3 = {
+						a: dateTimeStr3
+					};
+
+					const error3: EjvError | null = ejv(dateTimeData3, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							format: formatArr
+						}
+					}]);
+
+					if (!error3) {
+						throw new Error('spec failed');
+					}
+
+					expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
+					expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+						reverse: true,
+						placeholders: [JSON.stringify(formatArr)]
+					}));
+					expect(error3.path).to.be.eql('a');
+					expect(error3.data).to.be.deep.equal(dateTimeData3);
+					expect(error3.errorData).to.be.eql(dateTimeStr3);
+				});
 			});
 		});
 	});
