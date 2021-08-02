@@ -738,7 +738,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						}
 
 						const foundFormatMatching: boolean = formats.some((format: StringFormat): boolean => {
-							let valid = false;
+							let valid: boolean = false;
 
 							switch (format) {
 								case StringFormat.EMAIL:
@@ -861,12 +861,15 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							}) as RegExp[];
 
 							// check value
-							if (!regExpPatterns.some((regexp: RegExp): boolean => {
+							const foundMatchPattern: boolean = regExpPatterns.some((regexp: RegExp): boolean => {
 								return stringRegExpTester(valueAsString, regexp);
-							})) {
+							});
+
+							if (xor(!foundMatchPattern, _options.reverse)) {
 								result = new EjvError({
 									type: ErrorType.PATTERN_ONE_OF,
 									message: createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+										reverse: _options.reverse,
 										placeholders: [createArrayErrorMsg(patternsAsArray)]
 									}),
 
@@ -890,12 +893,13 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							}
 
 							// check value
-							const regExp = new RegExp(patternAsOne);
+							const regExp: RegExp = new RegExp(patternAsOne);
 
-							if (!stringRegExpTester(valueAsString, regExp)) {
+							if (xor(!stringRegExpTester(valueAsString, regExp), _options.reverse)) {
 								result = new EjvError({
 									type: ErrorType.PATTERN,
 									message: createErrorMsg(ErrorMsg.PATTERN, {
+										reverse: _options.reverse,
 										placeholders: [patternToString(patternAsOne)]
 									}),
 
@@ -913,7 +917,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 				}
 
 				case DataType.OBJECT: {
-					const valueAsObject = value as unknown as AnyObject;
+					const valueAsObject: AnyObject = value as unknown as AnyObject;
 					const objectScheme: ObjectScheme = scheme as ObjectScheme;
 
 					if (definedTester(objectScheme.allowNoProperty)) {

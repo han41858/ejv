@@ -1736,303 +1736,712 @@ describe('StringScheme', () => {
 
 	describe('pattern', () => {
 		describe('check parameter', () => {
-			it('undefined is ok', () => {
-				expect(ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+			describe('normal', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: null as unknown as string
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['null']
+					}));
+				});
+
+				it('number', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: 1 as unknown as string
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['1']
+					}));
+				});
+
+				it('empty string', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: ''
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['//']
+					}));
+				});
+
+				it('empty array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: []
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[]']
+					}));
+				});
+
+				it('null array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: [null as unknown as RegExp, /ab/]
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[/null/, /ab/]']
+					}));
+				});
+
+				it('number array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: [1, 3] as unknown as string[]
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[1, 3]']
+					}));
+				});
+
+				it('empty string array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: ['']
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[//]']
+					}));
+				});
+
+				it('empty reg exp', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: new RegExp('')
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['//']
+					}));
+				});
+
+				it('null reg exp', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: new RegExp(null as unknown as string)
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['/null/']
+					}));
+				});
+
+				it('empty reg exp array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						pattern: [new RegExp('')]
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[//]']
+					}));
+				});
+			});
+
+			describe('not', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: undefined
+						}
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: null as unknown as string
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['null']
+					}));
+				});
+
+				it('number', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: 1 as unknown as string
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['1']
+					}));
+				});
+
+				it('empty string', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: ''
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['//']
+					}));
+				});
+
+				it('empty array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: []
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[]']
+					}));
+				});
+
+				it('null array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: [null as unknown as RegExp, /ab/]
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[/null/, /ab/]']
+					}));
+				});
+
+				it('number array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: [1, 3] as unknown as string[]
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[1, 3]']
+					}));
+				});
+
+				it('empty string array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: ['']
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[//]']
+					}));
+				});
+
+				it('empty reg exp', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: new RegExp('')
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['//']
+					}));
+				});
+
+				it('null reg exp', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: new RegExp(null as unknown as string)
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['/null/']
+					}));
+				});
+
+				it('empty reg exp array', () => {
+					expect(() => ejv({
+						a: 'ejv@ejv.com'
+					}, [{
+						key: 'a',
+						type: 'string',
+						not: {
+							pattern: [new RegExp('')]
+						}
+					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+						placeholders: ['[//]']
+					}));
+				});
+			});
+		});
+
+		describe('by string', () => {
+			it('normal', () => {
+				const str: string = 'abc';
+				const data = {
+					a: str
+				};
+
+				expect(ejv(data, [{
 					key: 'a',
 					type: 'string',
-					pattern: undefined
+					pattern: 'ab+c'
+				}])).to.be.null;
+
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: 'ac'
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ErrorType.PATTERN);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
+					placeholders: ['/ac/']
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(str);
+			});
+
+			it('not', () => {
+				const str: string = 'abc';
+				const data = {
+					a: str
+				};
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						pattern: 'ab+c'
+					}
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ErrorType.PATTERN);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
+					reverse: true,
+					placeholders: ['/ac/']
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(str);
+
+
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						pattern: 'ac'
+					}
 				}])).to.be.null;
 			});
+		});
 
-			it('null', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+
+		describe('by string[]', () => {
+			it('normal', () => {
+				const str: string = 'abc';
+				const data = {
+					a: str
+				};
+
+				expect(ejv(data, [{
 					key: 'a',
 					type: 'string',
-					pattern: null as unknown as string
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['null']
+					pattern: ['ab+c']
+				}])).to.be.null;
+
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: ['ac', 'ab+c']
+				}])).to.be.null;
+
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: ['ab+c', 'ac']
+				}])).to.be.null;
+
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: ['abcc', 'ac']
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+					placeholders: ['[/abcc/, /ac/]']
 				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(str);
 			});
 
-			it('number', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					pattern: 1 as unknown as string
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['1']
-				}));
-			});
+			it('not', () => {
+				const str: string = 'abc';
+				const data = {
+					a: str
+				};
 
-			it('empty string', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const error1: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
-					pattern: ''
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['//']
-				}));
-			});
+					not: {
+						pattern: ['ab+c']
+					}
+				}]);
 
-			it('empty array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					pattern: []
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['[]']
-				}));
-			});
+				expect(error1).to.be.instanceof(EjvError);
 
-			it('null array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					pattern: [null as unknown as RegExp, /ab/]
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['[/null/, /ab/]']
-				}));
-			});
+				if (!error1) {
+					throw new Error('spec failed');
+				}
 
-			it('number array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					pattern: [1, 3] as unknown as string[]
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['[1, 3]']
+				expect(error1.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
+				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+					reverse: true,
+					placeholders: ['[/abcc/, /ac/]']
 				}));
-			});
+				expect(error1.path).to.be.eql('a');
+				expect(error1.data).to.be.deep.equal(data);
+				expect(error1.errorData).to.be.eql(str);
 
-			it('empty string array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					pattern: ['']
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['[//]']
-				}));
-			});
 
-			it('empty reg exp', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const error2: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
-					pattern: new RegExp('')
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['//']
-				}));
-			});
+					not: {
+						pattern: ['ac', 'ab+c']
+					}
+				}]);
 
-			it('null reg exp', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
-					key: 'a',
-					type: 'string',
-					pattern: new RegExp(null as unknown as string)
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['/null/']
-				}));
-			});
+				expect(error2).to.be.instanceof(EjvError);
 
-			it('empty reg exp array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				if (!error2) {
+					throw new Error('spec failed');
+				}
+
+				expect(error2.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
+				expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+					reverse: true,
+					placeholders: ['[/abcc/, /ac/]']
+				}));
+				expect(error2.path).to.be.eql('a');
+				expect(error2.data).to.be.deep.equal(data);
+				expect(error2.errorData).to.be.eql(str);
+
+
+				const error3: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
-					pattern: [new RegExp('')]
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-					placeholders: ['[//]']
+					not: {
+						pattern: ['ab+c', 'ac']
+					}
+				}]);
+
+				expect(error3).to.be.instanceof(EjvError);
+
+				if (!error3) {
+					throw new Error('spec failed');
+				}
+
+				expect(error3.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
+				expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+					reverse: true,
+					placeholders: ['[/abcc/, /ac/]']
 				}));
+				expect(error3.path).to.be.eql('a');
+				expect(error3.data).to.be.deep.equal(data);
+				expect(error3.errorData).to.be.eql(str);
+
+
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						pattern: ['abcc', 'ac']
+					}
+				}])).to.be.null;
 			});
 		});
 
-		it('by string', () => {
-			expect(ejv({
-				a: 'abc'
-			}, [{
-				key: 'a',
-				type: 'string',
-				pattern: 'ab+c'
-			}])).to.be.null;
+		describe('by RegExp', () => {
+			it('normal', () => {
+				const str: string = 'abc';
+				const data = {
+					a: str
+				};
 
-			const data = {
-				a: 'abc'
-			};
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: /ab+c/
+				}])).to.be.null;
 
-			const error: EjvError | null = ejv(data, [{
-				key: 'a',
-				type: 'string',
-				pattern: 'ac'
-			}]);
 
-			expect(error).to.be.instanceof(EjvError);
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: /ac/
+				}]);
 
-			if (!error) {
-				throw new Error('spec failed');
-			}
+				expect(error).to.be.instanceof(EjvError);
 
-			expect(error.type).to.be.eql(ErrorType.PATTERN);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
-				placeholders: ['/ac/']
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql('abc');
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ErrorType.PATTERN);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
+					placeholders: [/ac/.toString()]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(str);
+			});
+
+			it('not', () => {
+				const str: string = 'abc';
+				const data = {
+					a: str
+				};
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						pattern: /ab+c/
+					}
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ErrorType.PATTERN);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
+					reverse: true,
+					placeholders: [/ab+c/.toString()]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(str);
+
+
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						pattern: /ac/
+					}
+				}])).to.be.null;
+			});
 		});
 
-		it('by string[]', () => {
-			expect(ejv({
-				a: 'abc'
-			}, [{
-				key: 'a',
-				type: 'string',
-				pattern: ['ab+c']
-			}])).to.be.null;
+		describe('by RegExp[]', () => {
+			it('normal', () => {
+				const str: string = 'abc';
+				const data = {
+					a: str
+				};
 
-			expect(ejv({
-				a: 'abc'
-			}, [{
-				key: 'a',
-				type: 'string',
-				pattern: ['ac', 'ab+c']
-			}])).to.be.null;
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: [/ab+c/]
+				}])).to.be.null;
 
-			expect(ejv({
-				a: 'abc'
-			}, [{
-				key: 'a',
-				type: 'string',
-				pattern: ['ab+c', 'ac']
-			}])).to.be.null;
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: [/ac/, /ab+c/]
+				}])).to.be.null;
 
-			const data = {
-				a: 'abc'
-			};
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: [/ab+c/, /ac/]
+				}])).to.be.null;
 
-			const error: EjvError | null = ejv(data, [{
-				key: 'a',
-				type: 'string',
-				pattern: ['abcc', 'ac']
-			}]);
 
-			expect(error).to.be.instanceof(EjvError);
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					pattern: [/abcc/, /ac/]
+				}]);
 
-			if (!error) {
-				throw new Error('spec failed');
-			}
+				expect(error).to.be.instanceof(EjvError);
 
-			expect(error.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
-				placeholders: ['[/abcc/, /ac/]']
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql('abc');
-		});
+				if (!error) {
+					throw new Error('spec failed');
+				}
 
-		it('by RegExp', () => {
-			expect(ejv({
-				a: 'abc'
-			}, [{
-				key: 'a',
-				type: 'string',
-				pattern: /ab+c/
-			}])).to.be.null;
+				expect(error.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+					placeholders: ['[/abcc/, /ac/]']
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(str);
+			});
 
-			const data = {
-				a: 'abc'
-			};
+			it('not', () => {
+				const str: string = 'abc';
+				const data = {
+					a: str
+				};
 
-			const error: EjvError | null = ejv(data, [{
-				key: 'a',
-				type: 'string',
-				pattern: /ac/
-			}]);
+				const error1: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						pattern: [/ab+c/]
+					}
+				}]);
 
-			expect(error).to.be.instanceof(EjvError);
+				expect(error1).to.be.instanceof(EjvError);
 
-			if (!error) {
-				throw new Error('spec failed');
-			}
+				if (!error1) {
+					throw new Error('spec failed');
+				}
 
-			expect(error.type).to.be.eql(ErrorType.PATTERN);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
-				placeholders: [/ac/.toString()]
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql('abc');
-		});
+				expect(error1.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
+				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+					reverse: true,
+					placeholders: ['[/abcc/, /ac/]']
+				}));
+				expect(error1.path).to.be.eql('a');
+				expect(error1.data).to.be.deep.equal(data);
+				expect(error1.errorData).to.be.eql(str);
 
-		it('by RegExp[]', () => {
-			expect(ejv({
-				a: 'abc'
-			}, [{
-				key: 'a',
-				type: 'string',
-				pattern: /ab+c/
-			}])).to.be.null;
 
-			expect(ejv({
-				a: 'abc'
-			}, [{
-				key: 'a',
-				type: 'string',
-				pattern: [/ac/, /ab+c/]
-			}])).to.be.null;
+				const error2: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						pattern: [/ac/, /ab+c/]
+					}
+				}]);
 
-			expect(ejv({
-				a: 'abc'
-			}, [{
-				key: 'a',
-				type: 'string',
-				pattern: [/ab+c/, /ac/]
-			}])).to.be.null;
+				expect(error2).to.be.instanceof(EjvError);
 
-			const data = {
-				a: 'abc'
-			};
+				if (!error2) {
+					throw new Error('spec failed');
+				}
 
-			const error: EjvError | null = ejv(data, [{
-				key: 'a',
-				type: 'string',
-				pattern: [/abcc/, /ac/]
-			}]);
+				expect(error2.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
+				expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+					reverse: true,
+					placeholders: ['[/abcc/, /ac/]']
+				}));
+				expect(error2.path).to.be.eql('a');
+				expect(error2.data).to.be.deep.equal(data);
+				expect(error2.errorData).to.be.eql(str);
 
-			expect(error).to.be.instanceof(EjvError);
 
-			if (!error) {
-				throw new Error('spec failed');
-			}
+				const error3: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						pattern: [/ab+c/, /ac/]
+					}
+				}]);
 
-			expect(error.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
-				placeholders: ['[/abcc/, /ac/]']
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql('abc');
+				expect(error3).to.be.instanceof(EjvError);
+
+				if (!error3) {
+					throw new Error('spec failed');
+				}
+
+				expect(error3.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
+				expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+					reverse: true,
+					placeholders: ['[/abcc/, /ac/]']
+				}));
+				expect(error3.path).to.be.eql('a');
+				expect(error3.data).to.be.deep.equal(data);
+				expect(error3.errorData).to.be.eql(str);
+
+
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'string',
+					not: {
+						pattern: [/abcc/, /ac/]
+					}
+				}])).to.be.null;
+			});
 		});
 
 		describe('special case', () => {
