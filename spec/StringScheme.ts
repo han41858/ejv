@@ -370,7 +370,7 @@ describe('StringScheme', () => {
 
 				expect(error.type).to.be.eql(ErrorType.LENGTH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.LENGTH, {
-					placeholders: ['' + 4]
+					placeholders: [4]
 				}));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
@@ -464,7 +464,7 @@ describe('StringScheme', () => {
 				expect(error.type).to.be.eql(ErrorType.LENGTH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.LENGTH, {
 					reverse: true,
-					placeholders: ['' + 3]
+					placeholders: [3]
 				}));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
@@ -554,7 +554,7 @@ describe('StringScheme', () => {
 
 				expect(error.type).to.be.eql(ErrorType.MIN_LENGTH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MIN_LENGTH, {
-					placeholders: ['4']
+					placeholders: [4]
 				}));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
@@ -678,7 +678,7 @@ describe('StringScheme', () => {
 
 				expect(error.type).to.be.eql(ErrorType.MAX_LENGTH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MAX_LENGTH, {
-					placeholders: ['2']
+					placeholders: [2]
 				}));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
@@ -789,7 +789,7 @@ describe('StringScheme', () => {
 				expect(error1.type).to.be.eql(ErrorType.MAX_LENGTH);
 				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.MAX_LENGTH, {
 					reverse: true,
-					placeholders: ['3']
+					placeholders: [3]
 				}));
 				expect(error1.path).to.be.eql('a');
 				expect(error1.data).to.be.deep.equal(data);
@@ -813,7 +813,7 @@ describe('StringScheme', () => {
 				expect(error2.type).to.be.eql(ErrorType.MAX_LENGTH);
 				expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.MAX_LENGTH, {
 					reverse: true,
-					placeholders: ['4']
+					placeholders: [4]
 				}));
 				expect(error2.path).to.be.eql('a');
 				expect(error2.data).to.be.deep.equal(data);

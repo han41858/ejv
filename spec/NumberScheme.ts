@@ -338,7 +338,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					expect(ejv({
@@ -428,7 +428,7 @@ describe('NumberScheme', () => {
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 						reverse: true,
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					const error2: EjvError | null = ejv({
@@ -450,7 +450,7 @@ describe('NumberScheme', () => {
 					expect(error2.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 						reverse: true,
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 				});
 			});
@@ -489,7 +489,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					const error2: EjvError | null = ejv({
@@ -509,7 +509,7 @@ describe('NumberScheme', () => {
 
 					expect(error2.type).to.be.eql(ErrorType.GREATER_THAN);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					expect(ejv({
@@ -540,7 +540,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					expect(ejv({
@@ -600,7 +600,7 @@ describe('NumberScheme', () => {
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 						reverse: false, // undefined
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					expect(ejv({
@@ -646,7 +646,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					expect(ejv({
@@ -692,7 +692,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					const error2: EjvError | null = ejv({
@@ -714,7 +714,7 @@ describe('NumberScheme', () => {
 
 					expect(error2.type).to.be.eql(ErrorType.GREATER_THAN);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					expect(ejv({
@@ -801,7 +801,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 				});
 			});
@@ -865,7 +865,7 @@ describe('NumberScheme', () => {
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 						reverse: true,
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					const error2: EjvError | null = ejv({
@@ -887,7 +887,7 @@ describe('NumberScheme', () => {
 					expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 						reverse: true,
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					expect(ejv({
@@ -945,7 +945,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					const error2: EjvError | null = ejv({
@@ -965,7 +965,7 @@ describe('NumberScheme', () => {
 
 					expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 				});
 
@@ -1005,7 +1005,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 				});
 			});
@@ -1068,7 +1068,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 				});
 
@@ -1114,7 +1114,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 				});
 
@@ -1149,7 +1149,7 @@ describe('NumberScheme', () => {
 
 					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN);
 					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 
 					const error2: EjvError | null = ejv({
@@ -1171,7 +1171,7 @@ describe('NumberScheme', () => {
 
 					expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN);
 					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
-						placeholders: ['10']
+						placeholders: [10]
 					}));
 				});
 			});

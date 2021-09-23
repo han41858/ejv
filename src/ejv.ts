@@ -405,7 +405,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										type: ErrorType.GREATER_THAN,
 										message: createErrorMsg(ErrorMsg.GREATER_THAN, {
 											// no reverse because of effectiveExclusive
-											placeholders: ['' + effectiveMin]
+											placeholders: [effectiveMin]
 										}),
 
 										data,
@@ -423,7 +423,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										type: ErrorType.GREATER_THAN_OR_EQUAL,
 										message: createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 											// no reverse because of effectiveExclusive
-											placeholders: ['' + effectiveMin]
+											placeholders: [effectiveMin]
 										}),
 
 										data,
@@ -442,7 +442,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									type: ErrorType.GREATER_THAN_OR_EQUAL,
 									message: createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
 										reverse: _options.reverse,
-										placeholders: ['' + numberScheme.min]
+										placeholders: [effectiveMin]
 									}),
 
 									data,
@@ -477,7 +477,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										type: ErrorType.SMALLER_THAN,
 										message: createErrorMsg(ErrorMsg.SMALLER_THAN, {
 											// no reverse because of effectiveExclusive
-											placeholders: ['' + effectiveMax]
+											placeholders: [effectiveMax]
 										}),
 
 										data,
@@ -495,7 +495,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										type: ErrorType.SMALLER_THAN_OR_EQUAL,
 										message: createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 											// no reverse because of effectiveExclusive
-											placeholders: ['' + effectiveMax]
+											placeholders: [effectiveMax]
 										}),
 
 										data,
@@ -514,7 +514,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									type: ErrorType.SMALLER_THAN_OR_EQUAL,
 									message: createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
 										reverse: _options.reverse,
-										placeholders: ['' + numberScheme.max]
+										placeholders: [effectiveMax]
 									}),
 
 									data,
@@ -658,7 +658,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								type: ErrorType.LENGTH,
 								message: createErrorMsg(ErrorMsg.LENGTH, {
 									reverse: _options.reverse,
-									placeholders: ['' + length]
+									placeholders: [length]
 								}),
 
 								data,

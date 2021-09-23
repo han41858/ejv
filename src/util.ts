@@ -87,13 +87,18 @@ export const clone = <T> (obj: T, sanitize?: boolean): T => {
 
 export const createErrorMsg = (errorMsg: ErrorMsg, param?: {
 	reverse?: boolean // default false
-	placeholders?: string[] // TODO: number[]
+	placeholders?: (string | number)[]
 }): string => {
 	let result: string = errorMsg;
 
 	if (param?.placeholders) {
-		param.placeholders.forEach((strToReplace: string, i: number): void => {
-			result = result.replace(`<<${ i + 1 }>>`, strToReplace);
+		param.placeholders.forEach((strToReplace: string | number, i: number): void => {
+			result = result.replace(
+				`<<${ i + 1 }>>`,
+				typeof strToReplace === 'string'
+					? strToReplace
+					: '' + strToReplace
+			);
 		});
 	}
 

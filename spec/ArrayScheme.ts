@@ -254,7 +254,7 @@ describe('ArrayScheme', () => {
 
 			expect(error.type).to.be.eql(ErrorType.MIN_LENGTH);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MIN_LENGTH, {
-				placeholders: ['4']
+				placeholders: [4]
 			}));
 			expect(error.path).to.be.eql('a');
 			expect(error.data).to.be.deep.equal(testData);
@@ -343,7 +343,7 @@ describe('ArrayScheme', () => {
 
 			expect(error.type).to.be.eql(ErrorType.MAX_LENGTH);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MAX_LENGTH, {
-				placeholders: ['2']
+				placeholders: [2]
 			}));
 			expect(error.path).to.be.eql('a');
 			expect(error.data).to.be.deep.equal(testData);
@@ -702,7 +702,7 @@ describe('ArrayScheme', () => {
 
 				expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-					placeholders: ['' + 2]
+					placeholders: [2]
 				}));
 				expect(error.path).to.be.eql('a/0');
 				expect(error.data).to.be.deep.equal(testObj);
@@ -751,7 +751,7 @@ describe('ArrayScheme', () => {
 
 				expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-					placeholders: ['' + 4]
+					placeholders: [4]
 				}));
 				expect(error.path).to.be.eql('a/0/number');
 				expect(error.data).to.be.deep.equal(data);
@@ -790,7 +790,7 @@ describe('ArrayScheme', () => {
 
 				expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-					placeholders: ['' + 4]
+					placeholders: [4]
 				}));
 				expect(error.path).to.be.eql('a/0/b/c/d/number');
 				expect(error.data).to.be.deep.equal(data);
