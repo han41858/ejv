@@ -369,7 +369,9 @@ describe('StringScheme', () => {
 				}
 
 				expect(error.type).to.be.eql(ErrorType.LENGTH);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.LENGTH));
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.LENGTH, {
+					placeholders: ['' + 4]
+				}));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
 				expect(error.errorData).to.be.eql(str);
@@ -461,7 +463,8 @@ describe('StringScheme', () => {
 
 				expect(error.type).to.be.eql(ErrorType.LENGTH);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.LENGTH, {
-					reverse: true
+					reverse: true,
+					placeholders: ['' + 3]
 				}));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
@@ -2081,7 +2084,7 @@ describe('StringScheme', () => {
 				expect(error.type).to.be.eql(ErrorType.PATTERN);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
 					reverse: true,
-					placeholders: ['/ac/']
+					placeholders: ['/ab+c/']
 				}));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
@@ -2169,7 +2172,7 @@ describe('StringScheme', () => {
 				expect(error1.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
 				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
 					reverse: true,
-					placeholders: ['[/abcc/, /ac/]']
+					placeholders: ['[/ab+c/]']
 				}));
 				expect(error1.path).to.be.eql('a');
 				expect(error1.data).to.be.deep.equal(data);
@@ -2193,7 +2196,7 @@ describe('StringScheme', () => {
 				expect(error2.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
 				expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
 					reverse: true,
-					placeholders: ['[/abcc/, /ac/]']
+					placeholders: ['[/ac/, /ab+c/]']
 				}));
 				expect(error2.path).to.be.eql('a');
 				expect(error2.data).to.be.deep.equal(data);
@@ -2217,7 +2220,7 @@ describe('StringScheme', () => {
 				expect(error3.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
 				expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
 					reverse: true,
-					placeholders: ['[/abcc/, /ac/]']
+					placeholders: ['[/ab+c/, /ac/]']
 				}));
 				expect(error3.path).to.be.eql('a');
 				expect(error3.data).to.be.deep.equal(data);
@@ -2379,7 +2382,7 @@ describe('StringScheme', () => {
 				expect(error1.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
 				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
 					reverse: true,
-					placeholders: ['[/abcc/, /ac/]']
+					placeholders: ['[/ab+c/]']
 				}));
 				expect(error1.path).to.be.eql('a');
 				expect(error1.data).to.be.deep.equal(data);
@@ -2403,7 +2406,7 @@ describe('StringScheme', () => {
 				expect(error2.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
 				expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
 					reverse: true,
-					placeholders: ['[/abcc/, /ac/]']
+					placeholders: ['[/ac/, /ab+c/]']
 				}));
 				expect(error2.path).to.be.eql('a');
 				expect(error2.data).to.be.deep.equal(data);
@@ -2427,7 +2430,7 @@ describe('StringScheme', () => {
 				expect(error3.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
 				expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
 					reverse: true,
-					placeholders: ['[/abcc/, /ac/]']
+					placeholders: ['[/ab+c/, /ac/]']
 				}));
 				expect(error3.path).to.be.eql('a');
 				expect(error3.data).to.be.deep.equal(data);
