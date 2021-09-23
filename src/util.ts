@@ -93,7 +93,7 @@ export const createErrorMsg = (errorMsg: ErrorMsg, param?: {
 
 	if (param?.placeholders) {
 		param.placeholders.forEach((strToReplace: string, i: number): void => {
-			result = result.replace(`<<${ i }>>`, strToReplace);
+			result = result.replace(`<<${ i + 1 }>>`, strToReplace);
 		});
 	}
 
