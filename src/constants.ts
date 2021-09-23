@@ -53,7 +53,7 @@ export enum ErrorType {
 	PATTERN = 'PATTERN',
 	PATTERN_ONE_OF = 'PATTERN_ONE_OF',
 
-	NO_PROPERTY = 'NO_PROPERTY',
+	PROPERTY = 'PROPERTY',
 
 	AFTER_OR_SAME_DATE = 'AFTER_OR_SAME_DATE',
 	AFTER_DATE = 'AFTER_DATE',
@@ -136,7 +136,7 @@ export enum ErrorMsg {
 	PATTERN = 'the value should <<not>>be pattern of <<1>>', // pattern
 	PATTERN_ONE_OF = 'the value should <<not>>be one of pattern of <<1>>', // pattern
 
-	NO_PROPERTY = 'the value should <<not>>have property',
+	PROPERTY = 'the value should have property',
 
 	AFTER_OR_SAME_DATE = 'the value should <<not>>be after or same date than <<1>>', // date
 	AFTER_DATE = 'the value should <<not>>be after date than <<1>>', // date

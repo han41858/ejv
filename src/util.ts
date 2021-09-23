@@ -87,7 +87,7 @@ export const clone = <T> (obj: T, sanitize?: boolean): T => {
 
 export const createErrorMsg = (errorMsg: ErrorMsg, param?: {
 	reverse?: boolean // default false
-	placeholders?: string[]
+	placeholders?: string[] // TODO: number[]
 }): string => {
 	let result: string = errorMsg;
 
