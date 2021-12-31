@@ -1,4 +1,4 @@
-import { AnyObject, Scheme } from './interfaces';
+import { AnyObject, DateScheme, NumberScheme, Scheme } from './interfaces';
 import { ErrorMsg, ErrorMsgCursorNot } from './constants';
 
 
@@ -122,4 +122,73 @@ export const getBothKeys = (a: Scheme, b: Scheme): string[] => {
 
 		return acc;
 	}, []);
+};
+
+
+const toEffectiveFlatSchemeOnce = <T extends NumberScheme | DateScheme> (scheme: T, reverse: boolean = false): T => {
+	const flatScheme: T = {} as T;
+
+	const schemeKeys: (keyof T)[] = Object.keys(scheme) as (keyof T)[];
+
+	for (const key of schemeKeys) {
+		switch (key) {
+			case 'min':
+				if (!reverse) {
+					flatScheme.min = scheme.min;
+
+					if (scheme.exclusiveMin !== undefined) {
+						flatScheme.exclusiveMin = scheme.exclusiveMin;
+					}
+				}
+				else {
+					flatScheme.max = scheme.min;
+					flatScheme.exclusiveMax = xor(!!scheme.exclusiveMin, reverse);
+				}
+				break;
+
+			case 'exclusiveMin':
+				flatScheme.exclusiveMin = xor(!!scheme.exclusiveMin, reverse);
+				break;
+
+			case 'not': {
+				// const notScheme: T | T[] | undefined = scheme.not; // TODO: array
+				const notScheme: T = scheme.not as T;
+
+				const notFlatScheme: T = toEffectiveFlatSchemeOnce(notScheme, !reverse);
+				const notFlatSchemeKeys: (keyof T)[] = Object.keys(notFlatScheme) as (keyof T)[];
+
+				for (const notFlatKey of notFlatSchemeKeys) {
+					if (flatScheme[notFlatKey] === undefined) {
+						// not overwrite
+						flatScheme[notFlatKey] = notFlatScheme[notFlatKey];
+					}
+				}
+
+				delete flatScheme.not;
+
+				break;
+			}
+
+			default:
+				flatScheme[key] = scheme[key];
+		}
+	}
+
+	return flatScheme;
+};
+
+// for NumberScheme, DateScheme
+export const toEffectiveFlatScheme = <T extends NumberScheme | DateScheme> (scheme: T): T => {
+	const flatScheme: T = toEffectiveFlatSchemeOnce(scheme);
+
+	// delete redundancies
+	if (flatScheme.exclusiveMin !== undefined && flatScheme.min === undefined) {
+		delete flatScheme.exclusiveMin;
+	}
+
+	if (flatScheme.exclusiveMax !== undefined && flatScheme.max === undefined) {
+		delete flatScheme.exclusiveMax;
+	}
+
+	return flatScheme;
 };
