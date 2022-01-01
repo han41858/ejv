@@ -150,6 +150,24 @@ const toEffectiveFlatSchemeOnce = <T extends NumberScheme | DateScheme> (scheme:
 				flatScheme.exclusiveMin = xor(!!scheme.exclusiveMin, reverse);
 				break;
 
+			case 'max':
+				if (!reverse) {
+					flatScheme.max = scheme.max;
+
+					if (scheme.exclusiveMax !== undefined) {
+						flatScheme.exclusiveMax = scheme.exclusiveMax;
+					}
+				}
+				else {
+					flatScheme.min = scheme.max;
+					flatScheme.exclusiveMin = xor(!!scheme.exclusiveMax, reverse);
+				}
+				break;
+
+			case 'exclusiveMax':
+				flatScheme.exclusiveMax = xor(!!scheme.exclusiveMax, reverse);
+				break;
+
 			case 'not': {
 				// const notScheme: T | T[] | undefined = scheme.not; // TODO: array
 				const notScheme: T = scheme.not as T;
@@ -182,11 +200,17 @@ export const toEffectiveFlatScheme = <T extends NumberScheme | DateScheme> (sche
 	const flatScheme: T = toEffectiveFlatSchemeOnce(scheme);
 
 	// delete redundancies
-	if (flatScheme.exclusiveMin !== undefined && flatScheme.min === undefined) {
+	if (
+		(flatScheme.exclusiveMin !== undefined && flatScheme.min === undefined)
+		|| flatScheme.exclusiveMin === false // default value
+	) {
 		delete flatScheme.exclusiveMin;
 	}
 
-	if (flatScheme.exclusiveMax !== undefined && flatScheme.max === undefined) {
+	if (
+		(flatScheme.exclusiveMax !== undefined && flatScheme.max === undefined)
+		|| flatScheme.exclusiveMax === false // default value
+	) {
 		delete flatScheme.exclusiveMax;
 	}
 
