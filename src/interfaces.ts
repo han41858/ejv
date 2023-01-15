@@ -16,14 +16,16 @@ interface CommonScheme {
 // no additional rule
 export type BooleanScheme = CommonScheme;
 
-export interface NumberScheme extends CommonScheme {
+export interface MinMaxScheme<T> extends CommonScheme {
+	min?: T;
+	exclusiveMin?: boolean; // default false
+
+	max?: T;
+	exclusiveMax?: boolean; // default false
+}
+
+export interface NumberScheme extends MinMaxScheme<number> {
 	value?: number; // TODO: need to add
-
-	min?: number;
-	exclusiveMin?: boolean; // false
-
-	max?: number;
-	exclusiveMax?: boolean; // false
 
 	enum?: number[];
 
@@ -48,12 +50,10 @@ export interface ObjectScheme extends CommonScheme {
 	allowNoProperty?: boolean; // true
 }
 
-export interface DateScheme extends CommonScheme {
-	min?: number | string | Date; // string for date string
-	exclusiveMin?: boolean; // false
 
-	max?: number | string | Date; // string for date string
-	exclusiveMax?: boolean; // false
+/* eslint-disable @typescript-eslint/no-empty-interface */
+export interface DateScheme extends MinMaxScheme<number | string | Date> {
+	// min, max string for date string
 }
 
 // no additional rule

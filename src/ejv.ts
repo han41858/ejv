@@ -126,6 +126,14 @@ function _extendsNotScheme (key: string, parentScheme: Scheme, notScheme: Scheme
 	const newScheme: Scheme = clone(notScheme);
 	newScheme.key = key;
 
+	// inject additional relative property
+	if ('min' in parentScheme && parentScheme.min !== undefined
+		&& 'exclusiveMin' in notScheme && notScheme.exclusiveMin !== undefined) {
+		if ('exclusiveMin' in newScheme) {
+			newScheme.exclusiveMin = !notScheme.exclusiveMin;
+		}
+	}
+
 	return newScheme;
 }
 
@@ -145,6 +153,8 @@ function _getEffectiveTypes (scheme: Scheme, options: InternalOptions): DataType
 }
 
 const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | EjvError => {
+	console.log('_ejv() %o', { data, schemes, options });
+
 	// check schemes
 	if (!arrayTester(schemes)) {
 		throw new Error(createErrorMsg(ErrorMsg.NO_ARRAY_SCHEME));
@@ -244,6 +254,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 			const typeResolved: DataType | undefined = types.find((type: DataType): type is DataType => {
 				return typeTester(value, type);
 			});
+
+			console.warn('typeResolved :', typeResolved);
 
 			if (typeResolved) {
 				if (definedTester(scheme.type)) {
@@ -399,8 +411,11 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							const effectiveExclusive: boolean = xor(_options.reverse, numberScheme.exclusiveMin);
 
+							console.log('effectiveExclusive :', effectiveExclusive);
+
 							if (effectiveExclusive) {
 								if (!exclusiveMinNumberTester(valueAsNumber, effectiveMin)) {
+									console.log(1);
 									result = new EjvError({
 										type: ErrorType.GREATER_THAN,
 										message: createErrorMsg(ErrorMsg.GREATER_THAN, {
@@ -1048,67 +1063,87 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 				case DataType.DATE: {
 					const valueAsDate: Date = value as unknown as Date;
 					const dateScheme: DateScheme = scheme as DateScheme;
+					const parentDateScheme: DateScheme | undefined = _options.parentScheme as DateScheme | undefined;
 
-					if (definedTester(dateScheme.min)) {
+					console.warn('dateScheme :', dateScheme);
+
+					if (definedTester(dateScheme.min) || definedTester(dateScheme.exclusiveMin)) {
+						const minDateCandidate: string | number | Date | undefined = dateScheme.min || parentDateScheme?.min;
+
 						if (!(
-							(stringTester(dateScheme.min)
+							(stringTester(minDateCandidate)
 								&& (
-									dateFormatTester(dateScheme.min as string)
-									|| dateTimeFormatTester(dateScheme.min as string)
+									dateFormatTester(minDateCandidate as string)
+									|| dateTimeFormatTester(minDateCandidate as string)
 								)
 							)
-							|| dateTester(dateScheme.min)
+							|| dateTester(minDateCandidate)
 						)) {
 							throw new Error(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
 						}
+
+						const minDate: Date = new Date(minDateCandidate);
 
 						if (definedTester(dateScheme.exclusiveMin) && !booleanTester(dateScheme.exclusiveMin)) {
 							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
 						}
 
-						let minDate: Date = new Date(dateScheme.min as string | Date);
+						// TODO: child-parent opposite exclusive
 
-						// adjust timezone
-						if (stringTester(dateScheme.min)) {
-							// by minutes
-							const timezoneOffset: number = minDate.getTimezoneOffset();
+						const exclusiveConditions: boolean[] = [
+							!_options.reverse && !!dateScheme.exclusiveMin, // normal, exclusive
+							_options.reverse && parentDateScheme?.exclusiveMin === false, // reverse, parent exclusive
+							!_options.reverse && dateScheme.not !== undefined && 'exclusiveMin' in dateScheme.not && !dateScheme.not.exclusiveMin, // normal, child not
+							_options.reverse && dateScheme.not !== undefined && 'exclusiveMin' in dateScheme.not && !!dateScheme.not.exclusiveMin
+						];
 
-							minDate = new Date(+minDate + (timezoneOffset * 60 * 1000));
-						}
 
-						if (dateScheme.exclusiveMin !== true) {
-							if (!minDateTester(valueAsDate, minDate)) {
-								result = new EjvError({
-									type: ErrorType.AFTER_OR_SAME_DATE,
-									message: createErrorMsg(ErrorMsg.AFTER_OR_SAME_DATE, {
-										placeholders: [minDate.toISOString()]
-									}),
+						console.warn('exclusiveConditions');
+						console.table(exclusiveConditions);
 
-									data,
-									path: _options.path,
+						const effectiveExclusive: boolean = exclusiveConditions.includes(true);
 
-									errorScheme: dateScheme,
-									errorData: value
-								});
-								break;
-							}
+						let validatorFnc: (checkDate: Date, schemeDate: Date) => boolean;
+
+						if (!options.reverse) {
+							validatorFnc = !effectiveExclusive
+								? minDateTester
+								: exclusiveMinDateTester;
 						}
 						else {
-							if (!exclusiveMinDateTester(valueAsDate, minDate)) {
-								result = new EjvError({
-									type: ErrorType.AFTER_DATE,
-									message: createErrorMsg(ErrorMsg.AFTER_DATE, {
-										placeholders: [minDate.toISOString()]
-									}),
+							validatorFnc = !effectiveExclusive
+								? exclusiveMaxDateTester
+								: maxDateTester;
+						}
 
-									data,
-									path: _options.path,
 
-									errorScheme: dateScheme,
-									errorData: value
-								});
-								break;
-							}
+						console.warn({
+							effectiveExclusive,
+							validatorFnc
+						});
+
+						if (!validatorFnc(valueAsDate, minDate)) {
+							const errorKey: keyof typeof ErrorType = (
+								(!options.reverse && !dateScheme.exclusiveMin)
+								|| (options.reverse && !parentDateScheme?.exclusiveMin)
+							)
+								? 'AFTER_OR_SAME_DATE'
+								: 'AFTER_DATE';
+
+							result = new EjvError({
+								type: ErrorType[errorKey],
+								message: createErrorMsg(ErrorMsg[errorKey], {
+									placeholders: [minDate.toISOString()],
+									reverse: _options.reverse
+								}),
+
+								data,
+								path: _options.path,
+
+								errorScheme: dateScheme,
+								errorData: value
+							});
+							break;
 						}
 					}
 
@@ -1129,15 +1164,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
 						}
 
-						let maxDate: Date = new Date(dateScheme.max as string | Date);
-
-						// adjust timezone
-						if (stringTester(dateScheme.max)) {
-							// by minutes
-							const timezoneOffset: number = maxDate.getTimezoneOffset();
-
-							maxDate = new Date(+maxDate + (timezoneOffset * 60 * 1000));
-						}
+						const maxDate: Date = new Date(dateScheme.max as string | Date);
 
 						if (dateScheme.exclusiveMax !== true) {
 							if (!maxDateTester(valueAsDate, maxDate)) {
@@ -1448,7 +1475,18 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 			const optionsForNot: InternalOptions = clone(options);
 			optionsForNot.reverse = !optionsForNot.reverse;
-			optionsForNot.parentScheme = scheme;
+			optionsForNot.parentScheme = Object.entries(scheme).reduce((acc: Scheme, [_key, _value]): Scheme => {
+				if (_key !== 'not') {
+					const asKey: keyof Scheme = _key as keyof Scheme;
+
+					if (scheme[asKey] !== undefined) {
+						acc[asKey] = _value;
+					}
+				}
+
+				return acc;
+			}, {});
+
 
 			const tempKey: string = '' + +new Date();
 
@@ -1479,6 +1517,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 			}
 		}
 	}
+
+	console.log('result :', result);
 
 	if (result !== null && definedTester(options.customErrorMsg)) {
 		const customErrorMsgObj: {

@@ -123,6 +123,7 @@ export enum ErrorMsg {
 	FORMAT = 'the value should <<not>>be a form of <<1>>', // format
 	FORMAT_ONE_OF = 'the value should <<not>>be form of one of <<1>>',
 
+	// TODO: or -> neither
 	GREATER_THAN_OR_EQUAL = 'the value should <<not>>be greater or equal than <<1>>', // min
 	GREATER_THAN = 'the value should <<not>>be greater than <<1>>', // min
 

@@ -1,4 +1,4 @@
-import { AnyObject, DateScheme, NumberScheme, Scheme } from './interfaces';
+import { AnyObject, MinMaxScheme, Scheme } from './interfaces';
 import { ErrorMsg, ErrorMsgCursorNot } from './constants';
 
 
@@ -14,6 +14,13 @@ enum CloneDataType {
 	RegExp = 'regexp'
 }
 
+export const isArray = <T> (value: unknown): value is T[] => {
+	return value !== undefined
+		&& value !== null
+		&& Array.isArray(value);
+};
+
+
 // sanitize removes undefined & null fields from object. default false
 export const clone = <T> (obj: T, sanitize?: boolean): T => {
 	let result !: T;
@@ -24,7 +31,7 @@ export const clone = <T> (obj: T, sanitize?: boolean): T => {
 		if (type === CloneDataType.Object) {
 			const objAsObject: AnyObject = obj as unknown as AnyObject;
 
-			if (Array.isArray(objAsObject)) {
+			if (isArray(objAsObject)) {
 				type = CloneDataType.Array;
 			}
 			else if (objAsObject instanceof Date) {
@@ -125,94 +132,171 @@ export const getBothKeys = (a: Scheme, b: Scheme): string[] => {
 };
 
 
-const toEffectiveFlatSchemeOnce = <T extends NumberScheme | DateScheme> (scheme: T, reverse: boolean = false): T => {
-	const flatScheme: T = {} as T;
+const extractCandidates = <T extends MinMaxScheme<unknown>> (schemes: T[], reverse: boolean = false): T[] => {
+	return schemes.reduce((acc: T[], one: T): T[] => {
+		if (one.not !== undefined) {
+			const notScheme: T | T[] = one.not as T | T[];
 
-	const schemeKeys: (keyof T)[] = Object.keys(scheme) as (keyof T)[];
+			const notFlatSchemes: T[] = extractCandidates(
+				isArray(notScheme)
+					? notScheme
+					: [notScheme]
+				, !reverse);
 
-	for (const key of schemeKeys) {
-		switch (key) {
-			case 'min':
-				if (!reverse) {
-					flatScheme.min = scheme.min;
+			acc.push(...notFlatSchemes);
 
-					if (scheme.exclusiveMin !== undefined) {
-						flatScheme.exclusiveMin = scheme.exclusiveMin;
-					}
-				}
-				else {
-					flatScheme.max = scheme.min;
-					flatScheme.exclusiveMax = xor(!!scheme.exclusiveMin, reverse);
-				}
-				break;
-
-			case 'exclusiveMin':
-				flatScheme.exclusiveMin = xor(!!scheme.exclusiveMin, reverse);
-				break;
-
-			case 'max':
-				if (!reverse) {
-					flatScheme.max = scheme.max;
-
-					if (scheme.exclusiveMax !== undefined) {
-						flatScheme.exclusiveMax = scheme.exclusiveMax;
-					}
-				}
-				else {
-					flatScheme.min = scheme.max;
-					flatScheme.exclusiveMin = xor(!!scheme.exclusiveMax, reverse);
-				}
-				break;
-
-			case 'exclusiveMax':
-				flatScheme.exclusiveMax = xor(!!scheme.exclusiveMax, reverse);
-				break;
-
-			case 'not': {
-				// const notScheme: T | T[] | undefined = scheme.not; // TODO: array
-				const notScheme: T = scheme.not as T;
-
-				const notFlatScheme: T = toEffectiveFlatSchemeOnce(notScheme, !reverse);
-				const notFlatSchemeKeys: (keyof T)[] = Object.keys(notFlatScheme) as (keyof T)[];
-
-				for (const notFlatKey of notFlatSchemeKeys) {
-					if (flatScheme[notFlatKey] === undefined) {
-						// not overwrite
-						flatScheme[notFlatKey] = notFlatScheme[notFlatKey];
-					}
-				}
-
-				delete flatScheme.not;
-
-				break;
-			}
-
-			default:
-				flatScheme[key] = scheme[key];
+			delete one.not;
 		}
-	}
 
-	return flatScheme;
+
+		const oneSanitized: T = {} as T;
+
+		Object.keys(one).forEach((_key: string): void => {
+			const key: keyof T = _key as keyof T;
+
+			if (one[key] !== undefined) {
+				switch (key) {
+					case 'min':
+						if (!reverse) {
+							oneSanitized.min = one.min;
+						}
+						else {
+							oneSanitized.max = one.min;
+							oneSanitized.exclusiveMax = xor(!!one.exclusiveMin, reverse);
+						}
+						break;
+
+					case 'exclusiveMin':
+						oneSanitized.exclusiveMin = xor(!!one.exclusiveMin, reverse);
+						break;
+
+					case 'max':
+						if (!reverse) {
+							oneSanitized.max = one.max;
+						}
+						else {
+							oneSanitized.min = one.max;
+							oneSanitized.exclusiveMin = xor(!!one.exclusiveMax, reverse);
+						}
+						break;
+
+					case 'exclusiveMax':
+						oneSanitized.exclusiveMax = xor(!!one.exclusiveMax, reverse);
+						break;
+
+					default:
+						oneSanitized[key] = one[key];
+				}
+			}
+		});
+
+		acc.push(oneSanitized);
+
+		return acc;
+	}, []);
 };
 
+
 // for NumberScheme, DateScheme
-export const toEffectiveFlatScheme = <T extends NumberScheme | DateScheme> (scheme: T): T => {
-	const flatScheme: T = toEffectiveFlatSchemeOnce(scheme);
+// assume same type schemes
+export const toEffectiveFlatScheme = <T extends MinMaxScheme<unknown>> (scheme: T | T[]): T[] => {
+	console.warn('toEffectiveFlatScheme()', scheme);
+
+	const flatSchemeCandidates: T[] = extractCandidates(
+		isArray(scheme)
+			? scheme
+			: [scheme]
+	);
+
+	console.log('candidates');
+	console.table(flatSchemeCandidates);
+
+
+	// accumulate to one scheme
+	const flatScheme: T = flatSchemeCandidates.reduce((acc: T, one: T): T => {
+		console.log({ acc, one });
+
+		Object.keys(one).forEach((_key: string): void => {
+			const key: keyof T = _key as keyof T;
+			console.log({ key, value: one[key] });
+
+			if (one[key] !== undefined) {
+				switch (key) {
+					case 'min':
+						if (acc[key] === undefined
+							|| acc[key] < one[key]) {
+							acc[key] = one[key];
+
+							// delete previous value
+							delete acc.exclusiveMin;
+
+							// set new value
+							console.log('exMin set by min');
+
+							acc.exclusiveMin = one.exclusiveMin;
+						}
+						break;
+
+					case 'exclusiveMin':
+						if (one.min === undefined) {
+							console.log('exMin set by self');
+							acc.exclusiveMin = one.exclusiveMin;
+						}
+						break;
+
+					case 'max':
+						if (acc[key] === undefined
+							|| acc[key] > one[key]) {
+							acc[key] = one[key];
+
+							console.log('set max');
+
+							// delete previous value
+							delete acc.exclusiveMax;
+
+							// set new value
+							console.log('exMax set by max');
+							acc.exclusiveMax = one.exclusiveMax;
+						}
+						break;
+
+					case 'exclusiveMax':
+						if (one.max === undefined) {
+							console.log('exMax set by self');
+							acc.exclusiveMax = one.exclusiveMax;
+						}
+						break;
+
+					case 'type':
+						acc.type = one.type;
+						break;
+				}
+			}
+		});
+
+		return acc;
+	}, {} as T);
 
 	// delete redundancies
 	if (
-		(flatScheme.exclusiveMin !== undefined && flatScheme.min === undefined)
-		|| flatScheme.exclusiveMin === false // default value
+		!flatScheme.exclusiveMin // undefined / default false
+		|| flatScheme.min === undefined // no min
 	) {
+		console.log('delete exMin', [!flatScheme.exclusiveMin, flatScheme.min === undefined]);
 		delete flatScheme.exclusiveMin;
 	}
 
 	if (
-		(flatScheme.exclusiveMax !== undefined && flatScheme.max === undefined)
-		|| flatScheme.exclusiveMax === false // default value
+		!flatScheme.exclusiveMax // undefined / default false
+		|| flatScheme.max === undefined // no max
 	) {
 		delete flatScheme.exclusiveMax;
 	}
 
-	return flatScheme;
+	console.log('final flatScheme:');
+	console.table([flatScheme]);
+
+	// TODO
+	// return flatScheme;
+	return [];
 };
