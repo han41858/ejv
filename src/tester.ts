@@ -169,7 +169,7 @@ const iso8601DateTester = (value: string): boolean => {
 		new RegExp(`^${ years }-${ weeks }(-${ days })?$`), // week dates : YYYY-Www, YYYY-Www-D
 		new RegExp(`^${ years }${ weeks }(${ days })?$`), // week dates : YYYYWww, YYYYWwwD
 		new RegExp(`^${ years }-?${ dateOfYear }$`) // ordinal dates : YYYY-DDD, YYYYDDD
-	].some((regExp: RegExp) => {
+	].some((regExp: RegExp): boolean => {
 		return regExp.test(value);
 	});
 };
@@ -190,7 +190,7 @@ const iso8601TimeTester = (value: string): boolean => {
 		new RegExp(`^(${ hours }${ minutes }${ seconds }|240000)$`), // hhmmss
 		new RegExp(`^(${ hours }${ minutes }${ seconds }${ ms }|240000.0+)$`) // hhmmss.sss
 	]
-		.some((regExp: RegExp) => {
+		.some((regExp: RegExp): boolean => {
 			return regExp.test(value);
 		});
 };
@@ -209,7 +209,9 @@ const iso8601DateTimeTester = (value: string): boolean => {
 			time = time.replace('Z', '');
 		}
 		else {
-			const timezoneStartIndex: number = time.includes('+') ? time.indexOf('+') : time.indexOf('-');
+			const timezoneStartIndex: number = time.includes('+')
+				? time.indexOf('+')
+				: time.indexOf('-');
 
 			time = time.substr(0, timezoneStartIndex);
 		}
@@ -290,14 +292,14 @@ export const arrayTester = (value: unknown): value is unknown[] => {
 };
 
 export const arrayTypeOfTester = (array: unknown[], type: DataType): boolean => {
-	return array.every((item: unknown) => {
+	return array.every((item: unknown): boolean => {
 		return typeTester(item, type);
 	});
 };
 
 export const uniqueItemsTester = (array: unknown[]): boolean => {
-	return array.every(item => {
-		return array.filter((target: unknown) => target === item).length === 1;
+	return array.every((item: unknown): boolean => {
+		return array.filter((target: unknown): boolean => target === item).length === 1;
 	});
 };
 

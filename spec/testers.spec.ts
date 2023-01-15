@@ -794,7 +794,7 @@ describe('testers', function () {
 				expect(arrayTypeOfTester([1, 2], DataType.NUMBER)).to.be.true;
 				expect(arrayTypeOfTester([1, 2, '3'], DataType.NUMBER)).to.be.false;
 
-				expect(arrayTypeOfTester([new Date, new Date, new Date], DataType.DATE)).to.be.true;
+				expect(arrayTypeOfTester([new Date(), new Date(), new Date()], DataType.DATE)).to.be.true;
 			});
 		});
 

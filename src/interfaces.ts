@@ -1,9 +1,11 @@
 import { DataType, ErrorType, NumberFormat, StringFormat } from './constants';
 
+export type AllDataType = string | string[] | DataType | DataType[];
+
 
 interface CommonScheme {
 	key?: string; // can be omitted in array items
-	type?: string | string[] | DataType | DataType[]; // optional for not
+	type?: AllDataType; // optional for not
 
 	optional?: boolean; // false
 	nullable?: boolean; // false
@@ -14,22 +16,26 @@ interface CommonScheme {
 // no additional rule
 export type BooleanScheme = CommonScheme;
 
-export interface NumberScheme extends CommonScheme {
-	min?: number;
-	exclusiveMin?: boolean; // false
+export interface MinMaxScheme<T> extends CommonScheme {
+	min?: T;
+	exclusiveMin?: boolean; // default false
 
-	max?: number;
-	exclusiveMax?: boolean; // false
+	max?: T;
+	exclusiveMax?: boolean; // default false
+}
+
+export interface NumberScheme extends MinMaxScheme<number> {
+	value?: number; // TODO: need to add
 
 	enum?: number[];
-	enumReverse?: number[]; // TODO: deprecate with not
 
 	format?: string | string[] | NumberFormat | NumberFormat[];
 }
 
 export interface StringScheme extends CommonScheme {
+	value?: string; // TODO: need to add
+
 	enum?: string[];
-	enumReverse?: string[]; // TODO: deprecate with not
 
 	format?: string | string[] | StringFormat | StringFormat[];
 	pattern?: string | string[] | RegExp | RegExp[];
@@ -44,12 +50,10 @@ export interface ObjectScheme extends CommonScheme {
 	allowNoProperty?: boolean; // true
 }
 
-export interface DateScheme extends CommonScheme {
-	min?: number | string | Date; // string for date string
-	exclusiveMin?: boolean; // false
 
-	max?: number | string | Date; // string for date string
-	exclusiveMax?: boolean; // false
+/* eslint-disable @typescript-eslint/no-empty-interface */
+export interface DateScheme extends MinMaxScheme<number | string | Date> {
+	// min, max string for date string
 }
 
 // no additional rule
@@ -57,7 +61,7 @@ export type RegExpScheme = CommonScheme;
 
 export interface ArrayScheme extends CommonScheme {
 	unique?: boolean; // false
-	items?: string | string[] | DataType | DataType[] | Scheme | Scheme[];
+	items?: AllDataType | Scheme | Scheme[];
 
 	length?: number;
 	minLength?: number;
@@ -82,7 +86,9 @@ export interface Options {
 
 export interface InternalOptions extends Options {
 	path: string[];
-	positiveTrue: boolean; // true, for not
+	reverse: boolean; // default false, for not
+
+	parentScheme?: Scheme;
 }
 
 export class EjvError {
@@ -92,8 +98,8 @@ export class EjvError {
 	public data: unknown;
 	public path: string;
 
-	public errorScheme?: Scheme;
-	public errorData?: unknown;
+	public errorScheme: Scheme;
+	public errorData: unknown;
 
 	constructor (param: {
 		type: ErrorType,
@@ -102,8 +108,8 @@ export class EjvError {
 		data: unknown,
 		path: string[],
 
-		errorScheme?: Scheme,
-		errorData?: unknown
+		errorScheme: Scheme,
+		errorData: unknown
 	}) {
 		this.type = param.type;
 		this.message = param.message;
