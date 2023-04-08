@@ -700,8 +700,8 @@ describe('ArrayScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+				expect(error.type).to.be.eql(ErrorType.BIGGER_THAN_OR_EQUAL);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
 					placeholders: [2]
 				}));
 				expect(error.path).to.be.eql('a/0');
@@ -749,8 +749,8 @@ describe('ArrayScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+				expect(error.type).to.be.eql(ErrorType.BIGGER_THAN_OR_EQUAL);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
 					placeholders: [4]
 				}));
 				expect(error.path).to.be.eql('a/0/number');
@@ -788,8 +788,8 @@ describe('ArrayScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+				expect(error.type).to.be.eql(ErrorType.BIGGER_THAN_OR_EQUAL);
+				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
 					placeholders: [4]
 				}));
 				expect(error.path).to.be.eql('a/0/b/c/d/number');

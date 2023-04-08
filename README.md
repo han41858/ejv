@@ -201,7 +201,7 @@ ejv({
 - `max : number`
 
 Checks the maximum value.
-Error occurs if the number is greater than this value.
+Error occurs if the number is bigger than this value.
 
 - `exclusiveMax : boolean`
 
@@ -526,7 +526,7 @@ If the JSON object passes the validation rule, it returns the `null` object, but
 The `EjvError` object is an object that represents the error that occurred at this time.
 
 > You do not always need to use `EjvError` type.
-However, if you use TypeScript, you can use it to refer to the property of an error object.
+> However, if you use TypeScript, you can use it to refer to the property of an error object.
 
 - `type : ErrorType`
 

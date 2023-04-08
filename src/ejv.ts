@@ -106,7 +106,21 @@ function _isNotSchemeEffective (scheme: Scheme[] | Scheme): boolean {
 		const keys: (keyof Scheme)[] = Object.keys(_scheme) as (keyof Scheme)[];
 
 		const effectiveKeys: (keyof Scheme)[] = keys.filter((key: keyof Scheme): boolean => {
-			return _scheme[key] !== undefined;
+			let isEffective: boolean;
+
+			if ('exclusiveMin' in _scheme) {
+				// !== true, because this context is in not
+				isEffective = _scheme.exclusiveMin !== true;
+			}
+			else if ('exclusiveMax' in _scheme) {
+				// !== true, because this context is in not
+				isEffective = _scheme.exclusiveMax !== true;
+			}
+			else {
+				isEffective = _scheme[key] !== undefined;
+			}
+
+			return isEffective;
 		});
 
 		return effectiveKeys.length > 0;
@@ -123,21 +137,13 @@ function _extendsNotScheme (key: string, parentScheme: Scheme, notScheme: Scheme
 	// check duplicated rule
 	_checkSchemeWithNot(parentScheme, notScheme);
 
-	const newScheme: Scheme = clone(notScheme);
+	const newScheme: Scheme = clone(notScheme, true);
 	newScheme.key = key;
-
-	// inject additional relative property
-	if ('min' in parentScheme && parentScheme.min !== undefined
-		&& 'exclusiveMin' in notScheme && notScheme.exclusiveMin !== undefined) {
-		if ('exclusiveMin' in newScheme) {
-			newScheme.exclusiveMin = !notScheme.exclusiveMin;
-		}
-	}
 
 	return newScheme;
 }
 
-function _getEffectiveTypes (scheme: Scheme, options: InternalOptions): DataType[] | undefined {
+function _getEffectiveTypes (scheme: Scheme): DataType[] | undefined {
 	let result: DataType[] | undefined;
 
 	if (definedTester(scheme.type)) {
@@ -145,15 +151,15 @@ function _getEffectiveTypes (scheme: Scheme, options: InternalOptions): DataType
 			? scheme.type
 			: [scheme.type]) as DataType[];
 	}
-	else if (definedTester(options.parentScheme)) {
-		result = _getEffectiveTypes(options.parentScheme, options);
+	else if (definedTester(scheme.parent)) {
+		result = _getEffectiveTypes(scheme.parent);
 	}
 
 	return result;
 }
 
 const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | EjvError => {
-	console.log('_ejv() %o', { data, schemes, options });
+	console.warn('_ejv() %o', { data, schemes, options });
 
 	// check schemes
 	if (!arrayTester(schemes)) {
@@ -187,7 +193,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 		// only care effective 'not' scheme
 		if (!(definedTester(scheme.not) && _isNotSchemeEffective(scheme.not))) {
-			const types: DataType[] | undefined = _getEffectiveTypes(scheme, _options);
+			const types: DataType[] | undefined = _getEffectiveTypes(scheme);
 
 			if (!definedTester(types)) {
 				throw new Error(createErrorMsg(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE));
@@ -255,8 +261,6 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 				return typeTester(value, type);
 			});
 
-			console.warn('typeResolved :', typeResolved);
-
 			if (typeResolved) {
 				if (definedTester(scheme.type)) {
 					if (!arrayTester(scheme.type)) {
@@ -264,8 +268,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							result = new EjvError({
 								type: ErrorType.TYPE_MISMATCH,
 								message: createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
-									reverse: _options.reverse,
-									placeholders: [scheme.type]
+									placeholders: [scheme.type],
+									reverse: _options.reverse
 								}),
 
 								data,
@@ -282,8 +286,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								result = new EjvError({
 									type: ErrorType.TYPE_MISMATCH_ONE_OF,
 									message: createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
-										reverse: _options.reverse,
-										placeholders: [JSON.stringify(scheme.type)]
+										placeholders: [JSON.stringify(scheme.type)],
+										reverse: _options.reverse
 									}),
 
 									data,
@@ -299,8 +303,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								result = new EjvError({
 									type: ErrorType.TYPE_MISMATCH_ONE_OF,
 									message: createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
-										reverse: _options.reverse,
-										placeholders: [JSON.stringify(scheme.type)]
+										placeholders: [JSON.stringify(scheme.type)],
+										reverse: _options.reverse
 									}),
 
 									data,
@@ -324,14 +328,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 				}
 				else {
 					// type not resolved, and reverse failed
-					const typesForMsg: AllDataType = scheme.type || _options.parentScheme?.type as AllDataType;
+					const typesForMsg: AllDataType = scheme.type || scheme.parent?.type as AllDataType;
 
 					if (!arrayTester(typesForMsg)) {
 						result = new EjvError({
 							type: ErrorType.TYPE_MISMATCH,
 							message: createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
-								reverse: _options.reverse,
-								placeholders: [typesForMsg]
+								placeholders: [typesForMsg],
+								reverse: _options.reverse
 							}),
 
 							data,
@@ -345,8 +349,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						result = new EjvError({
 							type: ErrorType.TYPE_MISMATCH_ONE_OF,
 							message: createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
-								reverse: _options.reverse,
-								placeholders: [JSON.stringify(typesForMsg)]
+								placeholders: [JSON.stringify(typesForMsg)],
+								reverse: _options.reverse
 							}),
 
 							data,
@@ -382,8 +386,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							result = new EjvError({
 								type: ErrorType.ONE_OF,
 								message: createErrorMsg(ErrorMsg.ONE_OF, {
-									reverse: _options.reverse,
-									placeholders: [JSON.stringify(enumArr)]
+									placeholders: [JSON.stringify(enumArr)],
+									reverse: _options.reverse
 								}),
 
 								data,
@@ -396,9 +400,15 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						}
 					}
 
-					if (definedTester(numberScheme.min)
-						|| definedTester((_options.parentScheme as NumberScheme)?.min)) {
-						const effectiveMin: number = numberScheme.min || (_options?.parentScheme as NumberScheme)?.min as number;
+					// TODO?
+					// const internalNumberScheme: MinMaxWithLevel<number> = evaluateEffectiveScheme(scheme);
+					// console.log({internalNumberScheme});
+
+					if (
+						definedTester(numberScheme.min)
+						|| definedTester((scheme.parent as NumberScheme)?.min)
+					) {
+						const effectiveMin: number = numberScheme.min || (scheme.parent as NumberScheme)?.min as number;
 
 						if (!numberTester(effectiveMin)) {
 							throw new Error(createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER));
@@ -408,19 +418,20 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							if (!booleanTester(numberScheme.exclusiveMin)) {
 								throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
 							}
+						}
 
-							const effectiveExclusive: boolean = xor(_options.reverse, numberScheme.exclusiveMin);
+						const effectiveExclusive: boolean = xor(_options.reverse, numberScheme.exclusiveMin || false);
 
-							console.log('effectiveExclusive :', effectiveExclusive);
+						if (effectiveExclusive) {
+							if (!_options.reverse) {
+								console.log('min 1');
 
-							if (effectiveExclusive) {
 								if (!exclusiveMinNumberTester(valueAsNumber, effectiveMin)) {
-									console.log(1);
 									result = new EjvError({
-										type: ErrorType.GREATER_THAN,
-										message: createErrorMsg(ErrorMsg.GREATER_THAN, {
-											// no reverse because of effectiveExclusive
-											placeholders: [effectiveMin]
+										type: ErrorType.BIGGER_THAN,
+										message: createErrorMsg(ErrorMsg.BIGGER_THAN, {
+											placeholders: [effectiveMin],
+											reverse: _options.reverse
 										}),
 
 										data,
@@ -433,12 +444,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								}
 							}
 							else {
-								if (!minNumberTester(valueAsNumber, effectiveMin)) {
+								console.log('min 2');
+
+								if (!exclusiveMaxNumberTester(valueAsNumber, effectiveMin)) {
 									result = new EjvError({
-										type: ErrorType.GREATER_THAN_OR_EQUAL,
-										message: createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-											// no reverse because of effectiveExclusive
-											placeholders: [effectiveMin]
+										type: ErrorType.SMALLER_THAN,
+										message: createErrorMsg(ErrorMsg.SMALLER_THAN, {
+											placeholders: [effectiveMin],
+											reverse: _options.reverse
 										}),
 
 										data,
@@ -452,28 +465,52 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							}
 						}
 						else {
-							if (xor(!minNumberTester(valueAsNumber, effectiveMin), _options.reverse)) {
-								result = new EjvError({
-									type: ErrorType.GREATER_THAN_OR_EQUAL,
-									message: createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-										reverse: _options.reverse,
-										placeholders: [effectiveMin]
-									}),
+							if (!_options.reverse) {
+								console.log('min 3');
 
-									data,
-									path: _options.path,
+								if (!minNumberTester(valueAsNumber, effectiveMin)) {
+									result = new EjvError({
+										type: ErrorType.BIGGER_THAN_OR_EQUAL,
+										message: createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
+											placeholders: [effectiveMin],
+											reverse: _options.reverse
+										}),
 
-									errorScheme: numberScheme,
-									errorData: value
-								});
-								break;
+										data,
+										path: _options.path,
+
+										errorScheme: numberScheme,
+										errorData: value
+									});
+									break;
+								}
+							}
+							else {
+								console.log('min 4');
+
+								if (!maxNumberTester(valueAsNumber, effectiveMin)) {
+									result = new EjvError({
+										type: ErrorType.SMALLER_THAN_OR_EQUAL,
+										message: createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+											placeholders: [effectiveMin],
+											reverse: _options.reverse
+										}),
+
+										data,
+										path: _options.path,
+
+										errorScheme: numberScheme,
+										errorData: value
+									});
+									break;
+								}
 							}
 						}
 					}
 
 					if (definedTester(numberScheme.max)
-						|| definedTester((_options.parentScheme as NumberScheme)?.max)) {
-						const effectiveMax: number = numberScheme.max || (_options?.parentScheme as NumberScheme)?.max as number;
+						|| definedTester((scheme.parent as NumberScheme)?.max)) {
+						const effectiveMax: number = numberScheme.max || (scheme.parent as NumberScheme)?.max as number;
 
 						if (!numberTester(effectiveMax)) {
 							throw new Error(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
@@ -483,16 +520,18 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							if (!booleanTester(numberScheme.exclusiveMax)) {
 								throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
 							}
+						}
 
-							const effectiveExclusive: boolean = xor(_options.reverse, numberScheme.exclusiveMax);
+						const effectiveExclusive: boolean = xor(_options.reverse, numberScheme.exclusiveMax || false);
 
-							if (effectiveExclusive) {
+						if (effectiveExclusive) {
+							if (!_options.reverse) {
 								if (!exclusiveMaxNumberTester(valueAsNumber, effectiveMax)) {
 									result = new EjvError({
 										type: ErrorType.SMALLER_THAN,
 										message: createErrorMsg(ErrorMsg.SMALLER_THAN, {
-											// no reverse because of effectiveExclusive
-											placeholders: [effectiveMax]
+											placeholders: [effectiveMax],
+											reverse: _options.reverse
 										}),
 
 										data,
@@ -505,12 +544,12 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								}
 							}
 							else {
-								if (!maxNumberTester(valueAsNumber, effectiveMax)) {
+								if (!exclusiveMinNumberTester(valueAsNumber, effectiveMax)) {
 									result = new EjvError({
-										type: ErrorType.SMALLER_THAN_OR_EQUAL,
-										message: createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
-											// no reverse because of effectiveExclusive
-											placeholders: [effectiveMax]
+										type: ErrorType.BIGGER_THAN,
+										message: createErrorMsg(ErrorMsg.BIGGER_THAN, {
+											placeholders: [effectiveMax],
+											reverse: _options.reverse
 										}),
 
 										data,
@@ -524,21 +563,41 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							}
 						}
 						else {
-							if (xor(!maxNumberTester(valueAsNumber, effectiveMax), _options.reverse)) {
-								result = new EjvError({
-									type: ErrorType.SMALLER_THAN_OR_EQUAL,
-									message: createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
-										reverse: _options.reverse,
-										placeholders: [effectiveMax]
-									}),
+							if (!_options.reverse) {
+								if (!maxNumberTester(valueAsNumber, effectiveMax)) {
+									result = new EjvError({
+										type: ErrorType.SMALLER_THAN_OR_EQUAL,
+										message: createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+											placeholders: [effectiveMax],
+											reverse: _options.reverse
+										}),
 
-									data,
-									path: _options.path,
+										data,
+										path: _options.path,
 
-									errorScheme: numberScheme,
-									errorData: value
-								});
-								break;
+										errorScheme: numberScheme,
+										errorData: value
+									});
+									break;
+								}
+							}
+							else {
+								if (!minNumberTester(valueAsNumber, effectiveMax)) {
+									result = new EjvError({
+										type: ErrorType.BIGGER_THAN_OR_EQUAL,
+										message: createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
+											placeholders: [effectiveMax],
+											reverse: _options.reverse
+										}),
+
+										data,
+										path: _options.path,
+
+										errorScheme: numberScheme,
+										errorData: value
+									});
+									break;
+								}
 							}
 						}
 					}
@@ -596,8 +655,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								result = new EjvError({
 									type: ErrorType.FORMAT,
 									message: createErrorMsg(ErrorMsg.FORMAT, {
-										reverse: _options.reverse,
-										placeholders: [numberScheme.format]
+										placeholders: [numberScheme.format],
+										reverse: _options.reverse
 									}),
 
 									data,
@@ -611,8 +670,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								result = new EjvError({
 									type: ErrorType.FORMAT_ONE_OF,
 									message: createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-										reverse: _options.reverse,
-										placeholders: [JSON.stringify(numberScheme.format)]
+										placeholders: [JSON.stringify(numberScheme.format)],
+										reverse: _options.reverse
 									}),
 
 									data,
@@ -647,8 +706,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							result = new EjvError({
 								type: ErrorType.ONE_OF,
 								message: createErrorMsg(ErrorMsg.ONE_OF, {
-									reverse: _options.reverse,
-									placeholders: [JSON.stringify(stringScheme.enum)]
+									placeholders: [JSON.stringify(stringScheme.enum)],
+									reverse: _options.reverse
 								}),
 
 								data,
@@ -672,8 +731,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							result = new EjvError({
 								type: ErrorType.LENGTH,
 								message: createErrorMsg(ErrorMsg.LENGTH, {
-									reverse: _options.reverse,
-									placeholders: [length]
+									placeholders: [length],
+									reverse: _options.reverse
 								}),
 
 								data,
@@ -697,8 +756,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							result = new EjvError({
 								type: ErrorType.MIN_LENGTH,
 								message: createErrorMsg(ErrorMsg.MIN_LENGTH, {
-									reverse: _options.reverse,
-									placeholders: ['' + minLength]
+									placeholders: ['' + minLength],
+									reverse: _options.reverse
 								}),
 
 								data,
@@ -722,8 +781,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							result = new EjvError({
 								type: ErrorType.MAX_LENGTH,
 								message: createErrorMsg(ErrorMsg.MAX_LENGTH, {
-									reverse: _options.reverse,
-									placeholders: ['' + maxLength]
+									placeholders: ['' + maxLength],
+									reverse: _options.reverse
 								}),
 
 								data,
@@ -796,8 +855,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								result = new EjvError({
 									type: ErrorType.FORMAT,
 									message: createErrorMsg(ErrorMsg.FORMAT, {
-										reverse: _options.reverse,
-										placeholders: [stringScheme.format as StringFormat]
+										placeholders: [stringScheme.format as StringFormat],
+										reverse: _options.reverse
 									}),
 
 									data,
@@ -811,8 +870,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								result = new EjvError({
 									type: ErrorType.FORMAT_ONE_OF,
 									message: createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-										reverse: _options.reverse,
-										placeholders: [JSON.stringify(stringScheme.format)]
+										placeholders: [JSON.stringify(stringScheme.format)],
+										reverse: _options.reverse
 									}),
 
 									data,
@@ -899,8 +958,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								result = new EjvError({
 									type: ErrorType.PATTERN_ONE_OF,
 									message: createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
-										reverse: _options.reverse,
-										placeholders: [createArrayErrorMsg(patternsAsArray)]
+										placeholders: [createArrayErrorMsg(patternsAsArray)],
+										reverse: _options.reverse
 									}),
 
 									data,
@@ -929,8 +988,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								result = new EjvError({
 									type: ErrorType.PATTERN,
 									message: createErrorMsg(ErrorMsg.PATTERN, {
-										reverse: _options.reverse,
-										placeholders: [patternToString(patternAsOne)]
+										placeholders: [patternToString(patternAsOne)],
+										reverse: _options.reverse
 									}),
 
 									data,
@@ -1003,7 +1062,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 						const partialData: T[keyof T] = data[key];
 						const partialScheme: Scheme[] = objectScheme.properties as Scheme[];
-						_options.parentScheme = objectScheme;
+						scheme.parent = objectScheme;
 
 						// call recursively
 						result = _ejv(partialData, partialScheme, _options);
@@ -1015,8 +1074,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										result = new EjvError({
 											type: ErrorType.TYPE_MISMATCH,
 											message: createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
-												reverse: true,
-												placeholders: [scheme.type]
+												placeholders: [scheme.type],
+												reverse: true
 											}),
 											data,
 											path: _options.path,
@@ -1029,8 +1088,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 										result = new EjvError({
 											type: ErrorType.TYPE_MISMATCH_ONE_OF,
 											message: createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
-												reverse: true,
-												placeholders: [JSON.stringify(scheme.type)]
+												placeholders: [JSON.stringify(scheme.type)],
+												reverse: true
 											}),
 											data,
 											path: _options.path,
@@ -1063,12 +1122,11 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 				case DataType.DATE: {
 					const valueAsDate: Date = value as unknown as Date;
 					const dateScheme: DateScheme = scheme as DateScheme;
-					const parentDateScheme: DateScheme | undefined = _options.parentScheme as DateScheme | undefined;
+					const parentDateScheme: DateScheme | undefined = scheme.parent as DateScheme | undefined;
 
-					console.warn('dateScheme :', dateScheme);
-
-					if (definedTester(dateScheme.min) || definedTester(dateScheme.exclusiveMin)) {
-						const minDateCandidate: string | number | Date | undefined = dateScheme.min || parentDateScheme?.min;
+					if (definedTester(dateScheme.min)
+						|| definedTester(parentDateScheme?.min)) {
+						const minDateCandidate: string | Date = dateScheme.min || parentDateScheme?.min as string | Date;
 
 						if (!(
 							(stringTester(minDateCandidate)
@@ -1082,114 +1140,114 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							throw new Error(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
 						}
 
-						const minDate: Date = new Date(minDateCandidate);
+						const effectiveMin: Date = new Date(minDateCandidate);
 
-						if (definedTester(dateScheme.exclusiveMin) && !booleanTester(dateScheme.exclusiveMin)) {
-							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
-						}
-
-						// TODO: child-parent opposite exclusive
-
-						const exclusiveConditions: boolean[] = [
-							!_options.reverse && !!dateScheme.exclusiveMin, // normal, exclusive
-							_options.reverse && parentDateScheme?.exclusiveMin === false, // reverse, parent exclusive
-							!_options.reverse && dateScheme.not !== undefined && 'exclusiveMin' in dateScheme.not && !dateScheme.not.exclusiveMin, // normal, child not
-							_options.reverse && dateScheme.not !== undefined && 'exclusiveMin' in dateScheme.not && !!dateScheme.not.exclusiveMin
-						];
+						if (definedTester(dateScheme.exclusiveMin)) {
+							if (!booleanTester(dateScheme.exclusiveMin)) {
+								throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
+							}
 
 
-						console.warn('exclusiveConditions');
-						console.table(exclusiveConditions);
+							const effectiveExclusive: boolean = xor(_options.reverse, dateScheme.exclusiveMin);
 
-						const effectiveExclusive: boolean = exclusiveConditions.includes(true);
+							if (effectiveExclusive) {
+								if (!exclusiveMinDateTester(valueAsDate, effectiveMin)) {
+									result = new EjvError({
+										type: ErrorType.AFTER_DATE,
+										message: createErrorMsg(ErrorMsg.AFTER_DATE, {
+											placeholders: [effectiveMin.toISOString()]
+											// no reverse because of effectiveExclusive
+										}),
 
-						let validatorFnc: (checkDate: Date, schemeDate: Date) => boolean;
+										data,
+										path: _options.path,
 
-						if (!options.reverse) {
-							validatorFnc = !effectiveExclusive
-								? minDateTester
-								: exclusiveMinDateTester;
+										errorScheme: dateScheme,
+										errorData: value
+									});
+									break;
+
+								}
+							}
+							else {
+								if (!minDateTester(valueAsDate, effectiveMin)) {
+									result = new EjvError({
+										type: ErrorType.AFTER_OR_SAME_DATE,
+										message: createErrorMsg(ErrorMsg.AFTER_OR_SAME_DATE, {
+											placeholders: [effectiveMin.toISOString()]
+											// no reverse because of effectiveExclusive
+										}),
+
+										data,
+										path: _options.path,
+
+										errorScheme: dateScheme,
+										errorData: value
+									});
+									break;
+								}
+							}
+
+
 						}
 						else {
-							validatorFnc = !effectiveExclusive
-								? exclusiveMaxDateTester
-								: maxDateTester;
-						}
+							if (xor(!minDateTester(valueAsDate, effectiveMin), _options.reverse)) {
+								result = new EjvError({
+									type: ErrorType.AFTER_OR_SAME_DATE,
+									message: createErrorMsg(ErrorMsg.AFTER_OR_SAME_DATE, {
+										placeholders: [effectiveMin.toISOString()],
+										reverse: _options.reverse
+									}),
 
+									data,
+									path: _options.path,
 
-						console.warn({
-							effectiveExclusive,
-							validatorFnc
-						});
-
-						if (!validatorFnc(valueAsDate, minDate)) {
-							const errorKey: keyof typeof ErrorType = (
-								(!options.reverse && !dateScheme.exclusiveMin)
-								|| (options.reverse && !parentDateScheme?.exclusiveMin)
-							)
-								? 'AFTER_OR_SAME_DATE'
-								: 'AFTER_DATE';
-
-							result = new EjvError({
-								type: ErrorType[errorKey],
-								message: createErrorMsg(ErrorMsg[errorKey], {
-									placeholders: [minDate.toISOString()],
-									reverse: _options.reverse
-								}),
-
-								data,
-								path: _options.path,
-
-								errorScheme: dateScheme,
-								errorData: value
-							});
-							break;
+									errorScheme: dateScheme,
+									errorData: value
+								});
+								break;
+							}
 						}
 					}
 
-					if (definedTester(dateScheme.max)) {
+					if (definedTester(dateScheme.max)
+						|| definedTester(parentDateScheme?.max)) {
+						const maxDateCandidate: string | Date = dateScheme.max || parentDateScheme?.max as string | Date;
+
 						if (!(
-							(stringTester(dateScheme.max)
+							(stringTester(maxDateCandidate)
 								&& (
-									dateFormatTester(dateScheme.max as string)
-									|| dateTimeFormatTester(dateScheme.max as string)
+									dateFormatTester(maxDateCandidate as string)
+									|| dateTimeFormatTester(maxDateCandidate as string)
 								)
 							)
-							|| dateTester(dateScheme.max)
+							|| dateTester(maxDateCandidate)
 						)) {
 							throw new Error(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
 						}
 
-						if (definedTester(dateScheme.exclusiveMax) && !booleanTester(dateScheme.exclusiveMax)) {
-							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
-						}
+						const effectiveMax: Date = new Date(maxDateCandidate);
 
-						const maxDate: Date = new Date(dateScheme.max as string | Date);
+						console.warn('defined: ', definedTester(dateScheme.exclusiveMax));
 
-						if (dateScheme.exclusiveMax !== true) {
-							if (!maxDateTester(valueAsDate, maxDate)) {
-								result = new EjvError({
-									type: ErrorType.BEFORE_OR_SAME_DATE,
-									message: createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
-										placeholders: [maxDate.toISOString()]
-									}),
 
-									data,
-									path: _options.path,
-
-									errorScheme: dateScheme,
-									errorData: value
-								});
-								break;
+						if (definedTester(dateScheme.exclusiveMax)) {
+							if (!booleanTester(dateScheme.exclusiveMax)) {
+								throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
 							}
-
 						}
-						else {
-							if (!exclusiveMaxDateTester(valueAsDate, maxDate)) {
+
+						const effectiveExclusive: boolean = xor(_options.reverse, dateScheme.exclusiveMax || false);
+						console.warn({ effectiveExclusive });
+
+
+						if (effectiveExclusive) {
+							if (!exclusiveMaxDateTester(valueAsDate, effectiveMax)) {
 								result = new EjvError({
 									type: ErrorType.BEFORE_DATE,
 									message: createErrorMsg(ErrorMsg.BEFORE_DATE, {
-										placeholders: [maxDate.toISOString()]
+										placeholders: [effectiveMax.toISOString()]
+										// no reverse because of effectiveExclusive
 									}),
 
 									data,
@@ -1201,6 +1259,43 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								break;
 							}
 						}
+						else {
+							if (!maxDateTester(valueAsDate, effectiveMax)) {
+								result = new EjvError({
+									type: ErrorType.BEFORE_OR_SAME_DATE,
+									message: createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
+										placeholders: [effectiveMax.toISOString()]
+										// no reverse because of effectiveExclusive
+									}),
+
+									data,
+									path: _options.path,
+
+									errorScheme: dateScheme,
+									errorData: value
+								});
+								break;
+							}
+						}
+						// }
+						// else {
+						// 	if (xor(!maxDateTester(valueAsDate, effectiveMax), _options.reverse)) {
+						// 		result = new EjvError({
+						// 			type: ErrorType.BEFORE_OR_SAME_DATE,
+						// 			message: createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
+						// 				placeholders: [effectiveMax.toISOString()],
+						// 				reverse: _options.reverse
+						// 			}),
+						//
+						// 			data,
+						// 			path: _options.path,
+						//
+						// 			errorScheme: dateScheme,
+						// 			errorData: value
+						// 		});
+						// 		break;
+						// 	}
+						// }
 					}
 					break;
 				}
@@ -1304,7 +1399,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					if (definedTester(arrayScheme.items)) {
 						// convert array to object
 						if (valueAsArray.length > 0) {
-							const now: Date = new Date;
+							const now: Date = new Date();
 							const tempKeyArr: string[] = valueAsArray.map((_value: unknown, i: number): string => {
 								return '' + (+now + i);
 							});
@@ -1327,7 +1422,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									});
 								});
 
-								_options.parentScheme = arrayScheme;
+								scheme.parent = arrayScheme;
 
 								// call recursively
 								const partialResult: EjvError | null = _ejv(partialData, partialSchemes, _options);
@@ -1471,11 +1566,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 		}
 		else {
 			// with not
-			let newSchemes: Scheme[];
-
 			const optionsForNot: InternalOptions = clone(options);
 			optionsForNot.reverse = !optionsForNot.reverse;
-			optionsForNot.parentScheme = Object.entries(scheme).reduce((acc: Scheme, [_key, _value]): Scheme => {
+			scheme.parent = Object.entries(scheme).reduce((acc: Scheme, [_key, _value]): Scheme => {
 				if (_key !== 'not') {
 					const asKey: keyof Scheme = _key as keyof Scheme;
 
@@ -1490,35 +1583,68 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 			const tempKey: string = '' + +new Date();
 
-			if (arrayTester(scheme.not)) {
-				newSchemes = scheme.not.map((one: Scheme): Scheme => {
-					return _extendsNotScheme(tempKey, scheme, one);
+			const notSchemes: Scheme[] = arrayTester(scheme.not)
+				? scheme.not
+				: [scheme.not];
+
+			const newSchemes: Scheme[] = notSchemes
+				.map((one: Scheme): Scheme => {
+					// check duplicated rule
+					_checkSchemeWithNot(scheme, one);
+
+					const newScheme: Scheme = clone(one); // no sanitize, need null
+					newScheme.key = tempKey;
+
+					// remove not effective values: undefined
+					Object.keys(newScheme).forEach((_key: string): void => {
+						const newSchemeAsObj: AnyObject = newScheme as AnyObject;
+
+						if (newSchemeAsObj[_key] === undefined) {
+							delete newSchemeAsObj[_key];
+						}
+					});
+
+					return newScheme;
+				})
+				.filter((newScheme: Scheme): boolean => {
+					return Object
+						.keys(newScheme)
+						// 'key' exists always
+						.filter((_key: string): boolean => _key !== 'key')
+						.length > 0;
 				});
+
+			console.log('newSchemes :', newSchemes);
+
+			if (newSchemes.length > 0) {
+				// has effective not schemes
+				result = _ejv({
+					[tempKey]: value
+				}, newSchemes, optionsForNot);
+
+				if (result) {
+					// replace data for not
+					result.data = data;
+					result.path = result.path.replace(tempKey, key as string);
+					delete result.errorScheme.key;
+
+					// wrap with 'not'
+					result.errorScheme = {
+						not: result.errorScheme
+					};
+				}
 			}
 			else {
-				newSchemes = [_extendsNotScheme(tempKey, scheme, scheme.not)];
-			}
+				// has no effective scheme
+				const newScheme: Scheme = clone(scheme);
+				delete newScheme.not;
 
-			result = _ejv({
-				[tempKey]: value
-			}, newSchemes, optionsForNot);
-
-
-			if (result) {
-				// replace data for not
-				result.data = data;
-				result.path = result.path.replace(tempKey, key as string);
-				delete result.errorScheme.key;
-
-				// wrap with 'not'
-				result.errorScheme = {
-					not: result.errorScheme
-				};
+				result = _ejv({
+					[key]: value
+				}, [newScheme], options);
 			}
 		}
 	}
-
-	console.log('result :', result);
 
 	if (result !== null && definedTester(options.customErrorMsg)) {
 		const customErrorMsgObj: {

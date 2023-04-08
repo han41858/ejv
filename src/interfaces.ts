@@ -4,6 +4,8 @@ export type AllDataType = string | string[] | DataType | DataType[];
 
 
 interface CommonScheme {
+	parent?: Scheme;
+
 	key?: string; // can be omitted in array items
 	type?: AllDataType; // optional for not
 
@@ -16,12 +18,15 @@ interface CommonScheme {
 // no additional rule
 export type BooleanScheme = CommonScheme;
 
-export interface MinMaxScheme<T> extends CommonScheme {
+export interface MinMax<T> {
 	min?: T;
 	exclusiveMin?: boolean; // default false
 
 	max?: T;
 	exclusiveMax?: boolean; // default false
+}
+
+export interface MinMaxScheme<T> extends CommonScheme, MinMax<T> {
 }
 
 export interface NumberScheme extends MinMaxScheme<number> {
@@ -52,7 +57,7 @@ export interface ObjectScheme extends CommonScheme {
 
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
-export interface DateScheme extends MinMaxScheme<number | string | Date> {
+export interface DateScheme extends MinMaxScheme<string | Date> {
 	// min, max string for date string
 }
 
@@ -87,8 +92,6 @@ export interface Options {
 export interface InternalOptions extends Options {
 	path: string[];
 	reverse: boolean; // default false, for not
-
-	parentScheme?: Scheme;
 }
 
 export class EjvError {

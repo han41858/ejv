@@ -276,8 +276,8 @@ describe('NumberScheme', () => {
 
 				expect(error.type).to.be.eql(ErrorType.ONE_OF);
 				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_OF, {
-					reverse: true,
-					placeholders: [JSON.stringify(enumArr)]
+					placeholders: [JSON.stringify(enumArr)],
+					reverse: true
 				}));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
@@ -336,8 +336,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+					expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN_OR_EQUAL);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
 						placeholders: [10]
 					}));
 
@@ -406,6 +406,9 @@ describe('NumberScheme', () => {
 						type: 'number',
 						not: {
 							min: 10
+							// means
+							// max: 10
+							// exclusiveMax : true
 						}
 					}])).to.be.null;
 
@@ -425,10 +428,10 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-						reverse: true,
-						placeholders: [10]
+					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
+						placeholders: [10],
+						reverse: true
 					}));
 
 					const error2: EjvError | null = ejv({
@@ -447,10 +450,10 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error2.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-						reverse: true,
-						placeholders: [10]
+					expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN);
+					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
+						placeholders: [10],
+						reverse: true
 					}));
 				});
 			});
@@ -487,8 +490,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
+					expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN, {
 						placeholders: [10]
 					}));
 
@@ -507,8 +510,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error2.type).to.be.eql(ErrorType.GREATER_THAN);
-					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
+					expect(error2.type).to.be.eql(ErrorType.BIGGER_THAN);
+					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN, {
 						placeholders: [10]
 					}));
 
@@ -538,8 +541,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+					expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN_OR_EQUAL);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
 						placeholders: [10]
 					}));
 
@@ -579,7 +582,7 @@ describe('NumberScheme', () => {
 					});
 				});
 
-				it('without exclusiveMin', () => {
+				it('exclusiveMin === undefined', () => {
 					const error1: EjvError | null = ejv({
 						a: 9
 					}, [{
@@ -587,7 +590,7 @@ describe('NumberScheme', () => {
 						type: 'number',
 						min: 10,
 						not: {
-							exclusiveMin: undefined
+							exclusiveMin: undefined // means nothing
 						}
 					}]);
 
@@ -597,10 +600,10 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
-						reverse: false, // undefined
-						placeholders: [10]
+					expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN_OR_EQUAL);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
+						placeholders: [10],
+						reverse: false // undefined
 					}));
 
 					expect(ejv({
@@ -635,6 +638,8 @@ describe('NumberScheme', () => {
 						min: 10,
 						not: {
 							exclusiveMin: true
+							// means
+							// exclusiveMin: false
 						}
 					}]);
 
@@ -644,8 +649,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN_OR_EQUAL);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN_OR_EQUAL, {
+					expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN_OR_EQUAL);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
 						placeholders: [10]
 					}));
 
@@ -680,7 +685,7 @@ describe('NumberScheme', () => {
 						type: 'number',
 						min: 10,
 						not: {
-							exclusiveMin: false
+							exclusiveMin: false // means exclusiveMin: true
 						}
 					}]);
 
@@ -690,8 +695,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.GREATER_THAN);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
+					expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN, {
 						placeholders: [10]
 					}));
 
@@ -712,8 +717,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error2.type).to.be.eql(ErrorType.GREATER_THAN);
-					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.GREATER_THAN, {
+					expect(error2.type).to.be.eql(ErrorType.BIGGER_THAN);
+					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN, {
 						placeholders: [10]
 					}));
 
@@ -854,6 +859,9 @@ describe('NumberScheme', () => {
 						not: {
 							max: 10
 						}
+						// means,
+						// min: 10,
+						// exclusiveMin: true
 					}]);
 
 					expect(error1).to.be.instanceof(EjvError);
@@ -862,10 +870,10 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
-						reverse: true,
-						placeholders: [10]
+					expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN);
+					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN, {
+						placeholders: [10],
+						reverse: true
 					}));
 
 					const error2: EjvError | null = ejv({
@@ -884,10 +892,10 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
-					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
-						reverse: true,
-						placeholders: [10]
+					expect(error2.type).to.be.eql(ErrorType.BIGGER_THAN);
+					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN, {
+						placeholders: [10],
+						reverse: true
 					}));
 
 					expect(ejv({
@@ -1081,6 +1089,8 @@ describe('NumberScheme', () => {
 						max: 10,
 						not: {
 							exclusiveMax: true
+							// means
+							// exclusiveMax: false
 						}
 					}])).to.be.null;
 
@@ -1358,8 +1368,8 @@ describe('NumberScheme', () => {
 
 						expect(error.type).to.be.eql(ErrorType.FORMAT);
 						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
-							reverse: true,
-							placeholders: ['integer']
+							placeholders: ['integer'],
+							reverse: true
 						}));
 					});
 				});
@@ -1505,8 +1515,8 @@ describe('NumberScheme', () => {
 
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 
 						const error2: EjvError | null = ejv({
@@ -1527,8 +1537,8 @@ describe('NumberScheme', () => {
 
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 
 						const error3: EjvError | null = ejv({
@@ -1549,8 +1559,8 @@ describe('NumberScheme', () => {
 
 						expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 					});
 
@@ -1575,8 +1585,8 @@ describe('NumberScheme', () => {
 
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 
 						const error2: EjvError | null = ejv({
@@ -1597,8 +1607,8 @@ describe('NumberScheme', () => {
 
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 
 						const error3: EjvError | null = ejv({
@@ -1619,8 +1629,8 @@ describe('NumberScheme', () => {
 
 						expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 					});
 
@@ -1645,8 +1655,8 @@ describe('NumberScheme', () => {
 
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 
 						const error2: EjvError | null = ejv({
@@ -1667,8 +1677,8 @@ describe('NumberScheme', () => {
 
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 
 						const error3: EjvError | null = ejv({
@@ -1689,8 +1699,8 @@ describe('NumberScheme', () => {
 
 						expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 					});
 				});
@@ -1830,8 +1840,8 @@ describe('NumberScheme', () => {
 
 						expect(error1.type).to.be.eql(ErrorType.FORMAT);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
-							reverse: true,
-							placeholders: ['index']
+							placeholders: ['index'],
+							reverse: true
 						}));
 
 						const error2: EjvError | null = ejv({
@@ -1852,8 +1862,8 @@ describe('NumberScheme', () => {
 
 						expect(error2.type).to.be.eql(ErrorType.FORMAT);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
-							reverse: true,
-							placeholders: ['index']
+							placeholders: ['index'],
+							reverse: true
 						}));
 					});
 				});
@@ -2033,8 +2043,8 @@ describe('NumberScheme', () => {
 
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 
 						const error2: EjvError | null = ejv({
@@ -2055,8 +2065,8 @@ describe('NumberScheme', () => {
 
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 					});
 
@@ -2081,8 +2091,8 @@ describe('NumberScheme', () => {
 
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 
 						const error2: EjvError | null = ejv({
@@ -2103,8 +2113,8 @@ describe('NumberScheme', () => {
 
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 					});
 
@@ -2129,8 +2139,8 @@ describe('NumberScheme', () => {
 
 						expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 
 						const error2: EjvError | null = ejv({
@@ -2151,8 +2161,8 @@ describe('NumberScheme', () => {
 
 						expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
 						expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
-							reverse: true,
-							placeholders: [JSON.stringify(formatArr)]
+							placeholders: [JSON.stringify(formatArr)],
+							reverse: true
 						}));
 					});
 				});

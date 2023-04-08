@@ -40,8 +40,8 @@ export enum ErrorType {
 	FORMAT = 'FORMAT',
 	FORMAT_ONE_OF = 'FORMAT_ONE_OF',
 
-	GREATER_THAN_OR_EQUAL = 'GREATER_THAN_OR_EQUAL',
-	GREATER_THAN = 'GREATER_THAN',
+	BIGGER_THAN_OR_EQUAL = 'BIGGER_THAN_OR_EQUAL',
+	BIGGER_THAN = 'BIGGER_THAN',
 
 	SMALLER_THAN_OR_EQUAL = 'SMALLER_THAN_OR_EQUAL',
 	SMALLER_THAN = 'SMALLER_THAN',
@@ -124,8 +124,8 @@ export enum ErrorMsg {
 	FORMAT_ONE_OF = 'the value should <<not>>be form of one of <<1>>',
 
 	// TODO: or -> neither
-	GREATER_THAN_OR_EQUAL = 'the value should <<not>>be greater or equal than <<1>>', // min
-	GREATER_THAN = 'the value should <<not>>be greater than <<1>>', // min
+	BIGGER_THAN_OR_EQUAL = 'the value should <<not>>be bigger or equal than <<1>>', // min
+	BIGGER_THAN = 'the value should <<not>>be bigger than <<1>>', // min
 
 	SMALLER_THAN_OR_EQUAL = 'the value should <<not>>be smaller or equal than <<1>>', // max
 	SMALLER_THAN = 'the value should <<not>>be smaller than <<1>>', // max

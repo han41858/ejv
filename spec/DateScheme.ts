@@ -21,19 +21,9 @@ describe('DateScheme', () => {
 	const seconds: number = now.getSeconds();
 	const ms: number = now.getMilliseconds();
 
-	// TODO: deprecate
 	const nowOnlyDate: Date = new Date();
 	nowOnlyDate.setHours(0, 0, 0, 0);
 
-	// TODO: deprecate
-	const dateTestData = {
-		date: nowOnlyDate
-	};
-
-	// TODO: deprecate
-	const dateTimeTestData = {
-		date: now
-	};
 
 	const TestCases: Date[] = [
 		// dates
@@ -86,7 +76,6 @@ describe('DateScheme', () => {
 				}],
 				result
 			});
-
 
 			if (define.error === null) {
 				expect(result).to.be.null;
@@ -211,63 +200,42 @@ describe('DateScheme', () => {
 		});
 	});
 
-	// TODO: nested not
-	describe.skip('min & exclusiveMin', () => {
-		describe('check parameter', () => {
+	describe('min & exclusiveMin', () => {
+		describe('min only', () => {
 			describe('normal', () => {
-				it('min === null', () => {
-					expect(() => ejv({
-						date: new Date
-					}, [{
-						key: 'date',
-						type: 'date',
-						min: null as unknown as number
-					}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+				describe('check parameter', () => {
+					it('undefined is ok', () => {
+						expect(ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							min: undefined
+						}])).to.be.null;
+					});
+
+					it('null', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							min: null as unknown as string
+						}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+					});
+
+					it('min type', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							min: 123 as unknown as string
+						}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+					});
 				});
 
-				it('exclusiveMin === null', () => {
-					expect(() => ejv({
-						date: new Date
-					}, [{
-						key: 'date',
-						type: 'date',
-						min: new Date(),
-						exclusiveMin: null as unknown as boolean
-					}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
-				});
-			});
-
-			describe('not', () => {
-				it('min === null', () => {
-					expect(() => ejv({
-						date: new Date()
-					}, [{
-						key: 'date',
-						type: 'date',
-						not: {
-							min: null as unknown as number
-						}
-					}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
-				});
-
-				it.skip('exclusiveMin === null', () => {
-					expect(() => ejv({
-						date: new Date
-					}, [{
-						key: 'date',
-						type: 'date',
-						min: new Date(),
-						not: {
-							exclusiveMin: null as unknown as boolean
-						}
-					}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
-				});
-			});
-		});
-
-		describe('by date', () => {
-			describe('min only', () => {
-				it('normal', () => {
+				it('by date', () => {
 					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
 						const result: ResultDefine = {
 							scheme: {
@@ -277,7 +245,7 @@ describe('DateScheme', () => {
 						};
 
 						if ([2, 5].includes(i)) {
-							result.error = 'AFTER_OR_SAME_DATE';
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
 							result.placeholder = one.toISOString();
 						}
 
@@ -285,7 +253,65 @@ describe('DateScheme', () => {
 					}));
 				});
 
-				it('not', () => {
+				it('by date string', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								min: one.toISOString()
+							},
+							error: null
+						};
+
+						if ([2, 5].includes(i)) {
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
+
+						return result;
+					}));
+				});
+			});
+
+			describe('not', () => {
+				describe('check parameter', () => {
+					it('undefined is ok', () => {
+						expect(ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							not: {
+								min: undefined
+							}
+						}])).to.be.null;
+					});
+
+					it('null', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							not: {
+								min: null as unknown as string
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+					});
+
+					it('min type', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							not: {
+								min: 123 as unknown as string
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+					});
+				});
+
+				it('by date', () => {
 					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
 						const result: ResultDefine = {
 							scheme: {
@@ -293,13 +319,89 @@ describe('DateScheme', () => {
 									min: one
 								}
 							},
-							error: null
+							error: null,
+							reverse: true
 						};
 
 						if ([0, 1, 3, 4].includes(i)) {
-							result.error = 'AFTER_OR_SAME_DATE';
+							result.error = ErrorType.AFTER_OR_SAME_DATE; // TODO: BEFORE ???
 							result.placeholder = one.toISOString();
-							result.reverse = true;
+						}
+
+						return result;
+					}));
+				});
+
+				it('by date string', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								not: {
+									min: one.toISOString()
+								}
+							},
+							error: null,
+							reverse: true
+						};
+
+						if ([0, 1, 3, 4].includes(i)) {
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
+
+						return result;
+					}));
+				});
+			});
+		});
+
+		describe('exclusiveMin', () => {
+			describe('normal', () => {
+				describe('check parameter', () => {
+					it('exclusiveMin type', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							min: now,
+							exclusiveMin: now.toISOString() as unknown as boolean
+						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
+					});
+				});
+
+				it('exclusiveMin === true', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								min: one,
+								exclusiveMin: true
+							},
+							error: null
+						};
+
+						if ([1, 2, 4, 5].includes(i)) {
+							result.error = ErrorType.AFTER_DATE;
+							result.placeholder = one.toISOString();
+						}
+
+						return result;
+					}));
+				});
+
+				it('exclusiveMin === false', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								min: one,
+								exclusiveMin: false
+							},
+							error: null
+						};
+
+						if ([2, 5].includes(i)) {
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
 						}
 
 						return result;
@@ -307,978 +409,378 @@ describe('DateScheme', () => {
 				});
 			});
 
-			describe('with exclusiveMin', () => {
-				describe('normal', () => {
-					it('exclusiveMin === false', () => {
-						checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-							const result: ResultDefine = {
-								scheme: {
-									min: one,
-									exclusiveMin: false
-								},
-								error: null
-							};
-
-							if ([2, 5].includes(i)) {
-								result.error = 'AFTER_OR_SAME_DATE';
-								result.placeholder = one.toISOString();
+			describe('not', () => {
+				describe('check parameter', () => {
+					it('exclusiveMin type', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							min: now,
+							not: {
+								exclusiveMin: now.toISOString() as unknown as boolean
 							}
-
-							return result;
-						}));
-					});
-
-					it('exclusiveMin === true', () => {
-						checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-							const result: ResultDefine = {
-								scheme: {
-									min: one,
-									exclusiveMin: true
-								},
-								error: null
-							};
-
-							if ([1, 2, 4, 5].includes(i)) {
-								result.error = 'AFTER_DATE';
-								result.placeholder = one.toISOString();
-							}
-
-							return result;
-						}));
+						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
 					});
 				});
 
-				describe('not - min', () => {
-					it('exclusiveMin === false', () => {
-						checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-							const result: ResultDefine = {
-								scheme: {
-									not: {
-										min: one
-									},
-									exclusiveMin: false
-								},
-								error: null
-							};
+				it('exclusiveMin === undefined', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								min: one,
+								not: {
+									exclusiveMin: undefined
+								}
+							},
+							error: null
+						};
 
-							if ([0, 3].includes(i)) {
-								result.error = 'AFTER_OR_SAME_DATE';
-								result.placeholder = one.toISOString();
-								result.reverse = true;
-							}
+						if ([2, 5].includes(i)) {
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
 
-							return result;
-						}));
-					});
-
-					it('exclusiveMin === true', () => {
-						checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-							const result: ResultDefine = {
-								scheme: {
-									not: {
-										min: one
-									},
-									exclusiveMin: true
-								},
-								error: null
-							};
-
-							if ([0, 1, 3, 4].includes(i)) {
-								result.error = 'AFTER_DATE';
-								result.placeholder = one.toISOString();
-								result.reverse = true;
-							}
-
-							return result;
-						}));
-					});
-				});
-
-				describe('not - exclusiveMin', () => {
-					it.skip('exclusiveMin === false', () => {
-						checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-							const result: ResultDefine = {
-								scheme: {
-									min: one,
-									not: {
-										exclusiveMin: false
-									}
-								},
-								error: null
-							};
-
-							if ([1, 2, 4, 5].includes(i)) {
-								result.error = 'AFTER_DATE';
-								result.placeholder = one.toISOString();
-								result.reverse = true;
-							}
-
-							return result;
-						}));
-					});
-
-					it('exclusiveMin === true', () => {
-						checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-							const result: ResultDefine = {
-								scheme: {
-									min: one,
-									not: {
-										exclusiveMin: true
-									}
-								},
-								error: null
-							};
-
-							if ([0, 3].includes(i)) {
-								result.error = 'AFTER_OR_SAME_DATE';
-								result.placeholder = one.toISOString();
-								result.reverse = true;
-							}
-
-							return result;
-						}));
-					});
-				});
-
-				describe.skip('not - both', () => {
-					it('exclusiveMin === false', () => {
-
-					});
-
-					it('exclusiveMin === true', () => {
-
-					});
-				});
-			});
-		});
-
-		describe('by date string', () => {
-			describe('min only', () => {
-				it('normal', () => {
-					expect(ejv(dateTestData, [{
-						key: 'date',
-						type: 'date',
-						min: new Date(year, month, date - 1).toISOString()
-					}])).to.be.null;
-
-					expect(ejv(dateTestData, [{
-						key: 'date',
-						type: 'date',
-						min: new Date(year, month, date).toISOString()
-					}])).to.be.null;
-
-					const min1: Date = new Date(year, month, date + 1);
-
-					const error1: EjvError | null = ejv(dateTestData, [{
-						key: 'date',
-						type: 'date',
-						min: min1.toISOString()
-					}]);
-
-					expect(error1).to.be.instanceof(EjvError);
-
-					if (!error1) {
-						throw new Error('spec failed');
-					}
-
-					expect(error1.type).to.be.eql(ErrorType.AFTER_OR_SAME_DATE);
-					expect(error1.message).to.eql(createErrorMsg(ErrorMsg.AFTER_OR_SAME_DATE, {
-						placeholders: [min1.toISOString()]
+						return result;
 					}));
-					expect(error1.path).to.be.eql('date');
-					expect(error1.data).to.be.deep.equal(dateTestData);
-					expect(error1.errorData).to.be.instanceof(Date);
+				});
 
-					// with time
-					expect(ejv(dateTimeTestData, [{
-						key: 'date',
-						type: 'date',
-						min: new Date(year, month, date, hours, minutes, seconds, ms - 1).toISOString()
-					}])).to.be.null;
+				it('exclusiveMin === true', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								min: one,
+								not: {
+									exclusiveMin: true
+								}
+							},
+							error: null
+						};
 
-					expect(ejv(dateTimeTestData, [{
-						key: 'date',
-						type: 'date',
-						min: new Date(year, month, date, hours, minutes, seconds, ms).toISOString()
-					}])).to.be.null;
+						if ([2, 5].includes(i)) {
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
 
-
-					const min2: Date = new Date(year, month, date, hours, minutes, seconds, ms + 1);
-
-					const error2: EjvError | null = ejv(dateTimeTestData, [{
-						key: 'date',
-						type: 'date',
-						min: min2.toISOString()
-					}]);
-
-					expect(error2).to.be.instanceof(EjvError);
-
-					if (!error2) {
-						throw new Error('spec failed');
-					}
-
-					expect(error2.type).to.be.eql(ErrorType.AFTER_OR_SAME_DATE);
-					expect(error2.message).to.eql(createErrorMsg(ErrorMsg.AFTER_OR_SAME_DATE, {
-						placeholders: [min2.toISOString()]
+						return result;
 					}));
-					expect(error2.path).to.be.eql('date');
-					expect(error2.data).to.be.deep.equal(dateTimeTestData);
-					expect(error2.errorData).to.be.instanceof(Date);
 				});
 
-				it('not', () => {
+				it('exclusiveMin === false', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								min: one,
+								not: {
+									exclusiveMin: false
+								}
+							},
+							error: null
+						};
 
-				});
-			});
-
-			describe('with exclusiveMin', () => {
-				describe('normal', () => {
-					it('exclusiveMin === false', () => {
-						expect(ejv(dateTestData, [{
-							key: 'date',
-							type: 'date',
-							min: new Date(year, month, date - 1).toISOString(),
-							exclusiveMin: false
-						}])).to.be.null;
-
-						expect(ejv(dateTestData, [{
-							key: 'date',
-							type: 'date',
-							min: new Date(year, month, date).toISOString(),
-							exclusiveMin: false
-						}])).to.be.null;
-
-
-						const min1: Date = new Date(year, month, date + 1);
-
-						const error1: EjvError | null = ejv(dateTestData, [{
-							key: 'date',
-							type: 'date',
-							min: min1.toISOString(),
-							exclusiveMin: false
-						}]);
-
-						expect(error1).to.be.instanceof(EjvError);
-
-						if (!error1) {
-							throw new Error('spec failed');
+						if ([1, 2, 4, 5].includes(i)) {
+							result.error = ErrorType.AFTER_DATE;
+							result.placeholder = one.toISOString();
 						}
 
-						expect(error1.type).to.be.eql(ErrorType.AFTER_OR_SAME_DATE);
-						expect(error1.message).to.eql(createErrorMsg(ErrorMsg.AFTER_OR_SAME_DATE, {
-							placeholders: [min1.toISOString()]
-						}));
-						expect(error1.path).to.be.eql('date');
-						expect(error1.data).to.be.deep.equal(dateTestData);
-						expect(error1.errorData).to.be.instanceof(Date);
-
-						// with time
-						expect(ejv(dateTimeTestData, [{
-							key: 'date',
-							type: 'date',
-							min: new Date(year, month, date, hours, minutes, seconds, ms - 1).toISOString(),
-							exclusiveMin: false
-						}])).to.be.null;
-
-						expect(ejv(dateTimeTestData, [{
-							key: 'date',
-							type: 'date',
-							min: new Date(year, month, date, hours, minutes, seconds, ms).toISOString(),
-							exclusiveMin: false
-						}])).to.be.null;
-
-
-						const min2: Date = new Date(year, month, date, hours, minutes, seconds, ms + 1);
-
-						const error2: EjvError | null = ejv(dateTimeTestData, [{
-							key: 'date',
-							type: 'date',
-							min: min2.toISOString(),
-							exclusiveMin: false
-						}]);
-
-						expect(error2).to.be.instanceof(EjvError);
-
-						if (!error2) {
-							throw new Error('spec failed');
-						}
-
-						expect(error2.type).to.be.eql(ErrorType.AFTER_OR_SAME_DATE);
-						expect(error2.message).to.eql(createErrorMsg(ErrorMsg.AFTER_OR_SAME_DATE, {
-							placeholders: [min2.toISOString()]
-						}));
-						expect(error2.path).to.be.eql('date');
-						expect(error2.data).to.be.deep.equal(dateTimeTestData);
-						expect(error2.errorData).to.be.instanceof(Date);
-					});
-
-					it('exclusiveMin === true', () => {
-						expect(ejv(dateTestData, [{
-							key: 'date',
-							type: 'date',
-							min: new Date(year, month, date - 1).toISOString(),
-							exclusiveMin: true
-						}])).to.be.null;
-
-
-						const min1: Date = new Date(year, month, date);
-
-						const error1: EjvError | null = ejv(dateTestData, [{
-							key: 'date',
-							type: 'date',
-							min: min1.toISOString(),
-							exclusiveMin: true
-						}]);
-
-						expect(error1).to.be.instanceof(EjvError);
-
-						if (!error1) {
-							throw new Error('spec failed');
-						}
-
-						expect(error1.type).to.be.eql(ErrorType.AFTER_DATE);
-						expect(error1.message).to.eql(createErrorMsg(ErrorMsg.AFTER_DATE, {
-							placeholders: [min1.toISOString()]
-						}));
-						expect(error1.path).to.be.eql('date');
-						expect(error1.data).to.be.deep.equal(dateTestData);
-						expect(error1.errorData).to.be.instanceof(Date);
-
-
-						const min2: Date = new Date(year, month, date + 1);
-
-						const error2: EjvError | null = ejv(dateTestData, [{
-							key: 'date',
-							type: 'date',
-							min: min2.toISOString(),
-							exclusiveMin: true
-						}]);
-
-						expect(error2).to.be.instanceof(EjvError);
-
-						if (!error2) {
-							throw new Error('spec failed');
-						}
-
-						expect(error2.type).to.be.eql(ErrorType.AFTER_DATE);
-						expect(error2.message).to.eql(createErrorMsg(ErrorMsg.AFTER_DATE, {
-							placeholders: [min2.toISOString()]
-						}));
-						expect(error2.path).to.be.eql('date');
-						expect(error2.data).to.be.deep.equal(dateTestData);
-						expect(error2.errorData).to.be.instanceof(Date);
-
-						// with time
-						expect(ejv(dateTimeTestData, [{
-							key: 'date',
-							type: 'date',
-							min: new Date(year, month, date, hours, minutes, seconds, ms - 1).toISOString(),
-							exclusiveMin: true
-						}])).to.be.null;
-
-
-						const min3: Date = new Date(year, month, date, hours, minutes, seconds, ms);
-
-						const error3: EjvError | null = ejv(dateTimeTestData, [{
-							key: 'date',
-							type: 'date',
-							min: min3.toISOString(),
-							exclusiveMin: true
-						}]);
-
-						expect(error3).to.be.instanceof(EjvError);
-
-						if (!error3) {
-							throw new Error('spec failed');
-						}
-
-						expect(error3.type).to.be.eql(ErrorType.AFTER_DATE);
-						expect(error3.message).to.eql(createErrorMsg(ErrorMsg.AFTER_DATE, {
-							placeholders: [min3.toISOString()]
-						}));
-						expect(error3.path).to.be.eql('date');
-						expect(error3.data).to.be.deep.equal(dateTimeTestData);
-						expect(error3.errorData).to.be.instanceof(Date);
-
-
-						const min4: Date = new Date(year, month, date, hours, minutes, seconds, ms + 1);
-						const error4: EjvError | null = ejv(dateTimeTestData, [{
-							key: 'date',
-							type: 'date',
-							min: min4.toISOString(),
-							exclusiveMin: true
-						}]);
-
-						expect(error4).to.be.instanceof(EjvError);
-
-						if (!error4) {
-							throw new Error('spec failed');
-						}
-
-						expect(error4.type).to.be.eql(ErrorType.AFTER_DATE);
-						expect(error4.message).to.eql(createErrorMsg(ErrorMsg.AFTER_DATE, {
-							placeholders: [min4.toISOString()]
-						}));
-						expect(error4.path).to.be.eql('date');
-						expect(error4.data).to.be.deep.equal(dateTimeTestData);
-						expect(error4.errorData).to.be.instanceof(Date);
-					});
-				});
-
-				describe('not - min', () => {
-
-				});
-
-				describe('not - exclusiveMin', () => {
-
-				});
-
-				describe('not - both', () => {
-
+						return result;
+					}));
 				});
 			});
 		});
 	});
 
-	describe('max & exclusiveMax', () => {
-		describe('check parameter', () => {
-			it('max === null', () => {
-				expect(() => ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: null as unknown as number
-				}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+	describe.skip('max & exclusiveMax', () => {
+		describe('max only', () => {
+			describe('normal', () => {
+				describe('check parameter', () => {
+					it('undefined is ok', () => {
+						expect(ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							max: undefined
+						}])).to.be.null;
+					});
+
+					it('null', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							max: null as unknown as string
+						}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+					});
+
+					it('max type', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							max: 123 as unknown as string
+						}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+					});
+				});
+
+				it('by date', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								max: one
+							},
+							error: null
+						};
+
+						if ([0, 3].includes(i)) {
+							result.error = ErrorType.BEFORE_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
+
+						return result;
+					}));
+				});
+
+				it('by date string', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								max: one.toISOString()
+							},
+							error: null
+						};
+
+						if ([0, 3].includes(i)) {
+							result.error = ErrorType.BEFORE_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
+
+						return result;
+					}));
+				});
 			});
 
-			it('exclusiveMax === null', () => {
-				expect(() => ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(),
-					exclusiveMax: null as unknown as boolean
-				}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
-			});
-		});
+			describe.skip('not', () => {
+				describe('check parameter', () => {
+					it('undefined is ok', () => {
+						expect(ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							not: {
+								max: undefined
+							}
+						}])).to.be.null;
+					});
 
-		describe('by date', () => {
-			it('without exclusiveMax', () => {
-				const max1: Date = new Date(year, month, date - 1);
+					it('null', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							not: {
+								max: null as unknown as string
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+					});
 
-				const error1: EjvError | null = ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max1
-				}]);
+					it('max type', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							not: {
+								max: 123 as unknown as string
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+					});
+				});
 
-				expect(error1).to.be.instanceof(EjvError);
+				it('by date', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								not: {
+									max: one
+								}
+								// means
+								// min : one,
+								// exclusiveMin: true
+							},
+							error: null,
+							reverse: true
+						};
 
-				if (!error1) {
-					throw new Error('spec failed');
-				}
+						if ([1, 2, 4, 5].includes(i)) {
+							result.error = ErrorType.AFTER_DATE;
+							result.placeholder = one.toISOString();
+						}
 
-				expect(error1.type).to.be.eql(ErrorType.BEFORE_OR_SAME_DATE);
-				expect(error1.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
-					placeholders: [max1.toISOString()]
-				}));
-				expect(error1.path).to.be.eql('date');
-				expect(error1.data).to.be.deep.equal(dateTestData);
-				expect(error1.errorData).to.be.instanceof(Date);
+						return result;
+					}));
+				});
 
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date)
-				}])).to.be.null;
+				it('by date string', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								not: {
+									max: one.toISOString()
+								}
+							},
+							error: null,
+							reverse: true
+						};
 
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date + 1)
-				}])).to.be.null;
+						if ([0, 1, 3, 4].includes(i)) {
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
 
-				// with time
-				const max2: Date = new Date(year, month, date, hours, minutes, seconds, ms - 1);
-
-				const error2: EjvError | null = ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max2
-				}]);
-
-				expect(error2).to.be.instanceof(EjvError);
-
-				if (!error2) {
-					throw new Error('spec failed');
-				}
-
-				expect(error2.type).to.be.eql(ErrorType.BEFORE_OR_SAME_DATE);
-				expect(error2.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
-					placeholders: [max2.toISOString()]
-				}));
-				expect(error2.path).to.be.eql('date');
-				expect(error2.data).to.be.deep.equal(dateTimeTestData);
-				expect(error2.errorData).to.be.instanceof(Date);
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms)
-				}])).to.be.null;
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms + 1)
-				}])).to.be.null;
-			});
-
-			it('exclusiveMax === false', () => {
-				const max1: Date = new Date(year, month, date - 1);
-
-				const error1: EjvError | null = ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max1,
-					exclusiveMax: false
-				}]);
-
-				expect(error1).to.be.instanceof(EjvError);
-
-				if (!error1) {
-					throw new Error('spec failed');
-				}
-
-				expect(error1.type).to.be.eql(ErrorType.BEFORE_OR_SAME_DATE);
-				expect(error1.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
-					placeholders: [max1.toISOString()]
-				}));
-				expect(error1.path).to.be.eql('date');
-				expect(error1.data).to.be.deep.equal(dateTestData);
-				expect(error1.errorData).to.be.instanceof(Date);
-
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date),
-					exclusiveMax: false
-				}])).to.be.null;
-
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date + 1),
-					exclusiveMax: false
-				}])).to.be.null;
-
-				// with time
-				const max2: Date = new Date(year, month, date, hours, minutes, seconds, ms - 1);
-				const error2: EjvError | null = ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max2,
-					exclusiveMax: false
-				}]);
-
-				expect(error2).to.be.instanceof(EjvError);
-
-				if (!error2) {
-					throw new Error('spec failed');
-				}
-
-				expect(error2.type).to.be.eql(ErrorType.BEFORE_OR_SAME_DATE);
-				expect(error2.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
-					placeholders: [max2.toISOString()]
-				}));
-				expect(error2.path).to.be.eql('date');
-				expect(error2.data).to.be.deep.equal(dateTimeTestData);
-				expect(error2.errorData).to.be.instanceof(Date);
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms),
-					exclusiveMax: false
-				}])).to.be.null;
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms + 1),
-					exclusiveMax: false
-				}])).to.be.null;
-			});
-
-			it('exclusiveMax === true', () => {
-				const max1: Date = new Date(year, month, date - 1);
-				const error1: EjvError | null = ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max1,
-					exclusiveMax: true
-				}]);
-
-				expect(error1).to.be.instanceof(EjvError);
-
-				if (!error1) {
-					throw new Error('spec failed');
-				}
-
-				expect(error1.type).to.be.eql(ErrorType.BEFORE_DATE);
-				expect(error1.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_DATE, {
-					placeholders: [max1.toISOString()]
-				}));
-				expect(error1.path).to.be.eql('date');
-				expect(error1.data).to.be.deep.equal(dateTestData);
-				expect(error1.errorData).to.be.instanceof(Date);
-
-
-				const max2: Date = new Date(year, month, date);
-
-				const error2: EjvError | null = ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max2,
-					exclusiveMax: true
-				}]);
-
-				expect(error2).to.be.instanceof(EjvError);
-
-				if (!error2) {
-					throw new Error('spec failed');
-				}
-
-				expect(error2.type).to.be.eql(ErrorType.BEFORE_DATE);
-				expect(error2.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_DATE, {
-					placeholders: [max2.toISOString()]
-				}));
-				expect(error2.path).to.be.eql('date');
-				expect(error2.data).to.be.deep.equal(dateTestData);
-				expect(error2.errorData).to.be.instanceof(Date);
-
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date + 1),
-					exclusiveMax: true
-				}])).to.be.null;
-
-
-				// with time
-				const max3: Date = new Date(year, month, date, hours, minutes, seconds, ms - 1);
-
-				const error3: EjvError | null = ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max3,
-					exclusiveMax: true
-				}]);
-
-				expect(error3).to.be.instanceof(EjvError);
-
-				if (!error3) {
-					throw new Error('spec failed');
-				}
-
-				expect(error3.type).to.be.eql(ErrorType.BEFORE_DATE);
-				expect(error3.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_DATE, {
-					placeholders: [max3.toISOString()]
-				}));
-				expect(error3.path).to.be.eql('date');
-				expect(error3.data).to.be.deep.equal(dateTimeTestData);
-				expect(error3.errorData).to.be.instanceof(Date);
-
-
-				const max4: Date = new Date(year, month, date, hours, minutes, seconds, ms);
-				const error4: EjvError | null = ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max4,
-					exclusiveMax: true
-				}]);
-
-				expect(error4).to.be.instanceof(EjvError);
-
-				if (!error4) {
-					throw new Error('spec failed');
-				}
-
-				expect(error4.type).to.be.eql(ErrorType.BEFORE_DATE);
-				expect(error4.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_DATE, {
-					placeholders: [max4.toISOString()]
-				}));
-				expect(error4.path).to.be.eql('date');
-				expect(error4.data).to.be.deep.equal(dateTimeTestData);
-				expect(error4.errorData).to.be.instanceof(Date);
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms + 1),
-					exclusiveMax: true
-				}])).to.be.null;
+						return result;
+					}));
+				});
 			});
 		});
 
-		describe('by date string', () => {
-			it('without exclusiveMax', () => {
-				const max1: Date = new Date(year, month, date - 1);
+		describe('exclusiveMax', () => {
+			describe('normal', () => {
+				describe('check parameter', () => {
+					it('exclusiveMax type', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							max: now,
+							exclusiveMax: now.toISOString() as unknown as boolean
+						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
+					});
+				});
 
-				const error1: EjvError | null = ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max1.toISOString()
-				}]);
+				it('exclusiveMax === true', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								max: one,
+								exclusiveMax: true
+							},
+							error: null
+						};
 
-				expect(error1).to.be.instanceof(EjvError);
+						if ([1, 2, 4, 5].includes(i)) {
+							result.error = ErrorType.AFTER_DATE;
+							result.placeholder = one.toISOString();
+						}
 
-				if (!error1) {
-					throw new Error('spec failed');
-				}
+						return result;
+					}));
+				});
 
-				expect(error1.type).to.be.eql(ErrorType.BEFORE_OR_SAME_DATE);
-				expect(error1.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
-					placeholders: [max1.toISOString()]
-				}));
-				expect(error1.path).to.be.eql('date');
-				expect(error1.data).to.be.deep.equal(dateTestData);
-				expect(error1.errorData).to.be.instanceof(Date);
+				it('exclusiveMax === false', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								max: one,
+								exclusiveMax: false
+							},
+							error: null
+						};
 
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date).toISOString()
-				}])).to.be.null;
+						if ([2, 5].includes(i)) {
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
 
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date + 1).toISOString()
-				}])).to.be.null;
-
-
-				// with time
-				const max2: Date = new Date(year, month, date, hours, minutes, seconds, ms - 1);
-
-				const error2: EjvError | null = ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max2.toISOString()
-				}]);
-
-				expect(error2).to.be.instanceof(EjvError);
-
-				if (!error2) {
-					throw new Error('spec failed');
-				}
-
-				expect(error2.type).to.be.eql(ErrorType.BEFORE_OR_SAME_DATE);
-				expect(error2.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
-					placeholders: [max2.toISOString()]
-				}));
-				expect(error2.path).to.be.eql('date');
-				expect(error2.data).to.be.deep.equal(dateTimeTestData);
-				expect(error2.errorData).to.be.instanceof(Date);
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms).toISOString()
-				}])).to.be.null;
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms + 1).toISOString()
-				}])).to.be.null;
+						return result;
+					}));
+				});
 			});
 
-			it('exclusiveMax === false', () => {
-				const max1: Date = new Date(year, month, date - 1);
+			describe('not', () => {
+				describe('check parameter', () => {
+					it('exclusiveMax type', () => {
+						expect(() => ejv({
+							date: new Date()
+						}, [{
+							key: 'date',
+							type: 'date',
+							max: now,
+							not: {
+								exclusiveMax: now.toISOString() as unknown as boolean
+							}
+						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
+					});
+				});
 
-				const error1: EjvError | null = ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max1.toISOString(),
-					exclusiveMax: false
-				}]);
+				it('exclusiveMax === undefined', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								max: one,
+								not: {
+									exclusiveMax: undefined
+								}
+							},
+							error: null
+						};
 
-				expect(error1).to.be.instanceof(EjvError);
+						if ([2, 5].includes(i)) {
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
 
-				if (!error1) {
-					throw new Error('spec failed');
-				}
+						return result;
+					}));
+				});
 
-				expect(error1.type).to.be.eql(ErrorType.BEFORE_OR_SAME_DATE);
-				expect(error1.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
-					placeholders: [max1.toISOString()]
-				}));
-				expect(error1.path).to.be.eql('date');
-				expect(error1.data).to.be.deep.equal(dateTestData);
-				expect(error1.errorData).to.be.instanceof(Date);
+				it('exclusiveMax === true', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								max: one,
+								not: {
+									exclusiveMax: true
+								}
+							},
+							error: null
+						};
 
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date).toISOString(),
-					exclusiveMax: false
-				}])).to.be.null;
+						if ([2, 5].includes(i)) {
+							result.error = ErrorType.AFTER_OR_SAME_DATE;
+							result.placeholder = one.toISOString();
+						}
 
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date + 1).toISOString(),
-					exclusiveMax: false
-				}])).to.be.null;
+						return result;
+					}));
+				});
 
+				it('exclusiveMax === false', () => {
+					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+						const result: ResultDefine = {
+							scheme: {
+								max: one,
+								not: {
+									exclusiveMax: false
+								}
+							},
+							error: null
+						};
 
-				// with time
-				const max2: Date = new Date(year, month, date, hours, minutes, seconds, ms - 1);
+						if ([1, 2, 4, 5].includes(i)) {
+							result.error = ErrorType.AFTER_DATE;
+							result.placeholder = one.toISOString();
+						}
 
-				const error2: EjvError | null = ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max2.toISOString(),
-					exclusiveMax: false
-				}]);
-
-				expect(error2).to.be.instanceof(EjvError);
-
-				if (!error2) {
-					throw new Error('spec failed');
-				}
-
-				expect(error2.type).to.be.eql(ErrorType.BEFORE_OR_SAME_DATE);
-				expect(error2.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_OR_SAME_DATE, {
-					placeholders: [max2.toISOString()]
-				}));
-				expect(error2.path).to.be.eql('date');
-				expect(error2.data).to.be.deep.equal(dateTimeTestData);
-				expect(error2.errorData).to.be.instanceof(Date);
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms).toISOString(),
-					exclusiveMax: false
-				}])).to.be.null;
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms + 1).toISOString(),
-					exclusiveMax: false
-				}])).to.be.null;
-			});
-
-			it('exclusiveMax === true', () => {
-				const max1: Date = new Date(year, month, date - 1);
-
-				const error1: EjvError | null = ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max1.toISOString(),
-					exclusiveMax: true
-				}]);
-
-				expect(error1).to.be.instanceof(EjvError);
-
-				if (!error1) {
-					throw new Error('spec failed');
-				}
-
-				expect(error1.type).to.be.eql(ErrorType.BEFORE_DATE);
-				expect(error1.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_DATE, {
-					placeholders: [max1.toISOString()]
-				}));
-				expect(error1.path).to.be.eql('date');
-				expect(error1.data).to.be.deep.equal(dateTestData);
-				expect(error1.errorData).to.be.instanceof(Date);
-
-
-				const max2: Date = new Date(year, month, date);
-
-				const error2: EjvError | null = ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max2.toISOString(),
-					exclusiveMax: true
-				}]);
-
-				expect(error2).to.be.instanceof(EjvError);
-
-				if (!error2) {
-					throw new Error('spec failed');
-				}
-
-				expect(error2.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_DATE, {
-					placeholders: [max2.toISOString()]
-				}));
-				expect(error2.path).to.be.eql('date');
-				expect(error2.data).to.be.deep.equal(dateTestData);
-				expect(error2.errorData).to.be.instanceof(Date);
-
-				expect(ejv(dateTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date + 1).toISOString(),
-					exclusiveMax: true
-				}])).to.be.null;
-
-
-				// with time
-				const max3: Date = new Date(year, month, date, hours, minutes, seconds, ms - 1);
-
-				const error3: EjvError | null = ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max3.toISOString(),
-					exclusiveMax: true
-				}]);
-
-				expect(error3).to.be.instanceof(EjvError);
-
-				if (!error3) {
-					throw new Error('spec failed');
-				}
-
-				expect(error3.type).to.be.eql(ErrorType.BEFORE_DATE);
-				expect(error3.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_DATE, {
-					placeholders: [max3.toISOString()]
-				}));
-				expect(error3.path).to.be.eql('date');
-				expect(error3.data).to.be.deep.equal(dateTimeTestData);
-				expect(error3.errorData).to.be.instanceof(Date);
-
-
-				const max4: Date = new Date(year, month, date, hours, minutes, seconds, ms);
-
-				const error4: EjvError | null = ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: max4.toISOString(),
-					exclusiveMax: true
-				}]);
-
-				expect(error4).to.be.instanceof(EjvError);
-
-				if (!error4) {
-					throw new Error('spec failed');
-				}
-
-				expect(error4.type).to.be.eql(ErrorType.BEFORE_DATE);
-				expect(error4.message).to.eql(createErrorMsg(ErrorMsg.BEFORE_DATE, {
-					placeholders: [max4.toISOString()]
-				}));
-				expect(error4.path).to.be.eql('date');
-				expect(error4.data).to.be.deep.equal(dateTimeTestData);
-				expect(error4.errorData).to.be.instanceof(Date);
-
-				expect(ejv(dateTimeTestData, [{
-					key: 'date',
-					type: 'date',
-					max: new Date(year, month, date, hours, minutes, seconds, ms + 1).toISOString(),
-					exclusiveMax: true
-				}])).to.be.null;
+						return result;
+					}));
+				});
 			});
 		});
 	});
