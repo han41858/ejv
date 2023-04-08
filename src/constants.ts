@@ -27,8 +27,6 @@ export enum StringFormat {
 	// IPV6 = 'ipv6'
 }
 
-export const ErrorMsgCursorNot = '<<not>>'; // includes tail space
-
 export enum ErrorType {
 	REQUIRED = 'REQUIRED',
 
@@ -79,7 +77,6 @@ export enum ErrorMsg {
 	SCHEMES_SHOULD_HAVE_TYPE = 'scheme should have type',
 	SCHEMES_HAS_INVALID_TYPE = 'schemes has invalid type: <<1>>',
 	SCHEMES_HAS_DUPLICATED_TYPE = 'schemes has duplicated type: <<1>>',
-	SCHEMES_HAS_RULES_CONTRARY = 'schemes has rules to the contrary', // for not
 
 	ENUM_SHOULD_BE_ARRAY = 'enum should be array',
 	ENUM_SHOULD_BE_NUMBERS = 'enum values should be numbers',
@@ -113,40 +110,39 @@ export enum ErrorMsg {
 	INVALID_ITEMS_SCHEME = 'invalid schemes of array items: <<1>>',
 
 	// about EjvError
-	REQUIRED = 'value is <<not>>required',
+	REQUIRED = 'value is required',
 
-	TYPE_MISMATCH = 'the value should <<not>>be a <<1>>',
-	TYPE_MISMATCH_ONE_OF = 'the value should <<not>>be one of <<1>>',
+	TYPE_MISMATCH = 'the value should be a <<1>>',
+	TYPE_MISMATCH_ONE_OF = 'the value should be one of <<1>>',
 
-	ONE_OF = 'the value should <<not>>be one of <<1>>', // enum
+	ONE_OF = 'the value should be one of <<1>>', // enum
 
-	FORMAT = 'the value should <<not>>be a form of <<1>>', // format
-	FORMAT_ONE_OF = 'the value should <<not>>be form of one of <<1>>',
+	FORMAT = 'the value should be a form of <<1>>', // format
+	FORMAT_ONE_OF = 'the value should be form of one of <<1>>',
 
-	// TODO: or -> neither
-	BIGGER_THAN_OR_EQUAL = 'the value should <<not>>be bigger or equal than <<1>>', // min
-	BIGGER_THAN = 'the value should <<not>>be bigger than <<1>>', // min
+	BIGGER_THAN_OR_EQUAL = 'the value should be bigger or equal than <<1>>', // min
+	BIGGER_THAN = 'the value should be bigger than <<1>>', // min
 
-	SMALLER_THAN_OR_EQUAL = 'the value should <<not>>be smaller or equal than <<1>>', // max
-	SMALLER_THAN = 'the value should <<not>>be smaller than <<1>>', // max
+	SMALLER_THAN_OR_EQUAL = 'the value should be smaller or equal than <<1>>', // max
+	SMALLER_THAN = 'the value should be smaller than <<1>>', // max
 
-	LENGTH = 'the value should <<not>>be length of <<1>>', // length
-	MIN_LENGTH = 'the value should <<not>>be longer than <<1>>', // minLength
-	MAX_LENGTH = 'the value should <<not>>be shorter than <<1>>', // maxLength
+	LENGTH = 'the value should be length of <<1>>', // length
+	MIN_LENGTH = 'the value should be longer than <<1>>', // minLength
+	MAX_LENGTH = 'the value should be shorter than <<1>>', // maxLength
 
-	PATTERN = 'the value should <<not>>be pattern of <<1>>', // pattern
-	PATTERN_ONE_OF = 'the value should <<not>>be one of pattern of <<1>>', // pattern
+	PATTERN = 'the value should be pattern of <<1>>', // pattern
+	PATTERN_ONE_OF = 'the value should be one of pattern of <<1>>', // pattern
 
 	PROPERTY = 'the value should have property',
 
-	AFTER_OR_SAME_DATE = 'the value should <<not>>be after or same date than <<1>>', // date
-	AFTER_DATE = 'the value should <<not>>be after date than <<1>>', // date
+	AFTER_OR_SAME_DATE = 'the value should be after or same date than <<1>>', // date
+	AFTER_DATE = 'the value should be after date than <<1>>', // date
 
-	BEFORE_OR_SAME_DATE = 'the value should <<not>>be before or same date than <<1>>', // date
-	BEFORE_DATE = 'the value should <<not>>be before date than <<1>>', // date
+	BEFORE_OR_SAME_DATE = 'the value should be before or same date than <<1>>', // date
+	BEFORE_DATE = 'the value should be before date than <<1>>', // date
 
-	UNIQUE_ITEMS = 'the array should <<not>>be unique items',
+	UNIQUE_ITEMS = 'the array should be unique items',
 
-	ITEMS_TYPE = 'the array should <<not>>have items in type of <<1>>',
-	ITEMS_SCHEMES = 'the array should <<not>>have items matched with schemes of <<1>>'
+	ITEMS_TYPE = 'the array should have items in type of <<1>>',
+	ITEMS_SCHEMES = 'the array should have items matched with schemes of <<1>>'
 }

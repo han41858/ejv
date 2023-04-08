@@ -42,7 +42,6 @@ describe('DateScheme', () => {
 
 		error: null | keyof typeof ErrorType;
 		placeholder?: string;
-		reverse?: boolean;
 	}
 
 
@@ -63,20 +62,6 @@ describe('DateScheme', () => {
 				...define.scheme
 			}]);
 
-			console.log('## %o', {
-				i,
-				data: {
-					date: checkValue
-				},
-				scheme: [{
-					key: 'date',
-					type: 'date',
-
-					...define.scheme
-				}],
-				result
-			});
-
 			if (define.error === null) {
 				expect(result).to.be.null;
 			}
@@ -89,8 +74,7 @@ describe('DateScheme', () => {
 
 				expect(result.type).to.be.eql(ErrorType[define.error]);
 				expect(result.message).to.eql(createErrorMsg(ErrorMsg[define.error], {
-					placeholders: [define.placeholder || ''],
-					reverse: define.reverse || false
+					placeholders: [define.placeholder || '']
 				}));
 				expect(result.path).to.be.eql('date');
 				expect(result.errorData).to.be.instanceof(Date);
@@ -202,298 +186,130 @@ describe('DateScheme', () => {
 
 	describe('min & exclusiveMin', () => {
 		describe('min only', () => {
-			describe('normal', () => {
-				describe('check parameter', () => {
-					it('undefined is ok', () => {
-						expect(ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							min: undefined
-						}])).to.be.null;
-					});
-
-					it('null', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							min: null as unknown as string
-						}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
-					});
-
-					it('min type', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							min: 123 as unknown as string
-						}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
-					});
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						date: new Date()
+					}, [{
+						key: 'date',
+						type: 'date',
+						min: undefined
+					}])).to.be.null;
 				});
 
-				it('by date', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								min: one
-							},
-							error: null
-						};
-
-						if ([2, 5].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
+				it('null', () => {
+					expect(() => ejv({
+						date: new Date()
+					}, [{
+						key: 'date',
+						type: 'date',
+						min: null as unknown as string
+					}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
 				});
 
-				it('by date string', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								min: one.toISOString()
-							},
-							error: null
-						};
-
-						if ([2, 5].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
+				it('min type', () => {
+					expect(() => ejv({
+						date: new Date()
+					}, [{
+						key: 'date',
+						type: 'date',
+						min: 123 as unknown as string
+					}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
 				});
 			});
 
-			describe('not', () => {
-				describe('check parameter', () => {
-					it('undefined is ok', () => {
-						expect(ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							not: {
-								min: undefined
-							}
-						}])).to.be.null;
-					});
+			it('by date', () => {
+				checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+					const result: ResultDefine = {
+						scheme: {
+							min: one
+						},
+						error: null
+					};
 
-					it('null', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							not: {
-								min: null as unknown as string
-							}
-						}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
-					});
+					if ([2, 5].includes(i)) {
+						result.error = ErrorType.AFTER_OR_SAME_DATE;
+						result.placeholder = one.toISOString();
+					}
 
-					it('min type', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							not: {
-								min: 123 as unknown as string
-							}
-						}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
-					});
-				});
+					return result;
+				}));
+			});
 
-				it('by date', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								not: {
-									min: one
-								}
-							},
-							error: null,
-							reverse: true
-						};
+			it('by date string', () => {
+				checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+					const result: ResultDefine = {
+						scheme: {
+							min: one.toISOString()
+						},
+						error: null
+					};
 
-						if ([0, 1, 3, 4].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE; // TODO: BEFORE ???
-							result.placeholder = one.toISOString();
-						}
+					if ([2, 5].includes(i)) {
+						result.error = ErrorType.AFTER_OR_SAME_DATE;
+						result.placeholder = one.toISOString();
+					}
 
-						return result;
-					}));
-				});
-
-				it('by date string', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								not: {
-									min: one.toISOString()
-								}
-							},
-							error: null,
-							reverse: true
-						};
-
-						if ([0, 1, 3, 4].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
-				});
+					return result;
+				}));
 			});
 		});
 
 		describe('exclusiveMin', () => {
-			describe('normal', () => {
-				describe('check parameter', () => {
-					it('exclusiveMin type', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							min: now,
-							exclusiveMin: now.toISOString() as unknown as boolean
-						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
-					});
-				});
-
-				it('exclusiveMin === true', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								min: one,
-								exclusiveMin: true
-							},
-							error: null
-						};
-
-						if ([1, 2, 4, 5].includes(i)) {
-							result.error = ErrorType.AFTER_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
-				});
-
-				it('exclusiveMin === false', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								min: one,
-								exclusiveMin: false
-							},
-							error: null
-						};
-
-						if ([2, 5].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
+			describe('check parameter', () => {
+				it('exclusiveMin type', () => {
+					expect(() => ejv({
+						date: new Date()
+					}, [{
+						key: 'date',
+						type: 'date',
+						min: now,
+						exclusiveMin: now.toISOString() as unknown as boolean
+					}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
 				});
 			});
 
-			describe('not', () => {
-				describe('check parameter', () => {
-					it('exclusiveMin type', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							min: now,
-							not: {
-								exclusiveMin: now.toISOString() as unknown as boolean
-							}
-						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
-					});
-				});
+			it('exclusiveMin === true', () => {
+				checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+					const result: ResultDefine = {
+						scheme: {
+							min: one,
+							exclusiveMin: true
+						},
+						error: null
+					};
 
-				it('exclusiveMin === undefined', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								min: one,
-								not: {
-									exclusiveMin: undefined
-								}
-							},
-							error: null
-						};
+					if ([1, 2, 4, 5].includes(i)) {
+						result.error = ErrorType.AFTER_DATE;
+						result.placeholder = one.toISOString();
+					}
 
-						if ([2, 5].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
+					return result;
+				}));
+			});
 
-						return result;
-					}));
-				});
+			it('exclusiveMin === false', () => {
+				checkError(TestCases.map((one: Date, i: number): ResultDefine => {
+					const result: ResultDefine = {
+						scheme: {
+							min: one,
+							exclusiveMin: false
+						},
+						error: null
+					};
 
-				it('exclusiveMin === true', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								min: one,
-								not: {
-									exclusiveMin: true
-								}
-							},
-							error: null
-						};
+					if ([2, 5].includes(i)) {
+						result.error = ErrorType.AFTER_OR_SAME_DATE;
+						result.placeholder = one.toISOString();
+					}
 
-						if ([2, 5].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
-				});
-
-				it('exclusiveMin === false', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								min: one,
-								not: {
-									exclusiveMin: false
-								}
-							},
-							error: null
-						};
-
-						if ([1, 2, 4, 5].includes(i)) {
-							result.error = ErrorType.AFTER_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
-				});
+					return result;
+				}));
 			});
 		});
-	});
 
-	describe.skip('max & exclusiveMax', () => {
-		describe('max only', () => {
-			describe('normal', () => {
+		describe('max & exclusiveMax', () => {
+			describe('max only', () => {
 				describe('check parameter', () => {
 					it('undefined is ok', () => {
 						expect(ejv({
@@ -563,94 +379,7 @@ describe('DateScheme', () => {
 				});
 			});
 
-			describe.skip('not', () => {
-				describe('check parameter', () => {
-					it('undefined is ok', () => {
-						expect(ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							not: {
-								max: undefined
-							}
-						}])).to.be.null;
-					});
-
-					it('null', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							not: {
-								max: null as unknown as string
-							}
-						}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
-					});
-
-					it('max type', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							not: {
-								max: 123 as unknown as string
-							}
-						}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
-					});
-				});
-
-				it('by date', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								not: {
-									max: one
-								}
-								// means
-								// min : one,
-								// exclusiveMin: true
-							},
-							error: null,
-							reverse: true
-						};
-
-						if ([1, 2, 4, 5].includes(i)) {
-							result.error = ErrorType.AFTER_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
-				});
-
-				it('by date string', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								not: {
-									max: one.toISOString()
-								}
-							},
-							error: null,
-							reverse: true
-						};
-
-						if ([0, 1, 3, 4].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
-				});
-			});
-		});
-
-		describe('exclusiveMax', () => {
-			describe('normal', () => {
+			describe('exclusiveMax', () => {
 				describe('check parameter', () => {
 					it('exclusiveMax type', () => {
 						expect(() => ejv({
@@ -674,8 +403,8 @@ describe('DateScheme', () => {
 							error: null
 						};
 
-						if ([1, 2, 4, 5].includes(i)) {
-							result.error = ErrorType.AFTER_DATE;
+						if ([0, 1, 3, 4].includes(i)) {
+							result.error = ErrorType.BEFORE_DATE;
 							result.placeholder = one.toISOString();
 						}
 
@@ -693,88 +422,8 @@ describe('DateScheme', () => {
 							error: null
 						};
 
-						if ([2, 5].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
-				});
-			});
-
-			describe('not', () => {
-				describe('check parameter', () => {
-					it('exclusiveMax type', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
-							key: 'date',
-							type: 'date',
-							max: now,
-							not: {
-								exclusiveMax: now.toISOString() as unknown as boolean
-							}
-						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
-					});
-				});
-
-				it('exclusiveMax === undefined', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								max: one,
-								not: {
-									exclusiveMax: undefined
-								}
-							},
-							error: null
-						};
-
-						if ([2, 5].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
-				});
-
-				it('exclusiveMax === true', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								max: one,
-								not: {
-									exclusiveMax: true
-								}
-							},
-							error: null
-						};
-
-						if ([2, 5].includes(i)) {
-							result.error = ErrorType.AFTER_OR_SAME_DATE;
-							result.placeholder = one.toISOString();
-						}
-
-						return result;
-					}));
-				});
-
-				it('exclusiveMax === false', () => {
-					checkError(TestCases.map((one: Date, i: number): ResultDefine => {
-						const result: ResultDefine = {
-							scheme: {
-								max: one,
-								not: {
-									exclusiveMax: false
-								}
-							},
-							error: null
-						};
-
-						if ([1, 2, 4, 5].includes(i)) {
-							result.error = ErrorType.AFTER_DATE;
+						if ([0, 3].includes(i)) {
+							result.error = ErrorType.BEFORE_OR_SAME_DATE;
 							result.placeholder = one.toISOString();
 						}
 

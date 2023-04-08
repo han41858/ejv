@@ -1,5 +1,5 @@
 import { AnyObject, Scheme } from './interfaces';
-import { ErrorMsg, ErrorMsgCursorNot } from './constants';
+import { ErrorMsg } from './constants';
 
 
 enum CloneDataType {
@@ -93,7 +93,6 @@ export const clone = <T> (obj: T, sanitize?: boolean): T => {
 };
 
 export const createErrorMsg = (errorMsg: ErrorMsg, param?: {
-	reverse?: boolean // default false
 	placeholders?: (string | number)[]
 }): string => {
 	let result: string = errorMsg;
@@ -108,8 +107,6 @@ export const createErrorMsg = (errorMsg: ErrorMsg, param?: {
 			);
 		});
 	}
-
-	result = result.replace(ErrorMsgCursorNot, param?.reverse ? 'not ' : '');
 
 	return result;
 };

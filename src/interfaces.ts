@@ -11,8 +11,6 @@ interface CommonScheme {
 
 	optional?: boolean; // false
 	nullable?: boolean; // false
-
-	not?: Scheme | Scheme[];
 }
 
 // no additional rule
@@ -91,7 +89,6 @@ export interface Options {
 
 export interface InternalOptions extends Options {
 	path: string[];
-	reverse: boolean; // default false, for not
 }
 
 export class EjvError {
