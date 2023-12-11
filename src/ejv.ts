@@ -1047,7 +1047,7 @@ const _ejv = <T>(data : T, schemes : Scheme[], options : InternalOptions = {
 export const ejv = (data : object, schemes : Scheme[], options? : Options) : null | EjvError => {
 	// check data itself
 	if (!definedTester(data) || !objectTester(data) || data === null) {
-		return new EjvError(ErrorType.REQUIRED, ErrorMsg.NO_DATA, ['/'], data, undefined);
+		return new EjvError(ErrorType.REQUIRED, ErrorMsg.NO_DATA, ['/'], data, data);
 	}
 
 	// check schemes itself
