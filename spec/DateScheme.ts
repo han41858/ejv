@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 
-import { DateScheme, EjvError } from '../src/interfaces';
+import { DateScheme, EjvError, Scheme } from '../src/interfaces';
 import { ErrorMsg, ErrorType } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { TypeTester, typeTesterArr } from './common-test-runner';
@@ -187,10 +187,12 @@ describe('DateScheme', () => {
 	describe('min & exclusiveMin', () => {
 		describe('min only', () => {
 			describe('check parameter', () => {
+				const data = {
+					date: new Date()
+				};
+
 				it('undefined is ok', () => {
-					expect(ejv({
-						date: new Date()
-					}, [{
+					expect(ejv(data, [{
 						key: 'date',
 						type: 'date',
 						min: undefined
@@ -198,23 +200,39 @@ describe('DateScheme', () => {
 				});
 
 				it('null', () => {
-					expect(() => ejv({
-						date: new Date()
-					}, [{
+					const errorScheme: Scheme = {
 						key: 'date',
 						type: 'date',
 						min: null as unknown as string
-					}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+					};
+
+					const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+					expect(ejvError).to.be.instanceOf(EjvError);
+					expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+					expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+					expect(ejvError).to.have.property('data', data);
+					expect(ejvError).to.not.have.property('path');
+					expect(ejvError).to.have.property('errorScheme', errorScheme);
+					expect(ejvError).to.not.have.property('errorData');
 				});
 
 				it('min type', () => {
-					expect(() => ejv({
-						date: new Date()
-					}, [{
+					const errorScheme: Scheme = {
 						key: 'date',
 						type: 'date',
 						min: 123 as unknown as string
-					}])).to.throw(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+					};
+
+					const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+					expect(ejvError).to.be.instanceOf(EjvError);
+					expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+					expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+					expect(ejvError).to.have.property('data', data);
+					expect(ejvError).to.not.have.property('path');
+					expect(ejvError).to.have.property('errorScheme', errorScheme);
+					expect(ejvError).to.not.have.property('errorData');
 				});
 			});
 
@@ -258,14 +276,26 @@ describe('DateScheme', () => {
 		describe('exclusiveMin', () => {
 			describe('check parameter', () => {
 				it('exclusiveMin type', () => {
-					expect(() => ejv({
+					const data = {
 						date: new Date()
-					}, [{
+					};
+
+					const errorScheme: Scheme = {
 						key: 'date',
 						type: 'date',
 						min: now,
 						exclusiveMin: now.toISOString() as unknown as boolean
-					}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
+					};
+
+					const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+					expect(ejvError).to.be.instanceOf(EjvError);
+					expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+					expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
+					expect(ejvError).to.have.property('data', data);
+					expect(ejvError).to.not.have.property('path');
+					expect(ejvError).to.have.property('errorScheme', errorScheme);
+					expect(ejvError).to.not.have.property('errorData');
 				});
 			});
 
@@ -311,10 +341,12 @@ describe('DateScheme', () => {
 		describe('max & exclusiveMax', () => {
 			describe('max only', () => {
 				describe('check parameter', () => {
+					const data = {
+						date: new Date()
+					};
+
 					it('undefined is ok', () => {
-						expect(ejv({
-							date: new Date()
-						}, [{
+						expect(ejv(data, [{
 							key: 'date',
 							type: 'date',
 							max: undefined
@@ -322,23 +354,39 @@ describe('DateScheme', () => {
 					});
 
 					it('null', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
+						const errorScheme: Scheme = {
 							key: 'date',
 							type: 'date',
 							max: null as unknown as string
-						}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+						};
+
+						const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+						expect(ejvError).to.be.instanceOf(EjvError);
+						expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+						expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+						expect(ejvError).to.have.property('data', data);
+						expect(ejvError).to.not.have.property('path');
+						expect(ejvError).to.have.property('errorScheme', errorScheme);
+						expect(ejvError).to.not.have.property('errorData');
 					});
 
 					it('max type', () => {
-						expect(() => ejv({
-							date: new Date()
-						}, [{
+						const errorScheme: Scheme = {
 							key: 'date',
 							type: 'date',
 							max: 123 as unknown as string
-						}])).to.throw(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+						};
+
+						const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+						expect(ejvError).to.be.instanceOf(EjvError);
+						expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+						expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+						expect(ejvError).to.have.property('data', data);
+						expect(ejvError).to.not.have.property('path');
+						expect(ejvError).to.have.property('errorScheme', errorScheme);
+						expect(ejvError).to.not.have.property('errorData');
 					});
 				});
 
@@ -382,14 +430,26 @@ describe('DateScheme', () => {
 			describe('exclusiveMax', () => {
 				describe('check parameter', () => {
 					it('exclusiveMax type', () => {
-						expect(() => ejv({
+						const data = {
 							date: new Date()
-						}, [{
+						};
+
+						const errorScheme: Scheme = {
 							key: 'date',
 							type: 'date',
 							max: now,
 							exclusiveMax: now.toISOString() as unknown as boolean
-						}])).to.throw(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
+						};
+
+						const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+						expect(ejvError).to.be.instanceOf(EjvError);
+						expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+						expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
+						expect(ejvError).to.have.property('data', data);
+						expect(ejvError).to.not.have.property('path');
+						expect(ejvError).to.have.property('errorScheme', errorScheme);
+						expect(ejvError).to.not.have.property('errorData');
 					});
 				});
 

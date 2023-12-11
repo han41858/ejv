@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 
-import { EjvError } from '../src/interfaces';
+import { EjvError, Scheme } from '../src/interfaces';
 import { ErrorMsg, ErrorType } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { TypeTester, typeTesterArr } from './common-test-runner';
@@ -112,10 +112,12 @@ describe('StringScheme', () => {
 
 	describe('enum', () => {
 		describe('check parameter', () => {
+			const data = {
+				a: 'a'
+			};
+
 			it('undefined is ok', () => {
-				expect(ejv({
-					a: 'a'
-				}, [{
+				expect(ejv(data, [{
 					key: 'a',
 					type: 'string',
 					enum: undefined
@@ -123,33 +125,57 @@ describe('StringScheme', () => {
 			});
 
 			it('null', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					enum: null as unknown as string[]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('not array', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					enum: 'a' as unknown as string[]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('not string', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					enum: [10]
-				}])).to.throw(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 		});
 
@@ -195,10 +221,12 @@ describe('StringScheme', () => {
 
 	describe('length', () => {
 		describe('check parameter', () => {
+			const data = {
+				a: 'ejv'
+			};
+
 			it('undefined is ok', () => {
-				expect(ejv({
-					a: 'ejv'
-				}, [{
+				expect(ejv(data, [{
 					key: 'a',
 					type: 'string',
 					length: undefined
@@ -206,23 +234,39 @@ describe('StringScheme', () => {
 			});
 
 			it('null', () => {
-				expect(() => ejv({
-					a: 'ejv'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					length: null as unknown as number
-				}])).to.throw(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('length type', () => {
-				expect(() => ejv({
-					a: 'ejv'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					length: '3' as unknown as number
-				}])).to.throw(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 		});
 
@@ -266,10 +310,11 @@ describe('StringScheme', () => {
 
 	describe('minLength', () => {
 		describe('check parameter', () => {
+			const data = {
+				a: 'ejv'
+			};
 			it('undefined is ok', () => {
-				expect(ejv({
-					a: 'ejv'
-				}, [{
+				expect(ejv(data, [{
 					key: 'a',
 					type: 'string',
 					minLength: undefined
@@ -277,33 +322,57 @@ describe('StringScheme', () => {
 			});
 
 			it('null', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					minLength: null as unknown as number
-				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('float number', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					minLength: 1.5
-				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('string', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					minLength: '1' as unknown as number
-				}])).to.throw(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 		});
 
@@ -354,10 +423,12 @@ describe('StringScheme', () => {
 
 	describe('maxLength', () => {
 		describe('check parameter', () => {
+			const data = {
+				a: 'ejv'
+			};
+
 			it('undefined is ok', () => {
-				expect(ejv({
-					a: 'ejv'
-				}, [{
+				expect(ejv(data, [{
 					key: 'a',
 					type: 'string',
 					maxLength: undefined
@@ -365,33 +436,57 @@ describe('StringScheme', () => {
 			});
 
 			it('null', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					maxLength: null as unknown as number
-				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('float number', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					maxLength: 1.5
-				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('string', () => {
-				expect(() => ejv({
-					a: 'a'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					maxLength: '1' as unknown as number
-				}])).to.throw(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 		});
 
@@ -442,10 +537,12 @@ describe('StringScheme', () => {
 
 	describe('format', () => {
 		describe('check parameter', () => {
+			const data = {
+				a: 'ejv@ejv.com'
+			};
+
 			it('undefined is ok', () => {
-				expect(ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				expect(ejv(data, [{
 					key: 'a',
 					type: 'string',
 					format: undefined
@@ -453,40 +550,64 @@ describe('StringScheme', () => {
 			});
 
 			it('null', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					format: null as unknown as string
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
 					placeholders: ['null']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			describe('invalid string format', () => {
 				it('single format', () => {
-					expect(() => ejv({
-						a: 'a'
-					}, [{
+					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
 						format: 'invalidStringFormat'
-					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+					};
+
+					const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+					expect(ejvError).to.be.instanceOf(EjvError);
+					expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+					expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
 						placeholders: ['invalidStringFormat']
 					}));
+					expect(ejvError).to.have.property('data', data);
+					expect(ejvError).to.not.have.property('path');
+					expect(ejvError).to.have.property('errorScheme', errorScheme);
+					expect(ejvError).to.not.have.property('errorData');
 				});
 
 				it('multiple format', () => {
-					expect(() => ejv({
-						a: 'a'
-					}, [{
+					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
 						format: ['invalidStringFormat']
-					}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+					};
+
+					const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+					expect(ejvError).to.be.instanceOf(EjvError);
+					expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+					expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
 						placeholders: ['invalidStringFormat']
 					}));
+					expect(ejvError).to.have.property('data', data);
+					expect(ejvError).to.not.have.property('path');
+					expect(ejvError).to.have.property('errorScheme', errorScheme);
+					expect(ejvError).to.not.have.property('errorData');
 				});
 			});
 		});
@@ -815,10 +936,12 @@ describe('StringScheme', () => {
 
 	describe('pattern', () => {
 		describe('check parameter', () => {
+			const data = {
+				a: 'ejv@ejv.com'
+			};
+
 			it('undefined is ok', () => {
-				expect(ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				expect(ejv(data, [{
 					key: 'a',
 					type: 'string',
 					pattern: undefined
@@ -826,123 +949,204 @@ describe('StringScheme', () => {
 			});
 
 			it('null', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: null as unknown as string
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['null']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('number', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: 1 as unknown as string
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['1']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('empty string', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: ''
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['//']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('empty array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: []
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['[]']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('null array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: [null as unknown as RegExp, /ab/]
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['[/null/, /ab/]']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('number array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: [1, 3] as unknown as string[]
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['[1, 3]']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('empty string array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: ['']
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['[//]']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('empty reg exp', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: new RegExp('')
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['//']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('null reg exp', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: new RegExp(null as unknown as string)
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['/null/']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 
 			it('empty reg exp array', () => {
-				expect(() => ejv({
-					a: 'ejv@ejv.com'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
 					pattern: [new RegExp('')]
-				}])).to.throw(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+				};
+
+				const ejvError: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(ejvError).to.be.instanceOf(EjvError);
+				expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 					placeholders: ['[//]']
 				}));
+				expect(ejvError).to.have.property('data', data);
+				expect(ejvError).to.not.have.property('path');
+				expect(ejvError).to.have.property('errorScheme', errorScheme);
+				expect(ejvError).to.not.have.property('errorData');
 			});
 		});
 

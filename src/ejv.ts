@@ -219,7 +219,6 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 			}
 		}
 
-
 		const typeResolved: DataType | undefined = types.find((type: DataType): type is DataType => {
 			return typeTester(value, type);
 		});
@@ -305,13 +304,27 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 				if (definedTester(numberScheme.enum)) {
 					if (!arrayTester(numberScheme.enum)) {
-						throw new Error(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY),
+
+							data: data,
+
+							errorScheme: numberScheme
+						});
 					}
 
 					const enumArr: number[] = numberScheme.enum;
 
 					if (!arrayTypeOfTester(enumArr, DataType.NUMBER)) {
-						throw new Error(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_NUMBERS));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_NUMBERS),
+
+							data: data,
+
+							errorScheme: numberScheme
+						});
 					}
 
 					if (!enumTester(valueAsNumber, enumArr)) {
@@ -338,12 +351,26 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					const effectiveMin: number = numberScheme.min || (scheme.parent as NumberScheme)?.min as number;
 
 					if (!numberTester(effectiveMin)) {
-						throw new Error(createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER),
+
+							data: data,
+
+							errorScheme: numberScheme
+						});
 					}
 
 					if (definedTester(numberScheme.exclusiveMin)) {
 						if (!booleanTester(numberScheme.exclusiveMin)) {
-							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN),
+
+								data: data,
+
+								errorScheme: numberScheme
+							});
 						}
 					}
 
@@ -388,12 +415,26 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					const effectiveMax: number = numberScheme.max || (scheme.parent as NumberScheme)?.max as number;
 
 					if (!numberTester(effectiveMax)) {
-						throw new Error(createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER),
+
+							data: data,
+
+							errorScheme: numberScheme
+						});
 					}
 
 					if (definedTester(numberScheme.exclusiveMax)) {
 						if (!booleanTester(numberScheme.exclusiveMax)) {
-							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN),
+
+								data: data,
+
+								errorScheme: numberScheme
+							});
 						}
 					}
 
@@ -442,9 +483,16 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const formatAsString: NumberFormat = numberScheme.format as NumberFormat;
 
 						if (!enumTester(formatAsString, allNumberFormat)) {
-							throw new Error(createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
-								placeholders: [formatAsString]
-							}));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+									placeholders: [formatAsString]
+								}),
+
+								data: data,
+
+								errorScheme: numberScheme
+							});
 						}
 
 						formats = [numberScheme.format as NumberFormat];
@@ -457,9 +505,16 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						});
 
 						if (errorFormat) {
-							throw new Error(createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
-								placeholders: [errorFormat]
-							}));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+									placeholders: [errorFormat]
+								}),
+
+								data: data,
+
+								errorScheme: numberScheme
+							});
 						}
 
 						formats = numberScheme.format as NumberFormat[];
@@ -522,13 +577,27 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 				if (definedTester(stringScheme.enum)) {
 					if (!arrayTester(stringScheme.enum)) {
-						throw new Error(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY),
+
+							data: data,
+
+							errorScheme: stringScheme
+						});
 					}
 
 					const enumArr: string[] = stringScheme.enum;
 
 					if (!arrayTypeOfTester(enumArr, DataType.STRING)) {
-						throw new Error(createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS),
+
+							data: data,
+
+							errorScheme: stringScheme
+						});
 					}
 
 					if (!enumTester(valueAsString, enumArr)) {
@@ -552,7 +621,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					const length: number = stringScheme.length;
 
 					if (!(numberTester(length) && integerTester(length))) {
-						throw new Error(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER),
+
+							data: data,
+
+							errorScheme: stringScheme
+						});
 					}
 
 					if (!lengthTester(valueAsString, length)) {
@@ -576,7 +652,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					const minLength: number = stringScheme.minLength;
 
 					if (!(numberTester(minLength) && integerTester(minLength))) {
-						throw new Error(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER),
+
+							data: data,
+
+							errorScheme: stringScheme
+						});
 					}
 
 					if (!minLengthTester(valueAsString, minLength)) {
@@ -600,7 +683,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					const maxLength: number = stringScheme.maxLength;
 
 					if (!(numberTester(maxLength) && integerTester(maxLength))) {
-						throw new Error(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER),
+
+							data: data,
+
+							errorScheme: stringScheme
+						});
 					}
 
 					if (!maxLengthTester(valueAsString, maxLength)) {
@@ -629,9 +719,16 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const formatAsString: string = stringScheme.format;
 
 						if (!enumTester(formatAsString, allStringFormat)) {
-							throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
-								placeholders: [formatAsString]
-							}));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+									placeholders: [formatAsString]
+								}),
+
+								data: data,
+
+								errorScheme: stringScheme
+							});
 						}
 
 						formats = [stringScheme.format] as StringFormat[];
@@ -643,9 +740,16 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						});
 
 						if (errorFormat) {
-							throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
-								placeholders: [errorFormat]
-							}));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+									placeholders: [errorFormat]
+								}),
+
+								data: data,
+
+								errorScheme: stringScheme
+							});
 						}
 
 						formats = stringScheme.format as StringFormat[];
@@ -711,9 +815,16 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 				if (definedTester(stringScheme.pattern)) {
 					// check parameter
 					if (stringScheme.pattern === null) {
-						throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-							placeholders: ['null']
-						}));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+								placeholders: ['null']
+							}),
+
+							data: data,
+
+							errorScheme: stringScheme
+						});
 					}
 
 					const isValidPattern = (pattern: string | RegExp): boolean => {
@@ -757,50 +868,77 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						const patternsAsArray: (string | RegExp)[] = stringScheme.pattern as (string | RegExp)[];
 
 						if (!minLengthTester(patternsAsArray, 1)) { // empty array
-							throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-								placeholders: [createArrayErrorMsg(patternsAsArray)]
-							}));
-						}
-
-						const regExpPatterns: RegExp[] = patternsAsArray.map((pattern: string | RegExp): RegExp => {
-							if (!isValidPattern(pattern)) {
-								throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-									placeholders: [createArrayErrorMsg(patternsAsArray)]
-								}));
-							}
-
-							return new RegExp(pattern);
-						}) as RegExp[];
-
-						// check value
-						const foundMatchPattern: boolean = regExpPatterns.some((regexp: RegExp): boolean => {
-							return stringRegExpTester(valueAsString, regexp);
-						});
-
-						if (!foundMatchPattern) {
-							result = new EjvError({
-								type: ErrorType.PATTERN_ONE_OF,
-								message: createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
 									placeholders: [createArrayErrorMsg(patternsAsArray)]
 								}),
 
-								data,
-								path: _options.path,
+								data: data,
 
-								errorScheme: stringScheme,
-								errorData: value
+								errorScheme: stringScheme
 							});
-							break;
 						}
 
+						try {
+							const regExpPatterns: RegExp[] = patternsAsArray.map((pattern: string | RegExp): RegExp => {
+								if (!isValidPattern(pattern)) {
+									throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+										placeholders: [createArrayErrorMsg(patternsAsArray)]
+									}));
+								}
+
+								return new RegExp(pattern);
+							}) as RegExp[];
+
+							// check value
+							const foundMatchPattern: boolean = regExpPatterns.some((regexp: RegExp): boolean => {
+								return stringRegExpTester(valueAsString, regexp);
+							});
+
+							if (!foundMatchPattern) {
+								result = new EjvError({
+									type: ErrorType.PATTERN_ONE_OF,
+									message: createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+										placeholders: [createArrayErrorMsg(patternsAsArray)]
+									}),
+
+									data,
+									path: _options.path,
+
+									errorScheme: stringScheme,
+									errorData: value
+								});
+								break;
+							}
+						}
+						catch (e: unknown) {
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+									placeholders: [createArrayErrorMsg(patternsAsArray)]
+								}),
+
+								data: data,
+
+								errorScheme: stringScheme
+							});
+						}
 					}
 					else {
 						const patternAsOne: string | RegExp = stringScheme.pattern as string | RegExp;
 
 						if (!isValidPattern(patternAsOne)) {
-							throw new Error(createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
-								placeholders: [patternToString(patternAsOne)]
-							}));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+									placeholders: [patternToString(patternAsOne)]
+								}),
+
+								data: data,
+
+								errorScheme: stringScheme
+							});
 						}
 
 						// check value
@@ -832,7 +970,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 				if (definedTester(objectScheme.allowNoProperty)) {
 					if (!booleanTester(objectScheme.allowNoProperty)) {
-						throw new Error(createErrorMsg(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN),
+
+							data: data,
+
+							errorScheme: objectScheme
+						});
 					}
 
 					if (!objectScheme.allowNoProperty && !hasPropertyTester(valueAsObject)) {
@@ -852,17 +997,38 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 				if (definedTester(objectScheme.properties)) {
 					if (!arrayTester(objectScheme.properties)) {
-						throw new Error(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY),
+
+							data: data,
+
+							errorScheme: objectScheme
+						});
 					}
 
 					const properties: Scheme[] = objectScheme.properties as Scheme[];
 
 					if (!minLengthTester(properties, 1)) {
-						throw new Error(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS),
+
+							data: data,
+
+							errorScheme: objectScheme
+						});
 					}
 
 					if (!arrayTypeOfTester(properties, DataType.OBJECT)) {
-						throw new Error(createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT),
+
+							data: data,
+
+							errorScheme: objectScheme
+						});
 					}
 
 					if (!objectTester(value)) {
@@ -914,14 +1080,28 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						)
 						|| dateTester(minDateCandidate)
 					)) {
-						throw new Error(createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING),
+
+							data: data,
+
+							errorScheme: dateScheme
+						});
 					}
 
 					const effectiveMin: Date = new Date(minDateCandidate);
 
 					if (definedTester(dateScheme.exclusiveMin)) {
 						if (!booleanTester(dateScheme.exclusiveMin)) {
-							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN),
+
+								data: data,
+
+								errorScheme: dateScheme
+							});
 						}
 
 
@@ -995,15 +1175,28 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						)
 						|| dateTester(maxDateCandidate)
 					)) {
-						throw new Error(createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING),
+
+							data: data,
+
+							errorScheme: dateScheme
+						});
 					}
 
 					const effectiveMax: Date = new Date(maxDateCandidate);
 
-
 					if (definedTester(dateScheme.exclusiveMax)) {
 						if (!booleanTester(dateScheme.exclusiveMax)) {
-							throw new Error(createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN),
+
+								data: data,
+
+								errorScheme: dateScheme
+							});
 						}
 					}
 
@@ -1053,7 +1246,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					const length: number = arrayScheme.length;
 
 					if (!(numberTester(length) && integerTester(length))) {
-						throw new Error(createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER),
+
+							data: data,
+
+							errorScheme: arrayScheme
+						});
 					}
 
 					if (!lengthTester(valueAsArray, length)) {
@@ -1077,7 +1277,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					const minLength: number = arrayScheme.minLength;
 
 					if (!(numberTester(arrayScheme.minLength) && integerTester(minLength))) {
-						throw new Error(createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER),
+
+							data: data,
+
+							errorScheme: arrayScheme
+						});
 					}
 
 					if (!minLengthTester(valueAsArray, minLength)) {
@@ -1101,7 +1308,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					const maxLength: number = arrayScheme.maxLength;
 
 					if (!(numberTester(arrayScheme.maxLength) && integerTester(maxLength))) {
-						throw new Error(createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER),
+
+							data: data,
+
+							errorScheme: arrayScheme
+						});
 					}
 
 					if (!maxLengthTester(valueAsArray, maxLength)) {
@@ -1123,7 +1337,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 				if (definedTester(arrayScheme.unique)) {
 					if (!booleanTester(arrayScheme.unique)) {
-						throw new Error(createErrorMsg(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN));
+						return new EjvError({
+							type: ErrorType.INVALID_SCHEMES,
+							message: createErrorMsg(ErrorMsg.UNIQUE_SHOULD_BE_BOOLEAN),
+
+							data: data,
+
+							errorScheme: arrayScheme
+						});
 					}
 
 					if (arrayScheme.unique && !uniqueItemsTester(valueAsArray)) {
@@ -1295,9 +1516,16 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							}
 						}
 						else {
-							throw new Error(createErrorMsg(ErrorMsg.INVALID_ITEMS_SCHEME, {
-								placeholders: [JSON.stringify(arrayScheme.items)]
-							}));
+							return new EjvError({
+								type: ErrorType.INVALID_SCHEMES,
+								message: createErrorMsg(ErrorMsg.INVALID_ITEMS_SCHEME, {
+									placeholders: [JSON.stringify(arrayScheme.items)]
+								}),
+
+								data: data,
+
+								errorScheme: arrayScheme
+							});
 						}
 					}
 				}
