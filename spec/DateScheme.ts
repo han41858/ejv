@@ -73,7 +73,7 @@ describe('DateScheme', () => {
 				}
 
 				expect(result.type).to.be.eql(ErrorType[define.error]);
-				expect(result.message).to.eql(createErrorMsg(ErrorMsg[define.error], {
+				expect(result.message).to.eql(createErrorMsg(ErrorMsg[define.error as keyof typeof ErrorMsg], {
 					placeholders: [define.placeholder || '']
 				}));
 				expect(result.path).to.be.eql('date');

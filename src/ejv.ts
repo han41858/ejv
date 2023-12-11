@@ -46,7 +46,7 @@ import {
 	typeTester,
 	uniqueItemsTester
 } from './tester';
-import { clone, createErrorMsg } from './util';
+import { clone, createErrorMsg, sift } from './util';
 
 
 function _getEffectiveTypes (scheme: Scheme): DataType[] | undefined {
@@ -66,16 +66,48 @@ function _getEffectiveTypes (scheme: Scheme): DataType[] | undefined {
 
 const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | EjvError => {
 	// check schemes
+	if (!definedTester(schemes) || schemes === null) {
+		return new EjvError({
+			type: ErrorType.NO_SCHEME,
+			message: ErrorMsg.NO_SCHEME,
+
+			data: data,
+
+			errorScheme: schemes
+		});
+	}
+
 	if (!arrayTester(schemes)) {
-		throw new Error(createErrorMsg(ErrorMsg.NO_ARRAY_SCHEME));
+		return new EjvError({
+			type: ErrorType.INVALID_SCHEMES,
+			message: ErrorMsg.NO_ARRAY_SCHEME,
+
+			data: data,
+
+			errorScheme: schemes
+		});
 	}
 
 	if (!arrayTypeOfTester(schemes, DataType.OBJECT)) {
-		throw new Error(createErrorMsg(ErrorMsg.NO_OBJECT_ARRAY_SCHEME));
+		return new EjvError({
+			type: ErrorType.INVALID_SCHEMES,
+			message: ErrorMsg.NO_OBJECT_ARRAY_SCHEME,
+
+			data: data,
+
+			errorScheme: schemes
+		});
 	}
 
 	if (!minLengthTester(schemes, 1)) {
-		throw new Error(createErrorMsg(ErrorMsg.EMPTY_SCHEME));
+		return new EjvError({
+			type: ErrorType.INVALID_SCHEMES,
+			message: ErrorMsg.EMPTY_SCHEME,
+
+			data: data,
+
+			errorScheme: schemes
+		});
 	}
 
 	// check data by schemes
@@ -98,7 +130,14 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 		const types: DataType[] | undefined = _getEffectiveTypes(scheme);
 
 		if (!definedTester(types)) {
-			throw new Error(createErrorMsg(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE));
+			return new EjvError({
+				type: ErrorType.INVALID_SCHEMES,
+				message: ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE,
+
+				data: data,
+
+				errorScheme: scheme
+			});
 		}
 
 
@@ -111,13 +150,35 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 		});
 
 		if (typeError) {
-			throw new Error(createErrorMsg(ErrorMsg.SCHEMES_HAS_INVALID_TYPE, {
-				placeholders: [typeError]
-			}));
+			return new EjvError({
+				type: ErrorType.INVALID_SCHEMES,
+				message: createErrorMsg(ErrorMsg.SCHEMES_HAS_INVALID_TYPE, {
+					placeholders: [typeError]
+				}),
+
+				data: data,
+
+				errorScheme: scheme
+			});
 		}
 
 		if (!uniqueItemsTester(types)) {
-			throw new Error(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE));
+			const notUniqueItems: string[] = types.filter((type: string): boolean => {
+				return types.filter((_type: unknown): boolean => _type === type).length > 1;
+			});
+
+			const notUniqueItemsSifted: string[] = sift(notUniqueItems);
+
+			return new EjvError({
+				type: ErrorType.INVALID_SCHEMES,
+				message: createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE, {
+					placeholders: [notUniqueItemsSifted.join(', ')]
+				}),
+
+				data: data,
+
+				errorScheme: scheme
+			});
 		}
 
 		if (!definedTester(value)) {
@@ -1126,7 +1187,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									});
 								}
 
-								const partialKeys: string[] = partialResult.path.split('/');
+								const partialKeys: string[] = (partialResult.path as string).split('/');
 								const partialKey: string = partialKeys[partialKeys.length - 1];
 
 								const partialScheme: Scheme = partialSchemes.find((_scheme: Scheme): boolean => {
@@ -1183,7 +1244,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									const partialResult: EjvError | null = _ejv(partialData, [partialScheme], _options);
 
 									if (partialResult) {
-										partialResult.path = partialResult.path.replace(tempKeyForThisValue, '' + arrIndex);
+										partialResult.path = (partialResult.path as string).replace(tempKeyForThisValue, '' + arrIndex);
 									}
 
 									return partialResult;
@@ -1225,7 +1286,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									message: errorMsg,
 
 									data,
-									path: partialError.path.split('/'),
+									path: (partialError.path as string).split('/'),
 
 									errorScheme: partialError.errorScheme,
 									errorData: partialError.errorData
@@ -1271,34 +1332,13 @@ export const ejv = (data: object, schemes: Scheme[], options?: Options): null | 
 	// check data itself
 	if (!definedTester(data) || !objectTester(data) || data === null) {
 		return new EjvError({
-			type: ErrorType.REQUIRED,
+			type: ErrorType.NO_DATA,
 			message: ErrorMsg.NO_DATA,
 
-			data,
-			path: ['/'],
-
-			errorScheme: schemes,
+			data: data,
 			errorData: data
 		});
 	}
-
-	// check schemes itself
-	if (!definedTester(schemes) || schemes === null) {
-		throw new Error(createErrorMsg(ErrorMsg.NO_SCHEME));
-	}
-
-	if (!arrayTester(schemes)) {
-		throw new Error(createErrorMsg(ErrorMsg.NO_ARRAY_SCHEME));
-	}
-
-	if (!arrayTypeOfTester(schemes, DataType.OBJECT)) {
-		throw new Error(createErrorMsg(ErrorMsg.NO_OBJECT_ARRAY_SCHEME));
-	}
-
-	if (!minLengthTester(schemes, 1)) {
-		throw new Error(createErrorMsg(ErrorMsg.EMPTY_SCHEME));
-	}
-
 
 	const internalOption: InternalOptions = (options
 		? {

@@ -1,4 +1,4 @@
-import { AnyObject, Scheme } from './interfaces';
+import { AnyObject } from './interfaces';
 import { ErrorMsg } from './constants';
 
 
@@ -92,6 +92,18 @@ export const clone = <T> (obj: T, sanitize?: boolean): T => {
 	return result;
 };
 
+
+export const sift = <T> (arr: T[]): T[] => {
+	return arr.reduce((acc: T[], cur: T) => {
+		if (cur !== null && cur !== undefined && !acc.includes(cur)) {
+			acc.push(cur);
+		}
+
+		return acc;
+	}, []);
+};
+
+
 export const createErrorMsg = (errorMsg: ErrorMsg, param?: {
 	placeholders?: (string | number)[]
 }): string => {
@@ -109,29 +121,4 @@ export const createErrorMsg = (errorMsg: ErrorMsg, param?: {
 	}
 
 	return result;
-};
-
-export const xor = (a: boolean, b: boolean): boolean => {
-	return a ? !b : b;
-};
-
-export const getBothKeys = (a: Scheme, b: Scheme): string[] => {
-	const aKeys: string[] = Object.keys(a);
-	const bKeys: string[] = Object.keys(b);
-
-	return [...aKeys, ...bKeys].reduce((acc: string[], key: string): string[] => {
-		if (!acc.includes(key) && aKeys.includes(key) && bKeys.includes(key)) {
-			acc.push(key);
-		}
-
-		return acc;
-	}, []);
-};
-
-const hasEffectiveKeys = (obj: object): boolean => {
-	return Object.keys(obj)
-		.filter((key: string): boolean => {
-			return obj[key as keyof object] !== undefined;
-		})
-		.length > 0;
 };

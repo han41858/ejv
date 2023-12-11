@@ -28,6 +28,13 @@ export enum StringFormat {
 }
 
 export enum ErrorType {
+	// about ejv() running
+	NO_DATA = 'NO_DATA',
+
+	NO_SCHEME = 'NO_SCHEME',
+	INVALID_SCHEMES = 'INVALID_SCHEMES',
+
+	// not match with scheme
 	REQUIRED = 'REQUIRED',
 
 	TYPE_MISMATCH = 'TYPE_MISMATCH',

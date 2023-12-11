@@ -17,9 +17,12 @@ describe('ejv()', () => {
 				);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error).to.have.property('type', ErrorType.REQUIRED);
+				expect(error).to.have.property('type', ErrorType.NO_DATA);
 				expect(error).to.have.property('message', ErrorMsg.NO_DATA);
-				expect(error).to.have.property('path', '/');
+				expect(error).to.have.property('data', undefined);
+				expect(error).to.not.have.property('path');
+				expect(error).to.not.have.property('errorScheme');
+				expect(error).to.have.property('errorData', undefined);
 			});
 
 			it('null data', () => {
@@ -29,72 +32,124 @@ describe('ejv()', () => {
 				);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error).to.have.property('type', ErrorType.REQUIRED);
+				expect(error).to.have.property('type', ErrorType.NO_DATA);
 				expect(error).to.have.property('message', ErrorMsg.NO_DATA);
-				expect(error).to.have.property('path', '/');
+				expect(error).to.have.property('data', null);
+				expect(error).to.not.have.property('path');
+				expect(error).to.not.have.property('errorScheme');
+				expect(error).to.have.property('errorData', null);
 			});
 		});
 
 		describe('scheme', () => {
+			const data = {
+				a: 'hello'
+			};
+
 			it('no scheme', () => {
-				expect(() => ejv({
-					a: 'hello'
-				}, undefined as unknown as Scheme[])).to.throw(createErrorMsg(ErrorMsg.NO_SCHEME));
+				const error: EjvError | null = ejv(data, undefined as unknown as Scheme[]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error).to.have.property('type', ErrorType.NO_SCHEME);
+				expect(error).to.have.property('message', ErrorMsg.NO_SCHEME);
+				expect(error).to.have.property('data', data);
+				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('errorScheme', undefined);
+				expect(error).to.not.have.property('errorData');
 			});
 
 			it('null scheme', () => {
-				expect(() => ejv({
-					a: 'hello'
-				}, null as unknown as Scheme[])).to.throw(createErrorMsg(ErrorMsg.NO_SCHEME));
+				const error: EjvError | null = ejv(data, null as unknown as Scheme[]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error).to.have.property('type', ErrorType.NO_SCHEME);
+				expect(error).to.have.property('message', ErrorMsg.NO_SCHEME);
+				expect(error).to.have.property('data', data);
+				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('errorScheme', null);
+				expect(error).to.not.have.property('errorData');
 			});
 
 			it('empty scheme array', () => {
-				expect(() => ejv({
-					a: 'hello'
-				}, [])).to.throw(createErrorMsg(ErrorMsg.EMPTY_SCHEME));
+				const errorScheme: Scheme[] = [];
+
+				const error: EjvError | null = ejv(data, errorScheme);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(error).to.have.property('message', ErrorMsg.EMPTY_SCHEME);
+				expect(error).to.have.property('data', data);
+				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('errorScheme', errorScheme);
+				expect(error).to.not.have.property('errorData');
 			});
 
 			it('invalid scheme object', () => {
-				expect(() => ejv({
-					a: 'hello'
-				}, ['string' as unknown as Scheme])).to.throw(createErrorMsg(ErrorMsg.NO_OBJECT_ARRAY_SCHEME));
+				const errorScheme: Scheme[] = ['string'];
+
+				const error: EjvError | null = ejv(data, errorScheme);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(error).to.have.property('message', ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
+				expect(error).to.have.property('data', data);
+				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('errorScheme', errorScheme);
+				expect(error).to.not.have.property('errorData');
 			});
 
 			it('no type', () => {
-				expect(() => ejv({
-					a: 'hello'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a'
-				} as unknown as Scheme])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE));
+				} as unknown as Scheme;
+
+				const error: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(error).to.have.property('message', ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE);
+				expect(error).to.have.property('data', data);
+				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('errorScheme', errorScheme);
+				expect(error).to.not.have.property('errorData');
 			});
 
 			it('invalid type', () => {
-				expect(() => ejv({
-					a: 'hello'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'invalidType'
-				}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_INVALID_TYPE, {
-					placeholders: ['invalidType']
-				}));
+				};
 
-				expect(() => ejv({
-					a: 'hello'
-				}, [{
-					key: 'a',
-					type: ['string', 'invalidType']
-				}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_INVALID_TYPE, {
+				const error: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(error).to.have.property('message', createErrorMsg(ErrorMsg.SCHEMES_HAS_INVALID_TYPE, {
 					placeholders: ['invalidType']
 				}));
+				expect(error).to.have.property('data', data);
+				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('errorScheme', errorScheme);
+				expect(error).to.not.have.property('errorData');
 			});
 
 			it('duplicated type', () => {
-				expect(() => ejv({
-					a: 'hello'
-				}, [{
+				const errorScheme: Scheme = {
 					key: 'a',
 					type: ['string', 'string']
-				}])).to.throw(createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE));
+				};
+
+				const error: EjvError | null = ejv(data, [errorScheme]);
+
+				expect(error).to.be.instanceof(EjvError);
+				expect(error).to.have.property('type', ErrorType.INVALID_SCHEMES);
+				expect(error).to.have.property('message', createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE, {
+					placeholders: ['string']
+				}));
+				expect(error).to.have.property('data', data);
+				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('errorScheme', errorScheme);
+				expect(error).to.not.have.property('errorData');
 			});
 		});
 
