@@ -80,8 +80,8 @@ export enum ErrorMsg {
 	NO_ARRAY_SCHEME = 'schemes should be array',
 	NO_OBJECT_ARRAY_SCHEME = 'schemes should be array of object',
 
-	EMPTY_SCHEME = 'scheme should not be empty',
-	SCHEMES_SHOULD_HAVE_TYPE = 'scheme should have type',
+	EMPTY_SCHEME = 'schemes should not be empty',
+	SCHEMES_SHOULD_HAVE_TYPE = 'schemes should have type',
 	SCHEMES_HAS_INVALID_TYPE = 'schemes has invalid type: <<1>>',
 	SCHEMES_HAS_DUPLICATED_TYPE = 'schemes has duplicated type: <<1>>',
 

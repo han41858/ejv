@@ -73,7 +73,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 			data: data,
 
-			errorScheme: schemes
+			errorScheme: schemes,
+			isSchemeError: true
 		});
 	}
 
@@ -84,7 +85,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 			data: data,
 
-			errorScheme: schemes
+			errorScheme: schemes,
+			isSchemeError: true
 		});
 	}
 
@@ -95,7 +97,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 			data: data,
 
-			errorScheme: schemes
+			errorScheme: schemes,
+			isSchemeError: true
 		});
 	}
 
@@ -106,7 +109,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 			data: data,
 
-			errorScheme: schemes
+			errorScheme: schemes,
+			isSchemeError: true
 		});
 	}
 
@@ -136,7 +140,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 				data: data,
 
-				errorScheme: scheme
+				errorScheme: scheme,
+				isSchemeError: true
 			});
 		}
 
@@ -158,7 +163,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 				data: data,
 
-				errorScheme: scheme
+				errorScheme: scheme,
+				isSchemeError: true
 			});
 		}
 
@@ -177,7 +183,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 				data: data,
 
-				errorScheme: scheme
+				errorScheme: scheme,
+				isSchemeError: true
 			});
 		}
 
@@ -310,7 +317,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: numberScheme
+							errorScheme: numberScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -323,7 +331,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: numberScheme
+							errorScheme: numberScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -357,7 +366,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: numberScheme
+							errorScheme: numberScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -369,7 +379,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: numberScheme
+								errorScheme: numberScheme,
+								isSchemeError: true
 							});
 						}
 					}
@@ -421,7 +432,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: numberScheme
+							errorScheme: numberScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -433,7 +445,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: numberScheme
+								errorScheme: numberScheme,
+								isSchemeError: true
 							});
 						}
 					}
@@ -491,7 +504,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: numberScheme
+								errorScheme: numberScheme,
+								isSchemeError: true
 							});
 						}
 
@@ -513,7 +527,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: numberScheme
+								errorScheme: numberScheme,
+								isSchemeError: true
 							});
 						}
 
@@ -583,7 +598,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: stringScheme
+							errorScheme: stringScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -596,7 +612,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: stringScheme
+							errorScheme: stringScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -627,7 +644,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: stringScheme
+							errorScheme: stringScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -658,7 +676,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: stringScheme
+							errorScheme: stringScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -689,7 +708,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: stringScheme
+							errorScheme: stringScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -727,7 +747,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: stringScheme
+								errorScheme: stringScheme,
+								isSchemeError: true
 							});
 						}
 
@@ -748,7 +769,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: stringScheme
+								errorScheme: stringScheme,
+								isSchemeError: true
 							});
 						}
 
@@ -823,7 +845,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: stringScheme
+							errorScheme: stringScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -876,7 +899,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: stringScheme
+								errorScheme: stringScheme,
+								isSchemeError: true
 							});
 						}
 
@@ -921,7 +945,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: stringScheme
+								errorScheme: stringScheme,
+								isSchemeError: true
 							});
 						}
 					}
@@ -937,7 +962,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: stringScheme
+								errorScheme: stringScheme,
+								isSchemeError: true
 							});
 						}
 
@@ -976,7 +1002,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: objectScheme
+							errorScheme: objectScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1003,7 +1030,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: objectScheme
+							errorScheme: objectScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1016,7 +1044,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: objectScheme
+							errorScheme: objectScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1027,7 +1056,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: objectScheme
+							errorScheme: objectScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1086,7 +1116,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: dateScheme
+							errorScheme: dateScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1100,7 +1131,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: dateScheme
+								errorScheme: dateScheme,
+								isSchemeError: true
 							});
 						}
 
@@ -1181,7 +1213,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: dateScheme
+							errorScheme: dateScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1195,7 +1228,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: dateScheme
+								errorScheme: dateScheme,
+								isSchemeError: true
 							});
 						}
 					}
@@ -1252,7 +1286,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: arrayScheme
+							errorScheme: arrayScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1283,7 +1318,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: arrayScheme
+							errorScheme: arrayScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1314,7 +1350,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: arrayScheme
+							errorScheme: arrayScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1343,7 +1380,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							data: data,
 
-							errorScheme: arrayScheme
+							errorScheme: arrayScheme,
+							isSchemeError: true
 						});
 					}
 
@@ -1377,6 +1415,27 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								? arrayScheme.items
 								: [arrayScheme.items]) as DataType[];
 
+							const itemTypeError: string | undefined = itemTypes.find((type: DataType): boolean => {
+								return !definedTester(type)
+									|| !stringTester(type)
+									|| !enumTester(type, allDataType);
+							});
+
+							if (itemTypeError) {
+								return new EjvError({
+									type: ErrorType.INVALID_SCHEMES,
+									message: createErrorMsg(ErrorMsg.SCHEMES_HAS_INVALID_TYPE, {
+										placeholders: [itemTypeError]
+									}),
+
+									data: data,
+
+									errorScheme: scheme,
+									isSchemeError: true
+								});
+							}
+
+
 							const partialData: AnyObject = {};
 							const partialSchemes: Scheme[] = [];
 
@@ -1408,7 +1467,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									});
 								}
 
-								const partialKeys: string[] = (partialResult.path as string).split('/');
+								const partialKeys: string[] = (partialResult.path || '').split('/');
 								const partialKey: string = partialKeys[partialKeys.length - 1];
 
 								const partialScheme: Scheme = partialSchemes.find((_scheme: Scheme): boolean => {
@@ -1465,7 +1524,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									const partialResult: EjvError | null = _ejv(partialData, [partialScheme], _options);
 
 									if (partialResult) {
-										partialResult.path = (partialResult.path as string).replace(tempKeyForThisValue, '' + arrIndex);
+										partialResult.path = (partialResult.path || '').replace(tempKeyForThisValue, '' + arrIndex);
 									}
 
 									return partialResult;
@@ -1474,7 +1533,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								if (!partialResults.some((oneResult: EjvError | null): boolean => oneResult === null)) {
 									partialError = partialResults.find((oneResult: EjvError | null): boolean => {
 										return !!oneResult;
-									});
+									}) as EjvError;
 									break;
 								}
 							}
@@ -1506,12 +1565,18 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									type: errorType,
 									message: errorMsg,
 
-									data,
-									path: (partialError.path as string).split('/'),
-
-									errorScheme: partialError.errorScheme,
-									errorData: partialError.errorData
+									data
 								});
+
+								if (errorType === ErrorType.INVALID_SCHEMES) {
+									result.errorScheme = arrayScheme;
+									result.isSchemeError = true;
+									result.isDataError = false;
+								}
+								else {
+									result.path = partialError.path;
+									result.errorData = partialError.errorData;
+								}
 								break;
 							}
 						}
@@ -1524,7 +1589,8 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 								data: data,
 
-								errorScheme: arrayScheme
+								errorScheme: arrayScheme,
+								isSchemeError: true
 							});
 						}
 					}

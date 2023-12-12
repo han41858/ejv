@@ -6,7 +6,7 @@ import { ejv } from '../src/ejv';
 import { EjvError } from '../src/interfaces';
 import { ErrorMsg, ErrorType } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { TypeTester, typeTesterArr } from './common-test-runner';
+import { TypeTester, typeTesterArr } from './common-test-util';
 
 
 describe('RegExpScheme', () => {

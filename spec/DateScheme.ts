@@ -6,7 +6,7 @@ import { ejv } from '../src/ejv';
 import { DateScheme, EjvError, Scheme } from '../src/interfaces';
 import { ErrorMsg, ErrorType } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { TypeTester, typeTesterArr } from './common-test-runner';
+import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
 
 
 describe('DateScheme', () => {
@@ -206,15 +206,11 @@ describe('DateScheme', () => {
 						min: null as unknown as string
 					};
 
-					const ejvError: EjvError | null = ejv(data, [errorScheme]);
-
-					expect(ejvError).to.be.instanceOf(EjvError);
-					expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
-					expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
-					expect(ejvError).to.have.property('data', data);
-					expect(ejvError).to.not.have.property('path');
-					expect(ejvError).to.have.property('errorScheme', errorScheme);
-					expect(ejvError).to.not.have.property('errorData');
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING)
+					});
 				});
 
 				it('min type', () => {
@@ -224,15 +220,11 @@ describe('DateScheme', () => {
 						min: 123 as unknown as string
 					};
 
-					const ejvError: EjvError | null = ejv(data, [errorScheme]);
-
-					expect(ejvError).to.be.instanceOf(EjvError);
-					expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
-					expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING));
-					expect(ejvError).to.have.property('data', data);
-					expect(ejvError).to.not.have.property('path');
-					expect(ejvError).to.have.property('errorScheme', errorScheme);
-					expect(ejvError).to.not.have.property('errorData');
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING)
+					});
 				});
 			});
 
@@ -287,15 +279,11 @@ describe('DateScheme', () => {
 						exclusiveMin: now.toISOString() as unknown as boolean
 					};
 
-					const ejvError: EjvError | null = ejv(data, [errorScheme]);
-
-					expect(ejvError).to.be.instanceOf(EjvError);
-					expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
-					expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN));
-					expect(ejvError).to.have.property('data', data);
-					expect(ejvError).to.not.have.property('path');
-					expect(ejvError).to.have.property('errorScheme', errorScheme);
-					expect(ejvError).to.not.have.property('errorData');
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN)
+					});
 				});
 			});
 
@@ -360,15 +348,11 @@ describe('DateScheme', () => {
 							max: null as unknown as string
 						};
 
-						const ejvError: EjvError | null = ejv(data, [errorScheme]);
-
-						expect(ejvError).to.be.instanceOf(EjvError);
-						expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
-						expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
-						expect(ejvError).to.have.property('data', data);
-						expect(ejvError).to.not.have.property('path');
-						expect(ejvError).to.have.property('errorScheme', errorScheme);
-						expect(ejvError).to.not.have.property('errorData');
+						checkSchemeError({
+							data,
+							errorScheme,
+							message: createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING)
+						});
 					});
 
 					it('max type', () => {
@@ -378,15 +362,11 @@ describe('DateScheme', () => {
 							max: 123 as unknown as string
 						};
 
-						const ejvError: EjvError | null = ejv(data, [errorScheme]);
-
-						expect(ejvError).to.be.instanceOf(EjvError);
-						expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
-						expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING));
-						expect(ejvError).to.have.property('data', data);
-						expect(ejvError).to.not.have.property('path');
-						expect(ejvError).to.have.property('errorScheme', errorScheme);
-						expect(ejvError).to.not.have.property('errorData');
+						checkSchemeError({
+							data,
+							errorScheme,
+							message: createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING)
+						});
 					});
 				});
 
@@ -441,15 +421,11 @@ describe('DateScheme', () => {
 							exclusiveMax: now.toISOString() as unknown as boolean
 						};
 
-						const ejvError: EjvError | null = ejv(data, [errorScheme]);
-
-						expect(ejvError).to.be.instanceOf(EjvError);
-						expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
-						expect(ejvError).to.have.property('message', createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN));
-						expect(ejvError).to.have.property('data', data);
-						expect(ejvError).to.not.have.property('path');
-						expect(ejvError).to.have.property('errorScheme', errorScheme);
-						expect(ejvError).to.not.have.property('errorData');
+						checkSchemeError({
+							data,
+							errorScheme,
+							message: createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN)
+						});
 					});
 				});
 

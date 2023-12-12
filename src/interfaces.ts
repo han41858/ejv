@@ -101,6 +101,9 @@ export class EjvError {
 	public errorScheme: Scheme | undefined;
 	public errorData: unknown | undefined;
 
+	public isSchemeError: boolean;
+	public isDataError: boolean;
+
 	constructor (param: {
 		type: ErrorType,
 		message: string,
@@ -109,7 +112,9 @@ export class EjvError {
 		path?: string[],
 
 		errorScheme?: Scheme,
-		errorData?: unknown
+		errorData?: unknown,
+
+		isSchemeError?: boolean
 	}) {
 		this.type = param.type;
 		this.message = param.message;
@@ -126,6 +131,15 @@ export class EjvError {
 
 		if ('errorData' in param) {
 			this.errorData = param.errorData;
+		}
+
+		if (param.isSchemeError) {
+			this.isSchemeError = true;
+			this.isDataError = false;
+		}
+		else {
+			this.isSchemeError = false;
+			this.isDataError = true;
 		}
 	}
 }
