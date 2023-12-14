@@ -120,9 +120,9 @@ export enum ErrorMsg {
 	REQUIRED = 'value is required',
 
 	TYPE_MISMATCH = 'the value should be a <<1>>',
-	TYPE_MISMATCH_ONE_OF = 'the value should be one of <<1>>',
+	TYPE_MISMATCH_ONE_OF = 'the value should be type of <<1>>',
 
-	ONE_OF = 'the value should be one of <<1>>', // enum
+	ONE_VALUE_OF = 'the value should be one of <<1>>', // enum
 
 	FORMAT = 'the value should be a form of <<1>>', // format
 	FORMAT_ONE_OF = 'the value should be form of one of <<1>>',
