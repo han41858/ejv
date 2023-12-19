@@ -186,7 +186,7 @@ describe('StringScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.ONE_OF);
+			expect(error.type).to.be.eql(ErrorType.ONE_VALUE_OF);
 			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_VALUE_OF, {
 				placeholders: [JSON.stringify(enumArr)]
 			}));

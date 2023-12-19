@@ -5,7 +5,7 @@
 - improvement
 	- `ejv()` does not throw error, just return `EjvError` object
 	- `EjvError` - `isSchemeError`, `isDataError` properties added
-	- `ErrorMsg` - `ONE_OF` renamed to `ONE_VALUE_OF`
+	- `ErrorType`, `ErrorMsg` - `ONE_OF` renamed to `ONE_VALUE_OF`
 	- esm build added
 		- types : `build`
 		- esm : `build/esm`
