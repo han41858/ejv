@@ -2,7 +2,6 @@
 	"name": "ejv",
 	"version": "1.1.11",
 	"description": "Easy JSON Validator",
-	"type": "module",
 	"exports": {
 		"require": "./build/cjs/index.js",
 		"import": "./build/esm/index.js"
@@ -16,9 +15,6 @@
 		"build:cjs": "tsc -p tsconfig.cjs.json&&echo { \"type\": \"commonjs\" } > build/cjs/package.json",
 		"build:esm": "tsc -p tsconfig.esm.json&&echo { \"type\": \"module\" } > build/esm/package.json",
 		"build": "yarn build:types&&yarn build:cjs&&yarn build:esm",
-		"prebuild:test": "yarn clean",
-		"build:test": "tsc -p tsconfig.spec.json&&echo { \"type\": \"commonjs\" } > build/package.json",
-		"pretest": "yarn build:test",
 		"test": "mocha",
 		"lint": "eslint src/**/*.ts spec/**/*.ts"
 	},
