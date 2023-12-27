@@ -338,7 +338,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 					if (!enumTester(valueAsNumber, enumArr)) {
 						result = new EjvError({
-							type: ErrorType.ONE_OF,
+							type: ErrorType.ONE_VALUE_OF,
 							message: createErrorMsg(ErrorMsg.ONE_VALUE_OF, {
 								placeholders: [JSON.stringify(enumArr)]
 							}),
@@ -619,7 +619,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 					if (!enumTester(valueAsString, enumArr)) {
 						result = new EjvError({
-							type: ErrorType.ONE_OF,
+							type: ErrorType.ONE_VALUE_OF,
 							message: createErrorMsg(ErrorMsg.ONE_VALUE_OF, {
 								placeholders: [JSON.stringify(stringScheme.enum)]
 							}),

@@ -28,16 +28,12 @@ export interface MinMaxScheme<T> extends CommonScheme, MinMax<T> {
 }
 
 export interface NumberScheme extends MinMaxScheme<number> {
-	value?: number; // TODO: need to add
-
 	enum?: number[];
 
 	format?: string | string[] | NumberFormat | NumberFormat[];
 }
 
 export interface StringScheme extends CommonScheme {
-	value?: string; // TODO: need to add
-
 	enum?: string[];
 
 	format?: string | string[] | StringFormat | StringFormat[];

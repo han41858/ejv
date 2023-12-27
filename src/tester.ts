@@ -213,7 +213,7 @@ const iso8601DateTimeTester = (value: string): boolean => {
 				? time.indexOf('+')
 				: time.indexOf('-');
 
-			time = time.substr(0, timezoneStartIndex);
+			time = time.slice(0, timezoneStartIndex);
 		}
 
 		valid = iso8601DateTester(date) && iso8601TimeTester(time);
