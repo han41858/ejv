@@ -31,12 +31,16 @@ This function does not change original JSON object.
 import { ejv, EjvError } from 'ejv';
 ```
 
+> When using `import { ejv } from 'ejv'`, it uses the `build/esm` folder built in ES Module style.
+
 - JavaScript (before ES6)
 
 ```javascript
 var _ejv = require('ejv');
 var ejv = _ejv.ejv;
 ```
+
+> When Using `require('ejv')`, it uses the `build/cjs` folder built in CommonJS style.
 
 ### Usage
 

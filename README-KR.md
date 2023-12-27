@@ -29,12 +29,16 @@ ejv 라이브러리는 단 하나의 함수만 제공합니다.
 import { ejv, EjvError } from 'ejv';
 ```
 
+> `import { ejv } from 'ejv'`를 사용하면 ES Module 방식으로 빌드된 `build/esm` 폴더를 사용합니다.
+
 - JavaScript (ES6 이전)
 
 ```javascript
 var _ejv = require('ejv');
 var ejv = _ejv.ejv;
 ```
+
+> `require('ejv')`를 사용하면 CommonJS 방식으로 빌드된 `build/cjs` 폴더를 사용합니다.
 
 ### 사용방법
 
@@ -523,7 +527,7 @@ ejv({
 `EjvError` 객체는 이 때 발생한 에러를 표현하는 객체입니다.
 
 > `EjvError` 형식을 꼭 사용할 필요는 없습니다.
-하지만 TypeScript를 사용한다면 이 객체의 프로퍼티를 참조할 때 활용할 수 있습니다.
+> 하지만 TypeScript를 사용한다면 이 객체의 프로퍼티를 참조할 때 활용할 수 있습니다.
 
 - `type : ErrorKey`
 
