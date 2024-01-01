@@ -1630,7 +1630,12 @@ export const ejv = (data: object, schemes: Scheme[], options?: Options): null | 
 			message: ErrorMsg.NO_DATA,
 
 			data: data,
-			errorData: data
+			path: undefined,
+
+			errorScheme: undefined,
+			errorData: data,
+
+			isSchemeError: false
 		});
 	}
 

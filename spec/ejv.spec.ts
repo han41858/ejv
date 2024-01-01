@@ -20,10 +20,15 @@ describe('ejv()', () => {
 				expect(error).to.be.instanceof(EjvError);
 				expect(error).to.have.property('type', ErrorType.NO_DATA);
 				expect(error).to.have.property('message', ErrorMsg.NO_DATA);
+
 				expect(error).to.have.property('data', undefined);
-				expect(error).to.not.have.property('path');
-				expect(error).to.not.have.property('errorScheme');
+				expect(error).to.have.property('path', undefined);
+
+				expect(error).to.have.property('errorScheme', undefined);
 				expect(error).to.have.property('errorData', undefined);
+
+				expect(error).to.have.property('isSchemeError', false);
+				expect(error).to.have.property('isDataError', true);
 			});
 
 			it('null data', () => {
@@ -35,10 +40,15 @@ describe('ejv()', () => {
 				expect(error).to.be.instanceof(EjvError);
 				expect(error).to.have.property('type', ErrorType.NO_DATA);
 				expect(error).to.have.property('message', ErrorMsg.NO_DATA);
+
 				expect(error).to.have.property('data', null);
-				expect(error).to.not.have.property('path');
-				expect(error).to.not.have.property('errorScheme');
+				expect(error).to.have.property('path', undefined);
+
+				expect(error).to.have.property('errorScheme', undefined);
 				expect(error).to.have.property('errorData', null);
+
+				expect(error).to.have.property('isSchemeError', false);
+				expect(error).to.have.property('isDataError', true);
 			});
 		});
 
@@ -52,12 +62,16 @@ describe('ejv()', () => {
 				const error: EjvError | null = ejv(data, undefined as unknown as Scheme[]);
 
 				expect(error).to.be.instanceof(EjvError);
+
 				expect(error).to.have.property('type', ErrorType.NO_SCHEME);
 				expect(error).to.have.property('message', ErrorMsg.NO_SCHEME);
+
 				expect(error).to.have.property('data', data);
-				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('path', undefined);
+
 				expect(error).to.have.property('errorScheme', undefined);
-				expect(error).to.not.have.property('errorData');
+				expect(error).to.have.property('errorData', undefined);
+
 				expect(error).to.have.property('isSchemeError', true);
 				expect(error).to.have.property('isDataError', false);
 			});
@@ -67,12 +81,16 @@ describe('ejv()', () => {
 				const error: EjvError | null = ejv(data, null as unknown as Scheme[]);
 
 				expect(error).to.be.instanceof(EjvError);
+
 				expect(error).to.have.property('type', ErrorType.NO_SCHEME);
 				expect(error).to.have.property('message', ErrorMsg.NO_SCHEME);
+
 				expect(error).to.have.property('data', data);
-				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('path', undefined);
+
 				expect(error).to.have.property('errorScheme', null);
-				expect(error).to.not.have.property('errorData');
+				expect(error).to.have.property('errorData', undefined);
+
 				expect(error).to.have.property('isSchemeError', true);
 				expect(error).to.have.property('isDataError', false);
 			});
@@ -84,12 +102,16 @@ describe('ejv()', () => {
 				const error: EjvError | null = ejv(data, errorScheme);
 
 				expect(error).to.be.instanceof(EjvError);
+
 				expect(error).to.have.property('type', ErrorType.INVALID_SCHEMES);
 				expect(error).to.have.property('message', ErrorMsg.EMPTY_SCHEME);
+
 				expect(error).to.have.property('data', data);
-				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('path', undefined);
+
 				expect(error).to.have.property('errorScheme', errorScheme);
-				expect(error).to.not.have.property('errorData');
+				expect(error).to.have.property('errorData', undefined);
+
 				expect(error).to.have.property('isSchemeError', true);
 				expect(error).to.have.property('isDataError', false);
 			});
@@ -101,12 +123,16 @@ describe('ejv()', () => {
 				const error: EjvError | null = ejv(data, errorScheme);
 
 				expect(error).to.be.instanceof(EjvError);
+
 				expect(error).to.have.property('type', ErrorType.INVALID_SCHEMES);
 				expect(error).to.have.property('message', ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
+
 				expect(error).to.have.property('data', data);
-				expect(error).to.not.have.property('path');
+				expect(error).to.have.property('path', undefined);
+
 				expect(error).to.have.property('errorScheme', errorScheme);
-				expect(error).to.not.have.property('errorData');
+				expect(error).to.have.property('errorData', undefined);
+
 				expect(error).to.have.property('isSchemeError', true);
 				expect(error).to.have.property('isDataError', false);
 			});

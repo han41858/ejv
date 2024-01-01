@@ -53,10 +53,10 @@ export const checkSchemeError = (param: {
 	expect(ejvError).to.have.property('message', param.message);
 
 	expect(ejvError).to.have.property('data', param.data);
-	expect(ejvError).to.not.have.property('path');
+	expect(ejvError).to.have.property('path', undefined);
 
 	expect(ejvError).to.have.property('errorScheme', param.errorScheme);
-	expect(ejvError).to.not.have.property('errorData');
+	expect(ejvError).to.have.property('errorData', undefined);
 
 	expect(ejvError).to.have.property('isSchemeError', true);
 	expect(ejvError).to.have.property('isDataError', false);
