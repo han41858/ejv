@@ -1,6 +1,6 @@
 # Change Log
 
-# 2.0.1
+# 2.0.2
 
 - improvement
 	- `ejv()` does not throw error, just return `EjvError` object

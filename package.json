@@ -1,13 +1,13 @@
 {
 	"name": "ejv",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"description": "Easy JSON Validator",
 	"exports": {
 		"require": "./build/cjs/index.js",
 		"import": "./build/esm/index.js"
 	},
-	"types": "build/public_api.d.ts",
-	"main": "build/cjs/public_api.js",
+	"types": "build/index.d.ts",
+	"main": "build/cjs/index.js",
 	"scripts": {
 		"clean": "rimraf ./build",
 		"prebuild": "yarn clean",
