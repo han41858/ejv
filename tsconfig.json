@@ -2,14 +2,10 @@
 	"compilerOptions": {
 		"target": "ES2022",
 		"sourceMap": true,
-		"forceConsistentCasingInFileNames": true,
 		"strict": true,
+		"forceConsistentCasingInFileNames": true,
 		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-		"lib": [
-			"ES2022",
-			"dom"
-		]
+		"noFallthroughCasesInSwitch": true
 	},
 	"include": [
 		"src"
