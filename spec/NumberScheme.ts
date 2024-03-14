@@ -264,6 +264,16 @@ describe('NumberScheme', () => {
 						message: createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER)
 					});
 				});
+
+				it('0 is ok', () => {
+					expect(ejv({
+						a: 1
+					}, [{
+						key: 'a',
+						type: 'number',
+						min: 0
+					}])).to.be.null;
+				});
 			});
 
 			it('ok', () => {
@@ -466,6 +476,16 @@ describe('NumberScheme', () => {
 						errorScheme,
 						message: createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER)
 					});
+				});
+
+				it('0 is ok', () => {
+					expect(ejv({
+						a: -1
+					}, [{
+						key: 'a',
+						type: 'number',
+						max: 0
+					}])).to.be.null;
 				});
 			});
 

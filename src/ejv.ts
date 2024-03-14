@@ -357,7 +357,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					definedTester(numberScheme.min)
 					|| definedTester((scheme.parent as NumberScheme)?.min)
 				) {
-					const effectiveMin: number = numberScheme.min || (scheme.parent as NumberScheme)?.min as number;
+					const effectiveMin: number = definedTester(numberScheme.min)
+						? numberScheme.min
+						: (scheme.parent as NumberScheme)?.min as number;
 
 					if (!numberTester(effectiveMin)) {
 						return new EjvError({
@@ -423,7 +425,9 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 				if (definedTester(numberScheme.max)
 					|| definedTester((scheme.parent as NumberScheme)?.max)) {
-					const effectiveMax: number = numberScheme.max || (scheme.parent as NumberScheme)?.max as number;
+					const effectiveMax: number = definedTester(numberScheme.max)
+						? numberScheme.max
+						: (scheme.parent as NumberScheme)?.max as number;
 
 					if (!numberTester(effectiveMax)) {
 						return new EjvError({
