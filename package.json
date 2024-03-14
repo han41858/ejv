@@ -17,7 +17,8 @@
 		"build": "yarn build:types&&yarn build:cjs&&yarn build:esm",
 		"postbuild": "tsc -p tsconfig.scripts.json&&node build/scripts/add-js-extensions",
 		"test": "mocha",
-		"lint": "eslint src/**/*.ts spec/**/*.ts"
+		"lint": "eslint src/**/*.ts spec/**/*.ts",
+		"publish": "yarn build&&npm publish"
 	},
 	"repository": {
 		"type": "git",
