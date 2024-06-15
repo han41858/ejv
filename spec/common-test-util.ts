@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 import { EjvError, Scheme } from '../src/interfaces';
 import { ejv } from '../src/ejv';
-import { ErrorType } from '../src/constants';
+import { ERROR_TYPE } from '../src/constants';
 
 export const commonTestRunner = (
 	testFnc: (args: unknown) => unknown,
@@ -49,7 +49,7 @@ export const checkSchemeError = (param: {
 	const ejvError: EjvError | null = ejv(param.data, [param.errorScheme]);
 
 	expect(ejvError).to.be.instanceOf(EjvError);
-	expect(ejvError).to.have.property('type', ErrorType.INVALID_SCHEMES);
+	expect(ejvError).to.have.property('type', ERROR_TYPE.INVALID_SCHEMES);
 	expect(ejvError).to.have.property('message', param.message);
 
 	expect(ejvError).to.have.property('data', param.data);

@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ejv } from '../src/ejv';
 
 import { EjvError, Scheme } from '../src/interfaces';
-import { ErrorMsg, ErrorType } from '../src/constants';
+import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
 
@@ -31,8 +31,8 @@ describe('StringScheme', () => {
 							throw new Error('spec failed');
 						}
 
-						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+						expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+						expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 							placeholders: ['string']
 						}));
 						expect(error.path).to.be.eql('a');
@@ -60,8 +60,8 @@ describe('StringScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
+				expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH_ONE_OF, {
 					placeholders: [JSON.stringify(typeArr)]
 				}));
 				expect(error.path).to.be.eql('a');
@@ -134,7 +134,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY)
+					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
 				});
 			});
 
@@ -148,7 +148,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY)
+					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
 				});
 			});
 
@@ -162,7 +162,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_STRINGS)
+					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_STRINGS)
 				});
 			});
 		});
@@ -186,8 +186,8 @@ describe('StringScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.ONE_VALUE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_VALUE_OF, {
+			expect(error.type).to.be.eql(ERROR_TYPE.ONE_VALUE_OF);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.ONE_VALUE_OF, {
 				placeholders: [JSON.stringify(enumArr)]
 			}));
 			expect(error.path).to.be.eql('a');
@@ -231,7 +231,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER)
+					message: createErrorMsg(ERROR_MESSAGE.LENGTH_SHOULD_BE_INTEGER)
 				});
 			});
 
@@ -245,7 +245,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.LENGTH_SHOULD_BE_INTEGER)
+					message: createErrorMsg(ERROR_MESSAGE.LENGTH_SHOULD_BE_INTEGER)
 				});
 			});
 		});
@@ -278,8 +278,8 @@ describe('StringScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.LENGTH);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.LENGTH, {
+			expect(error.type).to.be.eql(ERROR_TYPE.LENGTH);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.LENGTH, {
 				placeholders: [4]
 			}));
 			expect(error.path).to.be.eql('a');
@@ -311,7 +311,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER)
+					message: createErrorMsg(ERROR_MESSAGE.MIN_LENGTH_SHOULD_BE_INTEGER)
 				});
 			});
 
@@ -325,7 +325,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER)
+					message: createErrorMsg(ERROR_MESSAGE.MIN_LENGTH_SHOULD_BE_INTEGER)
 				});
 			});
 
@@ -339,7 +339,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.MIN_LENGTH_SHOULD_BE_INTEGER)
+					message: createErrorMsg(ERROR_MESSAGE.MIN_LENGTH_SHOULD_BE_INTEGER)
 				});
 			});
 		});
@@ -379,8 +379,8 @@ describe('StringScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.MIN_LENGTH);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MIN_LENGTH, {
+			expect(error.type).to.be.eql(ERROR_TYPE.MIN_LENGTH);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.MIN_LENGTH, {
 				placeholders: [4]
 			}));
 			expect(error.path).to.be.eql('a');
@@ -413,7 +413,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER)
+					message: createErrorMsg(ERROR_MESSAGE.MAX_LENGTH_SHOULD_BE_INTEGER)
 				});
 			});
 
@@ -427,7 +427,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER)
+					message: createErrorMsg(ERROR_MESSAGE.MAX_LENGTH_SHOULD_BE_INTEGER)
 				});
 			});
 
@@ -441,7 +441,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.MAX_LENGTH_SHOULD_BE_INTEGER)
+					message: createErrorMsg(ERROR_MESSAGE.MAX_LENGTH_SHOULD_BE_INTEGER)
 				});
 			});
 		});
@@ -463,8 +463,8 @@ describe('StringScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.MAX_LENGTH);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.MAX_LENGTH, {
+			expect(error.type).to.be.eql(ERROR_TYPE.MAX_LENGTH);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.MAX_LENGTH, {
 				placeholders: [2]
 			}));
 			expect(error.path).to.be.eql('a');
@@ -515,7 +515,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_FORMAT, {
 						placeholders: ['null']
 					})
 				});
@@ -532,7 +532,7 @@ describe('StringScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+						message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_FORMAT, {
 							placeholders: ['invalidStringFormat']
 						})
 					});
@@ -548,7 +548,7 @@ describe('StringScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.INVALID_STRING_FORMAT, {
+						message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_FORMAT, {
 							placeholders: ['invalidStringFormat']
 						})
 					});
@@ -574,8 +574,8 @@ describe('StringScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
 					placeholders: ['email']
 				}));
 				expect(error.path).to.be.eql('a');
@@ -610,8 +610,8 @@ describe('StringScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
 					placeholders: [JSON.stringify(formatArr)]
 				}));
 				expect(error.path).to.be.eql('a');
@@ -647,8 +647,8 @@ describe('StringScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
 					placeholders: ['date']
 				}));
 				expect(error.path).to.be.eql('a');
@@ -683,8 +683,8 @@ describe('StringScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
 					placeholders: [JSON.stringify(formatArr)]
 				}));
 				expect(error.path).to.be.eql('a');
@@ -719,8 +719,8 @@ describe('StringScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
 					placeholders: ['time']
 				}));
 				expect(error.path).to.be.eql('a');
@@ -755,8 +755,8 @@ describe('StringScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
 					placeholders: [JSON.stringify(formatArr)]
 				}));
 				expect(error.path).to.be.eql('a');
@@ -791,8 +791,8 @@ describe('StringScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
 					placeholders: ['date-time']
 				}));
 				expect(error.path).to.be.eql('a');
@@ -843,8 +843,8 @@ describe('StringScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
 					placeholders: [JSON.stringify(formatArr)]
 				}));
 				expect(error.path).to.be.eql('a');
@@ -902,7 +902,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['null']
 					})
 				});
@@ -918,7 +918,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['1']
 					})
 				});
@@ -934,7 +934,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['//']
 					})
 				});
@@ -950,7 +950,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['[]']
 					})
 				});
@@ -966,7 +966,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['[/null/, /ab/]']
 					})
 				});
@@ -982,7 +982,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['[1, 3]']
 					})
 				});
@@ -998,7 +998,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['[//]']
 					})
 				});
@@ -1014,7 +1014,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['//']
 					})
 				});
@@ -1030,7 +1030,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['/null/']
 					})
 				});
@@ -1046,7 +1046,7 @@ describe('StringScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_STRING_PATTERN, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['[//]']
 					})
 				});
@@ -1078,8 +1078,8 @@ describe('StringScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.PATTERN);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
+			expect(error.type).to.be.eql(ERROR_TYPE.PATTERN);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.PATTERN, {
 				placeholders: ['/ac/']
 			}));
 			expect(error.path).to.be.eql('a');
@@ -1124,8 +1124,8 @@ describe('StringScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+			expect(error.type).to.be.eql(ERROR_TYPE.PATTERN_ONE_OF);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.PATTERN_ONE_OF, {
 				placeholders: ['[/abcc/, /ac/]']
 			}));
 			expect(error.path).to.be.eql('a');
@@ -1158,8 +1158,8 @@ describe('StringScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.PATTERN);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN, {
+			expect(error.type).to.be.eql(ERROR_TYPE.PATTERN);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.PATTERN, {
 				placeholders: [/ac/.toString()]
 			}));
 			expect(error.path).to.be.eql('a');
@@ -1204,8 +1204,8 @@ describe('StringScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.PATTERN_ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PATTERN_ONE_OF, {
+			expect(error.type).to.be.eql(ERROR_TYPE.PATTERN_ONE_OF);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.PATTERN_ONE_OF, {
 				placeholders: ['[/abcc/, /ac/]']
 			}));
 			expect(error.path).to.be.eql('a');

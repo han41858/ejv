@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ejv } from '../src/ejv';
 
 import { EjvError, Scheme } from '../src/interfaces';
-import { ErrorMsg, ErrorType } from '../src/constants';
+import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
 
@@ -33,8 +33,8 @@ describe('ObjectScheme', () => {
 							throw new Error('spec failed');
 						}
 
-						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+						expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+						expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 							placeholders: ['object']
 						}));
 						expect(error.path).to.be.eql('a');
@@ -62,8 +62,8 @@ describe('ObjectScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
+				expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH_ONE_OF, {
 					placeholders: [JSON.stringify(typeArr)]
 				}));
 				expect(error.path).to.be.eql('a');
@@ -159,7 +159,7 @@ describe('ObjectScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY)
+					message: createErrorMsg(ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY)
 				});
 			});
 
@@ -173,7 +173,7 @@ describe('ObjectScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY)
+					message: createErrorMsg(ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY)
 				});
 			});
 
@@ -187,7 +187,7 @@ describe('ObjectScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_HAVE_ITEMS)
+					message: createErrorMsg(ERROR_MESSAGE.PROPERTIES_SHOULD_HAVE_ITEMS)
 				});
 			});
 
@@ -201,7 +201,7 @@ describe('ObjectScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT)
+					message: createErrorMsg(ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT)
 				});
 			});
 		});
@@ -226,8 +226,8 @@ describe('ObjectScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(undefinedError.type).to.be.eql(ErrorType.REQUIRED);
-			expect(undefinedError.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
+			expect(undefinedError.type).to.be.eql(ERROR_TYPE.REQUIRED);
+			expect(undefinedError.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.REQUIRED));
 			expect(undefinedError.path).to.be.eql('a/b');
 
 			const nullError: EjvError | null = ejv({
@@ -247,8 +247,8 @@ describe('ObjectScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(nullError.type).to.be.eql(ErrorType.REQUIRED);
-			expect(nullError.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
+			expect(nullError.type).to.be.eql(ERROR_TYPE.REQUIRED);
+			expect(nullError.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.REQUIRED));
 			expect(nullError.path).to.be.eql('a');
 
 			const data = {
@@ -272,8 +272,8 @@ describe('ObjectScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+			expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 				placeholders: ['string']
 			}));
 			expect(error.path).to.be.eql('a/b');
@@ -316,8 +316,8 @@ describe('ObjectScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(undefinedError.type).to.be.eql(ErrorType.REQUIRED);
-			expect(undefinedError.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
+			expect(undefinedError.type).to.be.eql(ERROR_TYPE.REQUIRED);
+			expect(undefinedError.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.REQUIRED));
 			expect(undefinedError.path).to.be.eql('a/b');
 
 			const data = {
@@ -341,8 +341,8 @@ describe('ObjectScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
+			expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH_ONE_OF);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH_ONE_OF, {
 				placeholders: [JSON.stringify(typeArr)]
 			}));
 			expect(error.path).to.be.eql('a/b');
@@ -402,7 +402,7 @@ describe('ObjectScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN)
+					message: createErrorMsg(ERROR_MESSAGE.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN)
 				});
 			});
 		});
@@ -449,8 +449,8 @@ describe('ObjectScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.PROPERTY);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.PROPERTY));
+				expect(error.type).to.be.eql(ERROR_TYPE.PROPERTY);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.PROPERTY));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.a('object');
 			});

@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ejv } from '../src/ejv';
 
 import { DateScheme, EjvError, Scheme } from '../src/interfaces';
-import { ErrorMsg, ErrorType } from '../src/constants';
+import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
 
@@ -40,7 +40,7 @@ describe('DateScheme', () => {
 	type ResultDefine = {
 		scheme: Partial<DateScheme>;
 
-		error: null | keyof typeof ErrorType;
+		error: null | keyof typeof ERROR_TYPE;
 		placeholder?: string;
 	}
 
@@ -72,8 +72,8 @@ describe('DateScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(result.type).to.be.eql(ErrorType[define.error]);
-				expect(result.message).to.eql(createErrorMsg(ErrorMsg[define.error as keyof typeof ErrorMsg], {
+				expect(result.type).to.be.eql(ERROR_TYPE[define.error]);
+				expect(result.message).to.eql(createErrorMsg(ERROR_MESSAGE[define.error as keyof typeof ERROR_MESSAGE], {
 					placeholders: [define.placeholder || '']
 				}));
 				expect(result.path).to.be.eql('date');
@@ -105,8 +105,8 @@ describe('DateScheme', () => {
 							throw new Error('spec failed');
 						}
 
-						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+						expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+						expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 							placeholders: ['date']
 						}));
 						expect(error.path).to.be.eql('a');
@@ -134,8 +134,8 @@ describe('DateScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
+				expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH_ONE_OF, {
 					placeholders: [JSON.stringify(typeArr)]
 				}));
 				expect(error.path).to.be.eql('a');
@@ -209,7 +209,7 @@ describe('DateScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING)
+						message: createErrorMsg(ERROR_MESSAGE.MIN_DATE_SHOULD_BE_DATE_OR_STRING)
 					});
 				});
 
@@ -223,7 +223,7 @@ describe('DateScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.MIN_DATE_SHOULD_BE_DATE_OR_STRING)
+						message: createErrorMsg(ERROR_MESSAGE.MIN_DATE_SHOULD_BE_DATE_OR_STRING)
 					});
 				});
 			});
@@ -238,7 +238,7 @@ describe('DateScheme', () => {
 					};
 
 					if ([2, 5].includes(i)) {
-						result.error = ErrorType.AFTER_OR_SAME_DATE;
+						result.error = ERROR_TYPE.AFTER_OR_SAME_DATE;
 						result.placeholder = one.toISOString();
 					}
 
@@ -256,7 +256,7 @@ describe('DateScheme', () => {
 					};
 
 					if ([2, 5].includes(i)) {
-						result.error = ErrorType.AFTER_OR_SAME_DATE;
+						result.error = ERROR_TYPE.AFTER_OR_SAME_DATE;
 						result.placeholder = one.toISOString();
 					}
 
@@ -282,7 +282,7 @@ describe('DateScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN)
+						message: createErrorMsg(ERROR_MESSAGE.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN)
 					});
 				});
 			});
@@ -298,7 +298,7 @@ describe('DateScheme', () => {
 					};
 
 					if ([1, 2, 4, 5].includes(i)) {
-						result.error = ErrorType.AFTER_DATE;
+						result.error = ERROR_TYPE.AFTER_DATE;
 						result.placeholder = one.toISOString();
 					}
 
@@ -317,7 +317,7 @@ describe('DateScheme', () => {
 					};
 
 					if ([2, 5].includes(i)) {
-						result.error = ErrorType.AFTER_OR_SAME_DATE;
+						result.error = ERROR_TYPE.AFTER_OR_SAME_DATE;
 						result.placeholder = one.toISOString();
 					}
 
@@ -351,7 +351,7 @@ describe('DateScheme', () => {
 						checkSchemeError({
 							data,
 							errorScheme,
-							message: createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING)
+							message: createErrorMsg(ERROR_MESSAGE.MAX_DATE_SHOULD_BE_DATE_OR_STRING)
 						});
 					});
 
@@ -365,7 +365,7 @@ describe('DateScheme', () => {
 						checkSchemeError({
 							data,
 							errorScheme,
-							message: createErrorMsg(ErrorMsg.MAX_DATE_SHOULD_BE_DATE_OR_STRING)
+							message: createErrorMsg(ERROR_MESSAGE.MAX_DATE_SHOULD_BE_DATE_OR_STRING)
 						});
 					});
 				});
@@ -380,7 +380,7 @@ describe('DateScheme', () => {
 						};
 
 						if ([0, 3].includes(i)) {
-							result.error = ErrorType.BEFORE_OR_SAME_DATE;
+							result.error = ERROR_TYPE.BEFORE_OR_SAME_DATE;
 							result.placeholder = one.toISOString();
 						}
 
@@ -398,7 +398,7 @@ describe('DateScheme', () => {
 						};
 
 						if ([0, 3].includes(i)) {
-							result.error = ErrorType.BEFORE_OR_SAME_DATE;
+							result.error = ERROR_TYPE.BEFORE_OR_SAME_DATE;
 							result.placeholder = one.toISOString();
 						}
 
@@ -424,7 +424,7 @@ describe('DateScheme', () => {
 						checkSchemeError({
 							data,
 							errorScheme,
-							message: createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN)
+							message: createErrorMsg(ERROR_MESSAGE.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN)
 						});
 					});
 				});
@@ -440,7 +440,7 @@ describe('DateScheme', () => {
 						};
 
 						if ([0, 1, 3, 4].includes(i)) {
-							result.error = ErrorType.BEFORE_DATE;
+							result.error = ERROR_TYPE.BEFORE_DATE;
 							result.placeholder = one.toISOString();
 						}
 
@@ -459,7 +459,7 @@ describe('DateScheme', () => {
 						};
 
 						if ([0, 3].includes(i)) {
-							result.error = ErrorType.BEFORE_OR_SAME_DATE;
+							result.error = ERROR_TYPE.BEFORE_OR_SAME_DATE;
 							result.placeholder = one.toISOString();
 						}
 

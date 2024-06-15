@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ejv } from '../src/ejv';
 
 import { EjvError } from '../src/interfaces';
-import { ErrorMsg, ErrorType } from '../src/constants';
+import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { TypeTester, typeTesterArr } from './common-test-util';
 
@@ -31,8 +31,8 @@ describe('RegExpScheme', () => {
 							throw new Error('spec failed');
 						}
 
-						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+						expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+						expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 							placeholders: ['regexp']
 						}));
 						expect(error.path).to.be.eql('a');
@@ -60,8 +60,8 @@ describe('RegExpScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
+				expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH_ONE_OF, {
 					placeholders: [JSON.stringify(typeArr)]
 				}));
 				expect(error.path).to.be.eql('a');

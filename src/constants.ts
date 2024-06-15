@@ -1,4 +1,4 @@
-export enum DataType {
+export enum DATA_TYPE {
 	BOOLEAN = 'boolean',
 	NUMBER = 'number',
 	STRING = 'string',
@@ -8,12 +8,12 @@ export enum DataType {
 	ARRAY = 'array'
 }
 
-export enum NumberFormat {
+export enum NUMBER_FORMAT {
 	INTEGER = 'integer',
 	INDEX = 'index'
 }
 
-export enum StringFormat {
+export enum STRING_FORMAT {
 	EMAIL = 'email',
 
 	DATE = 'date',
@@ -27,7 +27,7 @@ export enum StringFormat {
 	// IPV6 = 'ipv6'
 }
 
-export enum ErrorType {
+export enum ERROR_TYPE {
 	// about ejv() running
 	NO_DATA = 'NO_DATA',
 
@@ -72,7 +72,7 @@ export enum ErrorType {
 	ITEMS_SCHEMES = 'ITEMS_SCHEMES'
 }
 
-export enum ErrorMsg {
+export enum ERROR_MESSAGE {
 	// about Error
 	NO_DATA = 'no data to validate',
 

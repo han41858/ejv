@@ -1,6 +1,6 @@
-import { DataType, ErrorType, NumberFormat, StringFormat } from './constants';
+import { DATA_TYPE, ERROR_TYPE, NUMBER_FORMAT, STRING_FORMAT } from './constants';
 
-export type AllDataType = string | string[] | DataType | DataType[];
+export type AllDataType = string | string[] | DATA_TYPE | DATA_TYPE[];
 
 
 interface CommonScheme {
@@ -30,13 +30,13 @@ export interface MinMaxScheme<T> extends CommonScheme, MinMax<T> {
 export interface NumberScheme extends MinMaxScheme<number> {
 	enum?: number[];
 
-	format?: string | string[] | NumberFormat | NumberFormat[];
+	format?: string | string[] | NUMBER_FORMAT | NUMBER_FORMAT[];
 }
 
 export interface StringScheme extends CommonScheme {
 	enum?: string[];
 
-	format?: string | string[] | StringFormat | StringFormat[];
+	format?: string | string[] | STRING_FORMAT | STRING_FORMAT[];
 	pattern?: string | string[] | RegExp | RegExp[];
 
 	length?: number;
@@ -79,7 +79,7 @@ export type Scheme =
 
 export interface Options {
 	customErrorMsg?: {
-		[key in ErrorType]?: string;
+		[key in ERROR_TYPE]?: string;
 	};
 }
 
@@ -88,7 +88,7 @@ export interface InternalOptions extends Options {
 }
 
 export class EjvError {
-	public type: ErrorType;
+	public type: ERROR_TYPE;
 	public message: string;
 
 	public data: unknown;
@@ -101,7 +101,7 @@ export class EjvError {
 	public isDataError: boolean;
 
 	constructor (param: {
-		type: ErrorType,
+		type: ERROR_TYPE,
 		message: string,
 
 		data: unknown,

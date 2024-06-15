@@ -2,7 +2,7 @@ import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
-import { ErrorMsg, ErrorType } from '../src/constants';
+import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { AnyObject, EjvError, Scheme } from '../src/interfaces';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError } from './common-test-util';
@@ -18,8 +18,8 @@ describe('ejv()', () => {
 				);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error).to.have.property('type', ErrorType.NO_DATA);
-				expect(error).to.have.property('message', ErrorMsg.NO_DATA);
+				expect(error).to.have.property('type', ERROR_TYPE.NO_DATA);
+				expect(error).to.have.property('message', ERROR_MESSAGE.NO_DATA);
 
 				expect(error).to.have.property('data', undefined);
 				expect(error).to.have.property('path', undefined);
@@ -38,8 +38,8 @@ describe('ejv()', () => {
 				);
 
 				expect(error).to.be.instanceof(EjvError);
-				expect(error).to.have.property('type', ErrorType.NO_DATA);
-				expect(error).to.have.property('message', ErrorMsg.NO_DATA);
+				expect(error).to.have.property('type', ERROR_TYPE.NO_DATA);
+				expect(error).to.have.property('message', ERROR_MESSAGE.NO_DATA);
 
 				expect(error).to.have.property('data', null);
 				expect(error).to.have.property('path', undefined);
@@ -63,8 +63,8 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 
-				expect(error).to.have.property('type', ErrorType.NO_SCHEME);
-				expect(error).to.have.property('message', ErrorMsg.NO_SCHEME);
+				expect(error).to.have.property('type', ERROR_TYPE.NO_SCHEME);
+				expect(error).to.have.property('message', ERROR_MESSAGE.NO_SCHEME);
 
 				expect(error).to.have.property('data', data);
 				expect(error).to.have.property('path', undefined);
@@ -82,8 +82,8 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 
-				expect(error).to.have.property('type', ErrorType.NO_SCHEME);
-				expect(error).to.have.property('message', ErrorMsg.NO_SCHEME);
+				expect(error).to.have.property('type', ERROR_TYPE.NO_SCHEME);
+				expect(error).to.have.property('message', ERROR_MESSAGE.NO_SCHEME);
 
 				expect(error).to.have.property('data', data);
 				expect(error).to.have.property('path', undefined);
@@ -103,8 +103,8 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 
-				expect(error).to.have.property('type', ErrorType.INVALID_SCHEMES);
-				expect(error).to.have.property('message', ErrorMsg.EMPTY_SCHEME);
+				expect(error).to.have.property('type', ERROR_TYPE.INVALID_SCHEMES);
+				expect(error).to.have.property('message', ERROR_MESSAGE.EMPTY_SCHEME);
 
 				expect(error).to.have.property('data', data);
 				expect(error).to.have.property('path', undefined);
@@ -124,8 +124,8 @@ describe('ejv()', () => {
 
 				expect(error).to.be.instanceof(EjvError);
 
-				expect(error).to.have.property('type', ErrorType.INVALID_SCHEMES);
-				expect(error).to.have.property('message', ErrorMsg.NO_OBJECT_ARRAY_SCHEME);
+				expect(error).to.have.property('type', ERROR_TYPE.INVALID_SCHEMES);
+				expect(error).to.have.property('message', ERROR_MESSAGE.NO_OBJECT_ARRAY_SCHEME);
 
 				expect(error).to.have.property('data', data);
 				expect(error).to.have.property('path', undefined);
@@ -145,7 +145,7 @@ describe('ejv()', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: ErrorMsg.SCHEMES_SHOULD_HAVE_TYPE
+					message: ERROR_MESSAGE.SCHEMES_SHOULD_HAVE_TYPE
 				});
 			});
 
@@ -158,7 +158,7 @@ describe('ejv()', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.SCHEMES_HAS_INVALID_TYPE, {
+					message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
 						placeholders: ['invalidType']
 					})
 				});
@@ -173,7 +173,7 @@ describe('ejv()', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.SCHEMES_HAS_DUPLICATED_TYPE, {
+					message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_DUPLICATED_TYPE, {
 						placeholders: ['string']
 					})
 				});
@@ -192,7 +192,7 @@ describe('ejv()', () => {
 						type: 'number'
 					}], {
 						customErrorMsg: {
-							[ErrorType.REQUIRED]: customErrorMsg
+							[ERROR_TYPE.REQUIRED]: customErrorMsg
 						}
 					});
 
@@ -202,7 +202,7 @@ describe('ejv()', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error.type).to.be.eql(ErrorType.REQUIRED);
+					expect(error.type).to.be.eql(ERROR_TYPE.REQUIRED);
 					expect(error.message).to.be.eql(customErrorMsg);
 				});
 
@@ -216,7 +216,7 @@ describe('ejv()', () => {
 						type: 'number'
 					}], {
 						customErrorMsg: {
-							[ErrorType.TYPE_MISMATCH]: customErrorMsg
+							[ERROR_TYPE.TYPE_MISMATCH]: customErrorMsg
 						}
 					});
 
@@ -226,7 +226,7 @@ describe('ejv()', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
+					expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
 					expect(error.message).to.be.eql(customErrorMsg);
 				});
 			});

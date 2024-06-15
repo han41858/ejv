@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ejv } from '../src/ejv';
 
 import { EjvError, Scheme } from '../src/interfaces';
-import { ErrorMsg, ErrorType } from '../src/constants';
+import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
 
@@ -31,8 +31,8 @@ describe('NumberScheme', () => {
 							throw new Error('spec failed');
 						}
 
-						expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-						expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+						expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+						expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 							placeholders: ['number']
 						}));
 						expect(error.path).to.be.eql('a');
@@ -60,8 +60,8 @@ describe('NumberScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH_ONE_OF);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH_ONE_OF, {
+				expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH_ONE_OF, {
 					placeholders: [JSON.stringify(typeArr)]
 				}));
 				expect(error.path).to.be.eql('a');
@@ -136,7 +136,7 @@ describe('NumberScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY)
+					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
 				});
 			});
 
@@ -154,7 +154,7 @@ describe('NumberScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_ARRAY)
+					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
 				});
 			});
 
@@ -172,7 +172,7 @@ describe('NumberScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.ENUM_SHOULD_BE_NUMBERS)
+					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_NUMBERS)
 				});
 			});
 		});
@@ -196,8 +196,8 @@ describe('NumberScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.ONE_VALUE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.ONE_VALUE_OF, {
+			expect(error.type).to.be.eql(ERROR_TYPE.ONE_VALUE_OF);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.ONE_VALUE_OF, {
 				placeholders: [JSON.stringify(enumArr)]
 			}));
 			expect(error.path).to.be.eql('a');
@@ -243,7 +243,7 @@ describe('NumberScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER)
+						message: createErrorMsg(ERROR_MESSAGE.MIN_SHOULD_BE_NUMBER)
 					});
 				});
 
@@ -261,7 +261,7 @@ describe('NumberScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.MIN_SHOULD_BE_NUMBER)
+						message: createErrorMsg(ERROR_MESSAGE.MIN_SHOULD_BE_NUMBER)
 					});
 				});
 
@@ -291,8 +291,8 @@ describe('NumberScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN_OR_EQUAL);
-				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
+				expect(error1.type).to.be.eql(ERROR_TYPE.BIGGER_THAN_OR_EQUAL);
+				expect(error1.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.BIGGER_THAN_OR_EQUAL, {
 					placeholders: [10]
 				}));
 
@@ -331,7 +331,7 @@ describe('NumberScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN)
+						message: createErrorMsg(ERROR_MESSAGE.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN)
 					});
 				});
 			});
@@ -352,8 +352,8 @@ describe('NumberScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN);
-				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN, {
+				expect(error1.type).to.be.eql(ERROR_TYPE.BIGGER_THAN);
+				expect(error1.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.BIGGER_THAN, {
 					placeholders: [10]
 				}));
 
@@ -372,8 +372,8 @@ describe('NumberScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error2.type).to.be.eql(ErrorType.BIGGER_THAN);
-				expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN, {
+				expect(error2.type).to.be.eql(ERROR_TYPE.BIGGER_THAN);
+				expect(error2.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.BIGGER_THAN, {
 					placeholders: [10]
 				}));
 
@@ -403,8 +403,8 @@ describe('NumberScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error1.type).to.be.eql(ErrorType.BIGGER_THAN_OR_EQUAL);
-				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.BIGGER_THAN_OR_EQUAL, {
+				expect(error1.type).to.be.eql(ERROR_TYPE.BIGGER_THAN_OR_EQUAL);
+				expect(error1.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.BIGGER_THAN_OR_EQUAL, {
 					placeholders: [10]
 				}));
 
@@ -456,7 +456,7 @@ describe('NumberScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER)
+						message: createErrorMsg(ERROR_MESSAGE.MAX_SHOULD_BE_NUMBER)
 					});
 				});
 
@@ -474,7 +474,7 @@ describe('NumberScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.MAX_SHOULD_BE_NUMBER)
+						message: createErrorMsg(ERROR_MESSAGE.MAX_SHOULD_BE_NUMBER)
 					});
 				});
 
@@ -520,8 +520,8 @@ describe('NumberScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
-				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+				expect(error1.type).to.be.eql(ERROR_TYPE.SMALLER_THAN_OR_EQUAL);
+				expect(error1.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.SMALLER_THAN_OR_EQUAL, {
 					placeholders: [10]
 				}));
 			});
@@ -544,7 +544,7 @@ describe('NumberScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN)
+						message: createErrorMsg(ERROR_MESSAGE.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN)
 					});
 				});
 			});
@@ -574,8 +574,8 @@ describe('NumberScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN);
-				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
+				expect(error1.type).to.be.eql(ERROR_TYPE.SMALLER_THAN);
+				expect(error1.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.SMALLER_THAN, {
 					placeholders: [10]
 				}));
 
@@ -594,8 +594,8 @@ describe('NumberScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error2.type).to.be.eql(ErrorType.SMALLER_THAN);
-				expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN, {
+				expect(error2.type).to.be.eql(ERROR_TYPE.SMALLER_THAN);
+				expect(error2.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.SMALLER_THAN, {
 					placeholders: [10]
 				}));
 			});
@@ -634,8 +634,8 @@ describe('NumberScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error1.type).to.be.eql(ErrorType.SMALLER_THAN_OR_EQUAL);
-				expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.SMALLER_THAN_OR_EQUAL, {
+				expect(error1.type).to.be.eql(ERROR_TYPE.SMALLER_THAN_OR_EQUAL);
+				expect(error1.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.SMALLER_THAN_OR_EQUAL, {
 					placeholders: [10]
 				}));
 			});
@@ -668,7 +668,7 @@ describe('NumberScheme', () => {
 				checkSchemeError({
 					data,
 					errorScheme,
-					message: createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_NUMBER_FORMAT, {
 						placeholders: ['null']
 					})
 				});
@@ -689,7 +689,7 @@ describe('NumberScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+						message: createErrorMsg(ERROR_MESSAGE.INVALID_NUMBER_FORMAT, {
 							placeholders: ['invalidNumberFormat']
 						})
 					});
@@ -705,7 +705,7 @@ describe('NumberScheme', () => {
 					checkSchemeError({
 						data,
 						errorScheme,
-						message: createErrorMsg(ErrorMsg.INVALID_NUMBER_FORMAT, {
+						message: createErrorMsg(ERROR_MESSAGE.INVALID_NUMBER_FORMAT, {
 							placeholders: ['invalidNumberFormat']
 						})
 					});
@@ -730,8 +730,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error.type).to.be.eql(ErrorType.FORMAT);
-					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+					expect(error.type).to.be.eql(ERROR_TYPE.FORMAT);
+					expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
 						placeholders: ['integer']
 					}));
 				});
@@ -765,8 +765,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-					expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+					expect(error.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+					expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
 						placeholders: [JSON.stringify(formatArr)]
 					}));
 				});
@@ -868,8 +868,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.FORMAT);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+					expect(error1.type).to.be.eql(ERROR_TYPE.FORMAT);
+					expect(error1.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
 						placeholders: ['index']
 					}));
 
@@ -887,8 +887,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error2.type).to.be.eql(ErrorType.FORMAT);
-					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+					expect(error2.type).to.be.eql(ERROR_TYPE.FORMAT);
+					expect(error2.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
 						placeholders: ['index']
 					}));
 
@@ -906,8 +906,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error3.type).to.be.eql(ErrorType.FORMAT);
-					expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT, {
+					expect(error3.type).to.be.eql(ERROR_TYPE.FORMAT);
+					expect(error3.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
 						placeholders: ['index']
 					}));
 				});
@@ -949,8 +949,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error1.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-					expect(error1.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+					expect(error1.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+					expect(error1.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
 						placeholders: [JSON.stringify(formatArr)]
 					}));
 
@@ -968,8 +968,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error2.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-					expect(error2.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+					expect(error2.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+					expect(error2.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
 						placeholders: [JSON.stringify(formatArr)]
 					}));
 
@@ -987,8 +987,8 @@ describe('NumberScheme', () => {
 						throw new Error('spec failed');
 					}
 
-					expect(error3.type).to.be.eql(ErrorType.FORMAT_ONE_OF);
-					expect(error3.message).to.be.eql(createErrorMsg(ErrorMsg.FORMAT_ONE_OF, {
+					expect(error3.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+					expect(error3.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
 						placeholders: [JSON.stringify(formatArr)]
 					}));
 				});

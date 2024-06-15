@@ -1,5 +1,5 @@
 import { AnyObject } from './interfaces';
-import { ErrorMsg } from './constants';
+import { ERROR_MESSAGE } from './constants';
 
 
 enum CloneDataType {
@@ -104,7 +104,7 @@ export const sift = <T> (arr: T[]): T[] => {
 };
 
 
-export const createErrorMsg = (errorMsg: ErrorMsg, param?: {
+export const createErrorMsg = (errorMsg: ERROR_MESSAGE, param?: {
 	placeholders?: (string | number)[]
 }): string => {
 	let result: string = errorMsg;

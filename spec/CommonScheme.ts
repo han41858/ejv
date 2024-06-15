@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ejv } from '../src/ejv';
 
 import { EjvError } from '../src/interfaces';
-import { ErrorMsg, ErrorType } from '../src/constants';
+import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 
 
@@ -27,8 +27,8 @@ describe('CommonScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.REQUIRED);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
+				expect(error.type).to.be.eql(ERROR_TYPE.REQUIRED);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.REQUIRED));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
 				expect(error.errorData).to.be.undefined;
@@ -61,8 +61,8 @@ describe('CommonScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+				expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 					placeholders: ['string']
 				}));
 				expect(error.path).to.be.eql('a');
@@ -89,8 +89,8 @@ describe('CommonScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.REQUIRED);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
+				expect(error.type).to.be.eql(ERROR_TYPE.REQUIRED);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.REQUIRED));
 				expect(error.path).to.be.eql('a');
 				expect(error.data).to.be.deep.equal(data);
 				expect(error.errorData).to.be.undefined;
@@ -125,8 +125,8 @@ describe('CommonScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+				expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 					placeholders: ['string']
 				}));
 				expect(error.path).to.be.eql('a');
@@ -177,8 +177,8 @@ describe('CommonScheme', () => {
 					throw new Error('spec failed');
 				}
 
-				expect(error.type).to.be.eql(ErrorType.TYPE_MISMATCH);
-				expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.TYPE_MISMATCH, {
+				expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 					placeholders: ['string']
 				}));
 				expect(error.path).to.be.eql('a');
@@ -205,8 +205,8 @@ describe('CommonScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.REQUIRED);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
+			expect(error.type).to.be.eql(ERROR_TYPE.REQUIRED);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.REQUIRED));
 			expect(error.path).to.be.eql('a');
 			expect(error.data).to.be.deep.equal(data);
 			expect(error.errorData).to.be.null;
@@ -229,8 +229,8 @@ describe('CommonScheme', () => {
 				throw new Error('spec failed');
 			}
 
-			expect(error.type).to.be.eql(ErrorType.REQUIRED);
-			expect(error.message).to.be.eql(createErrorMsg(ErrorMsg.REQUIRED));
+			expect(error.type).to.be.eql(ERROR_TYPE.REQUIRED);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.REQUIRED));
 			expect(error.path).to.be.eql('a');
 			expect(error.data).to.be.deep.equal(data);
 			expect(error.errorData).to.be.null;

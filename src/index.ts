@@ -1,5 +1,5 @@
 export { ejv } from './ejv';
-export { DataType, NumberFormat, StringFormat, ErrorMsg, ErrorType } from './constants';
+export { DATA_TYPE, NUMBER_FORMAT, STRING_FORMAT, ERROR_MESSAGE, ERROR_TYPE } from './constants';
 export {
 	BooleanScheme,
 	NumberScheme,

@@ -1,35 +1,35 @@
-import { DataType } from './constants';
+import { DATA_TYPE } from './constants';
 import { AnyObject } from './interfaces';
 
-export const typeTester = (value: unknown, type: DataType): boolean => {
+export const typeTester = (value: unknown, type: DATA_TYPE): boolean => {
 	let valid: boolean;
 
 	switch (type) {
-		case DataType.BOOLEAN:
+		case DATA_TYPE.BOOLEAN:
 			valid = booleanTester(value);
 			break;
 
-		case DataType.NUMBER:
+		case DATA_TYPE.NUMBER:
 			valid = numberTester(value);
 			break;
 
-		case DataType.STRING:
+		case DATA_TYPE.STRING:
 			valid = stringTester(value);
 			break;
 
-		case DataType.OBJECT:
+		case DATA_TYPE.OBJECT:
 			valid = objectTester(value);
 			break;
 
-		case DataType.DATE:
+		case DATA_TYPE.DATE:
 			valid = dateTester(value);
 			break;
 
-		case DataType.REGEXP:
+		case DATA_TYPE.REGEXP:
 			valid = regExpTester(value);
 			break;
 
-		case DataType.ARRAY:
+		case DATA_TYPE.ARRAY:
 			valid = arrayTester(value);
 			break;
 	}
@@ -291,7 +291,7 @@ export const arrayTester = (value: unknown): value is unknown[] => {
 	return Array.isArray(value);
 };
 
-export const arrayTypeOfTester = (array: unknown[], type: DataType): boolean => {
+export const arrayTypeOfTester = (array: unknown[], type: DATA_TYPE): boolean => {
 	return array.every((item: unknown): boolean => {
 		return typeTester(item, type);
 	});
