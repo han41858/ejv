@@ -6,7 +6,8 @@
 
 ejv is JSON validation library. Check your JSON object with simple syntax.
 
-> ejv is written by TypeScript, and published by JavaScript. So you can use this library in TypeScript code and JavaScript code also.
+> ejv is written by TypeScript, and published by JavaScript. So you can use this library in TypeScript code and
+> JavaScript code also.
 
 ## Install
 
@@ -47,17 +48,18 @@ var ejv = _ejv.ejv;
 - TypeScript
 
 ```typescript
-const error : null | EjvError = ejv({
- a : 10
+const error: null | EjvError = ejv({
+	a: 10
 }, [{
- key : 'a',
- type : 'number'
+	key: 'a',
+	type: 'number'
 }]);
 
 if (!error) {
- console.log('success');
-} else {
- console.log('failed');
+	console.log('success');
+}
+else {
+	console.log('failed');
 }
 ```
 
@@ -65,16 +67,16 @@ if (!error) {
 
 ```javascript
 var error = ejv({
- a : 10
+	a: 10
 }, [{
- key : 'a',
- type : 'number'
+	key: 'a',
+	type: 'number'
 }]);
 
 if (!error) {
- console.log('success');
+	console.log('success');
 } else {
- console.log('failed');
+	console.log('failed');
 }
 ```
 
@@ -112,10 +114,10 @@ This option is available for all validation rules.
 
 ```typescript
 ejv({
- // empty object
+	// empty object
 }, [{
- key : 'a',
- optional : true // Error does not occur without proffering declared.
+	key: 'a',
+	optional: true // Error does not occur without proffering declared.
 }]);
 ```
 
@@ -126,10 +128,10 @@ This option is available for all validation rules.
 
 ```typescript
 ejv({
- a : null
+	a: null
 }, [{
- key : 'a',
- nullable : true
+	key: 'a',
+	nullable: true
 }]);
 ```
 
@@ -140,16 +142,16 @@ This option is available for the rules of validation: `type: number` and `type: 
 
 ```typescript
 ejv({
- a : 1,
- b : 'hello'
+	a: 1,
+	b: 'hello'
 }, [{
- key : 'a',
- type : 'number',
- enum : [1, 2, 3] // allow 1, 2, 3
+	key: 'a',
+	type: 'number',
+	enum: [1, 2, 3] // allow 1, 2, 3
 }, {
- key : 'b',
- type : 'string',
- enum : ['hello', 'ejv'] // allow 'hello', 'ejv'
+	key: 'b',
+	type: 'string',
+	enum: ['hello', 'ejv'] // allow 'hello', 'ejv'
 }]);
 ```
 
@@ -188,17 +190,17 @@ This option is used only when the `min` option is used.
 
 ```typescript
 ejv({
- num1 : 10,
- num2 : 10
+	num1: 10,
+	num2: 10
 }, [{
- key : 'num1',
- type : 'number',
- min : 10 // success
+	key: 'num1',
+	type: 'number',
+	min: 10 // success
 }, {
- key : 'num2',
- type : 'number',
- min : 10,
- exclusiveMin : true // failed
+	key: 'num2',
+	type: 'number',
+	min: 10,
+	exclusiveMin: true // failed
 }]);
 ```
 
@@ -215,17 +217,17 @@ This option is used only when the `min` option is used.
 
 ```typescript
 ejv({
- num1 : 10,
- num2 : 10
+	num1: 10,
+	num2: 10
 }, [{
- key : 'num1',
- type : 'number',
- max : 10 // success
+	key: 'num1',
+	type: 'number',
+	max: 10 // success
 }, {
- key : 'num2',
- type : 'number',
- max : 10,
- exclusiveMax : true // failed
+	key: 'num2',
+	type: 'number',
+	max: 10,
+	exclusiveMax: true // failed
 }]);
 ```
 
@@ -235,10 +237,10 @@ Checks the format of the number.
 If specified as an array, ejv allow the value if it corresponds to one of the given formats.
 The available formats are as follows.
 
-format|example
----|---
-`'integer'`|Allows only integer. ex) -1, 0, 1, ...
-`'index'`|Allows only index. This format is same rule with `format : 'integer', min : 0`. ex) 0, 1, 2, ...
+ format      | example                                                                                          
+-------------|--------------------------------------------------------------------------------------------------
+ `'integer'` | Allows only integer. ex) -1, 0, 1, ...                                                           
+ `'index'`   | Allows only index. This format is same rule with `format : 'integer', min : 0`. ex) 0, 1, 2, ... 
 
 #### `'string'` options
 
@@ -247,12 +249,12 @@ format|example
 Checks the format of string. If specified as an array, ejv will allow the value if it corresponds to one of the given
 formats. The available formats are as follows.
 
-format|example
----|---
-`'email'`|Allows only email. This is based on [RFC 5322 3.4.1](https://tools.ietf.org/html/rfc5322#section-3.4.1). ex) `'email@domain.com'`
-`'date'`|Allows only date string format. This is based on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'2018-12-29'`
-`'time'`|Allows only time string format. This is based on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'21:07:35'`
-`'date-time'`|Allows only date-time string format. This is based on [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) and [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'2018-12-29T21:07:35Z'`
+ format        | example                                                                                                                                                                                     
+---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ `'email'`     | Allows only email. This is based on [RFC 5322 3.4.1](https://tools.ietf.org/html/rfc5322#section-3.4.1). ex) `'email@domain.com'`                                                           
+ `'date'`      | Allows only date string format. This is based on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'2018-12-29'`                                                                     
+ `'time'`      | Allows only time string format. This is based on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'21:07:35'`                                                                       
+ `'date-time'` | Allows only date-time string format. This is based on [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) and [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'2018-12-29T21:07:35Z'` 
 
 - `length : number`
 
@@ -260,11 +262,11 @@ Checks the length of string.
 
 ```typescript
 ejv({
- str : 'hello'
+	str: 'hello'
 }, [{
- key : 'str',
- type : 'string',
- length : 5
+	key: 'str',
+	type: 'string',
+	length: 5
 }]);
 ````
 
@@ -274,11 +276,11 @@ Checks the minimum length of string.
 
 ```typescript
 ejv({
- str : 'hello'
+	str: 'hello'
 }, [{
- key : 'str',
- type : 'string',
- minLength : 5
+	key: 'str',
+	type: 'string',
+	minLength: 5
 }]);
 ````
 
@@ -288,39 +290,40 @@ Checks the maximum length of string.
 
 ```typescript
 ejv({
- str : 'hello'
+	str: 'hello'
 }, [{
- key : 'str',
- type : 'string',
- maxLength : 5
+	key: 'str',
+	type: 'string',
+	maxLength: 5
 }]);
 ````
 
 - `pattern : string | string[] | RegExp | RegExp[]`
 
 Checks the pattern of string.
-If specified as a string, the string is converted to a regular expression and checked, and if specified as a regular expression, it checks whether it passes the regular expression.
+If specified as a string, the string is converted to a regular expression and checked, and if specified as a regular
+expression, it checks whether it passes the regular expression.
 If the value of this option is specified as an array, pass the check if one of the rule passes.
 
 ```typescript
 ejv({
- str : 'abc'
+	str: 'abc'
 }, [{
- key : 'str',
- type : 'string',
- pattern : 'abc'
+	key: 'str',
+	type: 'string',
+	pattern: 'abc'
 }, {
- key : 'str',
- type : 'string',
- pattern : ['abc', 'ac']
+	key: 'str',
+	type: 'string',
+	pattern: ['abc', 'ac']
 }, {
- key : 'str',
- type : 'string',
- pattern : /abc/
+	key: 'str',
+	type: 'string',
+	pattern: /abc/
 }, {
- key : 'str',
- type : 'string',
- pattern : [/abc/, /ac/]
+	key: 'str',
+	type: 'string',
+	pattern: [/abc/, /ac/]
 }]);
 ```
 
@@ -334,11 +337,11 @@ If you omit this option or specify it as `true`, ejv will allow the empty object
 
 ```typescript
 ejv({
- obj : {}
+	obj: {}
 }, [{
- key : 'obj',
- type : 'object',
- allowNoProperty : false // failed
+	key: 'obj',
+	type: 'object',
+	allowNoProperty: false // failed
 }]);
 ```
 
@@ -349,20 +352,20 @@ The object specified for the validation is recursively processed by ejv().
 
 ```typescript
 ejv({
- data : {
-  num : 10,
-  str : 'ejv'
- }
+	data: {
+		num: 10,
+		str: 'ejv'
+	}
 }, [{
- key : 'data',
- type : 'object',
- properties : [{
-  key : 'num',
-  type : 'number'
- }, {
-  key : 'str',
-  type : 'string'
- }]
+	key: 'data',
+	type: 'object',
+	properties: [{
+		key: 'num',
+		type: 'number'
+	}, {
+		key: 'str',
+		type: 'string'
+	}]
 }]);
 ```
 
@@ -382,25 +385,25 @@ This option is used only when the `min` option is used.
 
 ```typescript
 ejv({
- date1 : new Date(2019, 11, 30)
+	date1: new Date(2019, 11, 30)
 }, [{
- key : 'date1',
- type : 'date',
- min : new Date(2019, 11, 30) // success
+	key: 'date1',
+	type: 'date',
+	min: new Date(2019, 11, 30) // success
 }, {
- key : 'date1',
- type : 'date',
- min : new Date(2019, 11, 30),
- exclusiveMin : true // failed
+	key: 'date1',
+	type: 'date',
+	min: new Date(2019, 11, 30),
+	exclusiveMin: true // failed
 }, {
- key : 'date1',
- type : 'date',
- min : '2019-12-30T00:00:00Z' // success
+	key: 'date1',
+	type: 'date',
+	min: '2019-12-30T00:00:00Z' // success
 }, {
- key : 'date1',
- type : 'date',
- min : '2019-12-30T00:00:00Z',
- exclusiveMin : true // failed
+	key: 'date1',
+	type: 'date',
+	min: '2019-12-30T00:00:00Z',
+	exclusiveMin: true // failed
 }]);
 ```
 
@@ -418,25 +421,25 @@ This option is used only when the `max` option is used.
 
 ```typescript
 ejv({
- date1 : new Date(2019, 11, 30)
+	date1: new Date(2019, 11, 30)
 }, [{
- key : 'date1',
- type : 'date',
- max : new Date(2019, 11, 30) // success
+	key: 'date1',
+	type: 'date',
+	max: new Date(2019, 11, 30) // success
 }, {
- key : 'date1',
- type : 'date',
- max : new Date(2019, 11, 30),
- exclusiveMax : true // failed
+	key: 'date1',
+	type: 'date',
+	max: new Date(2019, 11, 30),
+	exclusiveMax: true // failed
 }, {
- key : 'date1',
- type : 'date',
- max : '2019-12-30T00:00:00Z' // success
+	key: 'date1',
+	type: 'date',
+	max: '2019-12-30T00:00:00Z' // success
 }, {
- key : 'date1',
- type : 'date',
- max : '2019-12-30T00:00:00Z',
- exclusiveMax : true // failed
+	key: 'date1',
+	type: 'date',
+	max: '2019-12-30T00:00:00Z',
+	exclusiveMax: true // failed
 }]);
 ```
 
@@ -448,11 +451,11 @@ Checks the length of the array.
 
 ```typescript
 ejv({
- arr : [1, 2]
+	arr: [1, 2]
 }, [{
- key : 'arr',
- type : 'array',
- length : 2
+	key: 'arr',
+	type: 'array',
+	length: 2
 }]);
 ````
 
@@ -462,11 +465,11 @@ Checks the minimum length of the array.
 
 ```typescript
 ejv({
- arr : [1, 2]
+	arr: [1, 2]
 }, [{
- key : 'arr',
- type : 'array',
- minLength : 2
+	key: 'arr',
+	type: 'array',
+	minLength: 2
 }]);
 ````
 
@@ -476,11 +479,11 @@ Checks the maximum length of the array.
 
 ```typescript
 ejv({
- arr : [1, 2, 3]
+	arr: [1, 2, 3]
 }, [{
- key : 'arr',
- type : 'array',
- maxLength : 3
+	key: 'arr',
+	type: 'array',
+	maxLength: 3
 }]);
 ````
 
@@ -498,15 +501,15 @@ Schemes specified as arrays are recursively processed by `ejv()`, and processed 
 
 ```typescript
 ejv({
- arr : [1, 2, 3]
+	arr: [1, 2, 3]
 }, [{
- key : 'arr',
- type : 'array',
- items : [{
-  type : 'number',
-  min : 1,
-  max : 3
- }]
+	key: 'arr',
+	type: 'array',
+	items: [{
+		type: 'number',
+		min: 1,
+		max: 3
+	}]
 }])
 ```
 
@@ -514,19 +517,20 @@ ejv({
 
 Specify the type of property to inspect. The values available are as follows.
 
-type|example
----|---
-`'boolean'`|`true`, `false`
-`'number'`|`0`, `1`, `1.5`, ...
-`'string'`|`'ejv'`, `'hello'`, ...
-`'object'`|`{}`, `{ key : 123 }`, ...
-`'date'`|`new Date`
-`'regexp'`|`new RegExp(/./)`, `/./`, ...
-`'array'`|`[]`, `[1, 2, 3]`, ...
+ type        | example                       
+-------------|-------------------------------
+ `'boolean'` | `true`, `false`               
+ `'number'`  | `0`, `1`, `1.5`, ...          
+ `'string'`  | `'ejv'`, `'hello'`, ...       
+ `'object'`  | `{}`, `{ key : 123 }`, ...    
+ `'date'`    | `new Date`                    
+ `'regexp'`  | `new RegExp(/./)`, `/./`, ... 
+ `'array'`   | `[]`, `[1, 2, 3]`, ...        
 
 ## `EjvError`
 
-If the JSON object passes the validation rule, it returns the `null` object, but if it does not pass the inspection rule, it returns the instance of the `EjvError` type.
+If the JSON object passes the validation rule, it returns the `null` object, but if it does not pass the inspection
+rule, it returns the instance of the `EjvError` type.
 The `EjvError` object is an object that represents the error that occurred at this time.
 
 > You do not always need to use `EjvError` type.
@@ -557,11 +561,11 @@ usage)
 ```typescript
 import { ejv, EjvError } from 'ejv';
 
-const error : null | EjvError = ejv({
- a : 10
+const error: null | EjvError = ejv({
+	a: 10
 }, [{
- key : 'a',
- type : 'string'
+	key: 'a',
+	type: 'string'
 }]);
 
 console.log(error.type); // 'TYPE_MISMATCH'
@@ -584,15 +588,15 @@ This option is used in the type of `object`. You can use `ErrorType` as a key wh
 ```typescript
 import { ejv, EjvError, ErrorType } from 'ejv';
 
-const error : null | EjvError = ejv({
- a : 10
+const error: null | EjvError = ejv({
+	a: 10
 }, [{
- key : 'a',
- type : 'string'
+	key: 'a',
+	type: 'string'
 }, {
- customErrorMsg : {
-  [ErrorType.TYPE_MISMATCH] : 'property "a" should be a "string".'
- }
+	customErrorMsg: {
+		[ErrorType.TYPE_MISMATCH]: 'property "a" should be a "string".'
+	}
 }]);
 
 console.log(error.message); // 'property "a" should be a "string".'

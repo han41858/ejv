@@ -45,16 +45,17 @@ var ejv = _ejv.ejv;
 - TypeScript
 
 ```typescript
-const error : null | EjvError = ejv({
-	a : 10
+const error: null | EjvError = ejv({
+	a: 10
 }, [{
-	key : 'a',
-	type : 'number'
+	key: 'a',
+	type: 'number'
 }]);
 
 if (!error) {
 	console.log('검사 성공');
-} else {
+}
+else {
 	console.log('검사 실패');
 }
 ```
@@ -63,10 +64,10 @@ if (!error) {
 
 ```javascript
 var error = ejv({
-	a : 10
+	a: 10
 }, [{
-	key : 'a',
-	type : 'number'
+	key: 'a',
+	type: 'number'
 }]);
 
 if (!error) {
@@ -111,8 +112,8 @@ JSON 객체에 있는 `a` 프로퍼티를 검사하려면 `key : 'a'`라고 지�
 ejv({
 	// 빈 객체
 }, [{
-	key : 'a',
-	optional : true // 프로퍼티가 선언되지 않아도 에러가 발생하지 않습니다.
+	key: 'a',
+	optional: true // 프로퍼티가 선언되지 않아도 에러가 발생하지 않습니다.
 }]);
 ```
 
@@ -123,10 +124,10 @@ ejv({
 
 ```typescript
 ejv({
-	a : null
+	a: null
 }, [{
-	key : 'a',
-	nullable : true
+	key: 'a',
+	nullable: true
 }]);
 ```
 
@@ -137,16 +138,16 @@ ejv({
 
 ```typescript
 ejv({
-	a : 1,
-	b : 'hello'
+	a: 1,
+	b: 'hello'
 }, [{
-	key : 'a',
-	type : 'number',
-	enum : [1, 2, 3] // 1, 2, 3 값을 허용합니다.
+	key: 'a',
+	type: 'number',
+	enum: [1, 2, 3] // 1, 2, 3 값을 허용합니다.
 }, {
-	key : 'b',
-	type : 'string',
-	enum : ['hello', 'ejv'] // 'hello'나 'ejv' 값을 허용합니다.
+	key: 'b',
+	type: 'string',
+	enum: ['hello', 'ejv'] // 'hello'나 'ejv' 값을 허용합니다.
 }]);
 ```
 
@@ -185,17 +186,17 @@ ejv({
 
 ```typescript
 ejv({
-	num1 : 10,
-	num2 : 10
+	num1: 10,
+	num2: 10
 }, [{
-	key : 'num1',
-	type : 'number',
-	min : 10 // 성공
+	key: 'num1',
+	type: 'number',
+	min: 10 // 성공
 }, {
-	key : 'num2',
-	type : 'number',
-	min : 10,
-	exclusiveMin : true // 실패
+	key: 'num2',
+	type: 'number',
+	min: 10,
+	exclusiveMin: true // 실패
 }]);
 ```
 
@@ -212,17 +213,17 @@ ejv({
 
 ```typescript
 ejv({
-	num1 : 10,
-	num2 : 10
+	num1: 10,
+	num2: 10
 }, [{
-	key : 'num1',
-	type : 'number',
-	max : 10 // 성공
+	key: 'num1',
+	type: 'number',
+	max: 10 // 성공
 }, {
-	key : 'num2',
-	type : 'number',
-	max : 10,
-	exclusiveMax : true // 실패
+	key: 'num2',
+	type: 'number',
+	max: 10,
+	exclusiveMax: true // 실패
 }]);
 ```
 
@@ -232,10 +233,10 @@ ejv({
 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다.
 사용할 수 있는 값은 다음과 같습니다.
 
-포맷|예
----|---
-`'integer'`|정수만 허용합니다. ex) -1, 0, 1, ...
-`'index'`|인덱스만 허용합니다. `format : 'integer', min : 0`을 설정한 것과 같습니다. ex) 0, 1, 2, ...
+ 포맷          | 예                                                                        
+-------------|--------------------------------------------------------------------------
+ `'integer'` | 정수만 허용합니다. ex) -1, 0, 1, ...                                             
+ `'index'`   | 인덱스만 허용합니다. `format : 'integer', min : 0`을 설정한 것과 같습니다. ex) 0, 1, 2, ... 
 
 #### `'string'` 타입 옵션
 
@@ -243,12 +244,12 @@ ejv({
 
 문자열의 형식을 검사합니다. 배열로 지정된 경우에는 주어진 형식 중 하나에 해당되면 검사를 통과합니다. 사용할 수 있는 값은 다음과 같습니다.
 
-포맷|예
----|---
-`'email'`|이메일 형식인지 검사합니다. [RFC 5322 3.4.1](https://tools.ietf.org/html/rfc5322#section-3.4.1) 스펙을 기준으로 합니다. ex) `'email@domain.com'`
-`'date'`|날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29'`
-`'time'`|시간 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'21:07:35'`
-`'date-time'`|날짜-시간 형식인지 검사합니다. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) 스펙과 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29T21:07:35Z'`
+ 포맷            | 예                                                                                                                                                                    
+---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ `'email'`     | 이메일 형식인지 검사합니다. [RFC 5322 3.4.1](https://tools.ietf.org/html/rfc5322#section-3.4.1) 스펙을 기준으로 합니다. ex) `'email@domain.com'`                                           
+ `'date'`      | 날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29'`                                                                   
+ `'time'`      | 시간 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'21:07:35'`                                                                     
+ `'date-time'` | 날짜-시간 형식인지 검사합니다. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) 스펙과 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29T21:07:35Z'` 
 
 - `length : number`
 
@@ -256,11 +257,11 @@ ejv({
 
 ```typescript
 ejv({
-	str : 'hello'
+	str: 'hello'
 }, [{
-	key : 'str',
-	type : 'string',
-	length : 5
+	key: 'str',
+	type: 'string',
+	length: 5
 }]);
 ````
 
@@ -270,11 +271,11 @@ ejv({
 
 ```typescript
 ejv({
-	str : 'hello'
+	str: 'hello'
 }, [{
-	key : 'str',
-	type : 'string',
-	minLength : 5
+	key: 'str',
+	type: 'string',
+	minLength: 5
 }]);
 ````
 
@@ -284,11 +285,11 @@ ejv({
 
 ```typescript
 ejv({
-	str : 'hello'
+	str: 'hello'
 }, [{
-	key : 'str',
-	type : 'string',
-	maxLength : 5
+	key: 'str',
+	type: 'string',
+	maxLength: 5
 }]);
 ````
 
@@ -300,23 +301,23 @@ ejv({
 
 ```typescript
 ejv({
-	str : 'abc'
+	str: 'abc'
 }, [{
-	key : 'str',
-	type : 'string',
-	pattern : 'abc'
+	key: 'str',
+	type: 'string',
+	pattern: 'abc'
 }, {
-	key : 'str',
-	type : 'string',
-	pattern : ['abc', 'ac']
+	key: 'str',
+	type: 'string',
+	pattern: ['abc', 'ac']
 }, {
-	key : 'str',
-	type : 'string',
-	pattern : /abc/
+	key: 'str',
+	type: 'string',
+	pattern: /abc/
 }, {
-	key : 'str',
-	type : 'string',
-	pattern : [/abc/, /ac/]
+	key: 'str',
+	type: 'string',
+	pattern: [/abc/, /ac/]
 }]);
 ```
 
@@ -330,11 +331,11 @@ ejv({
 
 ```typescript
 ejv({
-	obj : {}
+	obj: {}
 }, [{
-	key : 'obj',
-	type : 'object',
-	allowNoProperty : false // 실패
+	key: 'obj',
+	type: 'object',
+	allowNoProperty: false // 실패
 }]);
 ```
 
@@ -345,19 +346,19 @@ ejv({
 
 ```typescript
 ejv({
-	data : {
-		num : 10,
-		str : 'ejv'
+	data: {
+		num: 10,
+		str: 'ejv'
 	}
 }, [{
-	key : 'data',
-	type : 'object',
-	properties : [{
-		key : 'num',
-		type : 'number'
+	key: 'data',
+	type: 'object',
+	properties: [{
+		key: 'num',
+		type: 'number'
 	}, {
-		key : 'str',
-		type : 'string'
+		key: 'str',
+		type: 'string'
 	}]
 }]);
 ```
@@ -378,25 +379,25 @@ ejv({
 
 ```typescript
 ejv({
-	date1 : new Date(2019, 11, 30)
+	date1: new Date(2019, 11, 30)
 }, [{
-	key : 'date1',
-	type : 'date',
-	min : new Date(2019, 11, 30) // 성공
+	key: 'date1',
+	type: 'date',
+	min: new Date(2019, 11, 30) // 성공
 }, {
-	key : 'date1',
-	type : 'date',
-	min : new Date(2019, 11, 30),
-	exclusiveMin : true // 실패
+	key: 'date1',
+	type: 'date',
+	min: new Date(2019, 11, 30),
+	exclusiveMin: true // 실패
 }, {
-	key : 'date1',
-	type : 'date',
-	min : '2019-12-30T00:00:00Z' // 성공
+	key: 'date1',
+	type: 'date',
+	min: '2019-12-30T00:00:00Z' // 성공
 }, {
-	key : 'date1',
-	type : 'date',
-	min : '2019-12-30T00:00:00Z',
-	exclusiveMin : true // 실패
+	key: 'date1',
+	type: 'date',
+	min: '2019-12-30T00:00:00Z',
+	exclusiveMin: true // 실패
 }]);
 ```
 
@@ -414,25 +415,25 @@ ejv({
 
 ```typescript
 ejv({
-	date1 : new Date(2019, 11, 30)
+	date1: new Date(2019, 11, 30)
 }, [{
-	key : 'date1',
-	type : 'date',
-	max : new Date(2019, 11, 30) // 성공
+	key: 'date1',
+	type: 'date',
+	max: new Date(2019, 11, 30) // 성공
 }, {
-	key : 'date1',
-	type : 'date',
-	max : new Date(2019, 11, 30),
-	exclusiveMax : true // 실패
+	key: 'date1',
+	type: 'date',
+	max: new Date(2019, 11, 30),
+	exclusiveMax: true // 실패
 }, {
-	key : 'date1',
-	type : 'date',
-	max : '2019-12-30T00:00:00Z' // 성공
+	key: 'date1',
+	type: 'date',
+	max: '2019-12-30T00:00:00Z' // 성공
 }, {
-	key : 'date1',
-	type : 'date',
-	max : '2019-12-30T00:00:00Z',
-	exclusiveMax : true // 실패
+	key: 'date1',
+	type: 'date',
+	max: '2019-12-30T00:00:00Z',
+	exclusiveMax: true // 실패
 }]);
 ```
 
@@ -444,11 +445,11 @@ ejv({
 
 ```typescript
 ejv({
-	arr : [1, 2]
+	arr: [1, 2]
 }, [{
-	key : 'arr',
-	type : 'array',
-	length : 2
+	key: 'arr',
+	type: 'array',
+	length: 2
 }]);
 ````
 
@@ -458,11 +459,11 @@ ejv({
 
 ```typescript
 ejv({
-	arr : [1, 2]
+	arr: [1, 2]
 }, [{
-	key : 'arr',
-	type : 'array',
-	minLength : 2
+	key: 'arr',
+	type: 'array',
+	minLength: 2
 }]);
 ````
 
@@ -472,11 +473,11 @@ ejv({
 
 ```typescript
 ejv({
-	arr : [1, 2, 3]
+	arr: [1, 2, 3]
 }, [{
-	key : 'arr',
-	type : 'array',
-	maxLength : 3
+	key: 'arr',
+	type: 'array',
+	maxLength: 3
 }]);
 ````
 
@@ -494,14 +495,14 @@ ejv({
 
 ```typescript
 ejv({
-	arr : [1, 2, 3]
+	arr: [1, 2, 3]
 }, [{
-	key : 'arr',
-	type : 'array',
-	items : [{
-		type : 'number',
-		min : 1,
-		max : 3
+	key: 'arr',
+	type: 'array',
+	items: [{
+		type: 'number',
+		min: 1,
+		max: 3
 	}]
 }])
 ```
@@ -511,15 +512,15 @@ ejv({
 검사할 프로퍼티의 타입을 지정합니다.
 사용할 수 있는 값은 다음과 같습니다.
 
-타입|예
----|---
-`'boolean'`|`true`, `false`
-`'number'`|`0`, `1`, `1.5`, ...
-`'string'`|`'ejv'`, `'hello'`, ...
-`'object'`|`{}`, `{ key : 123 }`, ...
-`'date'`|`new Date`
-`'regexp'`|`new RegExp(/./)`, `/./`, ...
-`'array'`|`[]`, `[1, 2, 3]`, ...
+ 타입          | 예                             
+-------------|-------------------------------
+ `'boolean'` | `true`, `false`               
+ `'number'`  | `0`, `1`, `1.5`, ...          
+ `'string'`  | `'ejv'`, `'hello'`, ...       
+ `'object'`  | `{}`, `{ key : 123 }`, ...    
+ `'date'`    | `new Date`                    
+ `'regexp'`  | `new RegExp(/./)`, `/./`, ... 
+ `'array'`   | `[]`, `[1, 2, 3]`, ...        
 
 ## `EjvError`
 
@@ -554,11 +555,11 @@ ejv({
 ```typescript
 import { ejv, EjvError } from 'ejv';
 
-const error : null | EjvError = ejv({
-	a : 10
+const error: null | EjvError = ejv({
+	a: 10
 }, [{
-	key : 'a',
-	type : 'string'
+	key: 'a',
+	type: 'string'
 }]);
 
 console.log(error.type); // 'TYPE_MISMATCH'
@@ -581,14 +582,14 @@ ejv가 제공하는 에러 메시지를 다른 내용으로 변경하려면 `Ejv
 ```typescript
 import { ejv, EjvError, ErrorType } from 'ejv';
 
-const error : null | EjvError = ejv({
-	a : 10
+const error: null | EjvError = ejv({
+	a: 10
 }, [{
-	key : 'a',
-	type : 'string'
+	key: 'a',
+	type: 'string'
 }, {
-	customErrorMsg : {
-		[ErrorType.TYPE_MISMATCH] : 'property "a" should be a "string".'
+	customErrorMsg: {
+		[ErrorType.TYPE_MISMATCH]: 'property "a" should be a "string".'
 	}
 }]);
 
