@@ -110,101 +110,198 @@ describe('StringScheme', () => {
 		});
 	});
 
-	describe('enum', () => {
-		describe('check parameter', () => {
-			const data = {
-				a: 'a'
-			};
+	describe('enum & notEnum', () => {
+		describe('enum', () => {
+			describe('check parameter', () => {
+				const data = {
+					a: 'a'
+				};
 
-			it('undefined is ok', () => {
-				expect(ejv(data, [{
+				it('undefined is ok', () => {
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						enum: undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'string',
+						enum: null as unknown as string[]
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
+					});
+				});
+
+				it('not array', () => {
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'string',
+						enum: 'a' as unknown as string[]
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
+					});
+				});
+
+				it('not string', () => {
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'string',
+						enum: [10]
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_STRINGS)
+					});
+				});
+			});
+
+			it('fail', () => {
+				const enumArr: string[] = ['b', 'c'];
+
+				const data = {
+					a: 'a'
+				};
+
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
-					enum: undefined
+					enum: enumArr
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ERROR_TYPE.ONE_VALUE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.ONE_VALUE_OF, {
+					placeholders: [JSON.stringify(enumArr)]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql('a');
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a: 'a'
+				}, [{
+					key: 'a',
+					type: 'string',
+					enum: ['a', 'b', 'c']
 				}])).to.be.null;
 			});
+		});
 
-			it('null', () => {
-				const errorScheme: Scheme = {
-					key: 'a',
-					type: 'string',
-					enum: null as unknown as string[]
+		describe('notEnum', () => {
+			describe('check parameter', () => {
+				const data = {
+					a: 'a'
 				};
 
-				checkSchemeError({
-					data,
-					errorScheme,
-					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
+				it('undefined is ok', () => {
+					expect(ejv(data, [{
+						key: 'a',
+						type: 'string',
+						notEnum: undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'string',
+						notEnum: null as unknown as string[]
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_ARRAY)
+					});
+				});
+
+				it('not array', () => {
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'string',
+						notEnum: 'a' as unknown as string[]
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_ARRAY)
+					});
+				});
+
+				it('not string', () => {
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'string',
+						notEnum: [10]
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_STRINGS)
+					});
 				});
 			});
 
-			it('not array', () => {
-				const errorScheme: Scheme = {
-					key: 'a',
-					type: 'string',
-					enum: 'a' as unknown as string[]
+			it('fail', () => {
+				const enumArr: string[] = ['a', 'b', 'c'];
+
+				const data = {
+					a: 'a'
 				};
 
-				checkSchemeError({
-					data,
-					errorScheme,
-					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
-				});
-			});
-
-			it('not string', () => {
-				const errorScheme: Scheme = {
+				const error: EjvError | null = ejv(data, [{
 					key: 'a',
 					type: 'string',
-					enum: [10]
-				};
+					notEnum: enumArr
+				}]);
 
-				checkSchemeError({
-					data,
-					errorScheme,
-					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_STRINGS)
-				});
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ERROR_TYPE.NOT_ONE_VALUE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.NOT_ONE_VALUE_OF, {
+					placeholders: [JSON.stringify(enumArr)]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql('a');
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a: 'a'
+				}, [{
+					key: 'a',
+					type: 'string',
+					notEnum: ['b', 'c']
+				}])).to.be.null;
 			});
 		});
-
-		it('fail', () => {
-			const enumArr: string[] = ['b', 'c'];
-
-			const data = {
-				a: 'a'
-			};
-
-			const error: EjvError | null = ejv(data, [{
-				key: 'a',
-				type: 'string',
-				enum: enumArr
-			}]);
-
-			expect(error).to.be.instanceof(EjvError);
-
-			if (!error) {
-				throw new Error('spec failed');
-			}
-
-			expect(error.type).to.be.eql(ERROR_TYPE.ONE_VALUE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.ONE_VALUE_OF, {
-				placeholders: [JSON.stringify(enumArr)]
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql('a');
-		});
-
-		it('ok', () => {
-			expect(ejv({
-				a: 'a'
-			}, [{
-				key: 'a',
-				type: 'string',
-				enum: ['a', 'b', 'c']
-			}])).to.be.null;
-		});
-
 	});
 
 	describe('length', () => {

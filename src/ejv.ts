@@ -37,6 +37,7 @@ import {
 	minDateTester,
 	minLengthTester,
 	minNumberTester,
+	notEnumTester,
 	numberTester,
 	objectTester,
 	regExpTester,
@@ -353,6 +354,50 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					}
 				}
 
+				if (definedTester(numberScheme.notEnum)) {
+					if (!arrayTester(numberScheme.notEnum)) {
+						return new EjvError({
+							type: ERROR_TYPE.INVALID_SCHEMES,
+							message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_ARRAY),
+
+							data: data,
+
+							errorScheme: numberScheme,
+							isSchemeError: true
+						});
+					}
+
+					const enumArr: number[] = numberScheme.notEnum;
+
+					if (!arrayTypeOfTester(enumArr, DATA_TYPE.NUMBER)) {
+						return new EjvError({
+							type: ERROR_TYPE.INVALID_SCHEMES,
+							message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_NUMBERS),
+
+							data: data,
+
+							errorScheme: numberScheme,
+							isSchemeError: true
+						});
+					}
+
+					if (!notEnumTester(valueAsNumber, enumArr)) {
+						result = new EjvError({
+							type: ERROR_TYPE.NOT_ONE_VALUE_OF,
+							message: createErrorMsg(ERROR_MESSAGE.NOT_ONE_VALUE_OF, {
+								placeholders: [JSON.stringify(enumArr)]
+							}),
+
+							data,
+							path: _options.path,
+
+							errorScheme: numberScheme,
+							errorData: value
+						});
+						break;
+					}
+				}
+
 				if (
 					definedTester(numberScheme.min)
 					|| definedTester((scheme.parent as NumberScheme)?.min)
@@ -626,6 +671,50 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 							type: ERROR_TYPE.ONE_VALUE_OF,
 							message: createErrorMsg(ERROR_MESSAGE.ONE_VALUE_OF, {
 								placeholders: [JSON.stringify(stringScheme.enum)]
+							}),
+
+							data,
+							path: _options.path,
+
+							errorScheme: stringScheme,
+							errorData: value
+						});
+						break;
+					}
+				}
+
+				if (definedTester(stringScheme.notEnum)) {
+					if (!arrayTester(stringScheme.notEnum)) {
+						return new EjvError({
+							type: ERROR_TYPE.INVALID_SCHEMES,
+							message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_ARRAY),
+
+							data: data,
+
+							errorScheme: stringScheme,
+							isSchemeError: true
+						});
+					}
+
+					const enumArr: string[] = stringScheme.notEnum;
+
+					if (!arrayTypeOfTester(enumArr, DATA_TYPE.STRING)) {
+						return new EjvError({
+							type: ERROR_TYPE.INVALID_SCHEMES,
+							message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_STRINGS),
+
+							data: data,
+
+							errorScheme: stringScheme,
+							isSchemeError: true
+						});
+					}
+
+					if (!notEnumTester(valueAsString, enumArr)) {
+						result = new EjvError({
+							type: ERROR_TYPE.NOT_ONE_VALUE_OF,
+							message: createErrorMsg(ERROR_MESSAGE.NOT_ONE_VALUE_OF, {
+								placeholders: [JSON.stringify(stringScheme.notEnum)]
 							}),
 
 							data,

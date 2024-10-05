@@ -150,23 +150,23 @@ ejv({
 }]);
 ```
 
-- `enumReverse : number[] | string[]`
+- `notEnumse : number[] | string[]`
 
 배열로 전달되는 값을 허용하지 않습니다. 이 옵션의 결과는 `enum` 옵션의 결과와 반대입니다.
 이 옵션은 `type : number`과 `type : string` 검사규칙에 사용할 수 있습니다.
 
 ```typescript
 ejv({
-	a : 1,
-	b : 'hello'
+	a: 1,
+	b: 'hello'
 }, [{
-	key : 'a',
-	type : 'number',
-	enumReverse : [1, 2, 3] // 1, 2, 3 값을 허용하지 않습니다.
+	key: 'a',
+	type: 'number',
+	notEnum: [1, 2, 3] // 1, 2, 3 값을 허용하지 않습니다.
 }, {
-	key : 'b',
-	type : 'string',
-	enumReverse : ['hello', 'ejv'] // 'hello'나 'ejv' 값을 허용하지 않습니다.
+	key: 'b',
+	type: 'string',
+	notEnum: ['hello', 'ejv'] // 'hello'나 'ejv' 값을 허용하지 않습니다.
 }]);
 ```
 

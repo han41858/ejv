@@ -45,6 +45,10 @@ export const enumTester = <T> (value: T, arr: T[]): boolean => {
 	return arr.includes(value);
 };
 
+export const notEnumTester = <T> (value: T, arr: T[]): boolean => {
+	return !enumTester(value, arr);
+};
+
 export const lengthTester = (value: string | unknown[], length: number): boolean => {
 	return value.length === length;
 };

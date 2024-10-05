@@ -41,6 +41,7 @@ export enum ERROR_TYPE {
 	TYPE_MISMATCH_ONE_OF = 'TYPE_MISMATCH_ONE_OF',
 
 	ONE_VALUE_OF = 'ONE_VALUE_OF',
+	NOT_ONE_VALUE_OF = 'NOT_ONE_VALUE_OF',
 
 	FORMAT = 'FORMAT',
 	FORMAT_ONE_OF = 'FORMAT_ONE_OF',
@@ -89,6 +90,10 @@ export enum ERROR_MESSAGE {
 	ENUM_SHOULD_BE_NUMBERS = 'enum values should be numbers',
 	ENUM_SHOULD_BE_STRINGS = 'enum values should be strings',
 
+	NOT_ENUM_SHOULD_BE_ARRAY = 'notEnum should be array',
+	NOT_ENUM_SHOULD_BE_NUMBERS = 'notEnum values should be numbers',
+	NOT_ENUM_SHOULD_BE_STRINGS = 'notEnum values should be strings',
+
 	MIN_SHOULD_BE_NUMBER = 'min should be number',
 	EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN = 'exclusiveMin should be a boolean',
 
@@ -123,6 +128,7 @@ export enum ERROR_MESSAGE {
 	TYPE_MISMATCH_ONE_OF = 'the value should be type of <<1>>',
 
 	ONE_VALUE_OF = 'the value should be one of <<1>>', // enum
+	NOT_ONE_VALUE_OF = 'the value should not be one of <<1>>', // enum
 
 	FORMAT = 'the value should be a form of <<1>>', // format
 	FORMAT_ONE_OF = 'the value should be form of one of <<1>>',
@@ -153,3 +159,4 @@ export enum ERROR_MESSAGE {
 	ITEMS_TYPE = 'the array should have items in type of <<1>>',
 	ITEMS_SCHEMES = 'the array should have items matched with schemes of <<1>>'
 }
+

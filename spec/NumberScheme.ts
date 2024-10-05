@@ -110,109 +110,217 @@ describe('NumberScheme', () => {
 		});
 	});
 
-	describe('enum', () => {
-		describe('check parameter', () => {
-			it('undefined is ok', () => {
+	describe('enum & notEnum', () => {
+		describe('enum', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 1
+					}, [{
+						key: 'a',
+						type: 'number',
+						enum: undefined
+					}])).to.be.null;
+				});
+
+				it('null', () => {
+					const data = {
+						a: 1
+					};
+
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'number',
+						enum: null as unknown as number[]
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
+					});
+				});
+
+				it('not array', () => {
+					const data = {
+						a: 10
+					};
+
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'number',
+						enum: 1 as unknown as number[]
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
+					});
+				});
+
+				it('not number', () => {
+					const data = {
+						a: 10
+					};
+
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'number',
+						enum: ['10']
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_NUMBERS)
+					});
+				});
+			});
+
+			it('fail', () => {
+				const enumArr: number[] = [9, 11];
+
+				const data = {
+					a: 10
+				};
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'number',
+					enum: enumArr
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ERROR_TYPE.ONE_VALUE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.ONE_VALUE_OF, {
+					placeholders: [JSON.stringify(enumArr)]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(10);
+			});
+
+			it('ok', () => {
 				expect(ejv({
-					a: 1
+					a: 10
 				}, [{
 					key: 'a',
 					type: 'number',
-					enum: undefined
+					enum: [9, 10, 11]
 				}])).to.be.null;
 			});
-
-			it('null', () => {
-				const data = {
-					a: 1
-				};
-
-				const errorScheme: Scheme = {
-					key: 'a',
-					type: 'number',
-					enum: null as unknown as number[]
-				};
-
-				checkSchemeError({
-					data,
-					errorScheme,
-					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
-				});
-			});
-
-			it('not array', () => {
-				const data = {
-					a: 10
-				};
-
-				const errorScheme: Scheme = {
-					key: 'a',
-					type: 'number',
-					enum: 1 as unknown as number[]
-				};
-
-				checkSchemeError({
-					data,
-					errorScheme,
-					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY)
-				});
-			});
-
-			it('not number', () => {
-				const data = {
-					a: 10
-				};
-
-				const errorScheme: Scheme = {
-					key: 'a',
-					type: 'number',
-					enum: ['10']
-				};
-
-				checkSchemeError({
-					data,
-					errorScheme,
-					message: createErrorMsg(ERROR_MESSAGE.ENUM_SHOULD_BE_NUMBERS)
-				});
-			});
 		});
 
-		it('fail', () => {
-			const enumArr: number[] = [9, 11];
+		describe('notEnum', () => {
+			describe('check parameter', () => {
+				it('undefined is ok', () => {
+					expect(ejv({
+						a: 1
+					}, [{
+						key: 'a',
+						type: 'number',
+						notEnum: undefined
+					}])).to.be.null;
+				});
 
-			const data = {
-				a: 10
-			};
+				it('null', () => {
+					const data = {
+						a: 1
+					};
 
-			const error: EjvError | null = ejv(data, [{
-				key: 'a',
-				type: 'number',
-				enum: enumArr
-			}]);
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'number',
+						notEnum: null as unknown as number[]
+					};
 
-			expect(error).to.be.instanceof(EjvError);
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_ARRAY)
+					});
+				});
 
-			if (!error) {
-				throw new Error('spec failed');
-			}
+				it('not array', () => {
+					const data = {
+						a: 10
+					};
 
-			expect(error.type).to.be.eql(ERROR_TYPE.ONE_VALUE_OF);
-			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.ONE_VALUE_OF, {
-				placeholders: [JSON.stringify(enumArr)]
-			}));
-			expect(error.path).to.be.eql('a');
-			expect(error.data).to.be.deep.equal(data);
-			expect(error.errorData).to.be.eql(10);
-		});
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'number',
+						notEnum: 1 as unknown as number[]
+					};
 
-		it('ok', () => {
-			expect(ejv({
-				a: 10
-			}, [{
-				key: 'a',
-				type: 'number',
-				enum: [9, 10, 11]
-			}])).to.be.null;
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_ARRAY)
+					});
+				});
+
+				it('not number', () => {
+					const data = {
+						a: 10
+					};
+
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: 'number',
+						notEnum: ['10']
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_NUMBERS)
+					});
+				});
+			});
+
+			it('fail', () => {
+				const enumArr: number[] = [9, 10, 11];
+
+				const data = {
+					a: 9
+				};
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'number',
+					notEnum: enumArr
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ERROR_TYPE.NOT_ONE_VALUE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.NOT_ONE_VALUE_OF, {
+					placeholders: [JSON.stringify(enumArr)]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql(9);
+			});
+
+			it('ok', () => {
+				expect(ejv({
+					a: 8
+				}, [{
+					key: 'a',
+					type: 'number',
+					notEnum: [9, 10, 11]
+				}])).to.be.null;
+			});
 		});
 	});
 
