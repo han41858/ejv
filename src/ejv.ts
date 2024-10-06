@@ -1029,7 +1029,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								break;
 							}
 						}
-						catch (e: unknown) {
+						catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
 							return new EjvError({
 								type: ERROR_TYPE.INVALID_SCHEMES,
 								message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {

@@ -51,11 +51,8 @@ export interface ObjectScheme extends CommonScheme {
 	allowNoProperty?: boolean; // true
 }
 
-
-/* eslint-disable @typescript-eslint/no-empty-interface */
-export interface DateScheme extends MinMaxScheme<string | Date> {
-	// min, max string for date string
-}
+// min, max string for date string
+export type DateScheme = MinMaxScheme<string | Date>
 
 // no additional rule
 export type RegExpScheme = CommonScheme;
