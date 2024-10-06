@@ -1,5 +1,31 @@
 # Change Log
 
+# 2.1.1
+
+- improvement
+	- `notEnum` added
+	- README indent optimized
+- dependencies version up
+	- `typescript@5.6.2`
+	- `eslint@9.12.0`
+
+# ~~2.1.0~~
+
+- publish failed
+
+# 2.0.5
+
+- bug fix
+	- `min`, `max` error fix
+
+# ~~2.0.4~~
+
+- publish failed
+
+# 2.0.3
+
+- spec error fix
+
 # 2.0.2
 
 - improvement
