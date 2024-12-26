@@ -11,6 +11,12 @@ export default [
 		]
 	},
 	{
+		ignores: [
+			'build/**/*',
+			'node_modules/**/*'
+		]
+	},
+	{
 		languageOptions: {
 			globals: {
 				...globals.browser,
@@ -18,6 +24,7 @@ export default [
 			}
 		}
 	},
+
 	pluginJs.configs.recommended,
 	...tseslint.configs.recommended,
 
@@ -40,7 +47,7 @@ export default [
 			'@typescript-eslint/no-unused-expressions': 'off', // disable original rule
 			'chai-friendly/no-unused-expressions': 'error',
 
-			'linebreak-style': ['warn', 'windows'],
+			'linebreak-style': ['warn', 'unix'],
 			'arrow-parens': 'warn',
 			'quotes': ['warn', 'single'],
 			'semi': ['warn', 'always'],

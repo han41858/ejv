@@ -44,8 +44,7 @@
 - improvement
 	- `eslint` added
 	- `Scheme` interface subdivided with each type
-		- new
-		  schemes: `BooleanScheme`, `NumberScheme`, `StringScheme`, `ObjectScheme`, `DateScheme`, `RegExpScheme`, `ArrayScheme`
+		- new schemes: `BooleanScheme`, `NumberScheme`, `StringScheme`, `ObjectScheme`, `DateScheme`, `RegExpScheme`, `ArrayScheme`
 		- specs subdivided
 	- `not` rule added, but finally removed
 	- `eslint` rule more added
