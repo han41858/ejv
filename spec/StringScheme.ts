@@ -725,6 +725,77 @@ describe('StringScheme', () => {
 			});
 		});
 
+		describe('json', () => {
+			it('single format', () => {
+				const data = {
+					a: 'ejv'
+				};
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					format: 'json'
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
+					placeholders: ['json']
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql('ejv');
+
+				expect(ejv({
+					a: JSON.stringify({ key: 'value' })
+				}, [{
+					key: 'a',
+					type: 'string',
+					format: 'json'
+				}])).to.be.null;
+			});
+
+			it('multiple format', () => {
+				const formatArr: string[] = ['json', 'date'];
+
+				const data = {
+					a: 'ejv'
+				};
+
+				const error: EjvError | null = ejv(data, [{
+					key: 'a',
+					type: 'string',
+					format: formatArr
+				}]);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				if (!error) {
+					throw new Error('spec failed');
+				}
+
+				expect(error.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+				expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
+					placeholders: [JSON.stringify(formatArr)]
+				}));
+				expect(error.path).to.be.eql('a');
+				expect(error.data).to.be.deep.equal(data);
+				expect(error.errorData).to.be.eql('ejv');
+
+				expect(ejv({
+					a: JSON.stringify({ key: 'value' })
+				}, [{
+					key: 'a',
+					type: 'string',
+					format: formatArr
+				}])).to.be.null;
+			});
+		});
 
 		describe('date', () => {
 			it('single format', () => {

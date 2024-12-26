@@ -152,6 +152,17 @@ export const emailTester = (value: string): boolean => {
 	return valid;
 };
 
+export const jsonStrTester = (value: string): boolean => {
+	try {
+		JSON.parse(value);
+
+		return true;
+	}
+	catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
+		return false;
+	}
+};
+
 // RFC 3339 (https://www.ietf.org/rfc/rfc3339.txt) : YYYY-MM-DDThh:mm:ss[.SSSZ]
 const rfc3339Tester = (value: string): boolean => {
 	return /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/.test(value);

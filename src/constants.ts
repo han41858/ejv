@@ -16,6 +16,8 @@ export enum NUMBER_FORMAT {
 export enum STRING_FORMAT {
 	EMAIL = 'email',
 
+	JSON = 'json',
+
 	DATE = 'date',
 	DATE_TIME = 'date-time',
 	TIME = 'time',

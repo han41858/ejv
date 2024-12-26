@@ -30,6 +30,7 @@ import {
 	hasPropertyTester,
 	indexTester,
 	integerTester,
+	jsonStrTester,
 	lengthTester,
 	maxDateTester,
 	maxLengthTester,
@@ -876,6 +877,10 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 						switch (format) {
 							case STRING_FORMAT.EMAIL:
 								valid = emailTester(valueAsString);
+								break;
+
+							case STRING_FORMAT.JSON:
+								valid = jsonStrTester(valueAsString);
 								break;
 
 							case STRING_FORMAT.DATE:
