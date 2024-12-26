@@ -1,6 +1,6 @@
 {
 	"name": "ejv",
-	"version": "2.1.1",
+	"version": "2.1.2",
 	"description": "Easy JSON Validator",
 	"exports": {
 		"require": "./build/cjs/index.js",
