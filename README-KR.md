@@ -1,6 +1,13 @@
 ![npm](https://img.shields.io/npm/v/ejv?logo=npm)
+![NPM Last Update](https://img.shields.io/npm/last-update/ejv)
+
+[English](https://github.com/han41858/ejv/blob/master/README.md)
 
 # ejv - Easy JSON Validator
+
+![JSON](https://img.shields.io/badge/JSON-black?color=000000&logo=json&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-black?color=3178C6&logo=typescript&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-black?color=F7DF1E&logo=javascript&logoColor=white)
 
 ejv는 JSON 객체를 검사할 때 사용하는 라이브러리입니다. 복잡한 JSON 객체를 간단한 문법으로 검사해 보세요.
 

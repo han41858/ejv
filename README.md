@@ -1,8 +1,13 @@
 ![npm](https://img.shields.io/npm/v/ejv?logo=npm)
+![NPM Last Update](https://img.shields.io/npm/last-update/ejv)
+
+[🇰🇷 한국어](https://github.com/han41858/ejv/blob/master/README-KR.md)
 
 # ejv - Easy JSON Validator
 
-[한국어](https://github.com/han41858/ejv/blob/master/README-KR.md)
+![JSON](https://img.shields.io/badge/JSON-black?color=000000&logo=json&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-black?color=3178C6&logo=typescript&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-black?color=F7DF1E&logo=javascript&logoColor=white)
 
 ejv is JSON validation library. Check your JSON object with simple syntax.
 
