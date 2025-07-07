@@ -36,20 +36,21 @@
 	},
 	"homepage": "https://github.com/han41858/ejv#readme",
 	"devDependencies": {
-		"@eslint/js": "^9.12.0",
-		"@types/chai": "^5.0.0",
-		"@types/mocha": "^10.0.8",
-		"@types/node": "20.16.10",
-		"@typescript-eslint/eslint-plugin": "^8.8.0",
-		"@typescript-eslint/parser": "^8.8.0",
-		"chai": "^5.1.1",
-		"eslint": "^9.12.0",
-		"eslint-plugin-chai-friendly": "^1.0.1",
-		"globals": "^15.10.0",
-		"mocha": "^10.7.3",
+		"@eslint/js": "^9.30.1",
+		"@types/chai": "^5.2.2",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "^22.16.0",
+		"@typescript-eslint/eslint-plugin": "^8.35.1",
+		"@typescript-eslint/parser": "^8.35.1",
+		"chai": "^5.2.0",
+		"eslint": "^9.30.1",
+		"eslint-plugin-chai-friendly": "^1.1.0",
+		"globals": "^16.3.0",
+		"mocha": "^11.7.1",
 		"rimraf": "^6.0.1",
-		"tsx": "^4.19.1",
-		"typescript": "^5.6.2",
-		"typescript-eslint": "^8.8.0"
-	}
+		"tsx": "^4.20.3",
+		"typescript": "^5.8.3",
+		"typescript-eslint": "^8.35.1"
+	},
+	"packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }
