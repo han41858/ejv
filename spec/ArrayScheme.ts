@@ -191,6 +191,100 @@ describe('ArrayScheme', () => {
 		});
 	});
 
+	describe('length', () => {
+		describe('check parameter', () => {
+			const data = {
+				a: [1, 2, 3]
+			};
+
+			it('undefined is ok', () => {
+				expect(ejv(data, [{
+					key: 'a',
+					type: 'array',
+					length: undefined
+				}])).to.be.null;
+			});
+
+			it('null', () => {
+				checkSchemeError({
+					data: data,
+					errorScheme: {
+						key: 'a',
+						type: 'array',
+						// @ts-expect-error: null
+						length: null
+					},
+
+					message: createErrorMsg(ERROR_MESSAGE.LENGTH_SHOULD_BE_INTEGER)
+				});
+			});
+
+			it('float number', () => {
+				checkSchemeError({
+					data: data,
+					errorScheme: {
+						key: 'a',
+						type: 'array',
+						length: 1.5
+					},
+
+					message: createErrorMsg(ERROR_MESSAGE.LENGTH_SHOULD_BE_INTEGER)
+				});
+			});
+
+			it('string', () => {
+				checkSchemeError({
+					data: data,
+					errorScheme: {
+						key: 'a',
+						type: 'array',
+						// @ts-expect-error: type mismatch
+						length: '1'
+					},
+
+					message: createErrorMsg(ERROR_MESSAGE.LENGTH_SHOULD_BE_INTEGER)
+				});
+			});
+		});
+
+		it('fail', () => {
+			const value = [1, 2, 3];
+			const testData = {
+				a: value
+			};
+
+			const error: EjvError | null = ejv(testData, [{
+				key: 'a',
+				type: 'array',
+				length: 2
+			}]);
+
+			expect(error).to.be.instanceof(EjvError);
+
+			if (!error) {
+				throw new Error('spec failed');
+			}
+
+			expect(error.type).to.be.eql(ERROR_TYPE.LENGTH);
+			expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.LENGTH, {
+				placeholders: [2]
+			}));
+			expect(error.path).to.be.eql('a');
+			expect(error.data).to.be.deep.equal(testData);
+			expect(error.errorData).to.be.ordered.members(value);
+		});
+
+		it('ok', () => {
+			expect(ejv({
+				a: [1, 2, 3]
+			}, [{
+				key: 'a',
+				type: 'array',
+				length: 3
+			}])).to.be.null;
+		});
+	});
+
 	describe('minLength', () => {
 		describe('check parameter', () => {
 			const data = {
