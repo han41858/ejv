@@ -14,15 +14,15 @@ enum CloneDataType {
 	RegExp = 'regexp'
 }
 
-export const isArray = <T> (value: unknown): value is T[] => {
+export function isArray<T> (value: unknown): value is T[] {
 	return value !== undefined
 		&& value !== null
 		&& Array.isArray(value);
-};
+}
 
 
 // sanitize removes undefined & null fields from object. default false
-export const clone = <T> (obj: T, sanitize?: boolean): T => {
+export function clone<T> (obj: T, sanitize?: boolean): T {
 	let result !: T;
 
 	if (obj) {
@@ -90,10 +90,10 @@ export const clone = <T> (obj: T, sanitize?: boolean): T => {
 	}
 
 	return result;
-};
+}
 
 
-export const sift = <T> (arr: T[]): T[] => {
+export function sift<T> (arr: T[]): T[] {
 	return arr.reduce((acc: T[], cur: T) => {
 		if (cur !== null && cur !== undefined && !acc.includes(cur)) {
 			acc.push(cur);
@@ -101,12 +101,12 @@ export const sift = <T> (arr: T[]): T[] => {
 
 		return acc;
 	}, []);
-};
+}
 
 
-export const createErrorMsg = (errorMsg: ERROR_MESSAGE, param?: {
+export function createErrorMsg (errorMsg: ERROR_MESSAGE, param?: {
 	placeholders?: (string | number)[]
-}): string => {
+}): string {
 	let result: string = errorMsg;
 
 	if (param?.placeholders) {
@@ -121,4 +121,4 @@ export const createErrorMsg = (errorMsg: ERROR_MESSAGE, param?: {
 	}
 
 	return result;
-};
+}

@@ -6,7 +6,7 @@ import { EjvError, Scheme } from '../src/interfaces';
 import { ejv } from '../src/ejv';
 import { ERROR_TYPE } from '../src/constants';
 
-export const commonTestRunner = (
+export function commonTestRunner (
 	testFnc: (args: unknown) => unknown,
 	nullResult: boolean,
 	undefinedResult: boolean,
@@ -16,7 +16,7 @@ export const commonTestRunner = (
 	arrayResult: boolean,
 	objectResult: boolean,
 	bufferResult: boolean
-): boolean => {
+): boolean {
 	return testFnc(null) === nullResult
 		&& testFnc(undefined) === undefinedResult
 		&& testFnc(true) === booleanResult
@@ -25,7 +25,7 @@ export const commonTestRunner = (
 		&& testFnc([1, 2, 3]) === arrayResult
 		&& testFnc({ a: 1 }) === objectResult
 		&& testFnc(new Uint8Array(3)) === bufferResult;
-};
+}
 
 export interface TypeTester {
 	type: string;
@@ -44,11 +44,11 @@ export const TYPE_TESTER_ARR: TypeTester[] = [
 ];
 
 
-export const checkSchemeError = (param: {
+export function checkSchemeError (param: {
 	data: object,
 	errorScheme: Scheme,
 	message: string,
-}): void => {
+}): void {
 	const ejvError: EjvError | null = ejv(param.data, [param.errorScheme]);
 
 	expect(ejvError).to.be.instanceOf(EjvError);
@@ -63,4 +63,4 @@ export const checkSchemeError = (param: {
 
 	expect(ejvError).to.have.property('isSchemeError', true);
 	expect(ejvError).to.have.property('isDataError', false);
-};
+}

@@ -1827,7 +1827,7 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 	return result;
 };
 
-export const ejv = (data: object, schemes: Scheme[], options?: Options): null | EjvError => {
+export function ejv (data: object, schemes: Scheme[], options?: Options): null | EjvError {
 	// check data itself
 	if (!definedTester(data) || !objectTester(data) || data === null) {
 		return new EjvError({
@@ -1855,4 +1855,4 @@ export const ejv = (data: object, schemes: Scheme[], options?: Options): null | 
 	}
 
 	return _ejv(data, schemes, internalOption);
-};
+}

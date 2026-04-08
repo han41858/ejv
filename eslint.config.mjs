@@ -52,6 +52,7 @@ export default [
 			'quotes': ['warn', 'single'],
 			'semi': ['warn', 'always'],
 			'@typescript-eslint/no-shadow': 'error',
+			'no-extra-semi': 'warn',
 			'no-trailing-spaces': 'warn',
 			'key-spacing': [
 				'warn',

@@ -1,7 +1,7 @@
 import { DATA_TYPE } from './constants';
 import { AnyObject, BufferLike } from './interfaces';
 
-export const typeTester = (value: unknown, type: DATA_TYPE): boolean => {
+export function typeTester (value: unknown, type: DATA_TYPE): boolean {
 	let valid: boolean;
 
 	switch (type) {
@@ -39,81 +39,81 @@ export const typeTester = (value: unknown, type: DATA_TYPE): boolean => {
 	}
 
 	return valid;
-};
+}
 
-export const definedTester = (value: unknown): value is boolean => {
+export function definedTester (value: unknown): value is boolean {
 	return value !== undefined;
-};
+}
 
-export const enumTester = <T> (value: T, arr: T[]): boolean => {
+export function enumTester<T> (value: T, arr: T[]): boolean {
 	return arr.includes(value);
-};
+}
 
-export const notEnumTester = <T> (value: T, arr: T[]): boolean => {
+export function notEnumTester<T> (value: T, arr: T[]): boolean {
 	return !enumTester(value, arr);
-};
+}
 
-export const lengthTester = (value: string | unknown[], length: number): boolean => {
+export function lengthTester (value: string | unknown[], length: number): boolean {
 	return value.length === length;
-};
+}
 
-export const minLengthTester = (value: string | unknown[], minLength: number): boolean => {
+export function minLengthTester (value: string | unknown[], minLength: number): boolean {
 	return value.length >= minLength;
-};
+}
 
-export const maxLengthTester = (value: string | unknown[], maxLength: number): boolean => {
+export function maxLengthTester (value: string | unknown[], maxLength: number): boolean {
 	return value.length <= maxLength;
-};
+}
 
-export const bufferLengthTester = (value: BufferLike, length: number): boolean => {
+export function bufferLengthTester (value: BufferLike, length: number): boolean {
 	return value.byteLength === length;
-};
+}
 
-export const minByteLengthTester = (value: BufferLike, minLength: number): boolean => {
+export function minByteLengthTester (value: BufferLike, minLength: number): boolean {
 	return value.byteLength >= minLength;
-};
+}
 
-export const maxByteLengthTester = (value: BufferLike, maxLength: number): boolean => {
+export function maxByteLengthTester (value: BufferLike, maxLength: number): boolean {
 	return value.byteLength <= maxLength;
-};
+}
 
-export const booleanTester = (value: unknown): value is boolean => {
+export function booleanTester (value: unknown): value is boolean {
 	return typeof value === 'boolean';
-};
+}
 
-export const numberTester = (value: unknown): value is number => {
+export function numberTester (value: unknown): value is number {
 	return typeof value === 'number' && !isNaN(value);
-};
+}
 
-export const integerTester = (value: number): boolean => {
+export function integerTester (value: number): boolean {
 	return +value.toFixed(0) === value;
-};
+}
 
-export const indexTester = (value: number): value is number => {
+export function indexTester (value: number): value is number {
 	return integerTester(value) && value >= 0;
-};
+}
 
-export const minNumberTester = (value: number, min: number): boolean => {
+export function minNumberTester (value: number, min: number): boolean {
 	return value >= min;
-};
+}
 
-export const exclusiveMinNumberTester = (value: number, min: number): boolean => {
+export function exclusiveMinNumberTester (value: number, min: number): boolean {
 	return value > min;
-};
+}
 
-export const maxNumberTester = (value: number, max: number): boolean => {
+export function maxNumberTester (value: number, max: number): boolean {
 	return value <= max;
-};
+}
 
-export const exclusiveMaxNumberTester = (value: number, max: number): boolean => {
+export function exclusiveMaxNumberTester (value: number, max: number): boolean {
 	return value < max;
-};
+}
 
-export const stringTester = (value: unknown): value is string => {
+export function stringTester (value: unknown): value is string {
 	return typeof value === 'string';
-};
+}
 
-export const stringRegExpTester = (value: string, regExp: string | RegExp): boolean => {
+export function stringRegExpTester (value: string, regExp: string | RegExp): boolean {
 	let valid = false;
 
 	let _regExp: RegExp | undefined = undefined;
@@ -130,18 +130,18 @@ export const stringRegExpTester = (value: string, regExp: string | RegExp): bool
 	}
 
 	return valid;
-};
+}
 
 // RFC 5322, 3.4.1. spec
-export const emailTester = (value: string): boolean => {
+export function emailTester (value: string): boolean {
 	let valid = false;
 
 	if (stringTester(value) && stringRegExpTester(value, /^.+@.+$/)) {
 		const valueAsString: string = value as string;
 
 		const atIndex: number = valueAsString.lastIndexOf('@');
-		const localPart: string = valueAsString.substr(0, atIndex);
-		const domain: string = valueAsString.substr(atIndex + 1);
+		const localPart: string = valueAsString.substring(0, atIndex);
+		const domain: string = valueAsString.substring(atIndex + 1);
 
 		// regular expression sources
 		// const aTextRegExpStr : string = '[-a-zA-Z0-9!#$%&\\\'*+/=?^_`{|}~]+';
@@ -166,9 +166,9 @@ export const emailTester = (value: string): boolean => {
 	}
 
 	return valid;
-};
+}
 
-export const jsonStrTester = (value: string): boolean => {
+export function jsonStrTester (value: string): boolean {
 	try {
 		JSON.parse(value);
 
@@ -177,14 +177,14 @@ export const jsonStrTester = (value: string): boolean => {
 	catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
 		return false;
 	}
-};
+}
 
 // RFC 3339 (https://www.ietf.org/rfc/rfc3339.txt) : YYYY-MM-DDThh:mm:ss[.SSSZ]
-const rfc3339Tester = (value: string): boolean => {
+function rfc3339Tester (value: string): boolean {
 	return /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/.test(value);
-};
+}
 
-const iso8601DateTester = (value: string): boolean => {
+function iso8601DateTester (value: string): boolean {
 	const years = '(\\d{4})';
 	const months = '(0[1-9]|1[0-2])';
 	const dates = '(0[1-9]|[1-2][0-9]|3[0-1])';
@@ -203,9 +203,9 @@ const iso8601DateTester = (value: string): boolean => {
 	].some((regExp: RegExp): boolean => {
 		return regExp.test(value);
 	});
-};
+}
 
-const iso8601TimeTester = (value: string): boolean => {
+function iso8601TimeTester (value: string): boolean {
 	const hours = '([0-1]\\d|2[0-3])';
 	const minutes = '([0-5]\\d)';
 	const seconds = '([0-5]\\d|60)'; // 60 for leap second
@@ -224,9 +224,9 @@ const iso8601TimeTester = (value: string): boolean => {
 		.some((regExp: RegExp): boolean => {
 			return regExp.test(value);
 		});
-};
+}
 
-const iso8601DateTimeTester = (value: string): boolean => {
+function iso8601DateTimeTester (value: string): boolean {
 	let valid = false;
 
 	if (/.+T.+/.test(value) // should have 1 'T'
@@ -251,19 +251,19 @@ const iso8601DateTimeTester = (value: string): boolean => {
 	}
 
 	return valid;
-};
+}
 
-export const dateFormatTester = (value: string): boolean => {
+export function dateFormatTester (value: string): boolean {
 	return iso8601DateTester(value);
-};
+}
 
-export const timeFormatTester = (value: string): boolean => {
+export function timeFormatTester (value: string): boolean {
 	return iso8601TimeTester(value);
-};
+}
 
-export const dateTimeFormatTester = (value: string): boolean => {
+export function dateTimeFormatTester (value: string): boolean {
 	return rfc3339Tester(value) || iso8601DateTimeTester(value);
-};
+}
 
 // // with port
 // export const urlTester = (value : any) : boolean => {
@@ -286,60 +286,60 @@ export const dateTimeFormatTester = (value: string): boolean => {
 // 	return ipv4Tester(value) || ipv6Tester(value);
 // };
 
-export const objectTester = (value: unknown): boolean => {
+export function objectTester (value: unknown): boolean {
 	return typeof value === 'object';
-};
+}
 
-export const hasPropertyTester = (value: AnyObject): boolean => {
+export function hasPropertyTester (value: AnyObject): boolean {
 	return Object.keys(value).length > 0;
-};
+}
 
-export const dateTester = (value: unknown): value is Date => {
+export function dateTester (value: unknown): value is Date {
 	return objectTester(value)
 		&& value !== null
 		&& typeof value === 'object'
 		&& value instanceof Date
 		&& !isNaN(value.getFullYear());
-};
+}
 
-export const minDateTester = (value: Date, min: Date): boolean => {
+export function minDateTester (value: Date, min: Date): boolean {
 	return +value >= +min;
-};
+}
 
-export const exclusiveMinDateTester = (value: Date, min: Date): boolean => {
+export function exclusiveMinDateTester (value: Date, min: Date): boolean {
 	return +value > +min;
-};
+}
 
-export const maxDateTester = (value: Date, max: Date): boolean => {
+export function maxDateTester (value: Date, max: Date): boolean {
 	return +value <= +max;
-};
+}
 
-export const exclusiveMaxDateTester = (value: Date, max: Date): boolean => {
+export function exclusiveMaxDateTester (value: Date, max: Date): boolean {
 	return +value < +max;
-};
+}
 
-export const arrayTester = (value: unknown): value is unknown[] => {
+export function arrayTester (value: unknown): value is unknown[] {
 	return Array.isArray(value);
-};
+}
 
-export const arrayTypeOfTester = (array: unknown[], type: DATA_TYPE): boolean => {
+export function arrayTypeOfTester (array: unknown[], type: DATA_TYPE): boolean {
 	return array.every((item: unknown): boolean => {
 		return typeTester(item, type);
 	});
-};
+}
 
-export const uniqueItemsTester = (array: unknown[]): boolean => {
+export function uniqueItemsTester (array: unknown[]): boolean {
 	return array.every((item: unknown): boolean => {
 		return array.filter((target: unknown): boolean => target === item).length === 1;
 	});
-};
+}
 
-export const regExpTester = (value: unknown): value is RegExp => {
+export function regExpTester (value: unknown): value is RegExp {
 	return value instanceof RegExp;
-};
+}
 
-export const bufferTester = (value: unknown): value is BufferLike => {
+export function bufferTester (value: unknown): value is BufferLike {
 	return (ArrayBuffer.isView(value) && !(value instanceof DataView)) // normally buffer, ex. Uint8Array, Uint16Array, ...
 		|| value instanceof ArrayBuffer
 		|| (typeof SharedArrayBuffer !== 'undefined' && value instanceof SharedArrayBuffer);
-};
+}
