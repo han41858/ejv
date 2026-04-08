@@ -5,7 +5,8 @@ export enum DATA_TYPE {
 	OBJECT = 'object',
 	DATE = 'date',
 	REGEXP = 'regexp',
-	ARRAY = 'array'
+	ARRAY = 'array',
+	BUFFER = 'buffer'
 }
 
 export enum NUMBER_FORMAT {
@@ -57,6 +58,10 @@ export enum ERROR_TYPE {
 	LENGTH = 'LENGTH',
 	MIN_LENGTH = 'MIN_LENGTH',
 	MAX_LENGTH = 'MAX_LENGTH',
+
+	BYTE_LENGTH = 'BYTE_LENGTH',
+	MIN_BYTE_LENGTH = 'MIN_BYTE_LENGTH',
+	MAX_BYTE_LENGTH = 'MAX_BYTE_LENGTH',
 
 	PATTERN = 'PATTERN',
 	PATTERN_ONE_OF = 'PATTERN_ONE_OF',
@@ -110,6 +115,10 @@ export enum ERROR_MESSAGE {
 	MIN_LENGTH_SHOULD_BE_INTEGER = 'minLength should be a integer',
 	MAX_LENGTH_SHOULD_BE_INTEGER = 'maxLength should be a integer',
 
+	BYTE_LENGTH_SHOULD_BE_INTEGER = 'byteLength should be a integer',
+	MIN_BYTE_LENGTH_SHOULD_BE_INTEGER = 'minByteLength should be a integer',
+	MAX_BYTE_LENGTH_SHOULD_BE_INTEGER = 'maxByteLength should be a integer',
+
 	PROPERTIES_SHOULD_BE_ARRAY = 'properties should be array',
 	PROPERTIES_SHOULD_HAVE_ITEMS = 'properties should have items',
 	PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT = 'properties should be array of object',
@@ -144,6 +153,10 @@ export enum ERROR_MESSAGE {
 	LENGTH = 'the value should be length of <<1>>', // length
 	MIN_LENGTH = 'the value should be longer than <<1>>', // minLength
 	MAX_LENGTH = 'the value should be shorter than <<1>>', // maxLength
+
+	BYTE_LENGTH = 'the byte length of value should be <<1>>', // length
+	MIN_BYTE_LENGTH = 'the byte length of value should be longer than <<1>>', // minLength
+	MAX_BYTE_LENGTH = 'the byte length of value should be shorter than <<1>>', // maxLength
 
 	PATTERN = 'the value should be pattern of <<1>>', // pattern
 	PATTERN_ONE_OF = 'the value should be one of pattern of <<1>>', // pattern

@@ -66,6 +66,17 @@ export interface ArrayScheme extends CommonScheme {
 	maxLength?: number;
 }
 
+
+export type BufferLike = ArrayBuffer
+	| SharedArrayBuffer
+	| Exclude<ArrayBufferView, DataView>;
+
+export interface BufferScheme extends CommonScheme {
+	byteLength?: number;
+	minByteLength?: number;
+	maxByteLength?: number;
+}
+
 export type Scheme =
 	BooleanScheme
 	| NumberScheme
@@ -73,7 +84,8 @@ export type Scheme =
 	| ObjectScheme
 	| DateScheme
 	| RegExpScheme
-	| ArrayScheme;
+	| ArrayScheme
+	| BufferScheme;
 
 
 export interface Options {

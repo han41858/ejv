@@ -2,6 +2,8 @@ import {
 	AllDataType,
 	AnyObject,
 	ArrayScheme,
+	BufferLike,
+	BufferScheme,
 	DateScheme,
 	EjvError,
 	InternalOptions,
@@ -17,6 +19,7 @@ import {
 	arrayTester,
 	arrayTypeOfTester,
 	booleanTester,
+	bufferLengthTester,
 	dateFormatTester,
 	dateTester,
 	dateTimeFormatTester,
@@ -32,9 +35,11 @@ import {
 	integerTester,
 	jsonStrTester,
 	lengthTester,
+	maxByteLengthTester,
 	maxDateTester,
 	maxLengthTester,
 	maxNumberTester,
+	minByteLengthTester,
 	minDateTester,
 	minLengthTester,
 	minNumberTester,
@@ -1691,6 +1696,108 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 								isSchemeError: true
 							});
 						}
+					}
+				}
+				break;
+			}
+
+			case DATA_TYPE.BUFFER: {
+				const valueAsBuffer: BufferLike = value as unknown as BufferLike;
+				const bufferScheme: BufferScheme = scheme as BufferScheme;
+
+				if (definedTester(bufferScheme.byteLength)) {
+					const length: number = bufferScheme.byteLength;
+
+					if (!(numberTester(length) && integerTester(length))) {
+						return new EjvError({
+							type: ERROR_TYPE.INVALID_SCHEMES,
+							message: createErrorMsg(ERROR_MESSAGE.BYTE_LENGTH_SHOULD_BE_INTEGER),
+
+							data: data,
+
+							errorScheme: bufferScheme,
+							isSchemeError: true
+						});
+					}
+
+					if (!bufferLengthTester(valueAsBuffer, length)) {
+						result = new EjvError({
+							type: ERROR_TYPE.BYTE_LENGTH,
+							message: createErrorMsg(ERROR_MESSAGE.BYTE_LENGTH, {
+								placeholders: ['' + length]
+							}),
+
+							data,
+							path: _options.path,
+
+							errorScheme: bufferScheme,
+							errorData: value
+						});
+						break;
+					}
+				}
+
+				if (definedTester(bufferScheme.minByteLength)) {
+					const minLength: number = bufferScheme.minByteLength;
+
+					if (!(numberTester(bufferScheme.minByteLength) && integerTester(minLength))) {
+						return new EjvError({
+							type: ERROR_TYPE.INVALID_SCHEMES,
+							message: createErrorMsg(ERROR_MESSAGE.MIN_BYTE_LENGTH_SHOULD_BE_INTEGER),
+
+							data: data,
+
+							errorScheme: bufferScheme,
+							isSchemeError: true
+						});
+					}
+
+					if (!minByteLengthTester(valueAsBuffer, minLength)) {
+						result = new EjvError({
+							type: ERROR_TYPE.MIN_BYTE_LENGTH,
+							message: createErrorMsg(ERROR_MESSAGE.MIN_BYTE_LENGTH, {
+								placeholders: ['' + minLength]
+							}),
+
+							data,
+							path: _options.path,
+
+							errorScheme: bufferScheme,
+							errorData: value
+						});
+						break;
+					}
+				}
+
+				if (definedTester(bufferScheme.maxByteLength)) {
+					const maxLength: number = bufferScheme.maxByteLength;
+
+					if (!(numberTester(bufferScheme.maxByteLength) && integerTester(maxLength))) {
+						return new EjvError({
+							type: ERROR_TYPE.INVALID_SCHEMES,
+							message: createErrorMsg(ERROR_MESSAGE.MAX_BYTE_LENGTH_SHOULD_BE_INTEGER),
+
+							data: data,
+
+							errorScheme: bufferScheme,
+							isSchemeError: true
+						});
+					}
+
+					if (!maxByteLengthTester(valueAsBuffer, maxLength)) {
+						result = new EjvError({
+							type: ERROR_TYPE.MAX_BYTE_LENGTH,
+							message: createErrorMsg(ERROR_MESSAGE.MAX_BYTE_LENGTH, {
+								placeholders: ['' + maxLength]
+							}),
+
+							data,
+							path: _options.path,
+
+							errorScheme: bufferScheme,
+							errorData: value
+						});
+						break;
 					}
 				}
 				break;

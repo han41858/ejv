@@ -514,6 +514,51 @@ ejv({
 }])
 ```
 
+
+#### `'buffer'` options
+
+- `byteLength : number`
+
+버퍼의 바이트 길이를 검사합니다.
+
+```typescript
+ejv({
+	arr: new Uint8Array(2)
+}, [{
+	key: 'arr',
+	type: 'buffer',
+	byteLength: 2
+}]);
+````
+
+- `minByteLength : number`
+
+버퍼의 최소 바이트 길이를 검사합니다.
+
+```typescript
+ejv({
+	arr: new Uint8Array(2)
+}, [{
+	key: 'arr',
+	type: 'buffer',
+	minByteLength: 2
+}]);
+````
+
+- `maxByteLength : string`
+
+버퍼의 최대 바이트 길이를 검사합니다.
+
+```typescript
+ejv({
+	arr: new Uint8Array(3)
+}, [{
+	key: 'arr',
+	type: 'buffer',
+	maxByteLength: 3
+}]);
+````
+
 ## `DataType`
 
 검사할 프로퍼티의 타입을 지정합니다.
@@ -527,7 +572,8 @@ ejv({
  `'object'`  | `{}`, `{ key : 123 }`, ...    
  `'date'`    | `new Date`                    
  `'regexp'`  | `new RegExp(/./)`, `/./`, ... 
- `'array'`   | `[]`, `[1, 2, 3]`, ...        
+ `'array'`   | `[]`, `[1, 2, 3]`, ...
+`'buffer'`   | ``Buffer.from('ejv')``, `new Uint8Array(3)`, `new ArrayBuffer(5)`, ...
 
 ## `EjvError`
 

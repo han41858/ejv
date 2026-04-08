@@ -7,6 +7,7 @@ import {
 	arrayTester,
 	arrayTypeOfTester,
 	booleanTester,
+	bufferTester,
 	dateFormatTester,
 	dateTester,
 	dateTimeFormatTester,
@@ -45,6 +46,7 @@ describe('testers', function () {
 					definedTester,
 					true,
 					false,
+					true,
 					true,
 					true,
 					true,
@@ -112,6 +114,7 @@ describe('testers', function () {
 					false,
 					false,
 					false,
+					false,
 					false
 				)).to.be.true;
 			});
@@ -138,6 +141,7 @@ describe('testers', function () {
 					false,
 					false,
 					true,
+					false,
 					false,
 					false,
 					false
@@ -256,6 +260,7 @@ describe('testers', function () {
 					false,
 					false,
 					true,
+					false,
 					false,
 					false
 				)).to.be.true;
@@ -603,7 +608,8 @@ describe('testers', function () {
 					false,
 					false,
 					true, // array is object
-					true
+					true,
+					true // buffer is object
 				)).to.be.true;
 			});
 
@@ -638,6 +644,7 @@ describe('testers', function () {
 			it('common test', () => {
 				expect(commonTestRunner(
 					dateTester,
+					false,
 					false,
 					false,
 					false,
@@ -778,6 +785,7 @@ describe('testers', function () {
 					false,
 					false,
 					true,
+					false,
 					false
 				)).to.be.true;
 			});
@@ -818,6 +826,7 @@ describe('testers', function () {
 					false,
 					false,
 					false,
+					false,
 					false
 				)).to.be.true;
 			});
@@ -827,6 +836,31 @@ describe('testers', function () {
 				expect(regExpTester(new RegExp('d'))).to.be.true;
 
 				expect(regExpTester('d')).to.be.false;
+			});
+		});
+	});
+
+	describe('buffer', () => {
+		describe('bufferTester()', () => {
+			it('common test', () => {
+				expect(commonTestRunner(
+					bufferTester,
+					false,
+					false,
+					false,
+					false,
+					false,
+					false,
+					false,
+					true
+				)).to.be.true;
+			});
+
+			it('logic test', () => {
+				expect(bufferTester(new Uint8Array)).to.be.true;
+				expect(bufferTester(new Uint16Array)).to.be.true;
+				expect(bufferTester(new Uint32Array)).to.be.true;
+				expect(bufferTester(Buffer.from('hello'))).to.be.true;
 			});
 		});
 	});

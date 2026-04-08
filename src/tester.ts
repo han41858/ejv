@@ -1,5 +1,5 @@
 import { DATA_TYPE } from './constants';
-import { AnyObject } from './interfaces';
+import { AnyObject, BufferLike } from './interfaces';
 
 export const typeTester = (value: unknown, type: DATA_TYPE): boolean => {
 	let valid: boolean;
@@ -32,6 +32,10 @@ export const typeTester = (value: unknown, type: DATA_TYPE): boolean => {
 		case DATA_TYPE.ARRAY:
 			valid = arrayTester(value);
 			break;
+
+		case DATA_TYPE.BUFFER:
+			valid = bufferTester(value);
+			break;
 	}
 
 	return valid;
@@ -59,6 +63,18 @@ export const minLengthTester = (value: string | unknown[], minLength: number): b
 
 export const maxLengthTester = (value: string | unknown[], maxLength: number): boolean => {
 	return value.length <= maxLength;
+};
+
+export const bufferLengthTester = (value: BufferLike, length: number): boolean => {
+	return value.byteLength === length;
+};
+
+export const minByteLengthTester = (value: BufferLike, minLength: number): boolean => {
+	return value.byteLength >= minLength;
+};
+
+export const maxByteLengthTester = (value: BufferLike, maxLength: number): boolean => {
+	return value.byteLength <= maxLength;
 };
 
 export const booleanTester = (value: unknown): value is boolean => {
@@ -320,4 +336,10 @@ export const uniqueItemsTester = (array: unknown[]): boolean => {
 
 export const regExpTester = (value: unknown): value is RegExp => {
 	return value instanceof RegExp;
+};
+
+export const bufferTester = (value: unknown): value is BufferLike => {
+	return (ArrayBuffer.isView(value) && !(value instanceof DataView)) // normally buffer, ex. Uint8Array, Uint16Array, ...
+		|| value instanceof ArrayBuffer
+		|| (typeof SharedArrayBuffer !== 'undefined' && value instanceof SharedArrayBuffer);
 };

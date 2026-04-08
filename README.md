@@ -518,6 +518,52 @@ ejv({
 }])
 ```
 
+#### `'buffer'` options
+
+- `byteLength : number`
+
+Checks the byte length of the buffer.
+
+```typescript
+ejv({
+	arr: new Uint8Array(2)
+}, [{
+	key: 'arr',
+	type: 'buffer',
+	byteLength: 2
+}]);
+````
+
+- `minByteLength : number`
+
+Checks the minimum byte length of the buffer.
+
+```typescript
+ejv({
+	arr: new Uint8Array(2)
+}, [{
+	key: 'arr',
+	type: 'buffer',
+	minByteLength: 2
+}]);
+````
+
+- `maxByteLength : string`
+
+Checks the maximum byte length of the buffer.
+
+```typescript
+ejv({
+	arr: new Uint8Array(3)
+}, [{
+	key: 'arr',
+	type: 'buffer',
+	maxByteLength: 3
+}]);
+````
+
+
+
 ## `DataType`
 
 Specify the type of property to inspect. The values available are as follows.
@@ -531,6 +577,7 @@ Specify the type of property to inspect. The values available are as follows.
  `'date'`    | `new Date`                    
  `'regexp'`  | `new RegExp(/./)`, `/./`, ... 
  `'array'`   | `[]`, `[1, 2, 3]`, ...        
+ `'buffer'`   | `Buffer.from('ejv')`, `new Uint8Array(3)`, `new ArrayBuffer(5)` ,  ...        
 
 ## `EjvError`
 

@@ -14,7 +14,8 @@ export const commonTestRunner = (
 	numberResult: boolean,
 	stringResult: boolean,
 	arrayResult: boolean,
-	objectResult: boolean
+	objectResult: boolean,
+	bufferResult: boolean
 ): boolean => {
 	return testFnc(null) === nullResult
 		&& testFnc(undefined) === undefinedResult
@@ -22,7 +23,8 @@ export const commonTestRunner = (
 		&& testFnc(8) === numberResult
 		&& testFnc('hello') === stringResult
 		&& testFnc([1, 2, 3]) === arrayResult
-		&& testFnc({ a: 1 }) === objectResult;
+		&& testFnc({ a: 1 }) === objectResult
+		&& testFnc(new Uint8Array(3)) === bufferResult;
 };
 
 export interface TypeTester {
@@ -37,7 +39,8 @@ export const typeTesterArr: TypeTester[] = [
 	{ type: 'object', value: {} },
 	{ type: 'date', value: new Date },
 	{ type: 'regexp', value: new RegExp('ejv') },
-	{ type: 'array', value: [1, 2, 3] }
+	{ type: 'array', value: [1, 2, 3] },
+	{ type: 'buffer', value: new Uint8Array(5) }
 ];
 
 

@@ -14,7 +14,7 @@ describe('ObjectScheme', () => {
 		describe('mismatch', () => {
 			typeTesterArr
 				.filter((obj: TypeTester): boolean => {
-					return !['null', 'date', 'regexp', 'array', 'object'].includes(obj.type);
+					return !['null', 'date', 'regexp', 'array', 'object', 'buffer'].includes(obj.type);
 				})
 				.forEach((obj: TypeTester): void => {
 					const data = {
