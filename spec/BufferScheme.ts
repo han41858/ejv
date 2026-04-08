@@ -6,12 +6,12 @@ import { ejv } from '../src/ejv';
 import { EjvError } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
+import { checkSchemeError, TypeTester, TYPE_TESTER_ARR } from './common-test-util';
 
 describe('BufferScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTesterArr
+			TYPE_TESTER_ARR
 				.filter((obj: TypeTester): boolean => obj.type !== 'buffer')
 				.forEach((obj: TypeTester): void => {
 					it(obj.type, () => {
@@ -222,7 +222,8 @@ describe('BufferScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'buffer',
-						minByteLength: null as unknown as number
+						// @ts-expect-error: null
+						minByteLength: null
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.MIN_BYTE_LENGTH_SHOULD_BE_INTEGER)
@@ -248,7 +249,8 @@ describe('BufferScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'buffer',
-						minByteLength: '1' as unknown as number
+						// @ts-expect-error: type mismatch
+						minByteLength: '1'
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.MIN_BYTE_LENGTH_SHOULD_BE_INTEGER)
@@ -321,7 +323,8 @@ describe('BufferScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'buffer',
-						maxByteLength: null as unknown as number
+						// @ts-expect-error: null
+						maxByteLength: null
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.MAX_BYTE_LENGTH_SHOULD_BE_INTEGER)
@@ -347,7 +350,8 @@ describe('BufferScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'buffer',
-						maxByteLength: '1' as unknown as number
+						// @ts-expect-error: type mismatch
+						maxByteLength: '1'
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.MAX_BYTE_LENGTH_SHOULD_BE_INTEGER)

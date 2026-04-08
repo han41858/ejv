@@ -6,13 +6,13 @@ import { ejv } from '../src/ejv';
 import { EjvError, Scheme } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
+import { checkSchemeError, TypeTester, TYPE_TESTER_ARR } from './common-test-util';
 
 
 describe('ObjectScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTesterArr
+			TYPE_TESTER_ARR
 				.filter((obj: TypeTester): boolean => {
 					return !['null', 'date', 'regexp', 'array', 'object', 'buffer'].includes(obj.type);
 				})
@@ -83,9 +83,9 @@ describe('ObjectScheme', () => {
 				}])).to.be.null;
 			});
 
-			typeTesterArr
+			TYPE_TESTER_ARR
 				.filter((obj: TypeTester): boolean => {
-					return ['null', 'date', 'regexp', 'array', 'object'].includes(obj.type);
+					return ['null', 'date', 'regexp', 'array', 'object', 'buffer'].includes(obj.type);
 				})
 				.forEach((obj: TypeTester): void => {
 					it(obj.type, () => {
@@ -153,7 +153,8 @@ describe('ObjectScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'object',
-					properties: null as unknown as Scheme[]
+					// @ts-expect-error: null
+					properties: null
 				};
 
 				checkSchemeError({
@@ -167,7 +168,8 @@ describe('ObjectScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'object',
-					properties: 'b' as unknown as Scheme[]
+					// @ts-expect-error: type mismatch
+					properties: 'b'
 				};
 
 				checkSchemeError({
@@ -195,7 +197,7 @@ describe('ObjectScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'object',
-					properties: ['b'] as unknown as Scheme[]
+					properties: ['b']
 				};
 
 				checkSchemeError({
@@ -396,7 +398,8 @@ describe('ObjectScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'object',
-					allowNoProperty: null as unknown as boolean
+					// @ts-expect-error: null
+					allowNoProperty: null
 				};
 
 				checkSchemeError({

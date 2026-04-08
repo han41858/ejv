@@ -6,13 +6,13 @@ import { ejv } from '../src/ejv';
 import { EjvError, Scheme } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
+import { checkSchemeError, TypeTester, TYPE_TESTER_ARR } from './common-test-util';
 
 
 describe('StringScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTesterArr
+			TYPE_TESTER_ARR
 				.filter((obj: TypeTester): boolean => obj.type !== 'string')
 				.forEach((obj: TypeTester): void => {
 					const data = {
@@ -129,7 +129,8 @@ describe('StringScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
-						enum: null as unknown as string[]
+						// @ts-expect-error: null
+						enum: null
 					};
 
 					checkSchemeError({
@@ -143,7 +144,8 @@ describe('StringScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
-						enum: 'a' as unknown as string[]
+						// @ts-expect-error: type mismatch
+						enum: 'a'
 					};
 
 					checkSchemeError({
@@ -225,7 +227,8 @@ describe('StringScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
-						notEnum: null as unknown as string[]
+						// @ts-expect-error: null
+						notEnum: null
 					};
 
 					checkSchemeError({
@@ -239,7 +242,8 @@ describe('StringScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
-						notEnum: 'a' as unknown as string[]
+						// @ts-expect-error: type mismatch
+						notEnum: 'a'
 					};
 
 					checkSchemeError({
@@ -322,7 +326,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					length: null as unknown as number
+					// @ts-expect-error: null
+					length: null
 				};
 
 				checkSchemeError({
@@ -336,7 +341,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					length: '3' as unknown as number
+					// @ts-expect-error: type mismatch
+					length: '3'
 				};
 
 				checkSchemeError({
@@ -402,7 +408,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					minLength: null as unknown as number
+					// @ts-expect-error: type mismatch
+					minLength: null
 				};
 
 				checkSchemeError({
@@ -430,7 +437,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					minLength: '1' as unknown as number
+					// @ts-expect-error: type mismatch
+					minLength: '1'
 				};
 
 				checkSchemeError({
@@ -504,7 +512,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					maxLength: null as unknown as number
+					// @ts-expect-error: null
+					maxLength: null
 				};
 
 				checkSchemeError({
@@ -532,7 +541,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					maxLength: '1' as unknown as number
+					// @ts-expect-error: type mismatch
+					maxLength: '1'
 				};
 
 				checkSchemeError({
@@ -606,7 +616,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					format: null as unknown as string
+					// @ts-expect-error: null
+					format: null
 				};
 
 				checkSchemeError({
@@ -1064,7 +1075,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					pattern: null as unknown as string
+					// @ts-expect-error: null
+					pattern: null
 				};
 
 				checkSchemeError({
@@ -1080,7 +1092,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					pattern: 1 as unknown as string
+					// @ts-expect-error: type mismatch
+					pattern: 1
 				};
 
 				checkSchemeError({
@@ -1128,7 +1141,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					pattern: [null as unknown as RegExp, /ab/]
+					// @ts-expect-error: type mismatch
+					pattern: [null, /ab/]
 				};
 
 				checkSchemeError({
@@ -1144,7 +1158,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					pattern: [1, 3] as unknown as string[]
+					// @ts-expect-error: type mismatch
+					pattern: [1, 3]
 				};
 
 				checkSchemeError({
@@ -1192,7 +1207,8 @@ describe('StringScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'string',
-					pattern: new RegExp(null as unknown as string)
+					// @ts-expect-error: type mismatch
+					pattern: new RegExp(null)
 				};
 
 				checkSchemeError({

@@ -3,16 +3,16 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 
-import { EjvError, Scheme } from '../src/interfaces';
+import { EjvError, NumberScheme, Scheme } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
+import { checkSchemeError, TYPE_TESTER_ARR, TypeTester } from './common-test-util';
 
 
 describe('NumberScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTesterArr
+			TYPE_TESTER_ARR
 				.filter((obj: TypeTester): boolean => obj.type !== 'number')
 				.forEach((obj: TypeTester): void => {
 					const data = {
@@ -131,7 +131,8 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						enum: null as unknown as number[]
+						// @ts-expect-error: null
+						enum: null
 					};
 
 					checkSchemeError({
@@ -149,7 +150,8 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						enum: 1 as unknown as number[]
+						// @ts-expect-error: type mismatch
+						enum: 1
 					};
 
 					checkSchemeError({
@@ -237,7 +239,8 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						notEnum: null as unknown as number[]
+						// @ts-expect-error: null
+						notEnum: null
 					};
 
 					checkSchemeError({
@@ -255,7 +258,8 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						notEnum: 1 as unknown as number[]
+						// @ts-expect-error: type mismatch
+						notEnum: 1
 					};
 
 					checkSchemeError({
@@ -345,7 +349,8 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						min: null as unknown as number
+						// @ts-expect-error: null
+						min: null
 					};
 
 					checkSchemeError({
@@ -429,11 +434,12 @@ describe('NumberScheme', () => {
 						a: 3
 					};
 
-					const errorScheme: Scheme = {
+					const errorScheme: NumberScheme = {
 						key: 'a',
 						type: 'number',
 						min: 3,
-						exclusiveMin: '3' as unknown as boolean
+						// @ts-expect-error: type mismatch
+						exclusiveMin: '3'
 					};
 
 					checkSchemeError({
@@ -558,7 +564,8 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						max: null as unknown as number
+						// @ts-expect-error: null
+						max: null
 					};
 
 					checkSchemeError({
@@ -642,11 +649,12 @@ describe('NumberScheme', () => {
 						a: 3
 					};
 
-					const errorScheme: Scheme = {
+					const errorScheme: NumberScheme = {
 						key: 'a',
 						type: 'number',
 						max: 3,
-						exclusiveMax: '3' as unknown as boolean
+						// @ts-expect-error: type mismatch
+						exclusiveMax: '3'
 					};
 
 					checkSchemeError({
@@ -770,7 +778,8 @@ describe('NumberScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'number',
-					format: null as unknown as string
+					// @ts-expect-error: null
+					format: null
 				};
 
 				checkSchemeError({

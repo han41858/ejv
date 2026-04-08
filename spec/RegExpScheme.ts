@@ -6,13 +6,13 @@ import { ejv } from '../src/ejv';
 import { EjvError } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { TypeTester, typeTesterArr } from './common-test-util';
+import { TypeTester, TYPE_TESTER_ARR } from './common-test-util';
 
 
 describe('RegExpScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTesterArr
+			TYPE_TESTER_ARR
 				.filter((obj: TypeTester): boolean => obj.type !== 'regexp')
 				.forEach((obj: TypeTester): void => {
 					it(obj.type, () => {

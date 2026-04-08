@@ -32,7 +32,7 @@ export interface TypeTester {
 	value: unknown;
 }
 
-export const typeTesterArr: TypeTester[] = [
+export const TYPE_TESTER_ARR: TypeTester[] = [
 	{ type: 'boolean', value: true },
 	{ type: 'number', value: 123 },
 	{ type: 'string', value: 'ejv' },

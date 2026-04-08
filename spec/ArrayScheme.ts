@@ -6,13 +6,13 @@ import { ejv } from '../src/ejv';
 import { EjvError, Scheme } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
+import { checkSchemeError, TYPE_TESTER_ARR, TypeTester } from './common-test-util';
 
 
 describe('ArrayScheme', () => {
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTesterArr
+			TYPE_TESTER_ARR
 				.filter((obj: TypeTester): boolean => obj.type !== 'array')
 				.forEach((obj: TypeTester): void => {
 					it(obj.type, () => {
@@ -305,7 +305,8 @@ describe('ArrayScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'array',
-						minLength: null as unknown as number
+						// @ts-expect-error: null
+						minLength: null
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.MIN_LENGTH_SHOULD_BE_INTEGER)
@@ -331,7 +332,8 @@ describe('ArrayScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'array',
-						minLength: '1' as unknown as number
+						// @ts-expect-error: type mismatch
+						minLength: '1'
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.MIN_LENGTH_SHOULD_BE_INTEGER)
@@ -405,7 +407,8 @@ describe('ArrayScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'array',
-						maxLength: null as unknown as number
+						// @ts-expect-error: null
+						maxLength: null
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.MAX_LENGTH_SHOULD_BE_INTEGER)
@@ -431,7 +434,8 @@ describe('ArrayScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'array',
-						maxLength: '1' as unknown as number
+						// @ts-expect-error: type mismatch
+						maxLength: '1'
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.MAX_LENGTH_SHOULD_BE_INTEGER)
@@ -505,7 +509,8 @@ describe('ArrayScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'array',
-						unique: null as unknown as boolean
+						// @ts-expect-error: null
+						unique: null
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.UNIQUE_SHOULD_BE_BOOLEAN)
@@ -518,7 +523,8 @@ describe('ArrayScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'array',
-						unique: 'hello' as unknown as boolean
+						// @ts-expect-error: type mismatch
+						unique: 'hello'
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.UNIQUE_SHOULD_BE_BOOLEAN)
@@ -653,7 +659,8 @@ describe('ArrayScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'array',
-						items: null as unknown as string[]
+						// @ts-expect-error: null
+						items: null
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
@@ -822,7 +829,7 @@ describe('ArrayScheme', () => {
 							type: 'array',
 							items: {
 								type: invalidDataType
-							} as unknown as Scheme
+							}
 						},
 
 						message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
@@ -1044,7 +1051,7 @@ describe('ArrayScheme', () => {
 			});
 
 			it('nested array - single scheme', () => {
-				const arr: string[] = ['ok', null as unknown as string];
+				const arr = ['ok', null];
 				const testObj = {
 					a: [{
 						b: arr
@@ -1078,7 +1085,7 @@ describe('ArrayScheme', () => {
 			});
 
 			it('nested array - multiple chemes', () => {
-				const arr: string[] = ['ok', null as unknown as string];
+				const arr = ['ok', null];
 				const testObj = {
 					a: [{
 						b: arr

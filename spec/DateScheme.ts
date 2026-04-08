@@ -6,7 +6,7 @@ import { ejv } from '../src/ejv';
 import { DateScheme, EjvError, Scheme } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
-import { checkSchemeError, TypeTester, typeTesterArr } from './common-test-util';
+import { checkSchemeError, TypeTester, TYPE_TESTER_ARR } from './common-test-util';
 
 
 describe('DateScheme', () => {
@@ -86,7 +86,7 @@ describe('DateScheme', () => {
 
 	describe('type', () => {
 		describe('mismatch', () => {
-			typeTesterArr
+			TYPE_TESTER_ARR
 				.filter((obj: TypeTester): boolean => obj.type !== 'date')
 				.forEach((obj: TypeTester): void => {
 					const data = {
@@ -203,7 +203,8 @@ describe('DateScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'date',
 						type: 'date',
-						min: null as unknown as string
+						// @ts-expect-error: null
+						min: null
 					};
 
 					checkSchemeError({
@@ -217,7 +218,7 @@ describe('DateScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'date',
 						type: 'date',
-						min: 123 as unknown as string
+						min: 123
 					};
 
 					checkSchemeError({
@@ -276,7 +277,8 @@ describe('DateScheme', () => {
 						key: 'date',
 						type: 'date',
 						min: now,
-						exclusiveMin: now.toISOString() as unknown as boolean
+						// @ts-expect-error: type mismatch
+						exclusiveMin: now.toISOString()
 					};
 
 					checkSchemeError({
@@ -345,7 +347,8 @@ describe('DateScheme', () => {
 						const errorScheme: Scheme = {
 							key: 'date',
 							type: 'date',
-							max: null as unknown as string
+							// @ts-expect-error: null
+							max: null
 						};
 
 						checkSchemeError({
@@ -359,7 +362,7 @@ describe('DateScheme', () => {
 						const errorScheme: Scheme = {
 							key: 'date',
 							type: 'date',
-							max: 123 as unknown as string
+							max: 123
 						};
 
 						checkSchemeError({
@@ -418,7 +421,8 @@ describe('DateScheme', () => {
 							key: 'date',
 							type: 'date',
 							max: now,
-							exclusiveMax: now.toISOString() as unknown as boolean
+							// @ts-expect-error: type mismatch
+							exclusiveMax: now.toISOString()
 						};
 
 						checkSchemeError({
