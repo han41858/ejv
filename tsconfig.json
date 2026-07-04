@@ -1,12 +1,18 @@
 {
 	"compilerOptions": {
+		"rootDir": ".",
 		"target": "ES2022",
+		"lib": [
+			"ESNext"
+		],
+		"types": [
+			"node"
+		],
 		"sourceMap": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
 		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-		"moduleResolution": "Node"
+		"noFallthroughCasesInSwitch": true
 	},
 	"include": [
 		"src"
