@@ -20,6 +20,52 @@
 	- published files limited with `files` field
 	- CI added (GitHub Actions)
 
+# 2.1.7
+
+- bug fix
+	- build error fixed (`rootDir` of `tsconfig.json`, scripts are built into `build/scripts`)
+	- 2.1.5 changes restored (`buffer` type) - they were missing in 2.1.6
+
+# 2.1.6
+
+- dependencies version up
+	- `typescript@6.0.3`
+	- `eslint@10.6.0`
+	- `mocha@11.7.6`
+- caution : published without the 2.1.5 changes (`buffer` type is not available). Fixed in 2.1.7
+
+# 2.1.5
+
+- improvement
+	- `buffer` data type added : `byteLength`, `minByteLength`, `maxByteLength`
+	- arrow functions changed to pure functions
+	- `ArrayScheme` length specs added, spec code optimized
+- dependencies version up
+	- `typescript@5.9.3`
+	- `eslint@10.0.0`
+	- `mocha@11.7.5`
+
+# 2.1.4
+
+- bug fix
+	- `package.json` with module type for `build/cjs`, `build/esm` is created by script
+
+# 2.1.3
+
+- bug fix
+	- `package.json` - `exports` - `types` field added
+- README badges added
+- dependencies version up
+	- `typescript@5.8.3`
+	- `eslint@9.30.1`
+	- `mocha@11.7.1`
+
+# 2.1.2
+
+- improvement
+	- `STRING_FORMAT.JSON` added
+- eslint linebreak setting changed
+
 # 2.1.1
 
 - improvement
