@@ -146,7 +146,8 @@ export function emailTester (value: string): boolean {
 		// regular expression sources
 		// const aTextRegExpStr : string = '[-a-zA-Z0-9!#$%&\\\'*+/=?^_`{|}~]+';
 
-		const dotAtomRegExp = /^(\.?[-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]+)*$/;
+		// no leading, trailing or consecutive dots
+		const dotAtomRegExp = /^[-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]+(\.[-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]+)*$/;
 		const quotedStringRegExp = /^"[\u0020-\u005b\u005d-\u007e\\]*"$/; // include space (\u005b)
 		const domainLiteralRegExp = /^\[[\u0020-\u005a\u005c-\u007e\\]*]$/;
 
@@ -179,9 +180,27 @@ export function jsonStrTester (value: string): boolean {
 	}
 }
 
+function isLeapYear (year: number): boolean {
+	return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+// checks the day exists in the month. year can be omitted (ISO 8601 --MM-DD), then Feb 29 is allowed
+function calendarDateTester (year: number | undefined, month: number, date: number): boolean {
+	const daysInMonth: number[] = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+	if (month === 2 && date === 29) {
+		return year === undefined || isLeapYear(year);
+	}
+
+	return date <= daysInMonth[month - 1];
+}
+
 // RFC 3339 (https://www.ietf.org/rfc/rfc3339.txt) : YYYY-MM-DDThh:mm:ss[.SSSZ]
 function rfc3339Tester (value: string): boolean {
-	return /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/.test(value);
+	const matchResult: RegExpMatchArray | null = value.match(/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3])(:([0-5][0-9])){2}(\.\d+)?(Z|[-+]\d{2}:\d{2})?$/);
+
+	return matchResult !== null
+		&& calendarDateTester(+matchResult[1], +matchResult[2], +matchResult[3]);
 }
 
 function iso8601DateTester (value: string): boolean {
@@ -192,14 +211,32 @@ function iso8601DateTester (value: string): boolean {
 	const weeks = '(W(0[1-9]|[2-4][0-9]|5[0-3]))';
 	const days = '[1-7]';
 
+	// calendar dates : check the day exists in the month
+	const calendarDateMatch: RegExpMatchArray | null = value.match(new RegExp(`^${ years }-${ months }-${ dates }$`)) // YYYY-MM-DD
+		|| value.match(new RegExp(`^${ years }${ months }${ dates }$`)); // YYYYMMDD
+
+	if (calendarDateMatch) {
+		return calendarDateTester(+calendarDateMatch[1], +calendarDateMatch[2], +calendarDateMatch[3]);
+	}
+
+	const noYearDateMatch: RegExpMatchArray | null = value.match(new RegExp(`^--${ months }-?${ dates }$`)); // --MM-DD, --MMDD
+
+	if (noYearDateMatch) {
+		return calendarDateTester(undefined, +noYearDateMatch[1], +noYearDateMatch[2]);
+	}
+
+	// ordinal dates : 366th day only in leap year
+	const ordinalDateMatch: RegExpMatchArray | null = value.match(new RegExp(`^${ years }-?${ dateOfYear }$`)); // YYYY-DDD, YYYYDDD
+
+	if (ordinalDateMatch) {
+		return +ordinalDateMatch[2] !== 366 || isLeapYear(+ordinalDateMatch[1]);
+	}
+
 	return [
 		new RegExp(`^[-+]?${ years }$`), // years : YYYY, +YYYY, -YYYY
-		new RegExp(`^${ years }-${ months }(-${ dates })?$`), // calendar dates : YYYY-MM-DD, YYYY-MM
-		new RegExp(`^${ years }${ months }${ dates }$`), // calendar dates : YYYYMMDD
-		new RegExp(`^--${ months }-?${ dates }$`), // calendar dates : --MM-DD, --MMDD
+		new RegExp(`^${ years }-${ months }$`), // calendar dates : YYYY-MM
 		new RegExp(`^${ years }-${ weeks }(-${ days })?$`), // week dates : YYYY-Www, YYYY-Www-D
-		new RegExp(`^${ years }${ weeks }(${ days })?$`), // week dates : YYYYWww, YYYYWwwD
-		new RegExp(`^${ years }-?${ dateOfYear }$`) // ordinal dates : YYYY-DDD, YYYYDDD
+		new RegExp(`^${ years }${ weeks }(${ days })?$`) // week dates : YYYYWww, YYYYWwwD
 	].some((regExp: RegExp): boolean => {
 		return regExp.test(value);
 	});

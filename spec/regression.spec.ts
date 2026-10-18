@@ -5,7 +5,7 @@ import { ejv } from '../src/ejv';
 
 import { EjvError, Scheme } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
-import { indexTester, integerTester, uniqueItemsTester } from '../src/tester';
+import { dateFormatTester, dateTimeFormatTester, emailTester, indexTester, integerTester, uniqueItemsTester } from '../src/tester';
 
 
 describe('regression', () => {
@@ -141,6 +141,93 @@ describe('regression', () => {
 			const arr: number[] = Array.from({ length: 100000 }, (_: unknown, i: number): number => i);
 
 			expect(ejv({ a: arr }, [{ key: 'a', type: 'array', unique: true }])).to.be.null;
+		});
+	});
+
+	describe('calendar date', () => {
+		it('day should exist in the month', () => {
+			expect(dateFormatTester('2018-01-31')).to.be.true;
+			expect(dateFormatTester('2018-04-30')).to.be.true;
+
+			expect(dateFormatTester('2018-02-30')).to.be.false;
+			expect(dateFormatTester('2018-02-31')).to.be.false;
+			expect(dateFormatTester('2018-04-31')).to.be.false;
+			expect(dateFormatTester('2018-06-31')).to.be.false;
+			expect(dateFormatTester('2018-09-31')).to.be.false;
+			expect(dateFormatTester('2018-11-31')).to.be.false;
+
+			expect(dateFormatTester('20180431')).to.be.false; // YYYYMMDD
+		});
+
+		it('Feb 29 only in leap year', () => {
+			expect(dateFormatTester('2020-02-29')).to.be.true;
+			expect(dateFormatTester('2000-02-29')).to.be.true; // divisible by 400
+			expect(dateFormatTester('20200229')).to.be.true;
+
+			expect(dateFormatTester('2019-02-29')).to.be.false;
+			expect(dateFormatTester('1900-02-29')).to.be.false; // divisible by 100
+			expect(dateFormatTester('20190229')).to.be.false;
+		});
+
+		it('without year', () => {
+			expect(dateFormatTester('--02-29')).to.be.true; // can not know the year
+			expect(dateFormatTester('--0229')).to.be.true;
+
+			expect(dateFormatTester('--02-30')).to.be.false;
+			expect(dateFormatTester('--0431')).to.be.false;
+		});
+
+		it('ordinal date', () => {
+			expect(dateFormatTester('2020-366')).to.be.true;
+			expect(dateFormatTester('2019-365')).to.be.true;
+
+			expect(dateFormatTester('2019-366')).to.be.false;
+			expect(dateFormatTester('2019366')).to.be.false;
+		});
+
+		it('date-time', () => {
+			expect(dateTimeFormatTester('2020-02-29T12:00:00Z')).to.be.true; // RFC 3339
+			expect(dateTimeFormatTester('20200229T120000Z')).to.be.true; // ISO 8601
+
+			expect(dateTimeFormatTester('2019-02-29T12:00:00Z')).to.be.false;
+			expect(dateTimeFormatTester('2018-04-31T12:00:00+09:00')).to.be.false;
+			expect(dateTimeFormatTester('20180431T120000Z')).to.be.false;
+		});
+
+		it('ejv() with date format', () => {
+			expect(ejv({ a: '2020-02-29' }, [{ key: 'a', type: 'string', format: 'date' }])).to.be.null;
+			expect(ejv({ a: '2019-02-29' }, [{ key: 'a', type: 'string', format: 'date' }])?.type)
+				.to.be.eql(ERROR_TYPE.FORMAT);
+		});
+
+		it('date min, max with not existing day', () => {
+			expect(ejv({ a: new Date() }, [{ key: 'a', type: 'date', min: '2018-02-30' }])?.type)
+				.to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
+		});
+	});
+
+	describe('email dot-atom', () => {
+		it('no leading, trailing or consecutive dots in local part', () => {
+			expect(emailTester('first.last@domain.com')).to.be.true;
+			expect(emailTester('a.b.c@domain.com')).to.be.true;
+
+			expect(emailTester('.abc@domain.com')).to.be.false;
+			expect(emailTester('abc.@domain.com')).to.be.false;
+			expect(emailTester('a..b@domain.com')).to.be.false;
+			expect(emailTester('.@domain.com')).to.be.false;
+		});
+
+		it('quoted local part is not affected', () => {
+			expect(emailTester('".abc"@domain.com')).to.be.true;
+			expect(emailTester('"a..b"@domain.com')).to.be.true;
+		});
+
+		it('domain', () => {
+			expect(emailTester('abc@domain.com')).to.be.true;
+
+			expect(emailTester('abc@.domain.com')).to.be.false;
+			expect(emailTester('abc@domain..com')).to.be.false;
+			expect(emailTester('abc@domain.com.')).to.be.false;
 		});
 	});
 });
