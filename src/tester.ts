@@ -86,7 +86,7 @@ export function numberTester (value: unknown): value is number {
 }
 
 export function integerTester (value: number): boolean {
-	return +value.toFixed(0) === value;
+	return Number.isInteger(value);
 }
 
 export function indexTester (value: number): value is number {
@@ -328,10 +328,9 @@ export function arrayTypeOfTester (array: unknown[], type: DATA_TYPE): boolean {
 	});
 }
 
+// SameValueZero comparison (NaN equals NaN, objects by reference)
 export function uniqueItemsTester (array: unknown[]): boolean {
-	return array.every((item: unknown): boolean => {
-		return array.filter((target: unknown): boolean => target === item).length === 1;
-	});
+	return new Set(array).size === array.length;
 }
 
 export function regExpTester (value: unknown): value is RegExp {

@@ -1182,7 +1182,6 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 					const partialData: T[keyof T] = data[key];
 					const partialScheme: Scheme[] = objectScheme.properties as Scheme[];
-					scheme.parent = objectScheme;
 
 					// call recursively
 					result = _ejv(partialData, partialScheme, _options);
@@ -1225,6 +1224,19 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					}
 
 					const effectiveMin: Date = new Date(minDateCandidate);
+
+					// some ISO 8601 forms (ex. week dates) pass the format test but can't be parsed by Date
+					if (isNaN(+effectiveMin)) {
+						return new EjvError({
+							type: ERROR_TYPE.INVALID_SCHEMES,
+							message: createErrorMsg(ERROR_MESSAGE.MIN_DATE_SHOULD_BE_DATE_OR_STRING),
+
+							data: data,
+
+							errorScheme: dateScheme,
+							isSchemeError: true
+						});
+					}
 
 					if (definedTester(dateScheme.exclusiveMin)) {
 						if (!booleanTester(dateScheme.exclusiveMin)) {
@@ -1322,6 +1334,19 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 					}
 
 					const effectiveMax: Date = new Date(maxDateCandidate);
+
+					// some ISO 8601 forms (ex. week dates) pass the format test but can't be parsed by Date
+					if (isNaN(+effectiveMax)) {
+						return new EjvError({
+							type: ERROR_TYPE.INVALID_SCHEMES,
+							message: createErrorMsg(ERROR_MESSAGE.MAX_DATE_SHOULD_BE_DATE_OR_STRING),
+
+							data: data,
+
+							errorScheme: dateScheme,
+							isSchemeError: true
+						});
+					}
 
 					if (definedTester(dateScheme.exclusiveMax)) {
 						if (!booleanTester(dateScheme.exclusiveMax)) {
@@ -1549,8 +1574,6 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 									type: itemTypes
 								});
 							});
-
-							scheme.parent = arrayScheme;
 
 							// call recursively
 							const partialResult: EjvError | null = _ejv(partialData, partialSchemes, _options);
