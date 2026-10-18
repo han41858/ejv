@@ -41,7 +41,7 @@ export function typeTester (value: unknown, type: DATA_TYPE): boolean {
 	return valid;
 }
 
-export function definedTester (value: unknown): value is boolean {
+export function definedTester<T> (value: T | undefined): value is T {
 	return value !== undefined;
 }
 
