@@ -33,6 +33,9 @@ import {
 	hasPropertyTester,
 	indexTester,
 	integerTester,
+	ipTester,
+	ipv4Tester,
+	ipv6Tester,
 	jsonStrTester,
 	lengthTester,
 	maxByteLengthTester,
@@ -51,7 +54,8 @@ import {
 	stringTester,
 	timeFormatTester,
 	typeTester,
-	uniqueItemsTester
+	uniqueItemsTester,
+	urlTester
 } from './tester';
 import { clone, createErrorMsg, sift } from './util';
 
@@ -898,6 +902,22 @@ const _ejv = <T> (data: T, schemes: Scheme[], options: InternalOptions): null | 
 
 							case STRING_FORMAT.DATE_TIME:
 								valid = dateTimeFormatTester(valueAsString);
+								break;
+
+							case STRING_FORMAT.URL:
+								valid = urlTester(valueAsString);
+								break;
+
+							case STRING_FORMAT.IP:
+								valid = ipTester(valueAsString);
+								break;
+
+							case STRING_FORMAT.IPV4:
+								valid = ipv4Tester(valueAsString);
+								break;
+
+							case STRING_FORMAT.IPV6:
+								valid = ipv6Tester(valueAsString);
 								break;
 						}
 
