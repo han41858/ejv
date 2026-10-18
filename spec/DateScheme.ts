@@ -214,6 +214,20 @@ describe('DateScheme', () => {
 					});
 				});
 
+				it('not existing day', () => {
+					const errorScheme: Scheme = {
+						key: 'date',
+						type: 'date',
+						min: '2018-02-30'
+					};
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.MIN_DATE_SHOULD_BE_DATE_OR_STRING)
+					});
+				});
+
 				it('min type', () => {
 					const errorScheme: Scheme = {
 						key: 'date',
@@ -349,6 +363,20 @@ describe('DateScheme', () => {
 							type: 'date',
 							// @ts-expect-error: null
 							max: null
+						};
+
+						checkSchemeError({
+							data,
+							errorScheme,
+							message: createErrorMsg(ERROR_MESSAGE.MAX_DATE_SHOULD_BE_DATE_OR_STRING)
+						});
+					});
+
+					it('not existing day', () => {
+						const errorScheme: Scheme = {
+							key: 'date',
+							type: 'date',
+							max: '2019-02-29'
 						};
 
 						checkSchemeError({
