@@ -5,6 +5,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 // patch targets
 // cjs: const interfaces_1 = require("./interfaces");
 // esm: import { EjvError } from './interfaces';
+// d.ts: export { ejv } from './ejv';
 
 console.log('* add-js-extensions');
 
@@ -21,12 +22,12 @@ console.log('* add-js-extensions');
 	let modifiedStrCount: number = 0;
 
 	for await (const folder of folderNames) {
-		const jsFilePaths: string[] = (await readdir(join(buildFolder, folder), { withFileTypes: true }))
-			.filter((one: Dirent): boolean => one.isFile() && one.name.endsWith('.js'))
+		const targetFilePaths: string[] = (await readdir(join(buildFolder, folder), { withFileTypes: true }))
+			.filter((one: Dirent): boolean => one.isFile() && (one.name.endsWith('.js') || one.name.endsWith('.d.ts')))
 			.map((one: Dirent): string => join(buildFolder, folder, one.name));
 
-		for await(const jsFilePath of jsFilePaths) {
-			let fileContents: string = await readFile(jsFilePath, {
+		for await(const filePath of targetFilePaths) {
+			let fileContents: string = await readFile(filePath, {
 				encoding: 'utf-8'
 			});
 
@@ -46,7 +47,7 @@ console.log('* add-js-extensions');
 					++modifiedStrCount;
 				}
 
-				await writeFile(jsFilePath, fileContents, {
+				await writeFile(filePath, fileContents, {
 					encoding: 'utf-8'
 				});
 

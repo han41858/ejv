@@ -8,6 +8,9 @@ export {
 	ArrayScheme,
 	RegExpScheme,
 	DateScheme,
+	BufferScheme,
+	BufferLike,
+	AllDataType,
 	EjvError,
 	Scheme,
 	Options

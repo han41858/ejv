@@ -3,12 +3,26 @@
 	"version": "2.1.7",
 	"description": "Easy JSON Validator",
 	"exports": {
-		"require": "./build/cjs/index.js",
-		"import": "./build/esm/index.js",
-		"types": "./build/index.d.ts"
+		".": {
+			"import": {
+				"types": "./build/esm/index.d.ts",
+				"default": "./build/esm/index.js"
+			},
+			"require": {
+				"types": "./build/index.d.ts",
+				"default": "./build/cjs/index.js"
+			}
+		}
 	},
 	"types": "build/index.d.ts",
 	"main": "build/cjs/index.js",
+	"files": [
+		"build/*.d.ts",
+		"build/cjs",
+		"build/esm",
+		"README-KR.md",
+		"CHANGELOG.md"
+	],
 	"scripts": {
 		"clean": "rimraf ./build",
 		"prebuild": "yarn clean",
