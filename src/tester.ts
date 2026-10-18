@@ -265,26 +265,114 @@ export function dateTimeFormatTester (value: string): boolean {
 	return rfc3339Tester(value) || iso8601DateTimeTester(value);
 }
 
-// // with port
-// export const urlTester = (value : any) : boolean => {
-// 	return stringTester(value)
-// 		&& /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(value);
-// };
-//
-// // TODO: with port
-// export const ipv4Tester = (value : any) : boolean => {
-// 	return stringTester(value)
-// 		&& /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(value);
-// };
-//
-// export const ipv6Tester = (value : any) : boolean => {
-// 	return stringTester(value)
-// 		&& /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$;/.test(value);
-// };
-//
-// export const ipTester = (value : any) : boolean => {
-// 	return ipv4Tester(value) || ipv6Tester(value);
-// };
+// 0 ~ 255, without leading zeros
+const IPV4_OCTET: string = '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)';
+const IPV4_ADDRESS: string = `${ IPV4_OCTET }(\\.${ IPV4_OCTET }){3}`;
+
+// 0 ~ 65535, without leading zeros
+const PORT: string = '(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]\\d{4}|[1-9]\\d{0,3}|0)';
+
+const IPV4_ADDRESS_REGEXP = new RegExp(`^${ IPV4_ADDRESS }$`);
+const IPV4_REGEXP = new RegExp(`^${ IPV4_ADDRESS }(:${ PORT })?$`);
+const IPV6_WITH_PORT_REGEXP = new RegExp(`^\\[([^\\]]+)]:${ PORT }$`);
+
+// RFC 4291 2.2 : x:x:x:x:x:x:x:x, :: compression, x:x:x:x:x:x:d.d.d.d
+// zone index (ex. fe80::1%eth0) is not allowed
+function ipv6AddressTester (value: string): boolean {
+	const hexGroupRegExp = /^[0-9a-fA-F]{1,4}$/;
+
+	const compressionParts: string[] = value.split('::');
+
+	if (compressionParts.length > 2) {
+		return false; // '::' can be used only once
+	}
+
+	const isCompressed: boolean = compressionParts.length === 2;
+
+	const groups: string[] = compressionParts
+		.filter((part: string): boolean => part !== '')
+		.reduce((acc: string[], part: string): string[] => acc.concat(part.split(':')), []);
+
+	let groupCount: number = groups.length;
+
+	if (groups.length > 0 && groups[groups.length - 1].includes('.')) {
+		// embedded IPv4 address should be the last part
+		const ipv4Part: string = groups.pop() as string;
+
+		if (!IPV4_ADDRESS_REGEXP.test(ipv4Part)) {
+			return false;
+		}
+
+		groupCount += 1; // IPv4 address takes 2 groups
+	}
+
+	if (!groups.every((group: string): boolean => hexGroupRegExp.test(group))) {
+		return false; // also catches empty groups like '1:::2', ':1:2', '1:2:'
+	}
+
+	return isCompressed
+		? groupCount <= 7
+		: groupCount === 8;
+}
+
+// IPv4 with optional port : 192.168.0.1, 192.168.0.1:8080
+export function ipv4Tester (value: string): boolean {
+	return stringTester(value) && IPV4_REGEXP.test(value);
+}
+
+// IPv6 with optional port : ::1, [::1]:8080 (brackets are required only with port)
+export function ipv6Tester (value: string): boolean {
+	if (!stringTester(value)) {
+		return false;
+	}
+
+	const withPortMatch: RegExpMatchArray | null = value.match(IPV6_WITH_PORT_REGEXP);
+
+	return withPortMatch
+		? ipv6AddressTester(withPortMatch[1])
+		: ipv6AddressTester(value);
+}
+
+export function ipTester (value: string): boolean {
+	return ipv4Tester(value) || ipv6Tester(value);
+}
+
+// http or https URL that can be parsed by WHATWG URL API (new URL()) as written
+export function urlTester (value: string): boolean {
+	if (!stringTester(value)
+		|| !/^https?:\/\/[^/\\]/i.test(value) // should start with 'http://' or 'https://' and have authority
+		|| /[\s\\\u0000-\u001f\u007f]/.test(value) // eslint-disable-line no-control-regex -- whitespace, backslash and control characters are not allowed
+	) {
+		return false;
+	}
+
+	let url: URL;
+
+	try {
+		url = new URL(value);
+	}
+	catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
+		return false;
+	}
+
+	if (!['http:', 'https:'].includes(url.protocol) || url.hostname === '') {
+		return false;
+	}
+
+	// URL API normalizes IPv4 shorthand (ex. '1.2.3', '0x7f.1', '010.0.0.1') to dotted decimal
+	// reject them unless the host is written as it is
+	if (IPV4_ADDRESS_REGEXP.test(url.hostname)) {
+		const authority: string = value.replace(/^https?:\/\//i, '').split(/[/?#]/)[0];
+		const hostAndPort: string = authority.slice(authority.lastIndexOf('@') + 1);
+		const host: string = hostAndPort.replace(/:\d*$/, '');
+
+		if (host !== url.hostname) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 export function objectTester (value: unknown): boolean {
 	return typeof value === 'object';

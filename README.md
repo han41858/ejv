@@ -260,6 +260,10 @@ formats. The available formats are as follows.
  `'date'`      | Allows only date string format. This is based on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'2018-12-29'`                                                                     
  `'time'`      | Allows only time string format. This is based on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'21:07:35'`                                                                       
  `'date-time'` | Allows only date-time string format. This is based on [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) and [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'2018-12-29T21:07:35Z'` 
+ `'url'`       | Allows only `http://` or `https://` URL that can be parsed by [WHATWG URL API](https://url.spec.whatwg.org/) (`new URL()`) as written. Local and private hosts are allowed. Whitespace, backslash and forms that `new URL()` would fix up (ex. `'http:domain.com'`, `'http://1.2.3'`) are not allowed. ex) `'https://domain.com/path?query=1'`, `'http://localhost:3000'` 
+ `'ip'`        | Allows `'ipv4'` or `'ipv6'`. ex) `'127.0.0.1'`, `'[::1]:8080'` 
+ `'ipv4'`      | Allows only IPv4 address with optional port. Leading zeros are not allowed. ex) `'127.0.0.1'`, `'127.0.0.1:8080'` 
+ `'ipv6'`      | Allows only IPv6 address based on [RFC 4291 2.2](https://datatracker.ietf.org/doc/html/rfc4291#section-2.2). With port, the address should be in brackets. Zone index and prefix length are not allowed. ex) `'::1'`, `'2001:db8::1'`, `'[::1]:8080'` 
 
 - `length : number`
 

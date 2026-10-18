@@ -1055,6 +1055,97 @@ describe('StringScheme', () => {
 				}])).to.be.null;
 			});
 		});
+
+		const urlIpFormatCases: {
+			format: string;
+			valid: string[];
+			invalid: string[];
+		}[] = [
+			{
+				format: 'url',
+				valid: ['https://hello.com/child?query=some', 'http://localhost:3000'],
+				invalid: ['hello.com', 'ftp://hello.com', 'http:hello.com']
+			},
+			{
+				format: 'ipv4',
+				valid: ['127.0.0.1', '127.0.0.1:8080'],
+				invalid: ['256.0.0.1', '01.2.3.4', '::1']
+			},
+			{
+				format: 'ipv6',
+				valid: ['::1', '[::1]:8080'],
+				invalid: ['[::1]', '1::2::3', '127.0.0.1']
+			},
+			{
+				format: 'ip',
+				valid: ['127.0.0.1:8080', '2001:db8::1'],
+				invalid: ['localhost', '256.0.0.1']
+			}
+		];
+
+		urlIpFormatCases.forEach(({ format, valid, invalid }): void => {
+			describe(format, () => {
+				it('single format', () => {
+					valid.forEach((value: string): void => {
+						expect(ejv({ a: value }, [{
+							key: 'a',
+							type: 'string',
+							format
+						}])).to.be.null;
+					});
+
+					invalid.forEach((value: string): void => {
+						const data = { a: value };
+
+						const error: EjvError | null = ejv(data, [{
+							key: 'a',
+							type: 'string',
+							format
+						}]);
+
+						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
+
+						expect(error.type).to.be.eql(ERROR_TYPE.FORMAT);
+						expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
+							placeholders: [format]
+						}));
+						expect(error.path).to.be.eql('a');
+						expect(error.data).to.be.deep.equal(data);
+						expect(error.errorData).to.be.eql(value);
+					});
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = [format, 'email'];
+
+					valid.forEach((value: string): void => {
+						expect(ejv({ a: value }, [{
+							key: 'a',
+							type: 'string',
+							format: formatArr
+						}])).to.be.null;
+					});
+
+					invalid.forEach((value: string): void => {
+						const error: EjvError | null = ejv({ a: value }, [{
+							key: 'a',
+							type: 'string',
+							format: formatArr
+						}]);
+
+						expect(error).to.be.instanceof(EjvError);
+						expect(error?.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+						expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
+							placeholders: [JSON.stringify(formatArr)]
+						}));
+					});
+				});
+			});
+		});
 	});
 
 	describe('pattern', () => {

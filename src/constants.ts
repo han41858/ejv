@@ -23,11 +23,11 @@ export enum STRING_FORMAT {
 	DATE_TIME = 'date-time',
 	TIME = 'time',
 
-	// URL = 'url',
+	URL = 'url',
 
-	// IP = 'ip', // ipv4 || ipv6
-	// IPV4 = 'ipv4',
-	// IPV6 = 'ipv6'
+	IP = 'ip', // ipv4 || ipv6
+	IPV4 = 'ipv4',
+	IPV6 = 'ipv6'
 }
 
 export enum ERROR_TYPE {

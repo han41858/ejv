@@ -257,6 +257,10 @@ ejv({
  `'date'`      | 날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29'`                                                                   
  `'time'`      | 시간 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'21:07:35'`                                                                     
  `'date-time'` | 날짜-시간 형식인지 검사합니다. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) 스펙과 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29T21:07:35Z'` 
+ `'url'`       | `http://`나 `https://`로 시작하고, 입력값 그대로 [WHATWG URL API](https://url.spec.whatwg.org/)(`new URL()`)로 파싱되는 URL인지 검사합니다. 로컬·사설 호스트도 허용합니다. 공백, 백슬래시, `new URL()`이 보정해서 받아들이는 형식(ex. `'http:domain.com'`, `'http://1.2.3'`)은 허용하지 않습니다. ex) `'https://domain.com/path?query=1'`, `'http://localhost:3000'`
+ `'ip'`        | `'ipv4'` 또는 `'ipv6'` 형식인지 검사합니다. ex) `'127.0.0.1'`, `'[::1]:8080'`
+ `'ipv4'`      | IPv4 주소인지 검사합니다. 포트는 선택입니다. 앞자리 0은 허용하지 않습니다. ex) `'127.0.0.1'`, `'127.0.0.1:8080'`
+ `'ipv6'`      | IPv6 주소인지 검사합니다. [RFC 4291 2.2](https://datatracker.ietf.org/doc/html/rfc4291#section-2.2) 스펙을 기준으로 합니다. 포트를 붙일 때는 주소를 대괄호로 감싸야 합니다. 존 인덱스와 프리픽스 길이는 허용하지 않습니다. ex) `'::1'`, `'2001:db8::1'`, `'[::1]:8080'`
 
 - `length : number`
 
