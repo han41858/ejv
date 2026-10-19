@@ -411,25 +411,39 @@ describe('testers', function () {
 
 				// week dates
 				expect(dateFormatTester('2018-W01')).to.be.true;
-				expect(dateFormatTester('2018-W53')).to.be.true;
+				expect(dateFormatTester('2020-W53')).to.be.true;
 
 				expect(dateFormatTester('2018-W00')).to.be.false;
 				expect(dateFormatTester('2018-W54')).to.be.false;
 
 				expect(dateFormatTester('2018-W01-3')).to.be.true;
-				expect(dateFormatTester('2018-W53-7')).to.be.true;
+				expect(dateFormatTester('2020-W53-7')).to.be.true;
 
 				expect(dateFormatTester('2018-W01-0')).to.be.false;
 				expect(dateFormatTester('2018-W53-8')).to.be.false;
 
 				expect(dateFormatTester('2018W01')).to.be.true;
-				expect(dateFormatTester('2018W53')).to.be.true;
+				expect(dateFormatTester('2020W53')).to.be.true;
 
 				expect(dateFormatTester('2018W00')).to.be.false;
 				expect(dateFormatTester('2018W54')).to.be.false;
 
 				expect(dateFormatTester('2018W010')).to.be.false;
 				expect(dateFormatTester('2018W538')).to.be.false;
+
+				// W53 only in the year which has 53 weeks (starts on Thursday, or leap year starting on Wednesday)
+				expect(dateFormatTester('2018-W53')).to.be.false; // starts on Monday
+				expect(dateFormatTester('2018-W53-1')).to.be.false;
+				expect(dateFormatTester('2018W53')).to.be.false;
+				expect(dateFormatTester('2018W537')).to.be.false;
+				expect(dateFormatTester('2018-W52')).to.be.true;
+
+				expect(dateFormatTester('2015-W53')).to.be.true; // starts on Thursday
+				expect(dateFormatTester('2020-W53')).to.be.true; // leap year starting on Wednesday
+				expect(dateFormatTester('2020W537')).to.be.true;
+				expect(dateFormatTester('2024-W53')).to.be.false; // leap year starting on Monday
+				expect(dateFormatTester('2025-W53')).to.be.false; // starts on Wednesday, not a leap year
+				expect(dateFormatTester('2026-W53')).to.be.true; // starts on Thursday
 
 				// ordinal dates
 				expect(dateFormatTester('2018-052')).to.be.true;
@@ -531,6 +545,10 @@ describe('testers', function () {
 				expect(dateTimeFormatTester('20200229T120000Z')).to.be.true;
 				expect(dateTimeFormatTester('20190229T120000Z')).to.be.false;
 				expect(dateTimeFormatTester('20180431T120000Z')).to.be.false;
+
+				// ISO 8601 week dates
+				expect(dateTimeFormatTester('2020-W53-5T12:00:00Z')).to.be.true;
+				expect(dateTimeFormatTester('2018-W53-5T12:00:00Z')).to.be.false;
 			});
 
 			it('logic test', () => {
