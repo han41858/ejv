@@ -635,21 +635,24 @@ console.log(error.errorData); // 10
 
 ejv가 제공하는 에러 메시지를 다른 내용으로 변경하려면 `EjvError.type`에 해당하는 키로 에러 메시지를 오버라이드 할 수 있습니다.
 
-이 옵션은 `object` 형태로 사용합니다. 오버라이드하려는 에러에 해당하는 `ErrorType`를 키로 사용해서 원하는 문구를 지정해 보세요.
+이 옵션은 `object` 형태로 사용합니다. 오버라이드하려는 에러에 해당하는 `ERROR_TYPE`을 키로 사용해서 원하는 문구를 지정해 보세요.
 
 ```typescript
-import { ejv, EjvError, ErrorType } from 'ejv';
+import { ejv, EjvError, ERROR_TYPE } from 'ejv';
 
 const error: null | EjvError = ejv({
 	a: 10
 }, [{
 	key: 'a',
 	type: 'string'
-}, {
+}], {
 	customErrorMsg: {
-		[ErrorType.TYPE_MISMATCH]: 'property "a" should be a "string".'
+		[ERROR_TYPE.TYPE_MISMATCH]: 'property "a" should be a "string".'
 	}
-}]);
+});
 
-console.log(error.message); // 'property "a" should be a "string".'
+console.log(error?.message); // 'property "a" should be a "string".'
 ```
+
+이 옵션은 데이터 오류에만 적용됩니다. 스킴 오류(`EjvError.isSchemeError === true`, ex. `INVALID_SCHEMES`)는 중첩된 `properties`, `items`에서 발생한 경우를 포함해 원래 메시지를 유지합니다.
+

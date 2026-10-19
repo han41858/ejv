@@ -67,22 +67,36 @@ export interface ValidatorContext {
 	validate: Validate; // _ejv() for nested schemes
 }
 
-// wrapper of an invalid scheme error found in a type validator. it is a return value, not thrown.
-// _ejv() returns the wrapped error immediately, without customErrorMsg.
-// (scheme errors from nested schemes come back as plain EjvError and get customErrorMsg, same as before)
-export class SchemeFailure {
-	constructor (public readonly error: EjvError) {
-	}
-}
-
-// data error (or an error from nested schemes) : _ejv() stops and applies customErrorMsg
-export type ValidatorResult = EjvError | SchemeFailure | null;
+// first error found by a type validator (scheme error or data error), null if valid.
+// _ejv() stops at it, and applies customErrorMsg only to data errors (isDataError)
+export type ValidatorResult = EjvError | null;
 
 export const ALL_DATA_TYPES: DATA_TYPE[] = Object.values(DATA_TYPE);
 
+// index of the first invalid data type, -1 if all valid. falsy values (ex. '', null) are invalid too
+export function invalidTypeIndex (types: unknown[]): number {
+	return types.findIndex((type: unknown): boolean => {
+		return !stringTester(type) || !enumTester(type as DATA_TYPE, ALL_DATA_TYPES);
+	});
+}
 
-function schemeFailure (ctx: ValidatorContext, message: string): SchemeFailure {
-	return new SchemeFailure(new EjvError({
+// shows empty string and non-string values as JSON (ex. '""', 'null')
+export function invalidTypeToString (type: unknown): string {
+	return stringTester(type) && type.length > 0
+		? type
+		: String(JSON.stringify(type));
+}
+
+// every item should be a scheme object. typeof null is 'object', so null is excluded explicitly
+export function schemeArrayTester (array: unknown[]): boolean {
+	return array.every((item: unknown): boolean => {
+		return objectTester(item) && item !== null;
+	});
+}
+
+
+function schemeError (ctx: ValidatorContext, message: string): EjvError {
+	return new EjvError({
 		type: ERROR_TYPE.INVALID_SCHEMES,
 		message,
 
@@ -90,7 +104,7 @@ function schemeFailure (ctx: ValidatorContext, message: string): SchemeFailure {
 
 		errorScheme: ctx.scheme,
 		isSchemeError: true
-	}));
+	});
 }
 
 function dataError (ctx: ValidatorContext, type: ERROR_TYPE, message: string): EjvError {
@@ -131,7 +145,7 @@ function enumRule (ctx: ValidatorContext, rule: 'enum' | 'notEnum', itemType: DA
 	const isEnum: boolean = rule === 'enum';
 
 	if (!arrayTester(values)) {
-		return schemeFailure(ctx, isEnum
+		return schemeError(ctx, isEnum
 			? ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY
 			: ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_ARRAY);
 	}
@@ -139,7 +153,7 @@ function enumRule (ctx: ValidatorContext, rule: 'enum' | 'notEnum', itemType: DA
 	if (!arrayTypeOfTester(values, itemType)) {
 		const isNumber: boolean = itemType === DATA_TYPE.NUMBER;
 
-		return schemeFailure(ctx, isEnum
+		return schemeError(ctx, isEnum
 			? (isNumber ? ERROR_MESSAGE.ENUM_SHOULD_BE_NUMBERS : ERROR_MESSAGE.ENUM_SHOULD_BE_STRINGS)
 			: (isNumber ? ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_NUMBERS : ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_STRINGS));
 	}
@@ -178,7 +192,7 @@ function sizeRules (ctx: ValidatorContext, rules: SizeRule[]): ValidatorResult {
 		}
 
 		if (!(numberTester(rule.limit) && integerTester(rule.limit))) {
-			return schemeFailure(ctx, rule.invalidLimitMessage);
+			return schemeError(ctx, rule.invalidLimitMessage);
 		}
 
 		if (!rule.test(rule.limit)) {
@@ -257,7 +271,7 @@ function formatRule<T extends string> (
 
 	if (!arrayTester(format)) {
 		if (!enumTester(format as T, allFormats)) {
-			return schemeFailure(ctx, createErrorMsg(invalidFormatMessage, {
+			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
 				placeholders: [format as string]
 			}));
 		}
@@ -271,7 +285,7 @@ function formatRule<T extends string> (
 
 		// falsy values (ex. '') are not reported here, they fail at matching below
 		if (errorFormat) {
-			return schemeFailure(ctx, createErrorMsg(invalidFormatMessage, {
+			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
 				placeholders: [errorFormat as string]
 			}));
 		}
@@ -317,7 +331,7 @@ function numberBoundRule (ctx: ValidatorContext, bound: 'min' | 'max'): Validato
 		: parentScheme?.[bound] as number;
 
 	if (!numberTester(effectiveBound)) {
-		return schemeFailure(ctx, isMin
+		return schemeError(ctx, isMin
 			? ERROR_MESSAGE.MIN_SHOULD_BE_NUMBER
 			: ERROR_MESSAGE.MAX_SHOULD_BE_NUMBER);
 	}
@@ -325,7 +339,7 @@ function numberBoundRule (ctx: ValidatorContext, bound: 'min' | 'max'): Validato
 	const exclusive: unknown = isMin ? scheme.exclusiveMin : scheme.exclusiveMax;
 
 	if (definedTester(exclusive) && !booleanTester(exclusive)) {
-		return schemeFailure(ctx, isMin
+		return schemeError(ctx, isMin
 			? ERROR_MESSAGE.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN
 			: ERROR_MESSAGE.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 	}
@@ -375,7 +389,12 @@ function patternToString (pattern: string | RegExp): string {
 	}
 	else if (stringTester(pattern)) {
 		if (minLengthTester(pattern as string, 1)) {
-			regExpStr = new RegExp(pattern as string).toString();
+			try {
+				regExpStr = new RegExp(pattern as string).toString();
+			}
+			catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
+				regExpStr = '/' + pattern + '/'; // invalid regular expression string
+			}
 		}
 		else {
 			regExpStr = '//';
@@ -393,15 +412,27 @@ function patternToString (pattern: string | RegExp): string {
 	return regExpStr;
 }
 
-function isValidPattern (pattern: string | RegExp): boolean {
-	return (stringTester(pattern) && minLengthTester(pattern as string, 1))
-		|| (regExpTester(pattern) && pattern.toString() !== '/(?:)/' && pattern.toString() !== '/null/');
-}
-
 function patternsToString (patterns: (string | RegExp)[]): string {
 	return '[' + patterns.map((onePattern: string | RegExp): string => {
 		return patternToString(onePattern);
 	}).join(', ') + ']';
+}
+
+// returns null for invalid pattern : not a string or RegExp, empty, or invalid regular expression string
+function toRegExp (pattern: string | RegExp): RegExp | null {
+	const validType: boolean = (stringTester(pattern) && minLengthTester(pattern as string, 1))
+		|| (regExpTester(pattern) && pattern.toString() !== '/(?:)/' && pattern.toString() !== '/null/');
+
+	if (!validType) {
+		return null;
+	}
+
+	try {
+		return new RegExp(pattern);
+	}
+	catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
+		return null;
+	}
 }
 
 function patternRule (ctx: ValidatorContext): ValidatorResult {
@@ -413,65 +444,47 @@ function patternRule (ctx: ValidatorContext): ValidatorResult {
 	}
 
 	if (scheme.pattern === null) {
-		return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 			placeholders: ['null']
 		}));
 	}
 
 	if (arrayTester(scheme.pattern)) {
 		const patterns: (string | RegExp)[] = scheme.pattern as (string | RegExp)[];
+		const regExps: (RegExp | null)[] = patterns.map(toRegExp);
 
-		if (!minLengthTester(patterns, 1)) { // empty array
-			return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+		if (!minLengthTester(patterns, 1) // empty array
+			|| regExps.includes(null)) {
+			return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 				placeholders: [patternsToString(patterns)]
 			}));
 		}
 
-		try {
-			const regExps: RegExp[] = patterns.map((pattern: string | RegExp): RegExp => {
-				if (!isValidPattern(pattern)) {
-					throw new Error(createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
-						placeholders: [patternsToString(patterns)]
-					}));
-				}
+		const matched: boolean = (regExps as RegExp[]).some((regExp: RegExp): boolean => {
+			return stringRegExpTester(value, regExp);
+		});
 
-				return new RegExp(pattern);
-			});
-
-			const matched: boolean = regExps.some((regExp: RegExp): boolean => {
-				return stringRegExpTester(value, regExp);
-			});
-
-			if (!matched) {
-				return dataError(ctx, ERROR_TYPE.PATTERN_ONE_OF, createErrorMsg(ERROR_MESSAGE.PATTERN_ONE_OF, {
-					placeholders: [patternsToString(patterns)]
-				}));
-			}
-		}
-		catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
-			return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+		return matched
+			? null
+			: dataError(ctx, ERROR_TYPE.PATTERN_ONE_OF, createErrorMsg(ERROR_MESSAGE.PATTERN_ONE_OF, {
 				placeholders: [patternsToString(patterns)]
 			}));
-		}
-
-		return null;
 	}
 
 	const pattern: string | RegExp = scheme.pattern as string | RegExp;
+	const regExp: RegExp | null = toRegExp(pattern);
 
-	if (!isValidPattern(pattern)) {
-		return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+	if (regExp === null) {
+		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 			placeholders: [patternToString(pattern)]
 		}));
 	}
 
-	if (!stringRegExpTester(value, new RegExp(pattern))) {
-		return dataError(ctx, ERROR_TYPE.PATTERN, createErrorMsg(ERROR_MESSAGE.PATTERN, {
+	return stringRegExpTester(value, regExp)
+		? null
+		: dataError(ctx, ERROR_TYPE.PATTERN, createErrorMsg(ERROR_MESSAGE.PATTERN, {
 			placeholders: [patternToString(pattern)]
 		}));
-	}
-
-	return null;
 }
 
 export function validateString (ctx: ValidatorContext): ValidatorResult {
@@ -496,7 +509,7 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 
 	if (definedTester(scheme.allowNoProperty)) {
 		if (!booleanTester(scheme.allowNoProperty)) {
-			return schemeFailure(ctx, ERROR_MESSAGE.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
+			return schemeError(ctx, ERROR_MESSAGE.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
 		}
 
 		if (!scheme.allowNoProperty && !hasPropertyTester(value)) {
@@ -509,17 +522,17 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 	}
 
 	if (!arrayTester(scheme.properties)) {
-		return schemeFailure(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY);
+		return schemeError(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY);
 	}
 
 	const properties: Scheme[] = scheme.properties;
 
 	if (!minLengthTester(properties, 1)) {
-		return schemeFailure(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_HAVE_ITEMS);
+		return schemeError(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_HAVE_ITEMS);
 	}
 
-	if (!arrayTypeOfTester(properties, DATA_TYPE.OBJECT)) {
-		return schemeFailure(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
+	if (!schemeArrayTester(properties)) {
+		return schemeError(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
 	}
 
 	if (!objectTester(value)) {
@@ -568,20 +581,20 @@ function dateBoundRule (ctx: ValidatorContext, bound: 'min' | 'max'): ValidatorR
 		)
 		|| dateTester(boundCandidate)
 	)) {
-		return schemeFailure(ctx, invalidBoundMessage);
+		return schemeError(ctx, invalidBoundMessage);
 	}
 
 	const effectiveBound: Date = new Date(boundCandidate);
 
 	// some ISO 8601 forms (ex. week dates) pass the format test but can't be parsed by Date
 	if (isNaN(+effectiveBound)) {
-		return schemeFailure(ctx, invalidBoundMessage);
+		return schemeError(ctx, invalidBoundMessage);
 	}
 
 	const exclusive: unknown = isMin ? scheme.exclusiveMin : scheme.exclusiveMax;
 
 	if (definedTester(exclusive) && !booleanTester(exclusive)) {
-		return schemeFailure(ctx, isMin
+		return schemeError(ctx, isMin
 			? ERROR_MESSAGE.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN
 			: ERROR_MESSAGE.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 	}
@@ -627,15 +640,11 @@ function itemsByTypesRule (ctx: ValidatorContext, tempKeys: string[]): Validator
 		? scheme.items
 		: [scheme.items]) as DATA_TYPE[];
 
-	const itemTypeError: string | undefined = itemTypes.find((type: DATA_TYPE): boolean => {
-		return !definedTester(type)
-			|| !stringTester(type)
-			|| !enumTester(type, ALL_DATA_TYPES);
-	});
+	const itemTypeErrorIndex: number = invalidTypeIndex(itemTypes);
 
-	if (itemTypeError) {
-		return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
-			placeholders: [itemTypeError]
+	if (itemTypeErrorIndex >= 0) {
+		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
+			placeholders: [invalidTypeToString(itemTypes[itemTypeErrorIndex])]
 		}));
 	}
 
@@ -799,13 +808,13 @@ function itemsRule (ctx: ValidatorContext): ValidatorResult {
 		return itemsByTypesRule(ctx, tempKeys);
 	}
 
-	if ((objectTester(scheme.items) && scheme.items !== null) // by Scheme
-		|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as Scheme[], DATA_TYPE.OBJECT)) // by Scheme[]
+	if ((objectTester(scheme.items) && scheme.items !== null && !arrayTester(scheme.items)) // by Scheme
+		|| (arrayTester(scheme.items) && schemeArrayTester(scheme.items)) // by Scheme[]
 	) {
 		return itemsBySchemesRule(ctx, tempKeys);
 	}
 
-	return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+	return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
 		placeholders: [JSON.stringify(scheme.items)]
 	}));
 }
@@ -822,7 +831,7 @@ export function validateArray (ctx: ValidatorContext): ValidatorResult {
 			}
 
 			if (!booleanTester(scheme.unique)) {
-				return schemeFailure(ctx, ERROR_MESSAGE.UNIQUE_SHOULD_BE_BOOLEAN);
+				return schemeError(ctx, ERROR_MESSAGE.UNIQUE_SHOULD_BE_BOOLEAN);
 			}
 
 			return scheme.unique && !uniqueItemsTester(value)

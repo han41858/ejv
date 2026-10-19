@@ -8,6 +8,7 @@
 		- `ipv4`, `ipv6` : optional port (IPv6 with port should be in brackets, ex. `[::1]:8080`)
 	- `BufferScheme`, `BufferLike`, `AllDataType` exported
 	- `json` format documented in README
+	- `customErrorMsg` example in README fixed (`ERROR_TYPE`, options position)
 - bug fix
 	- schemes are not mutated by `ejv()` anymore (reusing a scheme could overflow the stack)
 	- date `min`, `max` which `Date` can not parse returns `INVALID_SCHEMES` instead of throwing
@@ -15,6 +16,11 @@
 	- `unique` : O(n) and `NaN` aware
 	- `date`, `date-time` formats check the day exists in the month (leap year included)
 	- `email` format rejects leading, trailing or consecutive dots in the local part
+	- invalid regular expression string in `pattern` (ex. `'('`) returns `INVALID_SCHEMES` instead of throwing
+	- `items` with values that are not schemes (ex. `[1, 2]`) and `null` in schemes, `properties`, `items` return `INVALID_SCHEMES` instead of throwing
+	- type mismatch message uses the type inherited through multiple `parent` levels (was `'the value should be a undefined'`)
+	- `customErrorMsg` is not applied to scheme errors at any depth (was applied only to scheme errors from nested schemes)
+	- falsy types (ex. `type: ''`, `type: null`, `['number', null]`) return `SCHEMES_HAS_INVALID_TYPE` instead of passing the scheme check
 - build
 	- ESM type declarations added (`build/esm/*.d.ts`), CJS types stay at `build/index.d.ts`
 	- published files limited with `files` field

@@ -668,6 +668,44 @@ describe('ArrayScheme', () => {
 					})
 				});
 			});
+
+			it('empty string in data types', () => {
+				checkSchemeError({
+					data: data,
+					errorScheme: {
+						key: 'a',
+						type: 'array',
+						items: ['number', '']
+					},
+
+					message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
+						placeholders: ['""']
+					})
+				});
+			});
+
+			const invalidItemsArr: unknown[][] = [
+				[1, 2],
+				[null],
+				['number', { type: 'number' }]
+			];
+
+			invalidItemsArr.forEach((items: unknown[]): void => {
+				it(`array of not scheme : ${ JSON.stringify(items) }`, () => {
+					checkSchemeError({
+						data: data,
+						errorScheme: {
+							key: 'a',
+							type: 'array',
+							items: items as Scheme[]
+						},
+
+						message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+							placeholders: [JSON.stringify(items)]
+						})
+					});
+				});
+			});
 		});
 
 		describe('single data type', () => {

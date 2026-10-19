@@ -1252,6 +1252,38 @@ describe('StringScheme', () => {
 				});
 			});
 
+			it('invalid regular expression string', () => {
+				const errorScheme: Scheme = {
+					key: 'a',
+					type: 'string',
+					pattern: '('
+				};
+
+				checkSchemeError({
+					data,
+					errorScheme,
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+						placeholders: ['/(/']
+					})
+				});
+			});
+
+			it('invalid regular expression string in array', () => {
+				const errorScheme: Scheme = {
+					key: 'a',
+					type: 'string',
+					pattern: ['ejv', '(']
+				};
+
+				checkSchemeError({
+					data,
+					errorScheme,
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+						placeholders: ['[/ejv/, /(/]']
+					})
+				});
+			});
+
 			it('null array', () => {
 				const errorScheme: Scheme = {
 					key: 'a',

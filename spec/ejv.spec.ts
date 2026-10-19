@@ -116,6 +116,19 @@ describe('ejv()', () => {
 				expect(error).to.have.property('isDataError', false);
 			});
 
+			it('null in schemes', () => {
+				const errorScheme: Scheme[] = [null as unknown as Scheme];
+
+				const error: EjvError | null = ejv(data, errorScheme);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				expect(error).to.have.property('type', ERROR_TYPE.INVALID_SCHEMES);
+				expect(error).to.have.property('message', ERROR_MESSAGE.NO_OBJECT_ARRAY_SCHEME);
+				expect(error).to.have.property('errorScheme', errorScheme);
+				expect(error).to.have.property('isSchemeError', true);
+			});
+
 			// can't use checkSchemeError()
 			it('invalid scheme object', () => {
 				const errorScheme: Scheme[] = ['string'];
@@ -161,6 +174,35 @@ describe('ejv()', () => {
 					message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
 						placeholders: ['invalidType']
 					})
+				});
+			});
+
+			const falsyTypes: [string, unknown][] = [
+				['empty string', ''],
+				['null', null],
+				['null in array', ['number', null]],
+				['empty string in array', ['', 'number']]
+			];
+
+			falsyTypes.forEach(([name, type]: [string, unknown]): void => {
+				it(`invalid type : ${ name }`, () => {
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: type as string,
+						parent: { type: 'number' }
+					};
+
+					const invalidType: unknown = Array.isArray(type)
+						? type.find((one: unknown): boolean => !one)
+						: type;
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
+							placeholders: [JSON.stringify(invalidType)]
+						})
+					});
 				});
 			});
 
@@ -301,8 +343,7 @@ describe('ejv()', () => {
 					});
 				});
 
-				// scheme errors found while checking the value are returned immediately at that level,
-				// so customErrorMsg is applied only when they come back from nested schemes
+				// customErrorMsg is for data errors. scheme errors keep their messages at any depth
 				describe('scheme errors', () => {
 					const customErrorMsg = 'custom scheme error';
 
@@ -333,8 +374,7 @@ describe('ejv()', () => {
 						expect(error?.message).to.be.eql(ERROR_MESSAGE.EMPTY_SCHEME);
 					});
 
-					// current behavior, not a design decision yet
-					it('applied to scheme error from object properties (current behavior)', () => {
+					it('not applied to scheme error from object properties', () => {
 						const error: EjvError | null = ejv({
 							o: { x: 1 }
 						}, [{
@@ -347,10 +387,10 @@ describe('ejv()', () => {
 
 						expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
 						expect(error?.isSchemeError).to.be.true;
-						expect(error?.message).to.be.eql(customErrorMsg);
+						expect(error?.message).to.be.eql(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY);
 					});
 
-					it('applied to scheme error from array items (current behavior)', () => {
+					it('not applied to scheme error from array items', () => {
 						const error: EjvError | null = ejv({
 							arr: [1]
 						}, [{
@@ -363,7 +403,7 @@ describe('ejv()', () => {
 
 						expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
 						expect(error?.isSchemeError).to.be.true;
-						expect(error?.message).to.be.eql(customErrorMsg);
+						expect(error?.message).to.be.eql(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY);
 					});
 				});
 			});
