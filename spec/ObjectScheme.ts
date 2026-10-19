@@ -513,4 +513,27 @@ describe('ObjectScheme', () => {
 			});
 		});
 	});
+
+	describe('properties with not scheme', () => {
+		const notSchemes: [string, unknown][] = [
+			['array', []],
+			['Date', new Date(0)],
+			['RegExp', /a/],
+			['buffer', new Uint8Array(1)]
+		];
+
+		notSchemes.forEach(([name, notScheme]: [string, unknown]): void => {
+			it(name, () => {
+				checkSchemeError({
+					data: { a: { b: 1 } },
+					errorScheme: {
+						key: 'a',
+						type: 'object',
+						properties: [notScheme as Scheme]
+					},
+					message: ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT
+				});
+			});
+		});
+	});
 });

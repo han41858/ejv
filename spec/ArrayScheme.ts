@@ -1157,4 +1157,47 @@ describe('ArrayScheme', () => {
 			});
 		});
 	});
+
+	describe('items with not scheme', () => {
+		const notSchemes: [string, unknown][] = [
+			['array', []],
+			['Date', new Date(0)],
+			['RegExp', /a/],
+			['buffer', new Uint8Array(1)]
+		];
+
+		notSchemes.forEach(([name, notScheme]: [string, unknown]): void => {
+			it(`in array : ${ name }`, () => {
+				checkSchemeError({
+					data: { a: [1, 2] },
+					errorScheme: {
+						key: 'a',
+						type: 'array',
+						items: [notScheme as Scheme]
+					},
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+						placeholders: [JSON.stringify([notScheme])]
+					})
+				});
+			});
+		});
+
+		// array as items is a list of data types or schemes
+		notSchemes.filter(([name]: [string, unknown]): boolean => name !== 'array')
+			.forEach(([name, notScheme]: [string, unknown]): void => {
+				it(`single : ${ name }`, () => {
+					checkSchemeError({
+						data: { a: [1, 2] },
+						errorScheme: {
+							key: 'a',
+							type: 'array',
+							items: notScheme as Scheme
+						},
+						message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+							placeholders: [JSON.stringify(notScheme)]
+						})
+					});
+				});
+			});
+	});
 });

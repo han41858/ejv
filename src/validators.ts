@@ -19,6 +19,7 @@ import {
 	arrayTypeOfTester,
 	booleanTester,
 	bufferLengthTester,
+	bufferTester,
 	dateFormatTester,
 	dateTester,
 	dateTimeFormatTester,
@@ -87,11 +88,19 @@ export function invalidTypeToString (type: unknown): string {
 		: String(JSON.stringify(type));
 }
 
-// every item should be a scheme object. typeof null is 'object', so null is excluded explicitly
+// scheme should be an object, but not null and not a value of other data types (array, Date, RegExp, buffer).
+// instances of user classes are allowed
+export function schemeObjectTester (value: unknown): boolean {
+	return objectTester(value)
+		&& value !== null
+		&& !arrayTester(value)
+		&& !(value instanceof Date)
+		&& !regExpTester(value)
+		&& !bufferTester(value);
+}
+
 export function schemeArrayTester (array: unknown[]): boolean {
-	return array.every((item: unknown): boolean => {
-		return objectTester(item) && item !== null;
-	});
+	return array.every(schemeObjectTester);
 }
 
 
@@ -808,7 +817,7 @@ function itemsRule (ctx: ValidatorContext): ValidatorResult {
 		return itemsByTypesRule(ctx, tempKeys);
 	}
 
-	if ((objectTester(scheme.items) && scheme.items !== null && !arrayTester(scheme.items)) // by Scheme
+	if (schemeObjectTester(scheme.items) // by Scheme
 		|| (arrayTester(scheme.items) && schemeArrayTester(scheme.items)) // by Scheme[]
 	) {
 		return itemsBySchemesRule(ctx, tempKeys);

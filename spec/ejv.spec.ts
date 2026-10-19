@@ -409,4 +409,33 @@ describe('ejv()', () => {
 			});
 		});
 	});
+
+	describe('scheme object', () => {
+		const notSchemes: [string, unknown][] = [
+			['array', []],
+			['Date', new Date(0)],
+			['RegExp', /a/],
+			['buffer', new Uint8Array(1)]
+		];
+
+		notSchemes.forEach(([name, notScheme]: [string, unknown]): void => {
+			it(`not scheme in schemes : ${ name }`, () => {
+				const error: EjvError | null = ejv({ a: 1 }, [notScheme as Scheme]);
+
+				expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
+				expect(error?.message).to.be.eql(ERROR_MESSAGE.NO_OBJECT_ARRAY_SCHEME);
+				expect(error?.isSchemeError).to.be.true;
+			});
+		});
+
+		it('instance of a class is a scheme', () => {
+			class NumberSchemeClass {
+				key: string = 'a';
+				type: string = 'number';
+			}
+
+			expect(ejv({ a: 1 }, [new NumberSchemeClass()])).to.be.null;
+			expect(ejv({ a: 'x' }, [new NumberSchemeClass()])?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+		});
+	});
 });
