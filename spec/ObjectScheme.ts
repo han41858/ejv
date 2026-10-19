@@ -206,6 +206,20 @@ describe('ObjectScheme', () => {
 					message: createErrorMsg(ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT)
 				});
 			});
+
+			it('null in array', () => {
+				const errorScheme: Scheme = {
+					key: 'a',
+					type: 'object',
+					properties: [null as unknown as Scheme]
+				};
+
+				checkSchemeError({
+					data,
+					errorScheme,
+					message: createErrorMsg(ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT)
+				});
+			});
 		});
 
 		it('with single type', () => {
@@ -497,6 +511,105 @@ describe('ObjectScheme', () => {
 
 				expect(error).to.be.null;
 			});
+		});
+	});
+
+	describe('properties with not scheme', () => {
+		const notSchemes: [string, unknown][] = [
+			['array', []],
+			['Date', new Date(0)],
+			['RegExp', /a/],
+			['buffer', new Uint8Array(1)]
+		];
+
+		notSchemes.forEach(([name, notScheme]: [string, unknown]): void => {
+			it(name, () => {
+				checkSchemeError({
+					data: { a: { b: 1 } },
+					errorScheme: {
+						key: 'a',
+						type: 'object',
+						properties: [notScheme as Scheme]
+					},
+					message: ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT
+				});
+			});
+		});
+	});
+
+	describe('allowUnknownProperty', () => {
+		const properties: Scheme[] = [{ key: 'a', type: 'number' }];
+
+		describe('check parameter', () => {
+			it('undefined is ok', () => {
+				expect(ejv({ o: { a: 1, b: 2 } }, [{ key: 'o', type: 'object', allowUnknownProperty: undefined, properties }])).to.be.null;
+			});
+
+			it('not boolean', () => {
+				checkSchemeError({
+					data: { o: { a: 1 } },
+					errorScheme: {
+						key: 'o',
+						type: 'object',
+						allowUnknownProperty: 'false' as unknown as boolean,
+						properties
+					},
+					message: ERROR_MESSAGE.ALLOW_UNKNOWN_PROPERTY_SHOULD_BE_BOOLEAN
+				});
+			});
+		});
+
+		it('allowed by default', () => {
+			expect(ejv({ o: { a: 1, b: 2 } }, [{ key: 'o', type: 'object', properties }])).to.be.null;
+			expect(ejv({ o: { a: 1, b: 2 } }, [{ key: 'o', type: 'object', allowUnknownProperty: true, properties }])).to.be.null;
+		});
+
+		it('not allowed', () => {
+			const data = { o: { a: 1, b: 2 } };
+
+			const error: EjvError | null = ejv(data, [{ key: 'o', type: 'object', allowUnknownProperty: false, properties }]);
+
+			expect(error).to.be.instanceof(EjvError);
+			expect(error?.type).to.be.eql(ERROR_TYPE.UNKNOWN_PROPERTY);
+			expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.UNKNOWN_PROPERTY, {
+				placeholders: ['b']
+			}));
+			expect(error?.path).to.be.eql('o');
+			expect(error?.data).to.be.eql(data);
+			expect(error?.errorData).to.be.eql(data.o);
+			expect(error?.isDataError).to.be.true;
+		});
+
+		it('declared properties only', () => {
+			expect(ejv({ o: { a: 1 } }, [{ key: 'o', type: 'object', allowUnknownProperty: false, properties }])).to.be.null;
+		});
+
+		it('property with undefined value is ignored', () => {
+			expect(ejv({ o: { a: 1, b: undefined } }, [{ key: 'o', type: 'object', allowUnknownProperty: false, properties }])).to.be.null;
+		});
+
+		it('declared properties are checked first', () => {
+			const error: EjvError | null = ejv({ o: { a: 'x', b: 2 } }, [{ key: 'o', type: 'object', allowUnknownProperty: false, properties }]);
+
+			expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+			expect(error?.path).to.be.eql('o/a');
+		});
+
+		it('works with properties only', () => {
+			expect(ejv({ o: { a: 1 } }, [{ key: 'o', type: 'object', allowUnknownProperty: false }])).to.be.null;
+		});
+
+		it('object in array items', () => {
+			const error: EjvError | null = ejv({
+				arr: [{ a: 1 }, { a: 1, z: 1 }]
+			}, [{
+				key: 'arr',
+				type: 'array',
+				items: { type: 'object', allowUnknownProperty: false, properties }
+			}]);
+
+			expect(error?.type).to.be.eql(ERROR_TYPE.UNKNOWN_PROPERTY);
+			expect(error?.path).to.be.eql('arr/1');
 		});
 	});
 });

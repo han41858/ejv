@@ -1,7 +1,7 @@
 ![npm](https://img.shields.io/npm/v/ejv?logo=npm)
 ![NPM Last Update](https://img.shields.io/npm/last-update/ejv)
 
-[🇰🇷 한국어](https://github.com/han41858/ejv/blob/master/README-KR.md)
+[🇰🇷 한국어](https://github.com/han41858/ejv/blob/main/README-KR.md)
 
 # ejv - Easy JSON Validator
 
@@ -20,7 +20,7 @@ ejv is JSON validation library. Check your JSON object with simple syntax.
 npm install ejv
 ```
 
-## `ejv(data : object, schemes : Scheme[])`
+## `ejv(data : object, schemes : Scheme[], options? : Options)`
 
 ejv provides only one function.
 All validation use this function.
@@ -137,6 +137,34 @@ ejv({
 }, [{
 	key: 'a',
 	nullable: true
+}]);
+```
+
+- `validate : (value, data) => string | null`
+
+Validates the value with a custom function.
+Returns `null` if the value is valid, or an error message string. The error type is `CUSTOM`, and an empty string uses the default message.
+Other return values (ex. `true`, `false`, `undefined`) are reported as a scheme error, to avoid confusing which value means valid.
+
+- `value` : the value to validate
+- `data` : the data passed to `ejv()`. It is the same in nested objects and array items, so you can refer to other properties.
+
+It is called after the other rules of the scheme pass, and not called for `undefined` or `null` allowed by `optional`, `nullable`.
+Errors thrown by the function are not caught.
+This option is available for all validation rules.
+
+```typescript
+ejv({
+	password: 'ejv-password',
+	confirm: 'ejv-password'
+}, [{
+	key: 'password',
+	type: 'string',
+	minLength: 8
+}, {
+	key: 'confirm',
+	type: 'string',
+	validate: (value: string, data: { password: string }) => value === data.password ? null : 'password does not match'
 }]);
 ```
 
@@ -257,9 +285,14 @@ formats. The available formats are as follows.
  format        | example                                                                                                                                                                                     
 ---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  `'email'`     | Allows only email. This is based on [RFC 5322 3.4.1](https://tools.ietf.org/html/rfc5322#section-3.4.1). ex) `'email@domain.com'`                                                           
- `'date'`      | Allows only date string format. This is based on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'2018-12-29'`                                                                     
+ `'json'`      | Allows only JSON string that can be parsed by `JSON.parse()`. Note that primitive JSON texts are also allowed. ex) `'{"a":1}'`, `'[1,2]'`, `'"ejv"'`, `'1'`
+ `'date'`      | Allows only date string format. This is based on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). The day should exist in the month (ex. `'2019-02-29'` is not allowed). ex) `'2018-12-29'`
  `'time'`      | Allows only time string format. This is based on [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'21:07:35'`                                                                       
  `'date-time'` | Allows only date-time string format. This is based on [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) and [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). ex) `'2018-12-29T21:07:35Z'` 
+ `'url'`       | Allows only `http://` or `https://` URL that can be parsed by [WHATWG URL API](https://url.spec.whatwg.org/) (`new URL()`) as written. Local and private hosts are allowed. Whitespace, backslash and forms that `new URL()` would fix up (ex. `'http:domain.com'`, `'http://1.2.3'`) are not allowed. ex) `'https://domain.com/path?query=1'`, `'http://localhost:3000'` 
+ `'ip'`        | Allows `'ipv4'` or `'ipv6'`. ex) `'127.0.0.1'`, `'[::1]:8080'` 
+ `'ipv4'`      | Allows only IPv4 address with optional port. Leading zeros are not allowed. ex) `'127.0.0.1'`, `'127.0.0.1:8080'` 
+ `'ipv6'`      | Allows only IPv6 address based on [RFC 4291 2.2](https://datatracker.ietf.org/doc/html/rfc4291#section-2.2). With port, the address should be in brackets. Zone index and prefix length are not allowed. ex) `'::1'`, `'2001:db8::1'`, `'[::1]:8080'` 
 
 - `length : number`
 
@@ -347,6 +380,31 @@ ejv({
 	key: 'obj',
 	type: 'object',
 	allowNoProperty: false // failed
+}]);
+```
+
+- `allowUnknownProperty : boolean`
+
+Checks if the object has properties not declared in `properties`.
+If you specify `false`, ejv will not allow the unknown properties, and returns `UNKNOWN_PROPERTY` error with the first unknown key.
+If you omit this option or specify it as `true`, ejv will allow the unknown properties.
+This option works with `properties` only. Declared properties are checked first, and properties with `undefined` value are ignored.
+For the top level data, use the `allowUnknownProperty` option of `ejv()`.
+
+```typescript
+ejv({
+	obj: {
+		num: 10,
+		str: 'ejv' // unknown property
+	}
+}, [{
+	key: 'obj',
+	type: 'object',
+	allowUnknownProperty: false, // failed
+	properties: [{
+		key: 'num',
+		type: 'number'
+	}]
 }]);
 ```
 
@@ -577,7 +635,10 @@ Specify the type of property to inspect. The values available are as follows.
  `'date'`    | `new Date`                    
  `'regexp'`  | `new RegExp(/./)`, `/./`, ... 
  `'array'`   | `[]`, `[1, 2, 3]`, ...        
- `'buffer'`   | `Buffer.from('ejv')`, `new Uint8Array(3)`, `new ArrayBuffer(5)` ,  ...        
+ `'buffer'`  | `Buffer.from('ejv')`, `new Uint8Array(3)`, `new ArrayBuffer(5)`, ... 
+
+> `'object'` also allows arrays, `Date`, `RegExp` and buffers, because they are objects in JavaScript.
+> Use their own types to distinguish them.
 
 ## `EjvError`
 
@@ -588,11 +649,11 @@ The `EjvError` object is an object that represents the error that occurred at th
 > You do not always need to use `EjvError` type.
 > However, if you use TypeScript, you can use it to refer to the property of an error object.
 
-- `type : ErrorType`
+- `type : ERROR_TYPE`
 
 Represents the type of the error that occurred.
 
-- `keyword : string`
+- `message : string`
 
 Describes the contents of the error that occurred.
 
@@ -607,6 +668,15 @@ Means the data that passed to `ejv()`.
 - `errorData : any`
 
 Means the data that the error occurred.
+
+- `errorScheme : Scheme`
+
+Means the scheme that the error occurred.
+
+- `isSchemeError : boolean`, `isDataError : boolean`
+
+Shows whether the error is caused by the invalid scheme (ex. `INVALID_SCHEMES`) or by the data.
+Scheme errors are mistakes in the code, and `customErrorMsg` option is not applied to them.
 
 usage)
 
@@ -635,21 +705,40 @@ When using a `ejv()` function, you can specify options as a third parameter.
 
 You can override error message corresponding with `EjvError.type` to another content.
 
-This option is used in the type of `object`. You can use `ErrorType` as a key when overriding error message.
+This option is used in the type of `object`. You can use `ERROR_TYPE` as a key when overriding error message.
 
 ```typescript
-import { ejv, EjvError, ErrorType } from 'ejv';
+import { ejv, EjvError, ERROR_TYPE } from 'ejv';
 
 const error: null | EjvError = ejv({
 	a: 10
 }, [{
 	key: 'a',
 	type: 'string'
-}, {
+}], {
 	customErrorMsg: {
-		[ErrorType.TYPE_MISMATCH]: 'property "a" should be a "string".'
+		[ERROR_TYPE.TYPE_MISMATCH]: 'property "a" should be a "string".'
 	}
-}]);
+});
 
-console.log(error.message); // 'property "a" should be a "string".'
+console.log(error?.message); // 'property "a" should be a "string".'
+```
+
+This option applies to data errors only. Scheme errors (`EjvError.isSchemeError === true`, ex. `INVALID_SCHEMES`) keep their original messages, including the ones from nested `properties` and `items`.
+
+- `allowUnknownProperty: boolean`
+
+If you specify `false`, ejv will not allow the properties of the top level data that are not declared in the schemes.
+It works the same as `allowUnknownProperty` of `'object'` options, and applies to the top level data only.
+
+```typescript
+ejv({
+	a: 10,
+	b: 'ejv' // unknown property
+}, [{
+	key: 'a',
+	type: 'number'
+}], {
+	allowUnknownProperty: false // failed
+});
 ```

@@ -668,6 +668,44 @@ describe('ArrayScheme', () => {
 					})
 				});
 			});
+
+			it('empty string in data types', () => {
+				checkSchemeError({
+					data: data,
+					errorScheme: {
+						key: 'a',
+						type: 'array',
+						items: ['number', '']
+					},
+
+					message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
+						placeholders: ['""']
+					})
+				});
+			});
+
+			const invalidItemsArr: unknown[][] = [
+				[1, 2],
+				[null],
+				['number', { type: 'number' }]
+			];
+
+			invalidItemsArr.forEach((items: unknown[]): void => {
+				it(`array of not scheme : ${ JSON.stringify(items) }`, () => {
+					checkSchemeError({
+						data: data,
+						errorScheme: {
+							key: 'a',
+							type: 'array',
+							items: items as Scheme[]
+						},
+
+						message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+							placeholders: [JSON.stringify(items)]
+						})
+					});
+				});
+			});
 		});
 
 		describe('single data type', () => {
@@ -1117,6 +1155,112 @@ describe('ArrayScheme', () => {
 				expect(error.data).to.be.eql(testObj);
 				expect(error.errorData).to.be.eql(null);
 			});
+		});
+	});
+
+	describe('items with not scheme', () => {
+		const notSchemes: [string, unknown][] = [
+			['array', []],
+			['Date', new Date(0)],
+			['RegExp', /a/],
+			['buffer', new Uint8Array(1)]
+		];
+
+		notSchemes.forEach(([name, notScheme]: [string, unknown]): void => {
+			it(`in array : ${ name }`, () => {
+				checkSchemeError({
+					data: { a: [1, 2] },
+					errorScheme: {
+						key: 'a',
+						type: 'array',
+						items: [notScheme as Scheme]
+					},
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+						placeholders: [JSON.stringify([notScheme])]
+					})
+				});
+			});
+		});
+
+		// array as items is a list of data types or schemes
+		notSchemes.filter(([name]: [string, unknown]): boolean => name !== 'array')
+			.forEach(([name, notScheme]: [string, unknown]): void => {
+				it(`single : ${ name }`, () => {
+					checkSchemeError({
+						data: { a: [1, 2] },
+						errorScheme: {
+							key: 'a',
+							type: 'array',
+							items: notScheme as Scheme
+						},
+						message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+							placeholders: [JSON.stringify(notScheme)]
+						})
+					});
+				});
+			});
+	});
+
+	describe('empty items', () => {
+		it('items: []', () => {
+			checkSchemeError({
+				data: { a: [1, 2] },
+				errorScheme: { key: 'a', type: 'array', items: [] },
+				message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+					placeholders: ['[]']
+				})
+			});
+		});
+
+		it('not checked with empty data array', () => {
+			expect(ejv({ a: [] }, [{ key: 'a', type: 'array', items: [] }])).to.be.null;
+		});
+	});
+
+	// values that JSON.stringify() can not serialize, in the messages of items
+	describe('items with bigint', () => {
+		it('invalid items scheme', () => {
+			checkSchemeError({
+				data: { a: [1, 2] },
+				errorScheme: { key: 'a', type: 'array', items: [1n] as unknown as Scheme[] },
+				message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+					placeholders: ['["1n"]']
+				})
+			});
+
+			checkSchemeError({
+				data: { a: [1, 2] },
+				errorScheme: { key: 'a', type: 'array', items: ['number', 1n] as unknown as Scheme[] },
+				message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+					placeholders: ['["number","1n"]']
+				})
+			});
+		});
+
+		it('multiple schemes', () => {
+			const error: EjvError | null = ejv({ a: ['x'] }, [{
+				key: 'a',
+				type: 'array',
+				items: [{ type: 'number', min: 1n as unknown as number }, { type: 'boolean' }]
+			}]);
+
+			expect(error?.type).to.be.eql(ERROR_TYPE.ITEMS_SCHEMES);
+			expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.ITEMS_SCHEMES, {
+				placeholders: ['[{"type":"number","min":"1n"},{"type":"boolean"}]']
+			}));
+		});
+
+		it('undefined item with single scheme', () => {
+			const error: EjvError | null = ejv({ a: [undefined] }, [{
+				key: 'a',
+				type: 'array',
+				items: { type: 'number', min: 1n as unknown as number }
+			}]);
+
+			expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+			expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
+				placeholders: ['{"type":"number","min":"1n"}']
+			}));
 		});
 	});
 });

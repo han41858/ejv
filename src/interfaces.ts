@@ -11,6 +11,11 @@ interface CommonScheme {
 
 	optional?: boolean; // false
 	nullable?: boolean; // false
+
+	// custom validation, called after the other rules of the scheme pass.
+	// value : the value to validate, data : the data passed to ejv()
+	// returns null if the value is valid, or an error message
+	validate?(value: unknown, data: unknown): string | null;
 }
 
 // no additional rule
@@ -49,6 +54,7 @@ export interface StringScheme extends CommonScheme {
 export interface ObjectScheme extends CommonScheme {
 	properties?: Scheme[];
 	allowNoProperty?: boolean; // true
+	allowUnknownProperty?: boolean; // true
 }
 
 // min, max string for date string
@@ -92,10 +98,13 @@ export interface Options {
 	customErrorMsg?: {
 		[key in ERROR_TYPE]?: string;
 	};
+
+	allowUnknownProperty?: boolean; // true, for the top level data
 }
 
 export interface InternalOptions extends Options {
 	path: string[];
+	rootData?: AnyObject; // data passed to ejv(), for custom validation
 }
 
 export class EjvError {

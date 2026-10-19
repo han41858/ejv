@@ -665,6 +665,14 @@ describe('StringScheme', () => {
 		});
 
 		describe('email', () => {
+			it('dot-atom local part', () => {
+				expect(ejv({ a: 'first.last@ejv.com' }, [{ key: 'a', type: 'string', format: 'email' }])).to.be.null;
+				expect(ejv({ a: '".first."@ejv.com' }, [{ key: 'a', type: 'string', format: 'email' }])).to.be.null;
+
+				expect(ejv({ a: '.first@ejv.com' }, [{ key: 'a', type: 'string', format: 'email' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(ejv({ a: 'last.@ejv.com' }, [{ key: 'a', type: 'string', format: 'email' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+			});
+
 			it('single format', () => {
 				const data = {
 					a: 'ejv'
@@ -809,6 +817,15 @@ describe('StringScheme', () => {
 		});
 
 		describe('date', () => {
+			it('not existing day', () => {
+				expect(ejv({ a: '2020-02-29' }, [{ key: 'a', type: 'string', format: 'date' }])).to.be.null;
+				expect(ejv({ a: '2018-04-30' }, [{ key: 'a', type: 'string', format: 'date' }])).to.be.null;
+
+				expect(ejv({ a: '2019-02-29' }, [{ key: 'a', type: 'string', format: 'date' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(ejv({ a: '2018-02-30' }, [{ key: 'a', type: 'string', format: 'date' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(ejv({ a: '2018-04-31' }, [{ key: 'a', type: 'string', format: 'date' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+			});
+
 			it('single format', () => {
 				const data = {
 					a: 'ejv'
@@ -953,6 +970,13 @@ describe('StringScheme', () => {
 		});
 
 		describe('date-time', () => {
+			it('not existing day', () => {
+				expect(ejv({ a: '2020-02-29T12:00:00Z' }, [{ key: 'a', type: 'string', format: 'date-time' }])).to.be.null;
+
+				expect(ejv({ a: '2019-02-29T12:00:00Z' }, [{ key: 'a', type: 'string', format: 'date-time' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(ejv({ a: '2018-04-31T12:00:00+09:00' }, [{ key: 'a', type: 'string', format: 'date-time' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+			});
+
 			it('single format', () => {
 				const data = {
 					a: 'ejv'
@@ -1055,6 +1079,97 @@ describe('StringScheme', () => {
 				}])).to.be.null;
 			});
 		});
+
+		const urlIpFormatCases: {
+			format: string;
+			valid: string[];
+			invalid: string[];
+		}[] = [
+			{
+				format: 'url',
+				valid: ['https://hello.com/child?query=some', 'http://localhost:3000'],
+				invalid: ['hello.com', 'ftp://hello.com', 'http:hello.com']
+			},
+			{
+				format: 'ipv4',
+				valid: ['127.0.0.1', '127.0.0.1:8080'],
+				invalid: ['256.0.0.1', '01.2.3.4', '::1']
+			},
+			{
+				format: 'ipv6',
+				valid: ['::1', '[::1]:8080'],
+				invalid: ['[::1]', '1::2::3', '127.0.0.1']
+			},
+			{
+				format: 'ip',
+				valid: ['127.0.0.1:8080', '2001:db8::1'],
+				invalid: ['localhost', '256.0.0.1']
+			}
+		];
+
+		urlIpFormatCases.forEach(({ format, valid, invalid }): void => {
+			describe(format, () => {
+				it('single format', () => {
+					valid.forEach((value: string): void => {
+						expect(ejv({ a: value }, [{
+							key: 'a',
+							type: 'string',
+							format
+						}])).to.be.null;
+					});
+
+					invalid.forEach((value: string): void => {
+						const data = { a: value };
+
+						const error: EjvError | null = ejv(data, [{
+							key: 'a',
+							type: 'string',
+							format
+						}]);
+
+						expect(error).to.be.instanceof(EjvError);
+
+						if (!error) {
+							throw new Error('spec failed');
+						}
+
+						expect(error.type).to.be.eql(ERROR_TYPE.FORMAT);
+						expect(error.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT, {
+							placeholders: [format]
+						}));
+						expect(error.path).to.be.eql('a');
+						expect(error.data).to.be.deep.equal(data);
+						expect(error.errorData).to.be.eql(value);
+					});
+				});
+
+				it('multiple format', () => {
+					const formatArr: string[] = [format, 'email'];
+
+					valid.forEach((value: string): void => {
+						expect(ejv({ a: value }, [{
+							key: 'a',
+							type: 'string',
+							format: formatArr
+						}])).to.be.null;
+					});
+
+					invalid.forEach((value: string): void => {
+						const error: EjvError | null = ejv({ a: value }, [{
+							key: 'a',
+							type: 'string',
+							format: formatArr
+						}]);
+
+						expect(error).to.be.instanceof(EjvError);
+						expect(error?.type).to.be.eql(ERROR_TYPE.FORMAT_ONE_OF);
+						expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.FORMAT_ONE_OF, {
+							placeholders: [JSON.stringify(formatArr)]
+						}));
+					});
+				});
+			});
+		});
 	});
 
 	describe('pattern', () => {
@@ -1133,6 +1248,38 @@ describe('StringScheme', () => {
 					errorScheme,
 					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 						placeholders: ['[]']
+					})
+				});
+			});
+
+			it('invalid regular expression string', () => {
+				const errorScheme: Scheme = {
+					key: 'a',
+					type: 'string',
+					pattern: '('
+				};
+
+				checkSchemeError({
+					data,
+					errorScheme,
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+						placeholders: ['/(/']
+					})
+				});
+			});
+
+			it('invalid regular expression string in array', () => {
+				const errorScheme: Scheme = {
+					key: 'a',
+					type: 'string',
+					pattern: ['ejv', '(']
+				};
+
+				checkSchemeError({
+					data,
+					errorScheme,
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+						placeholders: ['[/ejv/, /(/]']
 					})
 				});
 			});
@@ -1417,6 +1564,28 @@ describe('StringScheme', () => {
 				}]);
 
 				expect(error).to.be.null;
+			});
+		});
+	});
+
+	describe('format with empty or falsy value', () => {
+		const cases: [string, unknown, string][] = [
+			['empty array', [], '[]'],
+			['empty string', '', '""'],
+			['empty string in array', ['', 'email'], '""'],
+			['null in array', ['email', null], 'null'],
+			['bigint in array', ['email', 1n], '1n']
+		];
+
+		cases.forEach(([name, format, placeholder]: [string, unknown, string]): void => {
+			it(name, () => {
+				checkSchemeError({
+					data: { a: 'ejv@ejv.com' },
+					errorScheme: { key: 'a', type: 'string', format: format as string[] },
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_FORMAT, {
+						placeholders: [placeholder]
+					})
+				});
 			});
 		});
 	});

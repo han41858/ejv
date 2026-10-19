@@ -1,5 +1,88 @@
 # Change Log
 
+# 2.2.0
+
+- improvement
+	- `allowUnknownProperty` added : rejects properties not declared in `properties`. `'object'` option, and `ejv()` option for the top level data. `UNKNOWN_PROPERTY` error
+	- `validate` added : custom validation function for all schemes, `(value, data) => string | null`. `CUSTOM` error
+	- string formats added : `url`, `ip`, `ipv4`, `ipv6`
+		- `url` : `http://` or `https://` URL that can be parsed by `new URL()` as written
+		- `ipv4`, `ipv6` : optional port (IPv6 with port should be in brackets, ex. `[::1]:8080`)
+	- `BufferScheme`, `BufferLike`, `AllDataType` exported
+	- performance : `unique` is O(n), format testers and options are not created or deep copied for every value
+- bug fix : `ejv()` returns `EjvError` instead of throwing, or works correctly
+	- schemes are not mutated by `ejv()` anymore (reusing a scheme could overflow the stack)
+	- date `min`, `max` which `Date` can not parse (ex. `'2020-W01'`) returns `INVALID_SCHEMES`
+	- invalid regular expression string in `pattern` (ex. `'('`) returns `INVALID_SCHEMES`
+	- `items` with values that are not schemes (ex. `[1, 2]`) and `null` in schemes, `properties`, `items` return `INVALID_SCHEMES`
+	- bigint and circular reference in invalid scheme values are shown in the messages (ex. `1n`, `[Circular]`)
+	- type mismatch message uses the type inherited through multiple `parent` levels (was `'the value should be a undefined'`)
+- caution : stricter validation. values and schemes which passed before can fail
+	- `date`, `date-time` formats check the day exists in the month (ex. `'2019-02-29'`, `'2018-04-31'` fail)
+	- `email` format rejects leading and trailing dots in the local part (ex. `'.abc@domain.com'`)
+	- `Infinity` is not an `integer` / `index`
+	- falsy types (ex. `type: ''`, `type: null`) return `SCHEMES_HAS_INVALID_TYPE`
+	- empty or falsy lists are scheme errors : `type: []`, `items: []`, `format: []`, `format: ['', 'email']`
+	- arrays, `Date`, `RegExp` and buffers are not accepted as schemes in schemes, `properties`, `items`
+	- `customErrorMsg` is applied to data errors only (was also applied to scheme errors from nested schemes)
+	- `ERROR_MESSAGE` changed : `NO_OBJECT_ARRAY_SCHEME`, `PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT` (`array of object` -> `array of scheme object`)
+- internal
+	- `_ejv()` split into per-type validators (no behavior change)
+- build
+	- ESM type declarations added (`build/esm/*.d.ts`), CJS types stay at `build/index.d.ts`
+	- published files limited with `files` field
+	- CI added (GitHub Actions, Node 20, 22, 24)
+- docs
+	- `json` format, `allowUnknownProperty`, `validate` documented
+	- `customErrorMsg` example fixed (`ERROR_TYPE`, options position)
+	- `EjvError` properties fixed (`message`, `errorScheme`, `isSchemeError`, `isDataError`)
+
+# 2.1.7
+
+- bug fix
+	- build error fixed (`rootDir` of `tsconfig.json`, scripts are built into `build/scripts`)
+	- 2.1.5 changes restored (`buffer` type) - they were missing in 2.1.6
+
+# 2.1.6
+
+- dependencies version up
+	- `typescript@6.0.3`
+	- `eslint@10.6.0`
+	- `mocha@11.7.6`
+- caution : published without the 2.1.5 changes (`buffer` type is not available). Fixed in 2.1.7
+
+# 2.1.5
+
+- improvement
+	- `buffer` data type added : `byteLength`, `minByteLength`, `maxByteLength`
+	- arrow functions changed to pure functions
+	- `ArrayScheme` length specs added, spec code optimized
+- dependencies version up
+	- `typescript@5.9.3`
+	- `eslint@10.0.0`
+	- `mocha@11.7.5`
+
+# 2.1.4
+
+- bug fix
+	- `package.json` with module type for `build/cjs`, `build/esm` is created by script
+
+# 2.1.3
+
+- bug fix
+	- `package.json` - `exports` - `types` field added
+- README badges added
+- dependencies version up
+	- `typescript@5.8.3`
+	- `eslint@9.30.1`
+	- `mocha@11.7.1`
+
+# 2.1.2
+
+- improvement
+	- `STRING_FORMAT.JSON` added
+- eslint linebreak setting changed
+
 # 2.1.1
 
 - improvement

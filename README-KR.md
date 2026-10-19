@@ -1,7 +1,7 @@
 ![npm](https://img.shields.io/npm/v/ejv?logo=npm)
 ![NPM Last Update](https://img.shields.io/npm/last-update/ejv)
 
-[English](https://github.com/han41858/ejv/blob/master/README.md)
+[English](https://github.com/han41858/ejv/blob/main/README.md)
 
 # ejv - Easy JSON Validator
 
@@ -19,7 +19,7 @@ ejv는 JSON 객체를 검사할 때 사용하는 라이브러리입니다. 복�
 npm install ejv
 ```
 
-## `ejv(data : object, schemes : Scheme[])`
+## `ejv(data : object, schemes : Scheme[], options? : Options)`
 
 ejv 라이브러리는 단 하나의 함수만 제공합니다.
 모든 검사는 이 함수를 사용합니다.
@@ -135,6 +135,34 @@ ejv({
 }, [{
 	key: 'a',
 	nullable: true
+}]);
+```
+
+- `validate : (value, data) => string | null`
+
+함수로 값을 직접 검사합니다.
+값이 유효하면 `null`을, 유효하지 않으면 에러 메시지 문자열을 반환합니다. 에러 타입은 `CUSTOM`이며, 빈 문자열을 반환하면 기본 메시지를 사용합니다.
+어떤 값이 통과를 의미하는지 헷갈리지 않도록, 그 외의 반환값(ex. `true`, `false`, `undefined`)은 스킴 에러로 처리합니다.
+
+- `value` : 검사할 값
+- `data` : `ejv()`에 전달한 데이터. 중첩 객체나 배열 항목에서도 같은 값이므로 다른 프로퍼티를 참조해서 검사할 수 있습니다.
+
+이 함수는 해당 스킴의 다른 규칙을 모두 통과한 뒤에 실행되며, `optional`, `nullable`로 허용된 `undefined`, `null`에는 실행되지 않습니다.
+함수에서 발생한 예외는 잡지 않습니다.
+이 옵션은 모든 검사규칙에 사용할 수 있습니다.
+
+```typescript
+ejv({
+	password: 'ejv-password',
+	confirm: 'ejv-password'
+}, [{
+	key: 'password',
+	type: 'string',
+	minLength: 8
+}, {
+	key: 'confirm',
+	type: 'string',
+	validate: (value: string, data: { password: string }) => value === data.password ? null : 'password does not match'
 }]);
 ```
 
@@ -254,9 +282,14 @@ ejv({
  포맷            | 예                                                                                                                                                                    
 ---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
  `'email'`     | 이메일 형식인지 검사합니다. [RFC 5322 3.4.1](https://tools.ietf.org/html/rfc5322#section-3.4.1) 스펙을 기준으로 합니다. ex) `'email@domain.com'`                                           
- `'date'`      | 날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29'`                                                                   
+ `'json'`      | `JSON.parse()`로 파싱되는 JSON 문자열인지 검사합니다. 객체·배열이 아닌 원시 JSON 값도 허용됩니다. ex) `'{"a":1}'`, `'[1,2]'`, `'"ejv"'`, `'1'`
+ `'date'`      | 날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. 해당 월에 존재하는 날짜여야 합니다(ex. `'2019-02-29'`는 허용하지 않음). ex) `'2018-12-29'`
  `'time'`      | 시간 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'21:07:35'`                                                                     
  `'date-time'` | 날짜-시간 형식인지 검사합니다. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) 스펙과 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29T21:07:35Z'` 
+ `'url'`       | `http://`나 `https://`로 시작하고, 입력값 그대로 [WHATWG URL API](https://url.spec.whatwg.org/)(`new URL()`)로 파싱되는 URL인지 검사합니다. 로컬·사설 호스트도 허용합니다. 공백, 백슬래시, `new URL()`이 보정해서 받아들이는 형식(ex. `'http:domain.com'`, `'http://1.2.3'`)은 허용하지 않습니다. ex) `'https://domain.com/path?query=1'`, `'http://localhost:3000'`
+ `'ip'`        | `'ipv4'` 또는 `'ipv6'` 형식인지 검사합니다. ex) `'127.0.0.1'`, `'[::1]:8080'`
+ `'ipv4'`      | IPv4 주소인지 검사합니다. 포트는 선택입니다. 앞자리 0은 허용하지 않습니다. ex) `'127.0.0.1'`, `'127.0.0.1:8080'`
+ `'ipv6'`      | IPv6 주소인지 검사합니다. [RFC 4291 2.2](https://datatracker.ietf.org/doc/html/rfc4291#section-2.2) 스펙을 기준으로 합니다. 포트를 붙일 때는 주소를 대괄호로 감싸야 합니다. 존 인덱스와 프리픽스 길이는 허용하지 않습니다. ex) `'::1'`, `'2001:db8::1'`, `'[::1]:8080'`
 
 - `length : number`
 
@@ -343,6 +376,31 @@ ejv({
 	key: 'obj',
 	type: 'object',
 	allowNoProperty: false // 실패
+}]);
+```
+
+- `allowUnknownProperty : boolean`
+
+`properties`에 선언되지 않은 프로퍼티가 있는지 검사합니다.
+이 옵션에 `false`를 지정하면 선언되지 않은 프로퍼티를 허용하지 않으며, 첫 번째 미정의 키와 함께 `UNKNOWN_PROPERTY` 에러를 반환합니다.
+이 옵션을 생략하거나 `true`로 지정하면 선언되지 않은 프로퍼티를 허용합니다.
+이 옵션은 `properties`가 있을 때만 동작합니다. 선언된 프로퍼티를 먼저 검사하며, 값이 `undefined`인 프로퍼티는 없는 것으로 봅니다.
+최상위 데이터에는 `ejv()`의 `allowUnknownProperty` 옵션을 사용하세요.
+
+```typescript
+ejv({
+	obj: {
+		num: 10,
+		str: 'ejv' // 선언되지 않은 프로퍼티
+	}
+}, [{
+	key: 'obj',
+	type: 'object',
+	allowUnknownProperty: false, // 실패
+	properties: [{
+		key: 'num',
+		type: 'number'
+	}]
 }]);
 ```
 
@@ -572,8 +630,11 @@ ejv({
  `'object'`  | `{}`, `{ key : 123 }`, ...    
  `'date'`    | `new Date`                    
  `'regexp'`  | `new RegExp(/./)`, `/./`, ... 
- `'array'`   | `[]`, `[1, 2, 3]`, ...
-`'buffer'`   | ``Buffer.from('ejv')``, `new Uint8Array(3)`, `new ArrayBuffer(5)`, ...
+ `'array'`   | `[]`, `[1, 2, 3]`, ...                                                  
+ `'buffer'`  | `Buffer.from('ejv')`, `new Uint8Array(3)`, `new ArrayBuffer(5)`, ... 
+
+> JavaScript에서는 배열, `Date`, `RegExp`, 버퍼도 객체이므로 `'object'` 타입으로도 허용됩니다.
+> 이 값들을 구분하려면 각각의 타입을 사용하세요.
 
 ## `EjvError`
 
@@ -583,7 +644,7 @@ ejv({
 > `EjvError` 형식을 꼭 사용할 필요는 없습니다.
 > 하지만 TypeScript를 사용한다면 이 객체의 프로퍼티를 참조할 때 활용할 수 있습니다.
 
-- `type : ErrorKey`
+- `type : ERROR_TYPE`
 
 발생한 에러의 타입을 표현합니다.
 
@@ -602,6 +663,15 @@ ejv({
 - `errorData : any`
 
 에러가 발생한 데이터를 의미합니다.
+
+- `errorScheme : Scheme`
+
+에러가 발생한 스킴을 의미합니다.
+
+- `isSchemeError : boolean`, `isDataError : boolean`
+
+에러가 잘못된 스킴(ex. `INVALID_SCHEMES`) 때문인지, 데이터 때문인지 나타냅니다.
+스킴 에러는 코드의 실수이므로 `customErrorMsg` 옵션이 적용되지 않습니다.
 
 사용방법)
 
@@ -630,21 +700,40 @@ console.log(error.errorData); // 10
 
 ejv가 제공하는 에러 메시지를 다른 내용으로 변경하려면 `EjvError.type`에 해당하는 키로 에러 메시지를 오버라이드 할 수 있습니다.
 
-이 옵션은 `object` 형태로 사용합니다. 오버라이드하려는 에러에 해당하는 `ErrorType`를 키로 사용해서 원하는 문구를 지정해 보세요.
+이 옵션은 `object` 형태로 사용합니다. 오버라이드하려는 에러에 해당하는 `ERROR_TYPE`을 키로 사용해서 원하는 문구를 지정해 보세요.
 
 ```typescript
-import { ejv, EjvError, ErrorType } from 'ejv';
+import { ejv, EjvError, ERROR_TYPE } from 'ejv';
 
 const error: null | EjvError = ejv({
 	a: 10
 }, [{
 	key: 'a',
 	type: 'string'
-}, {
+}], {
 	customErrorMsg: {
-		[ErrorType.TYPE_MISMATCH]: 'property "a" should be a "string".'
+		[ERROR_TYPE.TYPE_MISMATCH]: 'property "a" should be a "string".'
 	}
-}]);
+});
 
-console.log(error.message); // 'property "a" should be a "string".'
+console.log(error?.message); // 'property "a" should be a "string".'
+```
+
+이 옵션은 데이터 오류에만 적용됩니다. 스킴 오류(`EjvError.isSchemeError === true`, ex. `INVALID_SCHEMES`)는 중첩된 `properties`, `items`에서 발생한 경우를 포함해 원래 메시지를 유지합니다.
+
+- `allowUnknownProperty: boolean`
+
+`false`를 지정하면 최상위 데이터에서 스킴에 선언되지 않은 프로퍼티를 허용하지 않습니다.
+`'object'` 옵션의 `allowUnknownProperty`와 같은 방식으로 동작하며, 최상위 데이터에만 적용됩니다.
+
+```typescript
+ejv({
+	a: 10,
+	b: 'ejv' // 선언되지 않은 프로퍼티
+}, [{
+	key: 'a',
+	type: 'number'
+}], {
+	allowUnknownProperty: false // 실패
+});
 ```

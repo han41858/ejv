@@ -21,6 +21,9 @@ import {
 	hasPropertyTester,
 	indexTester,
 	integerTester,
+	ipTester,
+	ipv4Tester,
+	ipv6Tester,
 	lengthTester,
 	maxDateTester,
 	maxLengthTester,
@@ -34,7 +37,8 @@ import {
 	stringRegExpTester,
 	stringTester,
 	timeFormatTester,
-	uniqueItemsTester
+	uniqueItemsTester,
+	urlTester
 } from '../src/tester';
 import { DATA_TYPE } from '../src/constants';
 
@@ -325,12 +329,51 @@ describe('testers', function () {
 				expect(emailTester('john..doe@example.com')).to.be.false;
 				expect(emailTester('john.doe@example..com')).to.be.false;
 
+				// dot-atom local part : no leading or trailing dot
+				expect(emailTester('.john.doe@example.com')).to.be.false;
+				expect(emailTester('john.doe.@example.com')).to.be.false;
+				expect(emailTester('.@example.com')).to.be.false;
+				expect(emailTester('".john.doe."@example.com')).to.be.true; // quoted local part
+
 				expect(emailTester(' ejv@ejv.com')).to.be.false;
 				expect(emailTester('ejv@ejv.com ')).to.be.false;
 			});
 		});
 
 		describe('dateFormatTester()', () => {
+			it('calendar date validity', () => {
+				// day should exist in the month
+				expect(dateFormatTester('2018-01-31')).to.be.true;
+				expect(dateFormatTester('2018-04-30')).to.be.true;
+				expect(dateFormatTester('2018-02-30')).to.be.false;
+				expect(dateFormatTester('2018-04-31')).to.be.false;
+				expect(dateFormatTester('2018-06-31')).to.be.false;
+				expect(dateFormatTester('2018-09-31')).to.be.false;
+				expect(dateFormatTester('2018-11-31')).to.be.false;
+				expect(dateFormatTester('20180431')).to.be.false;
+
+				// Feb 29 only in leap year
+				expect(dateFormatTester('2020-02-29')).to.be.true;
+				expect(dateFormatTester('2000-02-29')).to.be.true; // divisible by 400
+				expect(dateFormatTester('20200229')).to.be.true;
+				expect(dateFormatTester('2019-02-29')).to.be.false;
+				expect(dateFormatTester('1900-02-29')).to.be.false; // divisible by 100
+				expect(dateFormatTester('20190229')).to.be.false;
+
+				// without year : Feb 29 is allowed because the year is unknown
+				expect(dateFormatTester('--02-29')).to.be.true;
+				expect(dateFormatTester('--0229')).to.be.true;
+				expect(dateFormatTester('--02-30')).to.be.false;
+				expect(dateFormatTester('--0431')).to.be.false;
+
+				// ordinal date : 366th day only in leap year
+				expect(dateFormatTester('2020-366')).to.be.true;
+				expect(dateFormatTester('2020366')).to.be.true;
+				expect(dateFormatTester('2019-365')).to.be.true;
+				expect(dateFormatTester('2019-366')).to.be.false;
+				expect(dateFormatTester('2019366')).to.be.false;
+			});
+
 			it('logic test', () => {
 				//// ISO 8601
 				// year
@@ -478,6 +521,18 @@ describe('testers', function () {
 		});
 
 		describe('dateTimeFormatTester()', () => {
+			it('calendar date validity', () => {
+				// RFC 3339
+				expect(dateTimeFormatTester('2020-02-29T12:00:00Z')).to.be.true;
+				expect(dateTimeFormatTester('2019-02-29T12:00:00Z')).to.be.false;
+				expect(dateTimeFormatTester('2018-04-31T12:00:00+09:00')).to.be.false;
+
+				// ISO 8601
+				expect(dateTimeFormatTester('20200229T120000Z')).to.be.true;
+				expect(dateTimeFormatTester('20190229T120000Z')).to.be.false;
+				expect(dateTimeFormatTester('20180431T120000Z')).to.be.false;
+			});
+
 			it('logic test', () => {
 				// RFC 3339
 				expect(dateTimeFormatTester('2018-12-16T05:04:05')).to.be.true;
@@ -516,86 +571,239 @@ describe('testers', function () {
 		});
 	});
 
-	// describe('urlTester()', () => {
-	// 	it('common test', () => {
-	// 		expect(commonTestRunner(
-	// 			urlTester,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false
-	// 		)).to.be.true;
-	// 	});
-	//
-	// 	it('logic test', () => {
-	// 		expect(urlTester('')).to.be.false;
-	// 		expect(urlTester(' ')).to.be.false;
-	// 		expect(urlTester('hello')).to.be.false;
-	// 		expect(urlTester('http://hello')).to.be.false;
-	// 		expect(urlTester('https://hello')).to.be.false;
-	// 		expect(urlTester('http://hello.com')).to.be.true;
-	// 		expect(urlTester('http://hello.com/')).to.be.true;
-	// 		expect(urlTester('http://hello.com/#1')).to.be.true;
-	// 		expect(urlTester('http://hello.com/child')).to.be.true;
-	// 		expect(urlTester('http://hello.com/child/grand')).to.be.true;
-	// 		expect(urlTester('http://hello.com/child/grand?query=some')).to.be.true;
-	// 		expect(urlTester('http://hello.com/child/grand(some:angular)')).to.be.true;
-	// 	});
-	// });
-	//
-	// describe('ipv4Tester()', () => {
-	// 	it('common test', () => {
-	// 		expect(commonTestRunner(
-	// 			ipv4Tester,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false
-	// 		)).to.be.true;
-	// 	});
-	//
-	// 	it('logic test', () => {
-	// 		expect(ipv4Tester('')).to.be.false;
-	// 		expect(ipv4Tester(' ')).to.be.false;
-	// 		expect(ipv4Tester('127.0.0')).to.be.false;
-	// 		expect(ipv4Tester('127.0.0.1')).to.be.true;
-	// 		expect(ipv4Tester('256.0.0.1')).to.be.false;
-	// 		expect(ipv4Tester('255.-1.0.1')).to.be.false;
-	// 		expect(ipv4Tester('255.256.267.1')).to.be.false;
-	// 		expect(ipv4Tester('255.255.255.0')).to.be.true;
-	// 		expect(ipv4Tester('255.255.255.0.5')).to.be.false;
-	// 	});
-	// });
-	//
-	// describe('ipv6Tester()', () => {
-	// 	it('common test', () => {
-	// 		expect(commonTestRunner(
-	// 			ipv6Tester,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false,
-	// 			false
-	// 		)).to.be.true;
-	// 	});
-	//
-	// 	it('logic test', () => {
-	// 		expect(ipv6Tester('')).to.be.false;
-	// 		expect(ipv6Tester(' ')).to.be.false;
-	// 		expect(ipv6Tester('127.0.0')).to.be.false;
-	// 		// expect(ipv6Tester('1762:0:0:0:0:B03:1:AF18')).to.be.true;
-	// 		// expect(ipv6Tester('fe80:0000:0000:0000:0204:61ff:fe9d:f156/1')).to.be.true;
-	// 		expect(ipv6Tester('1200:0000:AB00:1234:O000:2552:7777:1313')).to.be.false; // has invalid character
-	// 	});
-	// });
+	describe('urlTester()', () => {
+		it('common test', () => {
+			expect(commonTestRunner(
+				urlTester as (args: unknown) => unknown,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('logic test', () => {
+			expect(urlTester('')).to.be.false;
+			expect(urlTester(' ')).to.be.false;
+			expect(urlTester('hello')).to.be.false;
+			expect(urlTester('hello.com')).to.be.false;
+
+			expect(urlTester('http://hello.com')).to.be.true;
+			expect(urlTester('https://hello.com')).to.be.true;
+			expect(urlTester('http://hello.com/')).to.be.true;
+			expect(urlTester('http://hello.com/#1')).to.be.true;
+			expect(urlTester('http://hello.com/child')).to.be.true;
+			expect(urlTester('http://hello.com/child/grand')).to.be.true;
+			expect(urlTester('http://hello.com/child/grand?query=some')).to.be.true;
+			expect(urlTester('http://hello.com/child/grand(some:angular)')).to.be.true;
+			expect(urlTester('http://hello.com/%20encoded')).to.be.true;
+			expect(urlTester('HTTPS://HELLO.COM')).to.be.true; // scheme is case-insensitive
+			expect(urlTester('http://user:password@hello.com:8080/path')).to.be.true;
+			expect(urlTester('https://例え.jp/パス')).to.be.true; // IDN
+
+			// TLD is not required, same as email format
+			expect(urlTester('http://hello')).to.be.true;
+		});
+
+		it('local & private hosts', () => {
+			expect(urlTester('http://localhost')).to.be.true;
+			expect(urlTester('http://localhost:3000')).to.be.true;
+			expect(urlTester('http://127.0.0.1:8080')).to.be.true;
+			expect(urlTester('http://192.168.0.1/')).to.be.true;
+			expect(urlTester('http://[::1]:8080/')).to.be.true;
+		});
+
+		it('only http & https', () => {
+			expect(urlTester('ftp://hello.com')).to.be.false;
+			expect(urlTester('file:///etc/passwd')).to.be.false;
+			expect(urlTester('mailto:hello@domain.com')).to.be.false;
+			expect(urlTester('javascript:alert(1)')).to.be.false;
+			expect(urlTester('data:text/plain,hello')).to.be.false;
+		});
+
+		it('rejects what URL API would fix up', () => {
+			expect(urlTester('http:hello.com')).to.be.false;
+			expect(urlTester('http:/hello.com')).to.be.false;
+			expect(urlTester('http:///hello.com')).to.be.false;
+			expect(urlTester('http://\\hello.com')).to.be.false;
+			expect(urlTester('http://hello.com\\child')).to.be.false;
+
+			expect(urlTester(' http://hello.com')).to.be.false;
+			expect(urlTester('http://hello.com ')).to.be.false;
+			expect(urlTester('http://hello.com/with space')).to.be.false;
+			expect(urlTester('http://hello.com/\ttab')).to.be.false;
+
+			// IPv4 shorthand normalized by URL API
+			expect(urlTester('http://1.2.3')).to.be.false;
+			expect(urlTester('http://0x7f.0.0.1')).to.be.false;
+			expect(urlTester('http://010.0.0.1')).to.be.false;
+			expect(urlTester('http://4294967295')).to.be.false;
+		});
+
+		it('rejects what URL API can not parse', () => {
+			expect(urlTester('http://')).to.be.false;
+			expect(urlTester('https://')).to.be.false;
+			expect(urlTester('http://:80')).to.be.false;
+			expect(urlTester('http://999.1.1.1')).to.be.false;
+			expect(urlTester('http://hello.com:99999')).to.be.false;
+		});
+	});
+
+	describe('ipv4Tester()', () => {
+		it('common test', () => {
+			expect(commonTestRunner(
+				ipv4Tester as (args: unknown) => unknown,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('logic test', () => {
+			expect(ipv4Tester('')).to.be.false;
+			expect(ipv4Tester(' ')).to.be.false;
+			expect(ipv4Tester('127.0.0')).to.be.false;
+			expect(ipv4Tester('127.0.0.1')).to.be.true;
+			expect(ipv4Tester('0.0.0.0')).to.be.true;
+			expect(ipv4Tester('256.0.0.1')).to.be.false;
+			expect(ipv4Tester('255.-1.0.1')).to.be.false;
+			expect(ipv4Tester('255.256.267.1')).to.be.false;
+			expect(ipv4Tester('255.255.255.0')).to.be.true;
+			expect(ipv4Tester('255.255.255.0.5')).to.be.false;
+			expect(ipv4Tester('1.2.3.4.')).to.be.false;
+			expect(ipv4Tester(' 1.2.3.4')).to.be.false;
+
+			// leading zeros are ambiguous (octal)
+			expect(ipv4Tester('01.2.3.4')).to.be.false;
+			expect(ipv4Tester('1.2.3.004')).to.be.false;
+		});
+
+		it('with port', () => {
+			expect(ipv4Tester('127.0.0.1:8080')).to.be.true;
+			expect(ipv4Tester('127.0.0.1:0')).to.be.true;
+			expect(ipv4Tester('127.0.0.1:65535')).to.be.true;
+
+			expect(ipv4Tester('127.0.0.1:')).to.be.false;
+			expect(ipv4Tester('127.0.0.1:65536')).to.be.false;
+			expect(ipv4Tester('127.0.0.1:080')).to.be.false;
+			expect(ipv4Tester('127.0.0.1:-1')).to.be.false;
+			expect(ipv4Tester('127.0.0.1:port')).to.be.false;
+		});
+	});
+
+	describe('ipv6Tester()', () => {
+		it('common test', () => {
+			expect(commonTestRunner(
+				ipv6Tester as (args: unknown) => unknown,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('logic test', () => {
+			expect(ipv6Tester('')).to.be.false;
+			expect(ipv6Tester(' ')).to.be.false;
+			expect(ipv6Tester('127.0.0')).to.be.false;
+			expect(ipv6Tester('127.0.0.1')).to.be.false;
+
+			expect(ipv6Tester('1762:0:0:0:0:B03:1:AF18')).to.be.true;
+			expect(ipv6Tester('2001:0db8:0000:0000:0000:ff00:0042:8329')).to.be.true;
+			expect(ipv6Tester('1:2:3:4:5:6:7:8')).to.be.true;
+
+			expect(ipv6Tester('1:2:3:4:5:6:7')).to.be.false;
+			expect(ipv6Tester('1:2:3:4:5:6:7:8:9')).to.be.false;
+			expect(ipv6Tester('12345::1')).to.be.false;
+			expect(ipv6Tester('1200:0000:AB00:1234:O000:2552:7777:1313')).to.be.false; // has invalid character
+		});
+
+		it('compression', () => {
+			expect(ipv6Tester('::')).to.be.true;
+			expect(ipv6Tester('::1')).to.be.true;
+			expect(ipv6Tester('2001:db8::1')).to.be.true;
+			expect(ipv6Tester('fe80::1')).to.be.true;
+			expect(ipv6Tester('1::8')).to.be.true;
+			expect(ipv6Tester('1:2:3:4:5:6:7::')).to.be.true;
+			expect(ipv6Tester('::1:2:3:4:5:6:7')).to.be.true;
+
+			expect(ipv6Tester('1::2::3')).to.be.false;
+			expect(ipv6Tester('1:::2')).to.be.false;
+			expect(ipv6Tester(':1:2:3:4:5:6:7')).to.be.false;
+			expect(ipv6Tester('1:2:3:4:5:6:7:')).to.be.false;
+			expect(ipv6Tester('1:2:3:4::5:6:7:8')).to.be.false;
+		});
+
+		it('embedded IPv4', () => {
+			expect(ipv6Tester('::ffff:192.168.0.1')).to.be.true;
+			expect(ipv6Tester('64:ff9b::192.0.2.33')).to.be.true;
+			expect(ipv6Tester('1:2:3:4:5:6:1.2.3.4')).to.be.true;
+
+			expect(ipv6Tester('::ffff:256.1.1.1')).to.be.false;
+			expect(ipv6Tester('::ffff:01.2.3.4')).to.be.false;
+			expect(ipv6Tester('1:2:3:4:5:6:7:1.2.3.4')).to.be.false;
+			expect(ipv6Tester('::1.2.3.4:5')).to.be.false;
+		});
+
+		it('with port', () => {
+			expect(ipv6Tester('[::1]:8080')).to.be.true;
+			expect(ipv6Tester('[2001:db8::1]:443')).to.be.true;
+			expect(ipv6Tester('[::1]:0')).to.be.true;
+
+			expect(ipv6Tester('[::1]')).to.be.false; // brackets only with port
+			expect(ipv6Tester('[::1]:')).to.be.false;
+			expect(ipv6Tester('[::1]:65536')).to.be.false;
+			expect(ipv6Tester('[::1]:080')).to.be.false;
+			expect(ipv6Tester('[1::2::3]:80')).to.be.false;
+			expect(ipv6Tester('::1:8080x')).to.be.false;
+		});
+
+		it('not supported', () => {
+			expect(ipv6Tester('fe80::1%eth0')).to.be.false; // zone index
+			expect(ipv6Tester('fe80:0000:0000:0000:0204:61ff:fe9d:f156/1')).to.be.false; // prefix length
+		});
+	});
+
+	describe('ipTester()', () => {
+		it('common test', () => {
+			expect(commonTestRunner(
+				ipTester as (args: unknown) => unknown,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false
+			)).to.be.true;
+		});
+
+		it('logic test', () => {
+			expect(ipTester('127.0.0.1')).to.be.true;
+			expect(ipTester('127.0.0.1:8080')).to.be.true;
+			expect(ipTester('::1')).to.be.true;
+			expect(ipTester('[::1]:8080')).to.be.true;
+
+			expect(ipTester('')).to.be.false;
+			expect(ipTester('localhost')).to.be.false;
+			expect(ipTester('256.0.0.1')).to.be.false;
+			expect(ipTester('1::2::3')).to.be.false;
+		});
+	});
 
 	describe('object', () => {
 		describe('objectTester()', () => {

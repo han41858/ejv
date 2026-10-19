@@ -1166,4 +1166,24 @@ describe('NumberScheme', () => {
 			});
 		});
 	});
+
+	describe('format with empty or falsy value', () => {
+		const cases: [string, unknown, string][] = [
+			['empty array', [], '[]'],
+			['empty string', '', '""'],
+			['null in array', [null, 'integer'], 'null']
+		];
+
+		cases.forEach(([name, format, placeholder]: [string, unknown, string]): void => {
+			it(name, () => {
+				checkSchemeError({
+					data: { a: 1 },
+					errorScheme: { key: 'a', type: 'number', format: format as string[] },
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_NUMBER_FORMAT, {
+						placeholders: [placeholder]
+					})
+				});
+			});
+		});
+	});
 });
