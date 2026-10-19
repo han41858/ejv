@@ -1,7 +1,7 @@
 ![npm](https://img.shields.io/npm/v/ejv?logo=npm)
 ![NPM Last Update](https://img.shields.io/npm/last-update/ejv)
 
-[🇰🇷 한국어](https://github.com/han41858/ejv/blob/master/README-KR.md)
+[🇰🇷 한국어](https://github.com/han41858/ejv/blob/main/README-KR.md)
 
 # ejv - Easy JSON Validator
 
@@ -20,7 +20,7 @@ ejv is JSON validation library. Check your JSON object with simple syntax.
 npm install ejv
 ```
 
-## `ejv(data : object, schemes : Scheme[])`
+## `ejv(data : object, schemes : Scheme[], options? : Options)`
 
 ejv provides only one function.
 All validation use this function.
@@ -635,7 +635,10 @@ Specify the type of property to inspect. The values available are as follows.
  `'date'`    | `new Date`                    
  `'regexp'`  | `new RegExp(/./)`, `/./`, ... 
  `'array'`   | `[]`, `[1, 2, 3]`, ...        
- `'buffer'`   | `Buffer.from('ejv')`, `new Uint8Array(3)`, `new ArrayBuffer(5)` ,  ...        
+ `'buffer'`  | `Buffer.from('ejv')`, `new Uint8Array(3)`, `new ArrayBuffer(5)`, ... 
+
+> `'object'` also allows arrays, `Date`, `RegExp` and buffers, because they are objects in JavaScript.
+> Use their own types to distinguish them.
 
 ## `EjvError`
 
@@ -650,7 +653,7 @@ The `EjvError` object is an object that represents the error that occurred at th
 
 Represents the type of the error that occurred.
 
-- `keyword : string`
+- `message : string`
 
 Describes the contents of the error that occurred.
 
@@ -665,6 +668,15 @@ Means the data that passed to `ejv()`.
 - `errorData : any`
 
 Means the data that the error occurred.
+
+- `errorScheme : Scheme`
+
+Means the scheme that the error occurred.
+
+- `isSchemeError : boolean`, `isDataError : boolean`
+
+Shows whether the error is caused by the invalid scheme (ex. `INVALID_SCHEMES`) or by the data.
+Scheme errors are mistakes in the code, and `customErrorMsg` option is not applied to them.
 
 usage)
 

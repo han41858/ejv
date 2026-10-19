@@ -1,7 +1,7 @@
 ![npm](https://img.shields.io/npm/v/ejv?logo=npm)
 ![NPM Last Update](https://img.shields.io/npm/last-update/ejv)
 
-[English](https://github.com/han41858/ejv/blob/master/README.md)
+[English](https://github.com/han41858/ejv/blob/main/README.md)
 
 # ejv - Easy JSON Validator
 
@@ -19,7 +19,7 @@ ejv는 JSON 객체를 검사할 때 사용하는 라이브러리입니다. 복�
 npm install ejv
 ```
 
-## `ejv(data : object, schemes : Scheme[])`
+## `ejv(data : object, schemes : Scheme[], options? : Options)`
 
 ejv 라이브러리는 단 하나의 함수만 제공합니다.
 모든 검사는 이 함수를 사용합니다.
@@ -630,8 +630,11 @@ ejv({
  `'object'`  | `{}`, `{ key : 123 }`, ...    
  `'date'`    | `new Date`                    
  `'regexp'`  | `new RegExp(/./)`, `/./`, ... 
- `'array'`   | `[]`, `[1, 2, 3]`, ...
-`'buffer'`   | ``Buffer.from('ejv')``, `new Uint8Array(3)`, `new ArrayBuffer(5)`, ...
+ `'array'`   | `[]`, `[1, 2, 3]`, ...                                                  
+ `'buffer'`  | `Buffer.from('ejv')`, `new Uint8Array(3)`, `new ArrayBuffer(5)`, ... 
+
+> JavaScript에서는 배열, `Date`, `RegExp`, 버퍼도 객체이므로 `'object'` 타입으로도 허용됩니다.
+> 이 값들을 구분하려면 각각의 타입을 사용하세요.
 
 ## `EjvError`
 
@@ -641,7 +644,7 @@ ejv({
 > `EjvError` 형식을 꼭 사용할 필요는 없습니다.
 > 하지만 TypeScript를 사용한다면 이 객체의 프로퍼티를 참조할 때 활용할 수 있습니다.
 
-- `type : ErrorKey`
+- `type : ERROR_TYPE`
 
 발생한 에러의 타입을 표현합니다.
 
@@ -660,6 +663,15 @@ ejv({
 - `errorData : any`
 
 에러가 발생한 데이터를 의미합니다.
+
+- `errorScheme : Scheme`
+
+에러가 발생한 스킴을 의미합니다.
+
+- `isSchemeError : boolean`, `isDataError : boolean`
+
+에러가 잘못된 스킴(ex. `INVALID_SCHEMES`) 때문인지, 데이터 때문인지 나타냅니다.
+스킴 에러는 코드의 실수이므로 `customErrorMsg` 옵션이 적용되지 않습니다.
 
 사용방법)
 
