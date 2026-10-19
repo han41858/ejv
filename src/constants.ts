@@ -86,7 +86,7 @@ export enum ERROR_MESSAGE {
 
 	NO_SCHEME = 'no scheme',
 	NO_ARRAY_SCHEME = 'schemes should be array',
-	NO_OBJECT_ARRAY_SCHEME = 'schemes should be array of object',
+	NO_OBJECT_ARRAY_SCHEME = 'schemes should be array of scheme object',
 
 	EMPTY_SCHEME = 'schemes should not be empty',
 	SCHEMES_SHOULD_HAVE_TYPE = 'schemes should have type',
@@ -121,7 +121,7 @@ export enum ERROR_MESSAGE {
 
 	PROPERTIES_SHOULD_BE_ARRAY = 'properties should be array',
 	PROPERTIES_SHOULD_HAVE_ITEMS = 'properties should have items',
-	PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT = 'properties should be array of object',
+	PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT = 'properties should be array of scheme object',
 
 	ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN = 'allowNoProperty should be a boolean',
 

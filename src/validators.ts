@@ -19,6 +19,7 @@ import {
 	arrayTypeOfTester,
 	booleanTester,
 	bufferLengthTester,
+	bufferTester,
 	dateFormatTester,
 	dateTester,
 	dateTimeFormatTester,
@@ -80,18 +81,29 @@ export function invalidTypeIndex (types: unknown[]): number {
 	});
 }
 
-// shows empty string and non-string values as JSON (ex. '""', 'null')
-export function invalidTypeToString (type: unknown): string {
-	return stringTester(type) && type.length > 0
-		? type
-		: String(JSON.stringify(type));
+// for messages of invalid scheme values : shows empty string and non-string values as JSON (ex. '""', 'null')
+export function invalidValueToString (value: unknown): string {
+	return stringTester(value) && value.length > 0
+		? value
+		: String(JSON.stringify(value));
 }
 
-// every item should be a scheme object. typeof null is 'object', so null is excluded explicitly
+// whether the value can be a scheme object : an object, but not null and not a value of other data types
+// (array, Date, RegExp, buffer). instances of user classes are allowed.
+// this only excludes values that are obviously not schemes. it does NOT check the structure of the scheme :
+// type and rules are checked later by _ejv() and the type validators
+// (ex. {} passes here, and fails with SCHEMES_SHOULD_HAVE_TYPE in _ejv())
+export function schemeObjectTester (value: unknown): boolean {
+	return objectTester(value)
+		&& value !== null
+		&& !arrayTester(value)
+		&& !(value instanceof Date)
+		&& !regExpTester(value)
+		&& !bufferTester(value);
+}
+
 export function schemeArrayTester (array: unknown[]): boolean {
-	return array.every((item: unknown): boolean => {
-		return objectTester(item) && item !== null;
-	});
+	return array.every(schemeObjectTester);
 }
 
 
@@ -272,21 +284,27 @@ function formatRule<T extends string> (
 	if (!arrayTester(format)) {
 		if (!enumTester(format as T, allFormats)) {
 			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
-				placeholders: [format as string]
+				placeholders: [invalidValueToString(format)]
 			}));
 		}
 
 		formats = [format as T];
 	}
 	else {
-		const errorFormat: unknown = (format as T[]).find((oneFormat: T): boolean => {
-			return !enumTester(oneFormat, allFormats);
+		if (format.length === 0) {
+			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
+				placeholders: ['[]']
+			}));
+		}
+
+		// falsy values (ex. '', null) are invalid too
+		const errorFormatIndex: number = format.findIndex((oneFormat: unknown): boolean => {
+			return !enumTester(oneFormat as T, allFormats);
 		});
 
-		// falsy values (ex. '') are not reported here, they fail at matching below
-		if (errorFormat) {
+		if (errorFormatIndex >= 0) {
 			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
-				placeholders: [errorFormat as string]
+				placeholders: [invalidValueToString(format[errorFormatIndex])]
 			}));
 		}
 
@@ -644,7 +662,7 @@ function itemsByTypesRule (ctx: ValidatorContext, tempKeys: string[]): Validator
 
 	if (itemTypeErrorIndex >= 0) {
 		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
-			placeholders: [invalidTypeToString(itemTypes[itemTypeErrorIndex])]
+			placeholders: [invalidValueToString(itemTypes[itemTypeErrorIndex])]
 		}));
 	}
 
@@ -802,14 +820,19 @@ function itemsRule (ctx: ValidatorContext): ValidatorResult {
 		return '' + (+now + i);
 	});
 
-	if (stringTester(scheme.items) // by DataType
-		|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as DATA_TYPE[], DATA_TYPE.STRING)) // by DataType[]
+	const isEmptyArray: boolean = arrayTester(scheme.items) && scheme.items.length === 0;
+
+	if (!isEmptyArray
+		&& (
+			stringTester(scheme.items) // by DataType
+			|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as DATA_TYPE[], DATA_TYPE.STRING)) // by DataType[]
+		)
 	) {
 		return itemsByTypesRule(ctx, tempKeys);
 	}
 
-	if ((objectTester(scheme.items) && scheme.items !== null && !arrayTester(scheme.items)) // by Scheme
-		|| (arrayTester(scheme.items) && schemeArrayTester(scheme.items)) // by Scheme[]
+	if (schemeObjectTester(scheme.items) // by Scheme
+		|| (!isEmptyArray && arrayTester(scheme.items) && schemeArrayTester(scheme.items)) // by Scheme[]
 	) {
 		return itemsBySchemesRule(ctx, tempKeys);
 	}

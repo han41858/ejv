@@ -21,6 +21,8 @@
 	- type mismatch message uses the type inherited through multiple `parent` levels (was `'the value should be a undefined'`)
 	- `customErrorMsg` is not applied to scheme errors at any depth (was applied only to scheme errors from nested schemes)
 	- falsy types (ex. `type: ''`, `type: null`, `['number', null]`) return `SCHEMES_HAS_INVALID_TYPE` instead of passing the scheme check
+	- arrays, `Date`, `RegExp` and buffers are not accepted as schemes in schemes, `properties`, `items` (message: `array of scheme object`)
+	- empty or falsy lists are scheme errors : `type: []`, `items: []`, `format: []`, `format: ['', 'email']`
 - build
 	- ESM type declarations added (`build/esm/*.d.ts`), CJS types stay at `build/index.d.ts`
 	- published files limited with `files` field
