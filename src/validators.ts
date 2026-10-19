@@ -375,7 +375,12 @@ function patternToString (pattern: string | RegExp): string {
 	}
 	else if (stringTester(pattern)) {
 		if (minLengthTester(pattern as string, 1)) {
-			regExpStr = new RegExp(pattern as string).toString();
+			try {
+				regExpStr = new RegExp(pattern as string).toString();
+			}
+			catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
+				regExpStr = '/' + pattern + '/'; // invalid regular expression string
+			}
 		}
 		else {
 			regExpStr = '//';
@@ -393,15 +398,27 @@ function patternToString (pattern: string | RegExp): string {
 	return regExpStr;
 }
 
-function isValidPattern (pattern: string | RegExp): boolean {
-	return (stringTester(pattern) && minLengthTester(pattern as string, 1))
-		|| (regExpTester(pattern) && pattern.toString() !== '/(?:)/' && pattern.toString() !== '/null/');
-}
-
 function patternsToString (patterns: (string | RegExp)[]): string {
 	return '[' + patterns.map((onePattern: string | RegExp): string => {
 		return patternToString(onePattern);
 	}).join(', ') + ']';
+}
+
+// returns null for invalid pattern : not a string or RegExp, empty, or invalid regular expression string
+function toRegExp (pattern: string | RegExp): RegExp | null {
+	const validType: boolean = (stringTester(pattern) && minLengthTester(pattern as string, 1))
+		|| (regExpTester(pattern) && pattern.toString() !== '/(?:)/' && pattern.toString() !== '/null/');
+
+	if (!validType) {
+		return null;
+	}
+
+	try {
+		return new RegExp(pattern);
+	}
+	catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
+		return null;
+	}
 }
 
 function patternRule (ctx: ValidatorContext): ValidatorResult {
@@ -420,58 +437,40 @@ function patternRule (ctx: ValidatorContext): ValidatorResult {
 
 	if (arrayTester(scheme.pattern)) {
 		const patterns: (string | RegExp)[] = scheme.pattern as (string | RegExp)[];
+		const regExps: (RegExp | null)[] = patterns.map(toRegExp);
 
-		if (!minLengthTester(patterns, 1)) { // empty array
+		if (!minLengthTester(patterns, 1) // empty array
+			|| regExps.includes(null)) {
 			return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 				placeholders: [patternsToString(patterns)]
 			}));
 		}
 
-		try {
-			const regExps: RegExp[] = patterns.map((pattern: string | RegExp): RegExp => {
-				if (!isValidPattern(pattern)) {
-					throw new Error(createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
-						placeholders: [patternsToString(patterns)]
-					}));
-				}
+		const matched: boolean = (regExps as RegExp[]).some((regExp: RegExp): boolean => {
+			return stringRegExpTester(value, regExp);
+		});
 
-				return new RegExp(pattern);
-			});
-
-			const matched: boolean = regExps.some((regExp: RegExp): boolean => {
-				return stringRegExpTester(value, regExp);
-			});
-
-			if (!matched) {
-				return dataError(ctx, ERROR_TYPE.PATTERN_ONE_OF, createErrorMsg(ERROR_MESSAGE.PATTERN_ONE_OF, {
-					placeholders: [patternsToString(patterns)]
-				}));
-			}
-		}
-		catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
-			return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+		return matched
+			? null
+			: dataError(ctx, ERROR_TYPE.PATTERN_ONE_OF, createErrorMsg(ERROR_MESSAGE.PATTERN_ONE_OF, {
 				placeholders: [patternsToString(patterns)]
 			}));
-		}
-
-		return null;
 	}
 
 	const pattern: string | RegExp = scheme.pattern as string | RegExp;
+	const regExp: RegExp | null = toRegExp(pattern);
 
-	if (!isValidPattern(pattern)) {
+	if (regExp === null) {
 		return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 			placeholders: [patternToString(pattern)]
 		}));
 	}
 
-	if (!stringRegExpTester(value, new RegExp(pattern))) {
-		return dataError(ctx, ERROR_TYPE.PATTERN, createErrorMsg(ERROR_MESSAGE.PATTERN, {
+	return stringRegExpTester(value, regExp)
+		? null
+		: dataError(ctx, ERROR_TYPE.PATTERN, createErrorMsg(ERROR_MESSAGE.PATTERN, {
 			placeholders: [patternToString(pattern)]
 		}));
-	}
-
-	return null;
 }
 
 export function validateString (ctx: ValidatorContext): ValidatorResult {
