@@ -1,6 +1,6 @@
 # Change Log
 
-# Unreleased
+# 2.2.1
 
 - improvement
 	- recursive schemes (ex. tree, `items` of a scheme refers itself) are supported
