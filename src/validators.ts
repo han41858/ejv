@@ -55,7 +55,7 @@ import {
 	uniqueItemsTester,
 	urlTester
 } from './tester';
-import { clone, createErrorMsg } from './util';
+import { clone, createErrorMsg, safeStringify } from './util';
 
 
 export type Validate = (data: AnyObject, schemes: Scheme[], options: InternalOptions) => EjvError | null;
@@ -81,11 +81,12 @@ export function invalidTypeIndex (types: unknown[]): number {
 	});
 }
 
-// for messages of invalid scheme values : shows empty string and non-string values as JSON (ex. '""', 'null')
+// for messages of invalid scheme values : shows empty string and non-string values as JSON (ex. '""', 'null').
+// never throws, also for bigint and circular reference
 export function invalidValueToString (value: unknown): string {
 	return stringTester(value) && value.length > 0
 		? value
-		: String(JSON.stringify(value));
+		: safeStringify(value);
 }
 
 // whether the value can be a scheme object : an object, but not null and not a value of other data types

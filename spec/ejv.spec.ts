@@ -177,6 +177,16 @@ describe('ejv()', () => {
 				});
 			});
 
+			it('invalid type : bigint', () => {
+				checkSchemeError({
+					data,
+					errorScheme: { key: 'a', type: 1n as unknown as string },
+					message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
+						placeholders: ['1n']
+					})
+				});
+			});
+
 			const falsyTypes: [string, unknown][] = [
 				['empty string', ''],
 				['null', null],

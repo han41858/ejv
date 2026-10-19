@@ -376,6 +376,27 @@ describe('CommonScheme', () => {
 					});
 				});
 			});
+
+			// values that JSON.stringify() can not serialize
+			const circular: { a: number, self?: unknown } = { a: 1 };
+			circular.self = circular;
+
+			const unserializableReturns: [string, unknown, string][] = [
+				['bigint', 1n, '1n'],
+				['circular reference', circular, '{"a":1,"self":"[Circular]"}']
+			];
+
+			unserializableReturns.forEach(([name, returnValue, placeholder]: [string, unknown, string]): void => {
+				it(`returns ${ name }`, () => {
+					checkSchemeError({
+						data: { a: 1 },
+						errorScheme: { key: 'a', type: 'number', validate: (() => returnValue) as () => null },
+						message: createErrorMsg(ERROR_MESSAGE.VALIDATE_SHOULD_RETURN_NULL_OR_STRING, {
+							placeholders: [placeholder]
+						})
+					});
+				});
+			});
 		});
 
 		it('returns null : valid', () => {
