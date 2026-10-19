@@ -2,7 +2,6 @@ import { AllDataType, AnyObject, EjvError, InternalOptions, Options, Scheme } fr
 import { DATA_TYPE, ERROR_MESSAGE, ERROR_TYPE } from './constants';
 import {
 	arrayTester,
-	arrayTypeOfTester,
 	definedTester,
 	enumTester,
 	minLengthTester,
@@ -15,6 +14,7 @@ import { clone, createErrorMsg, sift } from './util';
 import {
 	ALL_DATA_TYPES,
 	SchemeFailure,
+	schemeArrayTester,
 	validateArray,
 	validateBuffer,
 	validateDate,
@@ -77,7 +77,7 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 		});
 	}
 
-	if (!arrayTypeOfTester(schemes, DATA_TYPE.OBJECT)) {
+	if (!schemeArrayTester(schemes)) {
 		return new EjvError({
 			type: ERROR_TYPE.INVALID_SCHEMES,
 			message: ERROR_MESSAGE.NO_OBJECT_ARRAY_SCHEME,

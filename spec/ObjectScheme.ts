@@ -206,6 +206,20 @@ describe('ObjectScheme', () => {
 					message: createErrorMsg(ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT)
 				});
 			});
+
+			it('null in array', () => {
+				const errorScheme: Scheme = {
+					key: 'a',
+					type: 'object',
+					properties: [null as unknown as Scheme]
+				};
+
+				checkSchemeError({
+					data,
+					errorScheme,
+					message: createErrorMsg(ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT)
+				});
+			});
 		});
 
 		it('with single type', () => {

@@ -668,6 +668,29 @@ describe('ArrayScheme', () => {
 					})
 				});
 			});
+
+			const invalidItemsArr: unknown[][] = [
+				[1, 2],
+				[null],
+				['number', { type: 'number' }]
+			];
+
+			invalidItemsArr.forEach((items: unknown[]): void => {
+				it(`array of not scheme : ${ JSON.stringify(items) }`, () => {
+					checkSchemeError({
+						data: data,
+						errorScheme: {
+							key: 'a',
+							type: 'array',
+							items: items as Scheme[]
+						},
+
+						message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+							placeholders: [JSON.stringify(items)]
+						})
+					});
+				});
+			});
 		});
 
 		describe('single data type', () => {

@@ -80,6 +80,13 @@ export type ValidatorResult = EjvError | SchemeFailure | null;
 
 export const ALL_DATA_TYPES: DATA_TYPE[] = Object.values(DATA_TYPE);
 
+// every item should be a scheme object. typeof null is 'object', so null is excluded explicitly
+export function schemeArrayTester (array: unknown[]): boolean {
+	return array.every((item: unknown): boolean => {
+		return objectTester(item) && item !== null;
+	});
+}
+
 
 function schemeFailure (ctx: ValidatorContext, message: string): SchemeFailure {
 	return new SchemeFailure(new EjvError({
@@ -517,7 +524,7 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 		return schemeFailure(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_HAVE_ITEMS);
 	}
 
-	if (!arrayTypeOfTester(properties, DATA_TYPE.OBJECT)) {
+	if (!schemeArrayTester(properties)) {
 		return schemeFailure(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
 	}
 
@@ -798,8 +805,8 @@ function itemsRule (ctx: ValidatorContext): ValidatorResult {
 		return itemsByTypesRule(ctx, tempKeys);
 	}
 
-	if ((objectTester(scheme.items) && scheme.items !== null) // by Scheme
-		|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as Scheme[], DATA_TYPE.OBJECT)) // by Scheme[]
+	if ((objectTester(scheme.items) && scheme.items !== null && !arrayTester(scheme.items)) // by Scheme
+		|| (arrayTester(scheme.items) && schemeArrayTester(scheme.items)) // by Scheme[]
 	) {
 		return itemsBySchemesRule(ctx, tempKeys);
 	}

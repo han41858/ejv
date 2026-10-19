@@ -116,6 +116,19 @@ describe('ejv()', () => {
 				expect(error).to.have.property('isDataError', false);
 			});
 
+			it('null in schemes', () => {
+				const errorScheme: Scheme[] = [null as unknown as Scheme];
+
+				const error: EjvError | null = ejv(data, errorScheme);
+
+				expect(error).to.be.instanceof(EjvError);
+
+				expect(error).to.have.property('type', ERROR_TYPE.INVALID_SCHEMES);
+				expect(error).to.have.property('message', ERROR_MESSAGE.NO_OBJECT_ARRAY_SCHEME);
+				expect(error).to.have.property('errorScheme', errorScheme);
+				expect(error).to.have.property('isSchemeError', true);
+			});
+
 			// can't use checkSchemeError()
 			it('invalid scheme object', () => {
 				const errorScheme: Scheme[] = ['string'];
