@@ -593,7 +593,7 @@ The `EjvError` object is an object that represents the error that occurred at th
 > You do not always need to use `EjvError` type.
 > However, if you use TypeScript, you can use it to refer to the property of an error object.
 
-- `type : ErrorType`
+- `type : ERROR_TYPE`
 
 Represents the type of the error that occurred.
 
@@ -640,21 +640,24 @@ When using a `ejv()` function, you can specify options as a third parameter.
 
 You can override error message corresponding with `EjvError.type` to another content.
 
-This option is used in the type of `object`. You can use `ErrorType` as a key when overriding error message.
+This option is used in the type of `object`. You can use `ERROR_TYPE` as a key when overriding error message.
 
 ```typescript
-import { ejv, EjvError, ErrorType } from 'ejv';
+import { ejv, EjvError, ERROR_TYPE } from 'ejv';
 
 const error: null | EjvError = ejv({
 	a: 10
 }, [{
 	key: 'a',
 	type: 'string'
-}, {
+}], {
 	customErrorMsg: {
-		[ErrorType.TYPE_MISMATCH]: 'property "a" should be a "string".'
+		[ERROR_TYPE.TYPE_MISMATCH]: 'property "a" should be a "string".'
 	}
-}]);
+});
 
-console.log(error.message); // 'property "a" should be a "string".'
+console.log(error?.message); // 'property "a" should be a "string".'
 ```
+
+This option applies to data errors only. Scheme errors (`EjvError.isSchemeError === true`, ex. `INVALID_SCHEMES`) keep their original messages, including the ones from nested `properties` and `items`.
+
