@@ -140,6 +140,34 @@ ejv({
 }]);
 ```
 
+- `validate : (value, data) => string | null`
+
+Validates the value with a custom function.
+Returns `null` if the value is valid, or an error message string. The error type is `CUSTOM`, and an empty string uses the default message.
+Other return values (ex. `true`, `false`, `undefined`) are reported as a scheme error, to avoid confusing which value means valid.
+
+- `value` : the value to validate
+- `data` : the data passed to `ejv()`. It is the same in nested objects and array items, so you can refer to other properties.
+
+It is called after the other rules of the scheme pass, and not called for `undefined` or `null` allowed by `optional`, `nullable`.
+Errors thrown by the function are not caught.
+This option is available for all validation rules.
+
+```typescript
+ejv({
+	password: 'ejv-password',
+	confirm: 'ejv-password'
+}, [{
+	key: 'password',
+	type: 'string',
+	minLength: 8
+}, {
+	key: 'confirm',
+	type: 'string',
+	validate: (value: string, data: { password: string }) => value === data.password ? null : 'password does not match'
+}]);
+```
+
 - `enum : number[] | string[]`
 
 Allows only the values that are delivered in an array.
@@ -352,6 +380,31 @@ ejv({
 	key: 'obj',
 	type: 'object',
 	allowNoProperty: false // failed
+}]);
+```
+
+- `allowUnknownProperty : boolean`
+
+Checks if the object has properties not declared in `properties`.
+If you specify `false`, ejv will not allow the unknown properties, and returns `UNKNOWN_PROPERTY` error with the first unknown key.
+If you omit this option or specify it as `true`, ejv will allow the unknown properties.
+This option works with `properties` only. Declared properties are checked first, and properties with `undefined` value are ignored.
+For the top level data, use the `allowUnknownProperty` option of `ejv()`.
+
+```typescript
+ejv({
+	obj: {
+		num: 10,
+		str: 'ejv' // unknown property
+	}
+}, [{
+	key: 'obj',
+	type: 'object',
+	allowUnknownProperty: false, // failed
+	properties: [{
+		key: 'num',
+		type: 'number'
+	}]
 }]);
 ```
 
@@ -661,3 +714,19 @@ console.log(error?.message); // 'property "a" should be a "string".'
 
 This option applies to data errors only. Scheme errors (`EjvError.isSchemeError === true`, ex. `INVALID_SCHEMES`) keep their original messages, including the ones from nested `properties` and `items`.
 
+- `allowUnknownProperty: boolean`
+
+If you specify `false`, ejv will not allow the properties of the top level data that are not declared in the schemes.
+It works the same as `allowUnknownProperty` of `'object'` options, and applies to the top level data only.
+
+```typescript
+ejv({
+	a: 10,
+	b: 'ejv' // unknown property
+}, [{
+	key: 'a',
+	type: 'number'
+}], {
+	allowUnknownProperty: false // failed
+});
+```

@@ -138,6 +138,34 @@ ejv({
 }]);
 ```
 
+- `validate : (value, data) => string | null`
+
+함수로 값을 직접 검사합니다.
+값이 유효하면 `null`을, 유효하지 않으면 에러 메시지 문자열을 반환합니다. 에러 타입은 `CUSTOM`이며, 빈 문자열을 반환하면 기본 메시지를 사용합니다.
+어떤 값이 통과를 의미하는지 헷갈리지 않도록, 그 외의 반환값(ex. `true`, `false`, `undefined`)은 스킴 에러로 처리합니다.
+
+- `value` : 검사할 값
+- `data` : `ejv()`에 전달한 데이터. 중첩 객체나 배열 항목에서도 같은 값이므로 다른 프로퍼티를 참조해서 검사할 수 있습니다.
+
+이 함수는 해당 스킴의 다른 규칙을 모두 통과한 뒤에 실행되며, `optional`, `nullable`로 허용된 `undefined`, `null`에는 실행되지 않습니다.
+함수에서 발생한 예외는 잡지 않습니다.
+이 옵션은 모든 검사규칙에 사용할 수 있습니다.
+
+```typescript
+ejv({
+	password: 'ejv-password',
+	confirm: 'ejv-password'
+}, [{
+	key: 'password',
+	type: 'string',
+	minLength: 8
+}, {
+	key: 'confirm',
+	type: 'string',
+	validate: (value: string, data: { password: string }) => value === data.password ? null : 'password does not match'
+}]);
+```
+
 - `enum : number[] | string[]`
 
 배열로 전달되는 값만 허용합니다.
@@ -348,6 +376,31 @@ ejv({
 	key: 'obj',
 	type: 'object',
 	allowNoProperty: false // 실패
+}]);
+```
+
+- `allowUnknownProperty : boolean`
+
+`properties`에 선언되지 않은 프로퍼티가 있는지 검사합니다.
+이 옵션에 `false`를 지정하면 선언되지 않은 프로퍼티를 허용하지 않으며, 첫 번째 미정의 키와 함께 `UNKNOWN_PROPERTY` 에러를 반환합니다.
+이 옵션을 생략하거나 `true`로 지정하면 선언되지 않은 프로퍼티를 허용합니다.
+이 옵션은 `properties`가 있을 때만 동작합니다. 선언된 프로퍼티를 먼저 검사하며, 값이 `undefined`인 프로퍼티는 없는 것으로 봅니다.
+최상위 데이터에는 `ejv()`의 `allowUnknownProperty` 옵션을 사용하세요.
+
+```typescript
+ejv({
+	obj: {
+		num: 10,
+		str: 'ejv' // 선언되지 않은 프로퍼티
+	}
+}, [{
+	key: 'obj',
+	type: 'object',
+	allowUnknownProperty: false, // 실패
+	properties: [{
+		key: 'num',
+		type: 'number'
+	}]
 }]);
 ```
 
@@ -656,3 +709,19 @@ console.log(error?.message); // 'property "a" should be a "string".'
 
 이 옵션은 데이터 오류에만 적용됩니다. 스킴 오류(`EjvError.isSchemeError === true`, ex. `INVALID_SCHEMES`)는 중첩된 `properties`, `items`에서 발생한 경우를 포함해 원래 메시지를 유지합니다.
 
+- `allowUnknownProperty: boolean`
+
+`false`를 지정하면 최상위 데이터에서 스킴에 선언되지 않은 프로퍼티를 허용하지 않습니다.
+`'object'` 옵션의 `allowUnknownProperty`와 같은 방식으로 동작하며, 최상위 데이터에만 적용됩니다.
+
+```typescript
+ejv({
+	a: 10,
+	b: 'ejv' // 선언되지 않은 프로퍼티
+}, [{
+	key: 'a',
+	type: 'number'
+}], {
+	allowUnknownProperty: false // 실패
+});
+```
