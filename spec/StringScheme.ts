@@ -1567,4 +1567,25 @@ describe('StringScheme', () => {
 			});
 		});
 	});
+
+	describe('format with empty or falsy value', () => {
+		const cases: [string, unknown, string][] = [
+			['empty array', [], '[]'],
+			['empty string', '', '""'],
+			['empty string in array', ['', 'email'], '""'],
+			['null in array', ['email', null], 'null']
+		];
+
+		cases.forEach(([name, format, placeholder]: [string, unknown, string]): void => {
+			it(name, () => {
+				checkSchemeError({
+					data: { a: 'ejv@ejv.com' },
+					errorScheme: { key: 'a', type: 'string', format: format as string[] },
+					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_FORMAT, {
+						placeholders: [placeholder]
+					})
+				});
+			});
+		});
+	});
 });

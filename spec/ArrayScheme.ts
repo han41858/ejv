@@ -1200,4 +1200,20 @@ describe('ArrayScheme', () => {
 				});
 			});
 	});
+
+	describe('empty items', () => {
+		it('items: []', () => {
+			checkSchemeError({
+				data: { a: [1, 2] },
+				errorScheme: { key: 'a', type: 'array', items: [] },
+				message: createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+					placeholders: ['[]']
+				})
+			});
+		});
+
+		it('not checked with empty data array', () => {
+			expect(ejv({ a: [] }, [{ key: 'a', type: 'array', items: [] }])).to.be.null;
+		});
+	});
 });

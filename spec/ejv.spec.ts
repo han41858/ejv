@@ -438,4 +438,14 @@ describe('ejv()', () => {
 			expect(ejv({ a: 'x' }, [new NumberSchemeClass()])?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
 		});
 	});
+
+	describe('empty type list', () => {
+		it('type: []', () => {
+			checkSchemeError({
+				data: { a: 1 },
+				errorScheme: { key: 'a', type: [] },
+				message: ERROR_MESSAGE.SCHEMES_SHOULD_HAVE_TYPE
+			});
+		});
+	});
 });

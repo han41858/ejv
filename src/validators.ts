@@ -81,11 +81,11 @@ export function invalidTypeIndex (types: unknown[]): number {
 	});
 }
 
-// shows empty string and non-string values as JSON (ex. '""', 'null')
-export function invalidTypeToString (type: unknown): string {
-	return stringTester(type) && type.length > 0
-		? type
-		: String(JSON.stringify(type));
+// for messages of invalid scheme values : shows empty string and non-string values as JSON (ex. '""', 'null')
+export function invalidValueToString (value: unknown): string {
+	return stringTester(value) && value.length > 0
+		? value
+		: String(JSON.stringify(value));
 }
 
 // scheme should be an object, but not null and not a value of other data types (array, Date, RegExp, buffer).
@@ -281,21 +281,27 @@ function formatRule<T extends string> (
 	if (!arrayTester(format)) {
 		if (!enumTester(format as T, allFormats)) {
 			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
-				placeholders: [format as string]
+				placeholders: [invalidValueToString(format)]
 			}));
 		}
 
 		formats = [format as T];
 	}
 	else {
-		const errorFormat: unknown = (format as T[]).find((oneFormat: T): boolean => {
-			return !enumTester(oneFormat, allFormats);
+		if (format.length === 0) {
+			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
+				placeholders: ['[]']
+			}));
+		}
+
+		// falsy values (ex. '', null) are invalid too
+		const errorFormatIndex: number = format.findIndex((oneFormat: unknown): boolean => {
+			return !enumTester(oneFormat as T, allFormats);
 		});
 
-		// falsy values (ex. '') are not reported here, they fail at matching below
-		if (errorFormat) {
+		if (errorFormatIndex >= 0) {
 			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
-				placeholders: [errorFormat as string]
+				placeholders: [invalidValueToString(format[errorFormatIndex])]
 			}));
 		}
 
@@ -653,7 +659,7 @@ function itemsByTypesRule (ctx: ValidatorContext, tempKeys: string[]): Validator
 
 	if (itemTypeErrorIndex >= 0) {
 		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
-			placeholders: [invalidTypeToString(itemTypes[itemTypeErrorIndex])]
+			placeholders: [invalidValueToString(itemTypes[itemTypeErrorIndex])]
 		}));
 	}
 
@@ -811,14 +817,19 @@ function itemsRule (ctx: ValidatorContext): ValidatorResult {
 		return '' + (+now + i);
 	});
 
-	if (stringTester(scheme.items) // by DataType
-		|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as DATA_TYPE[], DATA_TYPE.STRING)) // by DataType[]
+	const isEmptyArray: boolean = arrayTester(scheme.items) && scheme.items.length === 0;
+
+	if (!isEmptyArray
+		&& (
+			stringTester(scheme.items) // by DataType
+			|| (arrayTester(scheme.items) && arrayTypeOfTester(scheme.items as DATA_TYPE[], DATA_TYPE.STRING)) // by DataType[]
+		)
 	) {
 		return itemsByTypesRule(ctx, tempKeys);
 	}
 
 	if (schemeObjectTester(scheme.items) // by Scheme
-		|| (arrayTester(scheme.items) && schemeArrayTester(scheme.items)) // by Scheme[]
+		|| (!isEmptyArray && arrayTester(scheme.items) && schemeArrayTester(scheme.items)) // by Scheme[]
 	) {
 		return itemsBySchemesRule(ctx, tempKeys);
 	}

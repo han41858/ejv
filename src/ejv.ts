@@ -11,7 +11,7 @@ import {
 import { clone, createErrorMsg, sift } from './util';
 import {
 	invalidTypeIndex,
-	invalidTypeToString,
+	invalidValueToString,
 	schemeArrayTester,
 	validateArray,
 	validateBuffer,
@@ -132,13 +132,26 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 			? effectiveType
 			: [effectiveType]) as DATA_TYPE[];
 
+		// empty type list
+		if (types.length === 0) {
+			return new EjvError({
+				type: ERROR_TYPE.INVALID_SCHEMES,
+				message: ERROR_MESSAGE.SCHEMES_SHOULD_HAVE_TYPE,
+
+				data: data,
+
+				errorScheme: scheme,
+				isSchemeError: true
+			});
+		}
+
 		const typeErrorIndex: number = invalidTypeIndex(types);
 
 		if (typeErrorIndex >= 0) {
 			return new EjvError({
 				type: ERROR_TYPE.INVALID_SCHEMES,
 				message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
-					placeholders: [invalidTypeToString(types[typeErrorIndex])]
+					placeholders: [invalidValueToString(types[typeErrorIndex])]
 				}),
 
 				data: data,
