@@ -1,5 +1,71 @@
 # Change Log
 
+# Unreleased
+
+- improvement
+	- string formats added: `url`, `ip`, `ipv4`, `ipv6`
+		- `url` : `http://` or `https://` URL that can be parsed by `new URL()` as written
+		- `ipv4`, `ipv6` : optional port (IPv6 with port should be in brackets, ex. `[::1]:8080`)
+	- `BufferScheme`, `BufferLike`, `AllDataType` exported
+	- `json` format documented in README
+- bug fix
+	- schemes are not mutated by `ejv()` anymore (reusing a scheme could overflow the stack)
+	- date `min`, `max` which `Date` can not parse returns `INVALID_SCHEMES` instead of throwing
+	- `Infinity` is not an `integer` / `index`
+	- `unique` : O(n) and `NaN` aware
+	- `date`, `date-time` formats check the day exists in the month (leap year included)
+	- `email` format rejects leading, trailing or consecutive dots in the local part
+- build
+	- ESM type declarations added (`build/esm/*.d.ts`), CJS types stay at `build/index.d.ts`
+	- published files limited with `files` field
+	- CI added (GitHub Actions)
+
+# 2.1.7
+
+- bug fix
+	- build error fixed (`rootDir` of `tsconfig.json`, scripts are built into `build/scripts`)
+	- 2.1.5 changes restored (`buffer` type) - they were missing in 2.1.6
+
+# 2.1.6
+
+- dependencies version up
+	- `typescript@6.0.3`
+	- `eslint@10.6.0`
+	- `mocha@11.7.6`
+- caution : published without the 2.1.5 changes (`buffer` type is not available). Fixed in 2.1.7
+
+# 2.1.5
+
+- improvement
+	- `buffer` data type added : `byteLength`, `minByteLength`, `maxByteLength`
+	- arrow functions changed to pure functions
+	- `ArrayScheme` length specs added, spec code optimized
+- dependencies version up
+	- `typescript@5.9.3`
+	- `eslint@10.0.0`
+	- `mocha@11.7.5`
+
+# 2.1.4
+
+- bug fix
+	- `package.json` with module type for `build/cjs`, `build/esm` is created by script
+
+# 2.1.3
+
+- bug fix
+	- `package.json` - `exports` - `types` field added
+- README badges added
+- dependencies version up
+	- `typescript@5.8.3`
+	- `eslint@9.30.1`
+	- `mocha@11.7.1`
+
+# 2.1.2
+
+- improvement
+	- `STRING_FORMAT.JSON` added
+- eslint linebreak setting changed
+
 # 2.1.1
 
 - improvement

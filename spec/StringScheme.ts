@@ -665,6 +665,14 @@ describe('StringScheme', () => {
 		});
 
 		describe('email', () => {
+			it('dot-atom local part', () => {
+				expect(ejv({ a: 'first.last@ejv.com' }, [{ key: 'a', type: 'string', format: 'email' }])).to.be.null;
+				expect(ejv({ a: '".first."@ejv.com' }, [{ key: 'a', type: 'string', format: 'email' }])).to.be.null;
+
+				expect(ejv({ a: '.first@ejv.com' }, [{ key: 'a', type: 'string', format: 'email' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(ejv({ a: 'last.@ejv.com' }, [{ key: 'a', type: 'string', format: 'email' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+			});
+
 			it('single format', () => {
 				const data = {
 					a: 'ejv'
@@ -809,6 +817,15 @@ describe('StringScheme', () => {
 		});
 
 		describe('date', () => {
+			it('not existing day', () => {
+				expect(ejv({ a: '2020-02-29' }, [{ key: 'a', type: 'string', format: 'date' }])).to.be.null;
+				expect(ejv({ a: '2018-04-30' }, [{ key: 'a', type: 'string', format: 'date' }])).to.be.null;
+
+				expect(ejv({ a: '2019-02-29' }, [{ key: 'a', type: 'string', format: 'date' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(ejv({ a: '2018-02-30' }, [{ key: 'a', type: 'string', format: 'date' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(ejv({ a: '2018-04-31' }, [{ key: 'a', type: 'string', format: 'date' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+			});
+
 			it('single format', () => {
 				const data = {
 					a: 'ejv'
@@ -953,6 +970,13 @@ describe('StringScheme', () => {
 		});
 
 		describe('date-time', () => {
+			it('not existing day', () => {
+				expect(ejv({ a: '2020-02-29T12:00:00Z' }, [{ key: 'a', type: 'string', format: 'date-time' }])).to.be.null;
+
+				expect(ejv({ a: '2019-02-29T12:00:00Z' }, [{ key: 'a', type: 'string', format: 'date-time' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+				expect(ejv({ a: '2018-04-31T12:00:00+09:00' }, [{ key: 'a', type: 'string', format: 'date-time' }])?.type).to.be.eql(ERROR_TYPE.FORMAT);
+			});
+
 			it('single format', () => {
 				const data = {
 					a: 'ejv'

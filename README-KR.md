@@ -254,7 +254,8 @@ ejv({
  포맷            | 예                                                                                                                                                                    
 ---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
  `'email'`     | 이메일 형식인지 검사합니다. [RFC 5322 3.4.1](https://tools.ietf.org/html/rfc5322#section-3.4.1) 스펙을 기준으로 합니다. ex) `'email@domain.com'`                                           
- `'date'`      | 날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29'`                                                                   
+ `'json'`      | `JSON.parse()`로 파싱되는 JSON 문자열인지 검사합니다. 객체·배열이 아닌 원시 JSON 값도 허용됩니다. ex) `'{"a":1}'`, `'[1,2]'`, `'"ejv"'`, `'1'`
+ `'date'`      | 날짜 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. 해당 월에 존재하는 날짜여야 합니다(ex. `'2019-02-29'`는 허용하지 않음). ex) `'2018-12-29'`
  `'time'`      | 시간 형식인지 검사합니다. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'21:07:35'`                                                                     
  `'date-time'` | 날짜-시간 형식인지 검사합니다. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) 스펙과 [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 스펙을 기준으로 합니다. ex) `'2018-12-29T21:07:35Z'` 
  `'url'`       | `http://`나 `https://`로 시작하고, 입력값 그대로 [WHATWG URL API](https://url.spec.whatwg.org/)(`new URL()`)로 파싱되는 URL인지 검사합니다. 로컬·사설 호스트도 허용합니다. 공백, 백슬래시, `new URL()`이 보정해서 받아들이는 형식(ex. `'http:domain.com'`, `'http://1.2.3'`)은 허용하지 않습니다. ex) `'https://domain.com/path?query=1'`, `'http://localhost:3000'`
