@@ -3,16 +3,15 @@ import { DATA_TYPE, ERROR_MESSAGE, ERROR_TYPE } from './constants';
 import {
 	arrayTester,
 	definedTester,
-	enumTester,
 	minLengthTester,
 	objectTester,
-	stringTester,
 	typeTester,
 	uniqueItemsTester
 } from './tester';
 import { clone, createErrorMsg, sift } from './util';
 import {
-	ALL_DATA_TYPES,
+	invalidTypeIndex,
+	invalidTypeToString,
 	schemeArrayTester,
 	validateArray,
 	validateBuffer,
@@ -133,17 +132,13 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 			? effectiveType
 			: [effectiveType]) as DATA_TYPE[];
 
-		const typeError: string | undefined = types.find((type: DATA_TYPE): boolean => {
-			return !definedTester(type)
-				|| !stringTester(type)
-				|| !enumTester(type, ALL_DATA_TYPES);
-		});
+		const typeErrorIndex: number = invalidTypeIndex(types);
 
-		if (typeError) {
+		if (typeErrorIndex >= 0) {
 			return new EjvError({
 				type: ERROR_TYPE.INVALID_SCHEMES,
 				message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
-					placeholders: [typeError]
+					placeholders: [invalidTypeToString(types[typeErrorIndex])]
 				}),
 
 				data: data,

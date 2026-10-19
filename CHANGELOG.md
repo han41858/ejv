@@ -20,6 +20,7 @@
 	- `items` with values that are not schemes (ex. `[1, 2]`) and `null` in schemes, `properties`, `items` return `INVALID_SCHEMES` instead of throwing
 	- type mismatch message uses the type inherited through multiple `parent` levels (was `'the value should be a undefined'`)
 	- `customErrorMsg` is not applied to scheme errors at any depth (was applied only to scheme errors from nested schemes)
+	- falsy types (ex. `type: ''`, `type: null`, `['number', null]`) return `SCHEMES_HAS_INVALID_TYPE` instead of passing the scheme check
 - build
 	- ESM type declarations added (`build/esm/*.d.ts`), CJS types stay at `build/index.d.ts`
 	- published files limited with `files` field

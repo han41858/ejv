@@ -73,6 +73,20 @@ export type ValidatorResult = EjvError | null;
 
 export const ALL_DATA_TYPES: DATA_TYPE[] = Object.values(DATA_TYPE);
 
+// index of the first invalid data type, -1 if all valid. falsy values (ex. '', null) are invalid too
+export function invalidTypeIndex (types: unknown[]): number {
+	return types.findIndex((type: unknown): boolean => {
+		return !stringTester(type) || !enumTester(type as DATA_TYPE, ALL_DATA_TYPES);
+	});
+}
+
+// shows empty string and non-string values as JSON (ex. '""', 'null')
+export function invalidTypeToString (type: unknown): string {
+	return stringTester(type) && type.length > 0
+		? type
+		: String(JSON.stringify(type));
+}
+
 // every item should be a scheme object. typeof null is 'object', so null is excluded explicitly
 export function schemeArrayTester (array: unknown[]): boolean {
 	return array.every((item: unknown): boolean => {
@@ -626,15 +640,11 @@ function itemsByTypesRule (ctx: ValidatorContext, tempKeys: string[]): Validator
 		? scheme.items
 		: [scheme.items]) as DATA_TYPE[];
 
-	const itemTypeError: string | undefined = itemTypes.find((type: DATA_TYPE): boolean => {
-		return !definedTester(type)
-			|| !stringTester(type)
-			|| !enumTester(type, ALL_DATA_TYPES);
-	});
+	const itemTypeErrorIndex: number = invalidTypeIndex(itemTypes);
 
-	if (itemTypeError) {
+	if (itemTypeErrorIndex >= 0) {
 		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
-			placeholders: [itemTypeError]
+			placeholders: [invalidTypeToString(itemTypes[itemTypeErrorIndex])]
 		}));
 	}
 

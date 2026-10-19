@@ -177,6 +177,35 @@ describe('ejv()', () => {
 				});
 			});
 
+			const falsyTypes: [string, unknown][] = [
+				['empty string', ''],
+				['null', null],
+				['null in array', ['number', null]],
+				['empty string in array', ['', 'number']]
+			];
+
+			falsyTypes.forEach(([name, type]: [string, unknown]): void => {
+				it(`invalid type : ${ name }`, () => {
+					const errorScheme: Scheme = {
+						key: 'a',
+						type: type as string,
+						parent: { type: 'number' }
+					};
+
+					const invalidType: unknown = Array.isArray(type)
+						? type.find((one: unknown): boolean => !one)
+						: type;
+
+					checkSchemeError({
+						data,
+						errorScheme,
+						message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
+							placeholders: [JSON.stringify(invalidType)]
+						})
+					});
+				});
+			});
+
 			it('duplicated type', () => {
 				const errorScheme: Scheme = {
 					key: 'a',

@@ -669,6 +669,21 @@ describe('ArrayScheme', () => {
 				});
 			});
 
+			it('empty string in data types', () => {
+				checkSchemeError({
+					data: data,
+					errorScheme: {
+						key: 'a',
+						type: 'array',
+						items: ['number', '']
+					},
+
+					message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
+						placeholders: ['""']
+					})
+				});
+			});
+
 			const invalidItemsArr: unknown[][] = [
 				[1, 2],
 				[null],
