@@ -88,8 +88,11 @@ export function invalidValueToString (value: unknown): string {
 		: String(JSON.stringify(value));
 }
 
-// scheme should be an object, but not null and not a value of other data types (array, Date, RegExp, buffer).
-// instances of user classes are allowed
+// whether the value can be a scheme object : an object, but not null and not a value of other data types
+// (array, Date, RegExp, buffer). instances of user classes are allowed.
+// this only excludes values that are obviously not schemes. it does NOT check the structure of the scheme :
+// type and rules are checked later by _ejv() and the type validators
+// (ex. {} passes here, and fails with SCHEMES_SHOULD_HAVE_TYPE in _ejv())
 export function schemeObjectTester (value: unknown): boolean {
 	return objectTester(value)
 		&& value !== null
