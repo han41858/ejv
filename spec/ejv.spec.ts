@@ -448,4 +448,59 @@ describe('ejv()', () => {
 			});
 		});
 	});
+
+	describe('options.allowUnknownProperty', () => {
+		const schemes: Scheme[] = [{ key: 'a', type: 'number' }];
+
+		it('allowed by default', () => {
+			expect(ejv({ a: 1, b: 2 }, schemes)).to.be.null;
+			expect(ejv({ a: 1, b: 2 }, schemes, { allowUnknownProperty: true })).to.be.null;
+		});
+
+		it('not allowed', () => {
+			const data = { a: 1, b: 2 };
+
+			const error: EjvError | null = ejv(data, schemes, { allowUnknownProperty: false });
+
+			expect(error?.type).to.be.eql(ERROR_TYPE.UNKNOWN_PROPERTY);
+			expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.UNKNOWN_PROPERTY, {
+				placeholders: ['b']
+			}));
+			expect(error?.path).to.be.eql('');
+			expect(error?.data).to.be.eql(data);
+			expect(error?.errorData).to.be.eql(data);
+			expect(error?.isDataError).to.be.true;
+		});
+
+		it('declared properties are checked first', () => {
+			expect(ejv({ a: 'x', b: 2 }, schemes, { allowUnknownProperty: false })?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+		});
+
+		it('applied to the top level only', () => {
+			expect(ejv({
+				a: 1,
+				o: { z: 1 }
+			}, [...schemes, {
+				key: 'o',
+				type: 'object'
+			}], { allowUnknownProperty: false })).to.be.null;
+		});
+
+		it('with customErrorMsg', () => {
+			const error: EjvError | null = ejv({ a: 1, b: 2 }, schemes, {
+				allowUnknownProperty: false,
+				customErrorMsg: { [ERROR_TYPE.UNKNOWN_PROPERTY]: 'no extra property' }
+			});
+
+			expect(error?.message).to.be.eql('no extra property');
+		});
+
+		it('not boolean', () => {
+			const error: EjvError | null = ejv({ a: 1 }, schemes, { allowUnknownProperty: 'false' as unknown as boolean });
+
+			expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
+			expect(error?.message).to.be.eql(ERROR_MESSAGE.ALLOW_UNKNOWN_PROPERTY_SHOULD_BE_BOOLEAN);
+			expect(error?.isSchemeError).to.be.true;
+		});
+	});
 });

@@ -67,6 +67,7 @@ export enum ERROR_TYPE {
 	PATTERN_ONE_OF = 'PATTERN_ONE_OF',
 
 	PROPERTY = 'PROPERTY',
+	UNKNOWN_PROPERTY = 'UNKNOWN_PROPERTY',
 
 	AFTER_OR_SAME_DATE = 'AFTER_OR_SAME_DATE',
 	AFTER_DATE = 'AFTER_DATE',
@@ -124,6 +125,7 @@ export enum ERROR_MESSAGE {
 	PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT = 'properties should be array of scheme object',
 
 	ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN = 'allowNoProperty should be a boolean',
+	ALLOW_UNKNOWN_PROPERTY_SHOULD_BE_BOOLEAN = 'allowUnknownProperty should be a boolean',
 
 	MIN_DATE_SHOULD_BE_DATE_OR_STRING = 'min should be Date or string representing date',
 	MAX_DATE_SHOULD_BE_DATE_OR_STRING = 'max should be Date or string representing date',
@@ -162,6 +164,7 @@ export enum ERROR_MESSAGE {
 	PATTERN_ONE_OF = 'the value should be one of pattern of <<1>>', // pattern
 
 	PROPERTY = 'the value should have property',
+	UNKNOWN_PROPERTY = 'the value has unknown property: <<1>>',
 
 	AFTER_OR_SAME_DATE = 'the value should be after or same date than <<1>>', // date
 	AFTER_DATE = 'the value should be after date than <<1>>', // date

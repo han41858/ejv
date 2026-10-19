@@ -106,6 +106,21 @@ export function schemeArrayTester (array: unknown[]): boolean {
 	return array.every(schemeObjectTester);
 }
 
+// first key of the object which is not declared in the schemes. keys with undefined value are ignored
+export function findUnknownKey (value: AnyObject, schemes: Scheme[]): string | undefined {
+	const knownKeys: Set<string | undefined> = new Set(schemes.map((scheme: Scheme): string | undefined => scheme.key));
+
+	return Object.keys(value).find((key: string): boolean => {
+		return value[key] !== undefined && !knownKeys.has(key);
+	});
+}
+
+export function unknownPropertyMessage (key: string): string {
+	return createErrorMsg(ERROR_MESSAGE.UNKNOWN_PROPERTY, {
+		placeholders: [key]
+	});
+}
+
 
 function schemeError (ctx: ValidatorContext, message: string): EjvError {
 	return new EjvError({
@@ -535,6 +550,11 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 		}
 	}
 
+	if (definedTester(scheme.allowUnknownProperty) && !booleanTester(scheme.allowUnknownProperty)) {
+		return schemeError(ctx, ERROR_MESSAGE.ALLOW_UNKNOWN_PROPERTY_SHOULD_BE_BOOLEAN);
+	}
+
+	// allowUnknownProperty works with properties only
 	if (!definedTester(scheme.properties)) {
 		return null;
 	}
@@ -565,9 +585,20 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 	if (result) {
 		// inject original data
 		result.data = ctx.data;
+
+		return result;
 	}
 
-	return result;
+	// declared properties first, and then unknown properties
+	if (scheme.allowUnknownProperty === false) {
+		const unknownKey: string | undefined = findUnknownKey(value, properties);
+
+		if (definedTester(unknownKey)) {
+			return dataError(ctx, ERROR_TYPE.UNKNOWN_PROPERTY, unknownPropertyMessage(unknownKey));
+		}
+	}
+
+	return null;
 }
 
 

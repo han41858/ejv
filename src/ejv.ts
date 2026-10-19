@@ -2,6 +2,7 @@ import { AllDataType, AnyObject, EjvError, InternalOptions, Options, Scheme } fr
 import { DATA_TYPE, ERROR_MESSAGE, ERROR_TYPE } from './constants';
 import {
 	arrayTester,
+	booleanTester,
 	definedTester,
 	minLengthTester,
 	objectTester,
@@ -10,9 +11,11 @@ import {
 } from './tester';
 import { createErrorMsg, sift } from './util';
 import {
+	findUnknownKey,
 	invalidTypeIndex,
 	invalidValueToString,
 	schemeArrayTester,
+	unknownPropertyMessage,
 	validateArray,
 	validateBuffer,
 	validateDate,
@@ -283,7 +286,11 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 	}
 
 
-	// customErrorMsg is for data errors. scheme errors keep their messages for debugging
+	return applyCustomErrorMsg(result, options);
+};
+
+// customErrorMsg is for data errors. scheme errors keep their messages for debugging
+function applyCustomErrorMsg (result: EjvError | null, options: Options): EjvError | null {
 	if (result !== null && result.isDataError && definedTester(options.customErrorMsg)) {
 		const customErrorMsgObj: {
 			[key in ERROR_TYPE]?: string;
@@ -300,7 +307,7 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 	}
 
 	return result;
-};
+}
 
 export function ejv (data: object, schemes: Scheme[], options?: Options): null | EjvError {
 	// check data itself
@@ -319,6 +326,17 @@ export function ejv (data: object, schemes: Scheme[], options?: Options): null |
 		});
 	}
 
+	if (definedTester(options?.allowUnknownProperty) && !booleanTester(options.allowUnknownProperty)) {
+		return new EjvError({
+			type: ERROR_TYPE.INVALID_SCHEMES,
+			message: ERROR_MESSAGE.ALLOW_UNKNOWN_PROPERTY_SHOULD_BE_BOOLEAN,
+
+			data: data,
+
+			isSchemeError: true
+		});
+	}
+
 	const internalOption: InternalOptions = (options
 		? {
 			...options
@@ -329,5 +347,29 @@ export function ejv (data: object, schemes: Scheme[], options?: Options): null |
 		internalOption.path = [];
 	}
 
-	return _ejv(data as AnyObject, schemes, internalOption);
+	const result: EjvError | null = _ejv(data as AnyObject, schemes, internalOption);
+
+	if (result !== null) {
+		return result;
+	}
+
+	// declared properties first, and then unknown properties of the top level data
+	// schemes are valid here, _ejv() returns a scheme error otherwise
+	if (options?.allowUnknownProperty === false) {
+		const unknownKey: string | undefined = findUnknownKey(data as AnyObject, schemes);
+
+		if (definedTester(unknownKey)) {
+			return applyCustomErrorMsg(new EjvError({
+				type: ERROR_TYPE.UNKNOWN_PROPERTY,
+				message: unknownPropertyMessage(unknownKey),
+
+				data,
+				path: [],
+
+				errorData: data
+			}), internalOption);
+		}
+	}
+
+	return null;
 }

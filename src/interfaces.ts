@@ -49,6 +49,7 @@ export interface StringScheme extends CommonScheme {
 export interface ObjectScheme extends CommonScheme {
 	properties?: Scheme[];
 	allowNoProperty?: boolean; // true
+	allowUnknownProperty?: boolean; // true
 }
 
 // min, max string for date string
@@ -92,6 +93,8 @@ export interface Options {
 	customErrorMsg?: {
 		[key in ERROR_TYPE]?: string;
 	};
+
+	allowUnknownProperty?: boolean; // true, for the top level data
 }
 
 export interface InternalOptions extends Options {
