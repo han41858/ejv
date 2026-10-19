@@ -67,7 +67,9 @@ export interface ValidatorContext {
 	validate: Validate; // _ejv() for nested schemes
 }
 
-// invalid scheme found in a type validator : _ejv() returns it immediately, without customErrorMsg
+// wrapper of an invalid scheme error found in a type validator. it is a return value, not thrown.
+// _ejv() returns the wrapped error immediately, without customErrorMsg.
+// (scheme errors from nested schemes come back as plain EjvError and get customErrorMsg, same as before)
 export class SchemeFailure {
 	constructor (public readonly error: EjvError) {
 	}
@@ -216,13 +218,36 @@ function lengthRules (ctx: ValidatorContext, scheme: StringScheme | ArrayScheme,
 }
 
 
+type FormatTesters = Map<string, (value: never) => boolean>;
+
+const NUMBER_FORMATS: NUMBER_FORMAT[] = Object.values(NUMBER_FORMAT);
+
+const NUMBER_FORMAT_TESTERS: FormatTesters = new Map<NUMBER_FORMAT, (value: number) => boolean>([
+	[NUMBER_FORMAT.INTEGER, integerTester],
+	[NUMBER_FORMAT.INDEX, indexTester]
+]);
+
+const STRING_FORMATS: STRING_FORMAT[] = Object.values(STRING_FORMAT);
+
+const STRING_FORMAT_TESTERS: FormatTesters = new Map<STRING_FORMAT, (value: string) => boolean>([
+	[STRING_FORMAT.EMAIL, emailTester],
+	[STRING_FORMAT.JSON, jsonStrTester],
+	[STRING_FORMAT.DATE, dateFormatTester],
+	[STRING_FORMAT.TIME, timeFormatTester],
+	[STRING_FORMAT.DATE_TIME, dateTimeFormatTester],
+	[STRING_FORMAT.URL, urlTester],
+	[STRING_FORMAT.IP, ipTester],
+	[STRING_FORMAT.IPV4, ipv4Tester],
+	[STRING_FORMAT.IPV6, ipv6Tester]
+]);
+
 // format of number & string
 function formatRule<T extends string> (
 	ctx: ValidatorContext,
 	format: unknown,
 	allFormats: T[],
 	invalidFormatMessage: ERROR_MESSAGE,
-	testers: Map<string, () => boolean>
+	testers: FormatTesters
 ): ValidatorResult {
 	if (!definedTester(format)) {
 		return null;
@@ -255,9 +280,9 @@ function formatRule<T extends string> (
 	}
 
 	const matched: boolean = formats.some((oneFormat: T): boolean => {
-		const tester: (() => boolean) | undefined = testers.get(oneFormat);
+		const tester: ((value: never) => boolean) | undefined = testers.get(oneFormat);
 
-		return tester !== undefined && tester();
+		return tester !== undefined && tester(ctx.value as never);
 	});
 
 	if (matched) {
@@ -329,17 +354,13 @@ function numberBoundRule (ctx: ValidatorContext, bound: 'min' | 'max'): Validato
 
 export function validateNumber (ctx: ValidatorContext): ValidatorResult {
 	const scheme: NumberScheme = ctx.scheme as NumberScheme;
-	const value: number = ctx.value as number;
 
 	return firstError(
 		(): ValidatorResult => enumRule(ctx, 'enum', DATA_TYPE.NUMBER),
 		(): ValidatorResult => enumRule(ctx, 'notEnum', DATA_TYPE.NUMBER),
 		(): ValidatorResult => numberBoundRule(ctx, 'min'),
 		(): ValidatorResult => numberBoundRule(ctx, 'max'),
-		(): ValidatorResult => formatRule(ctx, scheme.format, Object.values(NUMBER_FORMAT), ERROR_MESSAGE.INVALID_NUMBER_FORMAT, new Map([
-			[NUMBER_FORMAT.INTEGER, (): boolean => integerTester(value)],
-			[NUMBER_FORMAT.INDEX, (): boolean => indexTester(value)]
-		]))
+		(): ValidatorResult => formatRule(ctx, scheme.format, NUMBER_FORMATS, ERROR_MESSAGE.INVALID_NUMBER_FORMAT, NUMBER_FORMAT_TESTERS)
 	);
 }
 
@@ -461,17 +482,7 @@ export function validateString (ctx: ValidatorContext): ValidatorResult {
 		(): ValidatorResult => enumRule(ctx, 'enum', DATA_TYPE.STRING),
 		(): ValidatorResult => enumRule(ctx, 'notEnum', DATA_TYPE.STRING),
 		(): ValidatorResult => lengthRules(ctx, scheme, value),
-		(): ValidatorResult => formatRule(ctx, scheme.format, Object.values(STRING_FORMAT), ERROR_MESSAGE.INVALID_STRING_FORMAT, new Map([
-			[STRING_FORMAT.EMAIL, (): boolean => emailTester(value)],
-			[STRING_FORMAT.JSON, (): boolean => jsonStrTester(value)],
-			[STRING_FORMAT.DATE, (): boolean => dateFormatTester(value)],
-			[STRING_FORMAT.TIME, (): boolean => timeFormatTester(value)],
-			[STRING_FORMAT.DATE_TIME, (): boolean => dateTimeFormatTester(value)],
-			[STRING_FORMAT.URL, (): boolean => urlTester(value)],
-			[STRING_FORMAT.IP, (): boolean => ipTester(value)],
-			[STRING_FORMAT.IPV4, (): boolean => ipv4Tester(value)],
-			[STRING_FORMAT.IPV6, (): boolean => ipv6Tester(value)]
-		])),
+		(): ValidatorResult => formatRule(ctx, scheme.format, STRING_FORMATS, ERROR_MESSAGE.INVALID_STRING_FORMAT, STRING_FORMAT_TESTERS),
 		(): ValidatorResult => patternRule(ctx)
 	);
 }
