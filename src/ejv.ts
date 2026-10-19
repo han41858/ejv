@@ -8,7 +8,7 @@ import {
 	typeTester,
 	uniqueItemsTester
 } from './tester';
-import { clone, createErrorMsg, sift } from './util';
+import { createErrorMsg, sift } from './util';
 import {
 	invalidTypeIndex,
 	invalidValueToString,
@@ -104,7 +104,11 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 	for (const scheme of schemes) {
 		const key: string | undefined = scheme.key;
 
-		const _options: InternalOptions = clone(options); // divide instance
+		// divide instance of path. other options are not changed while validating, so shallow copy is enough
+		const _options: InternalOptions = {
+			...options,
+			path: [...options.path]
+		};
 
 		let value: unknown;
 
