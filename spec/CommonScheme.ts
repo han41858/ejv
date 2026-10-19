@@ -272,6 +272,24 @@ describe('CommonScheme', () => {
 				}));
 			});
 
+			it('inherited from grandparent', () => {
+				expect(ejv({ a: 1 }, [{ key: 'a', parent: { parent: { type: 'number' } } }])).to.be.null;
+
+				const error: EjvError | null = ejv({ a: 'x' }, [{ key: 'a', parent: { parent: { type: 'number' } } }]);
+
+				expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+				expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
+					placeholders: ['number']
+				}));
+
+				const multipleTypesError: EjvError | null = ejv({ a: true }, [{ key: 'a', parent: { parent: { type: ['number', 'string'] } } }]);
+
+				expect(multipleTypesError?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH_ONE_OF);
+				expect(multipleTypesError?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH_ONE_OF, {
+					placeholders: [JSON.stringify(['number', 'string'])]
+				}));
+			});
+
 			it('own type first', () => {
 				expect(ejv({ a: 'x' }, [{ key: 'a', type: 'string', parent: { type: 'number' } }])).to.be.null;
 			});

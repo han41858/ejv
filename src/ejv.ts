@@ -26,19 +26,17 @@ import {
 } from './validators';
 
 
-function _getEffectiveTypes (scheme: Scheme): DATA_TYPE[] | undefined {
-	let result: DATA_TYPE[] | undefined;
-
+// type of the scheme, or the nearest ancestor's type through parent
+function _getEffectiveType (scheme: Scheme): AllDataType | undefined {
 	if (definedTester(scheme.type)) {
-		result = (arrayTester(scheme.type)
-			? scheme.type
-			: [scheme.type]) as DATA_TYPE[];
-	}
-	else if (definedTester(scheme.parent)) {
-		result = _getEffectiveTypes(scheme.parent);
+		return scheme.type;
 	}
 
-	return result;
+	if (definedTester(scheme.parent)) {
+		return _getEffectiveType(scheme.parent);
+	}
+
+	return undefined;
 }
 
 // boolean & regexp have no additional rule
@@ -118,9 +116,9 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 			_options.path.push(key);
 		}
 
-		const types: DATA_TYPE[] | undefined = _getEffectiveTypes(scheme);
+		const effectiveType: AllDataType | undefined = _getEffectiveType(scheme);
 
-		if (!definedTester(types)) {
+		if (!definedTester(effectiveType)) {
 			return new EjvError({
 				type: ERROR_TYPE.INVALID_SCHEMES,
 				message: ERROR_MESSAGE.SCHEMES_SHOULD_HAVE_TYPE,
@@ -131,6 +129,10 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 				isSchemeError: true
 			});
 		}
+
+		const types: DATA_TYPE[] = (arrayTester(effectiveType)
+			? effectiveType
+			: [effectiveType]) as DATA_TYPE[];
 
 		const typeError: string | undefined = types.find((type: DATA_TYPE): boolean => {
 			return !definedTester(type)
@@ -215,8 +217,8 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 		});
 
 		if (!typeResolved) {
-			// type is not resolved
-			const typesForMsg: AllDataType = scheme.type || scheme.parent?.type as AllDataType;
+			// type is not resolved, message with the type used for resolving
+			const typesForMsg: AllDataType = effectiveType;
 
 			if (!arrayTester(typesForMsg)) {
 				result = new EjvError({
