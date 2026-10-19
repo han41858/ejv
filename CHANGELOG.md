@@ -1,34 +1,41 @@
 # Change Log
 
-# Unreleased
+# 2.2.0
 
 - improvement
-	- string formats added: `url`, `ip`, `ipv4`, `ipv6`
+	- `allowUnknownProperty` added : rejects properties not declared in `properties`. `'object'` option, and `ejv()` option for the top level data. `UNKNOWN_PROPERTY` error
+	- `validate` added : custom validation function for all schemes, `(value, data) => string | null`. `CUSTOM` error
+	- string formats added : `url`, `ip`, `ipv4`, `ipv6`
 		- `url` : `http://` or `https://` URL that can be parsed by `new URL()` as written
 		- `ipv4`, `ipv6` : optional port (IPv6 with port should be in brackets, ex. `[::1]:8080`)
 	- `BufferScheme`, `BufferLike`, `AllDataType` exported
-	- `json` format documented in README
-	- `customErrorMsg` example in README fixed (`ERROR_TYPE`, options position)
-	- `allowUnknownProperty` added : `'object'` option and `ejv()` option for the top level data. `UNKNOWN_PROPERTY` error
-	- `validate` added : custom validation function for all schemes, returns `null` or an error message. `CUSTOM` error
-- bug fix
+	- performance : `unique` is O(n), format testers and options are not created or deep copied for every value
+- bug fix : `ejv()` returns `EjvError` instead of throwing, or works correctly
 	- schemes are not mutated by `ejv()` anymore (reusing a scheme could overflow the stack)
-	- date `min`, `max` which `Date` can not parse returns `INVALID_SCHEMES` instead of throwing
-	- `Infinity` is not an `integer` / `index`
-	- `unique` : O(n) and `NaN` aware
-	- `date`, `date-time` formats check the day exists in the month (leap year included)
-	- `email` format rejects leading, trailing or consecutive dots in the local part
-	- invalid regular expression string in `pattern` (ex. `'('`) returns `INVALID_SCHEMES` instead of throwing
-	- `items` with values that are not schemes (ex. `[1, 2]`) and `null` in schemes, `properties`, `items` return `INVALID_SCHEMES` instead of throwing
+	- date `min`, `max` which `Date` can not parse (ex. `'2020-W01'`) returns `INVALID_SCHEMES`
+	- invalid regular expression string in `pattern` (ex. `'('`) returns `INVALID_SCHEMES`
+	- `items` with values that are not schemes (ex. `[1, 2]`) and `null` in schemes, `properties`, `items` return `INVALID_SCHEMES`
+	- bigint and circular reference in invalid scheme values are shown in the messages (ex. `1n`, `[Circular]`)
 	- type mismatch message uses the type inherited through multiple `parent` levels (was `'the value should be a undefined'`)
-	- `customErrorMsg` is not applied to scheme errors at any depth (was applied only to scheme errors from nested schemes)
-	- falsy types (ex. `type: ''`, `type: null`, `['number', null]`) return `SCHEMES_HAS_INVALID_TYPE` instead of passing the scheme check
-	- arrays, `Date`, `RegExp` and buffers are not accepted as schemes in schemes, `properties`, `items` (message: `array of scheme object`)
+- caution : stricter validation. values and schemes which passed before can fail
+	- `date`, `date-time` formats check the day exists in the month (ex. `'2019-02-29'`, `'2018-04-31'` fail)
+	- `email` format rejects leading and trailing dots in the local part (ex. `'.abc@domain.com'`)
+	- `Infinity` is not an `integer` / `index`
+	- falsy types (ex. `type: ''`, `type: null`) return `SCHEMES_HAS_INVALID_TYPE`
 	- empty or falsy lists are scheme errors : `type: []`, `items: []`, `format: []`, `format: ['', 'email']`
+	- arrays, `Date`, `RegExp` and buffers are not accepted as schemes in schemes, `properties`, `items`
+	- `customErrorMsg` is applied to data errors only (was also applied to scheme errors from nested schemes)
+	- `ERROR_MESSAGE` changed : `NO_OBJECT_ARRAY_SCHEME`, `PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT` (`array of object` -> `array of scheme object`)
+- internal
+	- `_ejv()` split into per-type validators (no behavior change)
 - build
 	- ESM type declarations added (`build/esm/*.d.ts`), CJS types stay at `build/index.d.ts`
 	- published files limited with `files` field
-	- CI added (GitHub Actions)
+	- CI added (GitHub Actions, Node 20, 22, 24)
+- docs
+	- `json` format, `allowUnknownProperty`, `validate` documented
+	- `customErrorMsg` example fixed (`ERROR_TYPE`, options position)
+	- `EjvError` properties fixed (`message`, `errorScheme`, `isSchemeError`, `isDataError`)
 
 # 2.1.7
 
