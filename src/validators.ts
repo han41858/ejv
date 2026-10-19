@@ -1,6 +1,7 @@
 // type specific rules, called by _ejv() after the type of the value is resolved
 
 import {
+	AllDataType,
 	AnyObject,
 	ArrayScheme,
 	BufferLike,
@@ -73,6 +74,35 @@ export interface ValidatorContext {
 export type ValidatorResult = EjvError | null;
 
 export const ALL_DATA_TYPES: DATA_TYPE[] = Object.values(DATA_TYPE);
+
+export interface EffectiveTypeResult {
+	type: AllDataType | undefined;
+	circular: boolean; // parent chain has a cycle
+}
+
+// type of the scheme, or the nearest ancestor's type through parent.
+// null or non-object parent means no parent
+export function getEffectiveType (scheme: Scheme): EffectiveTypeResult {
+	const visited: Set<Scheme> = new Set();
+
+	let current: Scheme | undefined = scheme;
+
+	while (typeof current === 'object' && current !== null) {
+		if (visited.has(current)) {
+			return { type: undefined, circular: true };
+		}
+
+		visited.add(current);
+
+		if (definedTester(current.type)) {
+			return { type: current.type, circular: false };
+		}
+
+		current = current.parent;
+	}
+
+	return { type: undefined, circular: false };
+}
 
 // index of the first invalid data type, -1 if all valid. falsy values (ex. '', null) are invalid too
 export function invalidTypeIndex (types: unknown[]): number {

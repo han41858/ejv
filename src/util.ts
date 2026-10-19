@@ -21,8 +21,24 @@ export function isArray<T> (value: unknown): value is T[] {
 }
 
 
+// built-in objects which can not be copied by own properties. they are shared, not copied
+function isNotCopiable (value: object): boolean {
+	return ArrayBuffer.isView(value)
+		|| value instanceof ArrayBuffer
+		|| value instanceof Map
+		|| value instanceof Set
+		|| value instanceof WeakMap
+		|| value instanceof WeakSet
+		|| value instanceof Promise;
+}
+
 // sanitize removes undefined & null fields from object. default false
+// circular references are kept in the copy, prototypes of objects are kept (ex. instances of user classes)
 export function clone<T> (obj: T, sanitize?: boolean): T {
+	return cloneWithMemo(obj, sanitize, new WeakMap());
+}
+
+function cloneWithMemo<T> (obj: T, sanitize: boolean | undefined, memo: WeakMap<object, unknown>): T {
 	let result !: T;
 
 	if (obj) {
@@ -44,6 +60,13 @@ export function clone<T> (obj: T, sanitize?: boolean): T {
 				&& typeof objAsObject.byteLength === 'function') {
 				type = CloneDataType.Buffer;
 			}
+			else if (isNotCopiable(objAsObject)) {
+				type = CloneDataType.Buffer; // simple copy
+			}
+		}
+
+		if ((type === CloneDataType.Array || type === CloneDataType.Object) && memo.has(obj as unknown as object)) {
+			return memo.get(obj as unknown as object) as T; // circular or shared reference
 		}
 
 		switch (type) {
@@ -55,17 +78,25 @@ export function clone<T> (obj: T, sanitize?: boolean): T {
 
 			case  CloneDataType.Array: {
 				const objAsArray: unknown[] = obj as unknown as unknown[];
-				result = objAsArray.map((one: unknown): unknown => {
-					return clone(one);
-				}) as unknown as T;
+				const resultArray: unknown[] = new Array(objAsArray.length);
+
+				memo.set(objAsArray, resultArray);
+
+				objAsArray.forEach((one: unknown, i: number): void => {
+					resultArray[i] = cloneWithMemo(one, undefined, memo);
+				});
+
+				result = resultArray as unknown as T;
 				break;
 			}
 
 			case CloneDataType.Object: {
 				// sanitize default false
-				result = {} as unknown as T;
+				const resultObject: AnyObject = Object.create(Object.getPrototypeOf(obj));
 
-				const entries: [string, unknown][] = Object.entries(obj)
+				memo.set(obj as unknown as object, resultObject);
+
+				const entries: [string, unknown][] = Object.entries(obj as unknown as AnyObject)
 					.filter(([, value]): boolean => {
 						return sanitize
 							? value !== undefined && value !== null
@@ -75,8 +106,10 @@ export function clone<T> (obj: T, sanitize?: boolean): T {
 
 				for (const [key, value] of entries) {
 					// call recursively
-					(result as unknown as AnyObject)[key] = clone(value, sanitize);
+					resultObject[key] = cloneWithMemo(value, sanitize, memo);
 				}
+
+				result = resultObject as unknown as T;
 				break;
 			}
 
