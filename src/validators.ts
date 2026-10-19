@@ -67,16 +67,9 @@ export interface ValidatorContext {
 	validate: Validate; // _ejv() for nested schemes
 }
 
-// wrapper of an invalid scheme error found in a type validator. it is a return value, not thrown.
-// _ejv() returns the wrapped error immediately, without customErrorMsg.
-// (scheme errors from nested schemes come back as plain EjvError and get customErrorMsg, same as before)
-export class SchemeFailure {
-	constructor (public readonly error: EjvError) {
-	}
-}
-
-// data error (or an error from nested schemes) : _ejv() stops and applies customErrorMsg
-export type ValidatorResult = EjvError | SchemeFailure | null;
+// first error found by a type validator (scheme error or data error), null if valid.
+// _ejv() stops at it, and applies customErrorMsg only to data errors (isDataError)
+export type ValidatorResult = EjvError | null;
 
 export const ALL_DATA_TYPES: DATA_TYPE[] = Object.values(DATA_TYPE);
 
@@ -88,8 +81,8 @@ export function schemeArrayTester (array: unknown[]): boolean {
 }
 
 
-function schemeFailure (ctx: ValidatorContext, message: string): SchemeFailure {
-	return new SchemeFailure(new EjvError({
+function schemeError (ctx: ValidatorContext, message: string): EjvError {
+	return new EjvError({
 		type: ERROR_TYPE.INVALID_SCHEMES,
 		message,
 
@@ -97,7 +90,7 @@ function schemeFailure (ctx: ValidatorContext, message: string): SchemeFailure {
 
 		errorScheme: ctx.scheme,
 		isSchemeError: true
-	}));
+	});
 }
 
 function dataError (ctx: ValidatorContext, type: ERROR_TYPE, message: string): EjvError {
@@ -138,7 +131,7 @@ function enumRule (ctx: ValidatorContext, rule: 'enum' | 'notEnum', itemType: DA
 	const isEnum: boolean = rule === 'enum';
 
 	if (!arrayTester(values)) {
-		return schemeFailure(ctx, isEnum
+		return schemeError(ctx, isEnum
 			? ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY
 			: ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_ARRAY);
 	}
@@ -146,7 +139,7 @@ function enumRule (ctx: ValidatorContext, rule: 'enum' | 'notEnum', itemType: DA
 	if (!arrayTypeOfTester(values, itemType)) {
 		const isNumber: boolean = itemType === DATA_TYPE.NUMBER;
 
-		return schemeFailure(ctx, isEnum
+		return schemeError(ctx, isEnum
 			? (isNumber ? ERROR_MESSAGE.ENUM_SHOULD_BE_NUMBERS : ERROR_MESSAGE.ENUM_SHOULD_BE_STRINGS)
 			: (isNumber ? ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_NUMBERS : ERROR_MESSAGE.NOT_ENUM_SHOULD_BE_STRINGS));
 	}
@@ -185,7 +178,7 @@ function sizeRules (ctx: ValidatorContext, rules: SizeRule[]): ValidatorResult {
 		}
 
 		if (!(numberTester(rule.limit) && integerTester(rule.limit))) {
-			return schemeFailure(ctx, rule.invalidLimitMessage);
+			return schemeError(ctx, rule.invalidLimitMessage);
 		}
 
 		if (!rule.test(rule.limit)) {
@@ -264,7 +257,7 @@ function formatRule<T extends string> (
 
 	if (!arrayTester(format)) {
 		if (!enumTester(format as T, allFormats)) {
-			return schemeFailure(ctx, createErrorMsg(invalidFormatMessage, {
+			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
 				placeholders: [format as string]
 			}));
 		}
@@ -278,7 +271,7 @@ function formatRule<T extends string> (
 
 		// falsy values (ex. '') are not reported here, they fail at matching below
 		if (errorFormat) {
-			return schemeFailure(ctx, createErrorMsg(invalidFormatMessage, {
+			return schemeError(ctx, createErrorMsg(invalidFormatMessage, {
 				placeholders: [errorFormat as string]
 			}));
 		}
@@ -324,7 +317,7 @@ function numberBoundRule (ctx: ValidatorContext, bound: 'min' | 'max'): Validato
 		: parentScheme?.[bound] as number;
 
 	if (!numberTester(effectiveBound)) {
-		return schemeFailure(ctx, isMin
+		return schemeError(ctx, isMin
 			? ERROR_MESSAGE.MIN_SHOULD_BE_NUMBER
 			: ERROR_MESSAGE.MAX_SHOULD_BE_NUMBER);
 	}
@@ -332,7 +325,7 @@ function numberBoundRule (ctx: ValidatorContext, bound: 'min' | 'max'): Validato
 	const exclusive: unknown = isMin ? scheme.exclusiveMin : scheme.exclusiveMax;
 
 	if (definedTester(exclusive) && !booleanTester(exclusive)) {
-		return schemeFailure(ctx, isMin
+		return schemeError(ctx, isMin
 			? ERROR_MESSAGE.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN
 			: ERROR_MESSAGE.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 	}
@@ -437,7 +430,7 @@ function patternRule (ctx: ValidatorContext): ValidatorResult {
 	}
 
 	if (scheme.pattern === null) {
-		return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 			placeholders: ['null']
 		}));
 	}
@@ -448,7 +441,7 @@ function patternRule (ctx: ValidatorContext): ValidatorResult {
 
 		if (!minLengthTester(patterns, 1) // empty array
 			|| regExps.includes(null)) {
-			return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+			return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 				placeholders: [patternsToString(patterns)]
 			}));
 		}
@@ -468,7 +461,7 @@ function patternRule (ctx: ValidatorContext): ValidatorResult {
 	const regExp: RegExp | null = toRegExp(pattern);
 
 	if (regExp === null) {
-		return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
+		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_STRING_PATTERN, {
 			placeholders: [patternToString(pattern)]
 		}));
 	}
@@ -502,7 +495,7 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 
 	if (definedTester(scheme.allowNoProperty)) {
 		if (!booleanTester(scheme.allowNoProperty)) {
-			return schemeFailure(ctx, ERROR_MESSAGE.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
+			return schemeError(ctx, ERROR_MESSAGE.ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN);
 		}
 
 		if (!scheme.allowNoProperty && !hasPropertyTester(value)) {
@@ -515,17 +508,17 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 	}
 
 	if (!arrayTester(scheme.properties)) {
-		return schemeFailure(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY);
+		return schemeError(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY);
 	}
 
 	const properties: Scheme[] = scheme.properties;
 
 	if (!minLengthTester(properties, 1)) {
-		return schemeFailure(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_HAVE_ITEMS);
+		return schemeError(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_HAVE_ITEMS);
 	}
 
 	if (!schemeArrayTester(properties)) {
-		return schemeFailure(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
+		return schemeError(ctx, ERROR_MESSAGE.PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT);
 	}
 
 	if (!objectTester(value)) {
@@ -574,20 +567,20 @@ function dateBoundRule (ctx: ValidatorContext, bound: 'min' | 'max'): ValidatorR
 		)
 		|| dateTester(boundCandidate)
 	)) {
-		return schemeFailure(ctx, invalidBoundMessage);
+		return schemeError(ctx, invalidBoundMessage);
 	}
 
 	const effectiveBound: Date = new Date(boundCandidate);
 
 	// some ISO 8601 forms (ex. week dates) pass the format test but can't be parsed by Date
 	if (isNaN(+effectiveBound)) {
-		return schemeFailure(ctx, invalidBoundMessage);
+		return schemeError(ctx, invalidBoundMessage);
 	}
 
 	const exclusive: unknown = isMin ? scheme.exclusiveMin : scheme.exclusiveMax;
 
 	if (definedTester(exclusive) && !booleanTester(exclusive)) {
-		return schemeFailure(ctx, isMin
+		return schemeError(ctx, isMin
 			? ERROR_MESSAGE.EXCLUSIVE_MIN_SHOULD_BE_BOOLEAN
 			: ERROR_MESSAGE.EXCLUSIVE_MAX_SHOULD_BE_BOOLEAN);
 	}
@@ -640,7 +633,7 @@ function itemsByTypesRule (ctx: ValidatorContext, tempKeys: string[]): Validator
 	});
 
 	if (itemTypeError) {
-		return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
+		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
 			placeholders: [itemTypeError]
 		}));
 	}
@@ -811,7 +804,7 @@ function itemsRule (ctx: ValidatorContext): ValidatorResult {
 		return itemsBySchemesRule(ctx, tempKeys);
 	}
 
-	return schemeFailure(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
+	return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
 		placeholders: [JSON.stringify(scheme.items)]
 	}));
 }
@@ -828,7 +821,7 @@ export function validateArray (ctx: ValidatorContext): ValidatorResult {
 			}
 
 			if (!booleanTester(scheme.unique)) {
-				return schemeFailure(ctx, ERROR_MESSAGE.UNIQUE_SHOULD_BE_BOOLEAN);
+				return schemeError(ctx, ERROR_MESSAGE.UNIQUE_SHOULD_BE_BOOLEAN);
 			}
 
 			return scheme.unique && !uniqueItemsTester(value)

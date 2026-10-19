@@ -314,8 +314,7 @@ describe('ejv()', () => {
 					});
 				});
 
-				// scheme errors found while checking the value are returned immediately at that level,
-				// so customErrorMsg is applied only when they come back from nested schemes
+				// customErrorMsg is for data errors. scheme errors keep their messages at any depth
 				describe('scheme errors', () => {
 					const customErrorMsg = 'custom scheme error';
 
@@ -346,8 +345,7 @@ describe('ejv()', () => {
 						expect(error?.message).to.be.eql(ERROR_MESSAGE.EMPTY_SCHEME);
 					});
 
-					// current behavior, not a design decision yet
-					it('applied to scheme error from object properties (current behavior)', () => {
+					it('not applied to scheme error from object properties', () => {
 						const error: EjvError | null = ejv({
 							o: { x: 1 }
 						}, [{
@@ -360,10 +358,10 @@ describe('ejv()', () => {
 
 						expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
 						expect(error?.isSchemeError).to.be.true;
-						expect(error?.message).to.be.eql(customErrorMsg);
+						expect(error?.message).to.be.eql(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY);
 					});
 
-					it('applied to scheme error from array items (current behavior)', () => {
+					it('not applied to scheme error from array items', () => {
 						const error: EjvError | null = ejv({
 							arr: [1]
 						}, [{
@@ -376,7 +374,7 @@ describe('ejv()', () => {
 
 						expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
 						expect(error?.isSchemeError).to.be.true;
-						expect(error?.message).to.be.eql(customErrorMsg);
+						expect(error?.message).to.be.eql(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY);
 					});
 				});
 			});

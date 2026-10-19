@@ -13,7 +13,6 @@ import {
 import { clone, createErrorMsg, sift } from './util';
 import {
 	ALL_DATA_TYPES,
-	SchemeFailure,
 	schemeArrayTester,
 	validateArray,
 	validateBuffer,
@@ -264,10 +263,6 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 				validate: _ejv
 			});
 
-			if (validatorResult instanceof SchemeFailure) {
-				return validatorResult.error;
-			}
-
 			if (validatorResult) {
 				result = validatorResult;
 				break;
@@ -276,7 +271,8 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 	}
 
 
-	if (result !== null && definedTester(options.customErrorMsg)) {
+	// customErrorMsg is for data errors. scheme errors keep their messages for debugging
+	if (result !== null && result.isDataError && definedTester(options.customErrorMsg)) {
 		const customErrorMsgObj: {
 			[key in ERROR_TYPE]?: string;
 		} = options.customErrorMsg as {
