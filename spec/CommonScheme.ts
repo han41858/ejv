@@ -291,6 +291,35 @@ describe('CommonScheme', () => {
 				}));
 			});
 
+			it('circular parent', () => {
+				const selfParent: Scheme = { key: 'a' };
+				selfParent.parent = selfParent;
+
+				checkSchemeError({
+					data: { a: 1 },
+					errorScheme: selfParent,
+					message: ERROR_MESSAGE.SCHEMES_HAS_CIRCULAR_PARENT
+				});
+
+				const parentA: Scheme = {};
+				const parentB: Scheme = { parent: parentA };
+				parentA.parent = parentB;
+
+				checkSchemeError({
+					data: { a: 1 },
+					errorScheme: { key: 'a', parent: parentA },
+					message: ERROR_MESSAGE.SCHEMES_HAS_CIRCULAR_PARENT
+				});
+			});
+
+			it('null parent is no parent', () => {
+				checkSchemeError({
+					data: { a: 1 },
+					errorScheme: { key: 'a', parent: null as unknown as Scheme },
+					message: ERROR_MESSAGE.SCHEMES_SHOULD_HAVE_TYPE
+				});
+			});
+
 			it('own type first', () => {
 				expect(ejv({ a: 'x' }, [{ key: 'a', type: 'string', parent: { type: 'number' } }])).to.be.null;
 			});

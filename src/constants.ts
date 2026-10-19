@@ -93,6 +93,7 @@ export enum ERROR_MESSAGE {
 
 	EMPTY_SCHEME = 'schemes should not be empty',
 	SCHEMES_SHOULD_HAVE_TYPE = 'schemes should have type',
+	SCHEMES_HAS_CIRCULAR_PARENT = 'schemes has circular parent',
 	SCHEMES_HAS_INVALID_TYPE = 'schemes has invalid type: <<1>>',
 	SCHEMES_HAS_DUPLICATED_TYPE = 'schemes has duplicated type: <<1>>',
 

@@ -12,6 +12,8 @@ import {
 import { createErrorMsg, sift } from './util';
 import {
 	customRule,
+	EffectiveTypeResult,
+	getEffectiveType,
 	findUnknownKey,
 	invalidTypeIndex,
 	invalidValueToString,
@@ -27,19 +29,6 @@ import {
 	ValidatorResult
 } from './validators';
 
-
-// type of the scheme, or the nearest ancestor's type through parent
-function _getEffectiveType (scheme: Scheme): AllDataType | undefined {
-	if (definedTester(scheme.type)) {
-		return scheme.type;
-	}
-
-	if (definedTester(scheme.parent)) {
-		return _getEffectiveType(scheme.parent);
-	}
-
-	return undefined;
-}
 
 // boolean & regexp have no additional rule
 const TYPE_VALIDATORS: Map<DATA_TYPE, (ctx: ValidatorContext) => ValidatorResult> = new Map([
@@ -122,7 +111,21 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 			_options.path.push(key);
 		}
 
-		const effectiveType: AllDataType | undefined = _getEffectiveType(scheme);
+		const effectiveTypeResult: EffectiveTypeResult = getEffectiveType(scheme);
+
+		if (effectiveTypeResult.circular) {
+			return new EjvError({
+				type: ERROR_TYPE.INVALID_SCHEMES,
+				message: ERROR_MESSAGE.SCHEMES_HAS_CIRCULAR_PARENT,
+
+				data: data,
+
+				errorScheme: scheme,
+				isSchemeError: true
+			});
+		}
+
+		const effectiveType: AllDataType | undefined = effectiveTypeResult.type;
 
 		if (!definedTester(effectiveType)) {
 			return new EjvError({
