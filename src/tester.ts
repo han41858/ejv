@@ -184,6 +184,16 @@ function isLeapYear (year: number): boolean {
 	return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 }
 
+// ISO 8601 week-numbering year has 53 weeks if it starts on Thursday, or it is a leap year starting on Wednesday
+// p(y) is the weekday of Dec 31 of the year (0 : Sunday)
+function isoWeeksInYear (year: number): number {
+	const p = (y: number): number => {
+		return ((y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400)) % 7 + 7) % 7;
+	};
+
+	return p(year) === 4 || p(year - 1) === 3 ? 53 : 52;
+}
+
 // checks the day exists in the month. year can be omitted (ISO 8601 --MM-DD), then Feb 29 is allowed
 function calendarDateTester (year: number | undefined, month: number, date: number): boolean {
 	const daysInMonth: number[] = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -232,11 +242,17 @@ function iso8601DateTester (value: string): boolean {
 		return +ordinalDateMatch[2] !== 366 || isLeapYear(+ordinalDateMatch[1]);
 	}
 
+	// week dates : W53 only in the year which has 53 weeks
+	const weekDateMatch: RegExpMatchArray | null = value.match(new RegExp(`^${ years }-${ weeks }(-${ days })?$`)) // YYYY-Www, YYYY-Www-D
+		|| value.match(new RegExp(`^${ years }${ weeks }(${ days })?$`)); // YYYYWww, YYYYWwwD
+
+	if (weekDateMatch) {
+		return +weekDateMatch[3] <= isoWeeksInYear(+weekDateMatch[1]);
+	}
+
 	return [
 		new RegExp(`^[-+]?${ years }$`), // years : YYYY, +YYYY, -YYYY
-		new RegExp(`^${ years }-${ months }$`), // calendar dates : YYYY-MM
-		new RegExp(`^${ years }-${ weeks }(-${ days })?$`), // week dates : YYYY-Www, YYYY-Www-D
-		new RegExp(`^${ years }${ weeks }(${ days })?$`) // week dates : YYYYWww, YYYYWwwD
+		new RegExp(`^${ years }-${ months }$`) // calendar dates : YYYY-MM
 	].some((regExp: RegExp): boolean => {
 		return regExp.test(value);
 	});

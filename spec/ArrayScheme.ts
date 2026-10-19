@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 
-import { EjvError, Scheme } from '../src/interfaces';
+import { ArrayScheme, EjvError, ObjectScheme, Scheme } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError, TYPE_TESTER_ARR, TypeTester } from './common-test-util';
@@ -1261,6 +1261,65 @@ describe('ArrayScheme', () => {
 			expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 				placeholders: ['{"type":"number","min":"1n"}']
 			}));
+		});
+	});
+
+	describe('recursive scheme', () => {
+		// tree : node has children of node
+		const nodeScheme: Scheme = {
+			type: 'object',
+			properties: [{
+				key: 'name',
+				type: 'string'
+			}, {
+				key: 'children',
+				type: 'array',
+				optional: true
+			}]
+		};
+
+		((nodeScheme as ObjectScheme).properties as ArrayScheme[])[1].items = nodeScheme;
+
+		it('valid tree', () => {
+			expect(ejv({
+				root: { name: 'root', children: [{ name: 'a', children: [{ name: 'a1' }] }, { name: 'b' }] }
+			}, [{ key: 'root', ...nodeScheme }])).to.be.null;
+		});
+
+		it('invalid leaf', () => {
+			const error: EjvError | null = ejv({
+				root: { name: 'root', children: [{ name: 'a', children: [{ name: 1 }] }] }
+			}, [{ key: 'root', ...nodeScheme }]);
+
+			expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+			expect(error?.path).to.be.eql('root/children/0/children/0/name');
+		});
+
+		it('item scheme with circular value', () => {
+			const circular: { self?: unknown } = {};
+			circular.self = circular;
+
+			expect(ejv({ a: [1] }, [{
+				key: 'a',
+				type: 'array',
+				items: { type: 'number', extra: circular } as Scheme
+			}])).to.be.null;
+		});
+
+		it('item scheme of class instance keeps validate method', () => {
+			class PositiveScheme {
+				type: string = 'number';
+
+				validate (value: unknown): string | null {
+					return (value as number) > 0 ? null : 'should be positive';
+				}
+			}
+
+			expect(ejv({ a: [1, -1] }, [{
+				key: 'a',
+				type: 'array',
+				items: new PositiveScheme()
+			}])?.message).to.be.eql('should be positive');
 		});
 	});
 });

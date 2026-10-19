@@ -1,5 +1,16 @@
 # Change Log
 
+# 2.2.1
+
+- improvement
+	- recursive schemes (ex. tree, `items` of a scheme refers itself) are supported
+- bug fix
+	- schemes with circular references in `items` don't overflow the stack (`clone()` keeps circular references)
+	- circular `parent` returns `SCHEMES_HAS_CIRCULAR_PARENT` instead of overflowing the stack
+	- `parent: null` is treated as no parent instead of throwing `TypeError`
+	- instance of a class as `items` scheme keeps its prototype methods (ex. `validate()`)
+	- `date`, `date-time` formats : ISO 8601 week date `W53` is allowed only in the year which has 53 weeks (ex. `2020-W53` is valid, `2018-W53` is not)
+
 # 2.2.0
 
 - improvement
