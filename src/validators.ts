@@ -802,7 +802,7 @@ function itemsBySchemesRule (ctx: ValidatorContext, tempKeys: string[]): Validat
 	if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
 		errorType = ERROR_TYPE.ITEMS_SCHEMES;
 		errorMsg = createErrorMsg(ERROR_MESSAGE.ITEMS_SCHEMES, {
-			placeholders: [JSON.stringify(itemsAsSchemes)]
+			placeholders: [safeStringify(itemsAsSchemes)]
 		});
 	}
 	else {
@@ -813,7 +813,7 @@ function itemsBySchemesRule (ctx: ValidatorContext, tempKeys: string[]): Validat
 			// REQUIRED in array is TYPE_MISMATCH except with nullable === true
 			errorType = ERROR_TYPE.TYPE_MISMATCH;
 			errorMsg = createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
-				placeholders: [JSON.stringify(scheme.items)]
+				placeholders: [safeStringify(scheme.items)]
 			});
 		}
 	}
@@ -870,7 +870,7 @@ function itemsRule (ctx: ValidatorContext): ValidatorResult {
 	}
 
 	return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
-		placeholders: [JSON.stringify(scheme.items)]
+		placeholders: [safeStringify(scheme.items)]
 	}));
 }
 
