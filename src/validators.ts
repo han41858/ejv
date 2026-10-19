@@ -927,3 +927,35 @@ export function validateBuffer (ctx: ValidatorContext): ValidatorResult {
 		}
 	]);
 }
+
+
+// custom validation of all types, called after the other rules pass
+export function customRule (ctx: ValidatorContext): ValidatorResult {
+	const validate: unknown = ctx.scheme.validate;
+
+	if (!definedTester(validate)) {
+		return null;
+	}
+
+	if (typeof validate !== 'function') {
+		return schemeError(ctx, ERROR_MESSAGE.VALIDATE_SHOULD_BE_FUNCTION);
+	}
+
+	// errors thrown by validate() are not caught, they are bugs of the user code
+	const result: unknown = validate.call(ctx.scheme, ctx.value, ctx.options.rootData);
+
+	if (result === null) {
+		return null;
+	}
+
+	// true, false and undefined are not allowed to avoid confusion
+	if (!stringTester(result)) {
+		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.VALIDATE_SHOULD_RETURN_NULL_OR_STRING, {
+			placeholders: [invalidValueToString(result)]
+		}));
+	}
+
+	return dataError(ctx, ERROR_TYPE.CUSTOM, result.length > 0
+		? result
+		: ERROR_MESSAGE.CUSTOM);
+}

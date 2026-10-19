@@ -11,6 +11,7 @@ import {
 } from './tester';
 import { createErrorMsg, sift } from './util';
 import {
+	customRule,
 	findUnknownKey,
 	invalidTypeIndex,
 	invalidValueToString,
@@ -269,19 +270,20 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 		// additional check for type resolved
 		const validator: ((ctx: ValidatorContext) => ValidatorResult) | undefined = TYPE_VALIDATORS.get(typeResolved);
 
-		if (validator) {
-			const validatorResult: ValidatorResult = validator({
-				data,
-				value,
-				scheme,
-				options: _options,
-				validate: _ejv
-			});
+		const ctx: ValidatorContext = {
+			data,
+			value,
+			scheme,
+			options: _options,
+			validate: _ejv
+		};
 
-			if (validatorResult) {
-				result = validatorResult;
-				break;
-			}
+		// rules of the type first, and then custom validation
+		const validatorResult: ValidatorResult = (validator ? validator(ctx) : null) ?? customRule(ctx);
+
+		if (validatorResult) {
+			result = validatorResult;
+			break;
 		}
 	}
 
@@ -346,6 +348,8 @@ export function ejv (data: object, schemes: Scheme[], options?: Options): null |
 	if (!definedTester(internalOption.path)) {
 		internalOption.path = [];
 	}
+
+	internalOption.rootData = data as AnyObject;
 
 	const result: EjvError | null = _ejv(data as AnyObject, schemes, internalOption);
 

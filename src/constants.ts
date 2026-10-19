@@ -78,7 +78,9 @@ export enum ERROR_TYPE {
 	UNIQUE_ITEMS = 'UNIQUE_ITEMS',
 
 	ITEMS_TYPE = 'ITEMS_TYPE',
-	ITEMS_SCHEMES = 'ITEMS_SCHEMES'
+	ITEMS_SCHEMES = 'ITEMS_SCHEMES',
+
+	CUSTOM = 'CUSTOM'
 }
 
 export enum ERROR_MESSAGE {
@@ -134,6 +136,9 @@ export enum ERROR_MESSAGE {
 
 	INVALID_ITEMS_SCHEME = 'invalid schemes of array items: <<1>>',
 
+	VALIDATE_SHOULD_BE_FUNCTION = 'validate should be a function',
+	VALIDATE_SHOULD_RETURN_NULL_OR_STRING = 'validate should return null or string: <<1>>',
+
 	// about EjvError
 	REQUIRED = 'value is required',
 
@@ -175,6 +180,8 @@ export enum ERROR_MESSAGE {
 	UNIQUE_ITEMS = 'the array should be unique items',
 
 	ITEMS_TYPE = 'the array should have items in type of <<1>>',
-	ITEMS_SCHEMES = 'the array should have items matched with schemes of <<1>>'
+	ITEMS_SCHEMES = 'the array should have items matched with schemes of <<1>>',
+
+	CUSTOM = 'the value is not valid' // validate() returns empty string
 }
 

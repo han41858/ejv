@@ -11,6 +11,11 @@ interface CommonScheme {
 
 	optional?: boolean; // false
 	nullable?: boolean; // false
+
+	// custom validation, called after the other rules of the scheme pass.
+	// value : the value to validate, data : the data passed to ejv()
+	// returns null if the value is valid, or an error message
+	validate?(value: unknown, data: unknown): string | null;
 }
 
 // no additional rule
@@ -99,6 +104,7 @@ export interface Options {
 
 export interface InternalOptions extends Options {
 	path: string[];
+	rootData?: AnyObject; // data passed to ejv(), for custom validation
 }
 
 export class EjvError {
