@@ -229,6 +229,143 @@ describe('ejv()', () => {
 					expect(error.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
 					expect(error.message).to.be.eql(customErrorMsg);
 				});
+
+				describe('errors from nested schemes', () => {
+					const customErrorMsg = 'custom message';
+
+					it('object properties', () => {
+						const error: EjvError | null = ejv({
+							o: { x: 'a' }
+						}, [{
+							key: 'o',
+							type: 'object',
+							properties: [{ key: 'x', type: 'number' }]
+						}], {
+							customErrorMsg: { [ERROR_TYPE.TYPE_MISMATCH]: customErrorMsg }
+						});
+
+						expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+						expect(error?.message).to.be.eql(customErrorMsg);
+						expect(error?.path).to.be.eql('o/x');
+					});
+
+					it('array items by scheme', () => {
+						const error: EjvError | null = ejv({
+							arr: [1, 'x']
+						}, [{
+							key: 'arr',
+							type: 'array',
+							items: { type: 'number' }
+						}], {
+							customErrorMsg: { [ERROR_TYPE.TYPE_MISMATCH]: customErrorMsg }
+						});
+
+						expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+						expect(error?.message).to.be.eql(customErrorMsg);
+						expect(error?.path).to.be.eql('arr/1');
+					});
+
+					it('array items by type', () => {
+						const error: EjvError | null = ejv({
+							arr: [1, 'x']
+						}, [{
+							key: 'arr',
+							type: 'array',
+							items: 'number'
+						}], {
+							customErrorMsg: { [ERROR_TYPE.ITEMS_TYPE]: customErrorMsg }
+						});
+
+						expect(error?.type).to.be.eql(ERROR_TYPE.ITEMS_TYPE);
+						expect(error?.message).to.be.eql(customErrorMsg);
+						expect(error?.path).to.be.eql('arr/1');
+					});
+
+					it('object properties in array items', () => {
+						const error: EjvError | null = ejv({
+							arr: [{ n: 1 }, { n: 'x' }]
+						}, [{
+							key: 'arr',
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: [{ key: 'n', type: 'number' }]
+							}
+						}], {
+							customErrorMsg: { [ERROR_TYPE.TYPE_MISMATCH]: customErrorMsg }
+						});
+
+						expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
+						expect(error?.message).to.be.eql(customErrorMsg);
+						expect(error?.path).to.be.eql('arr/1/n');
+					});
+				});
+
+				// scheme errors found while checking the value are returned immediately at that level,
+				// so customErrorMsg is applied only when they come back from nested schemes
+				describe('scheme errors', () => {
+					const customErrorMsg = 'custom scheme error';
+
+					it('not applied to scheme error of the top level', () => {
+						const error: EjvError | null = ejv({
+							a: 1
+						}, [{
+							key: 'a',
+							type: 'number',
+							enum: 'x' as unknown as number[]
+						}], {
+							customErrorMsg: { [ERROR_TYPE.INVALID_SCHEMES]: customErrorMsg }
+						});
+
+						expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
+						expect(error?.isSchemeError).to.be.true;
+						expect(error?.message).to.be.eql(ERROR_MESSAGE.ENUM_SHOULD_BE_ARRAY);
+					});
+
+					it('not applied to invalid scheme list', () => {
+						const error: EjvError | null = ejv({
+							a: 1
+						}, [], {
+							customErrorMsg: { [ERROR_TYPE.INVALID_SCHEMES]: customErrorMsg }
+						});
+
+						expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
+						expect(error?.message).to.be.eql(ERROR_MESSAGE.EMPTY_SCHEME);
+					});
+
+					// current behavior, not a design decision yet
+					it('applied to scheme error from object properties (current behavior)', () => {
+						const error: EjvError | null = ejv({
+							o: { x: 1 }
+						}, [{
+							key: 'o',
+							type: 'object',
+							properties: [{ key: 'x', type: 'number', enum: 'x' as unknown as number[] }]
+						}], {
+							customErrorMsg: { [ERROR_TYPE.INVALID_SCHEMES]: customErrorMsg }
+						});
+
+						expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
+						expect(error?.isSchemeError).to.be.true;
+						expect(error?.message).to.be.eql(customErrorMsg);
+					});
+
+					it('applied to scheme error from array items (current behavior)', () => {
+						const error: EjvError | null = ejv({
+							arr: [1]
+						}, [{
+							key: 'arr',
+							type: 'array',
+							items: { type: 'number', enum: 'x' as unknown as number[] }
+						}], {
+							customErrorMsg: { [ERROR_TYPE.INVALID_SCHEMES]: customErrorMsg }
+						});
+
+						expect(error?.type).to.be.eql(ERROR_TYPE.INVALID_SCHEMES);
+						expect(error?.isSchemeError).to.be.true;
+						expect(error?.message).to.be.eql(customErrorMsg);
+					});
+				});
 			});
 		});
 	});
