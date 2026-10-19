@@ -122,3 +122,43 @@ export function createErrorMsg (errorMsg: ERROR_MESSAGE, param?: {
 
 	return result;
 }
+
+
+// JSON.stringify() for error messages, never throws.
+// same result with JSON.stringify() for JSON values. bigint is shown as '1n', circular reference as '[Circular]'
+export function safeStringify (value: unknown): string {
+	if (typeof value === 'bigint') {
+		return value + 'n';
+	}
+
+	// objects on the path from the root to the current value. shared references which are not circular are kept
+	const ancestors: unknown[] = [];
+
+	try {
+		return String(JSON.stringify(value, function (this: unknown, _key: string, child: unknown): unknown {
+			if (typeof child === 'bigint') {
+				return child + 'n';
+			}
+
+			if (typeof child !== 'object' || child === null) {
+				return child;
+			}
+
+			while (ancestors.length > 0 && ancestors[ancestors.length - 1] !== this) {
+				ancestors.pop();
+			}
+
+			if (ancestors.includes(child)) {
+				return '[Circular]';
+			}
+
+			ancestors.push(child);
+
+			return child;
+		}));
+	}
+	catch (e: unknown) { // eslint-disable-line @typescript-eslint/no-unused-vars
+		// ex. toJSON() throws
+		return '[unserializable]';
+	}
+}

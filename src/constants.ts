@@ -67,6 +67,7 @@ export enum ERROR_TYPE {
 	PATTERN_ONE_OF = 'PATTERN_ONE_OF',
 
 	PROPERTY = 'PROPERTY',
+	UNKNOWN_PROPERTY = 'UNKNOWN_PROPERTY',
 
 	AFTER_OR_SAME_DATE = 'AFTER_OR_SAME_DATE',
 	AFTER_DATE = 'AFTER_DATE',
@@ -77,7 +78,9 @@ export enum ERROR_TYPE {
 	UNIQUE_ITEMS = 'UNIQUE_ITEMS',
 
 	ITEMS_TYPE = 'ITEMS_TYPE',
-	ITEMS_SCHEMES = 'ITEMS_SCHEMES'
+	ITEMS_SCHEMES = 'ITEMS_SCHEMES',
+
+	CUSTOM = 'CUSTOM'
 }
 
 export enum ERROR_MESSAGE {
@@ -124,6 +127,7 @@ export enum ERROR_MESSAGE {
 	PROPERTIES_SHOULD_BE_ARRAY_OF_OBJECT = 'properties should be array of scheme object',
 
 	ALLOW_NO_PROPERTY_SHOULD_BE_BOOLEAN = 'allowNoProperty should be a boolean',
+	ALLOW_UNKNOWN_PROPERTY_SHOULD_BE_BOOLEAN = 'allowUnknownProperty should be a boolean',
 
 	MIN_DATE_SHOULD_BE_DATE_OR_STRING = 'min should be Date or string representing date',
 	MAX_DATE_SHOULD_BE_DATE_OR_STRING = 'max should be Date or string representing date',
@@ -131,6 +135,9 @@ export enum ERROR_MESSAGE {
 	UNIQUE_SHOULD_BE_BOOLEAN = 'unique should be a boolean',
 
 	INVALID_ITEMS_SCHEME = 'invalid schemes of array items: <<1>>',
+
+	VALIDATE_SHOULD_BE_FUNCTION = 'validate should be a function',
+	VALIDATE_SHOULD_RETURN_NULL_OR_STRING = 'validate should return null or string: <<1>>',
 
 	// about EjvError
 	REQUIRED = 'value is required',
@@ -162,6 +169,7 @@ export enum ERROR_MESSAGE {
 	PATTERN_ONE_OF = 'the value should be one of pattern of <<1>>', // pattern
 
 	PROPERTY = 'the value should have property',
+	UNKNOWN_PROPERTY = 'the value has unknown property: <<1>>',
 
 	AFTER_OR_SAME_DATE = 'the value should be after or same date than <<1>>', // date
 	AFTER_DATE = 'the value should be after date than <<1>>', // date
@@ -172,6 +180,8 @@ export enum ERROR_MESSAGE {
 	UNIQUE_ITEMS = 'the array should be unique items',
 
 	ITEMS_TYPE = 'the array should have items in type of <<1>>',
-	ITEMS_SCHEMES = 'the array should have items matched with schemes of <<1>>'
+	ITEMS_SCHEMES = 'the array should have items matched with schemes of <<1>>',
+
+	CUSTOM = 'the value is not valid' // validate() returns empty string
 }
 

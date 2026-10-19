@@ -1573,7 +1573,8 @@ describe('StringScheme', () => {
 			['empty array', [], '[]'],
 			['empty string', '', '""'],
 			['empty string in array', ['', 'email'], '""'],
-			['null in array', ['email', null], 'null']
+			['null in array', ['email', null], 'null'],
+			['bigint in array', ['email', 1n], '1n']
 		];
 
 		cases.forEach(([name, format, placeholder]: [string, unknown, string]): void => {

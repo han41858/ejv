@@ -9,6 +9,8 @@
 	- `BufferScheme`, `BufferLike`, `AllDataType` exported
 	- `json` format documented in README
 	- `customErrorMsg` example in README fixed (`ERROR_TYPE`, options position)
+	- `allowUnknownProperty` added : `'object'` option and `ejv()` option for the top level data. `UNKNOWN_PROPERTY` error
+	- `validate` added : custom validation function for all schemes, returns `null` or an error message. `CUSTOM` error
 - bug fix
 	- schemes are not mutated by `ejv()` anymore (reusing a scheme could overflow the stack)
 	- date `min`, `max` which `Date` can not parse returns `INVALID_SCHEMES` instead of throwing

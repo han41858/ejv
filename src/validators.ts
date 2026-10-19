@@ -55,7 +55,7 @@ import {
 	uniqueItemsTester,
 	urlTester
 } from './tester';
-import { clone, createErrorMsg } from './util';
+import { clone, createErrorMsg, safeStringify } from './util';
 
 
 export type Validate = (data: AnyObject, schemes: Scheme[], options: InternalOptions) => EjvError | null;
@@ -81,11 +81,12 @@ export function invalidTypeIndex (types: unknown[]): number {
 	});
 }
 
-// for messages of invalid scheme values : shows empty string and non-string values as JSON (ex. '""', 'null')
+// for messages of invalid scheme values : shows empty string and non-string values as JSON (ex. '""', 'null').
+// never throws, also for bigint and circular reference
 export function invalidValueToString (value: unknown): string {
 	return stringTester(value) && value.length > 0
 		? value
-		: String(JSON.stringify(value));
+		: safeStringify(value);
 }
 
 // whether the value can be a scheme object : an object, but not null and not a value of other data types
@@ -104,6 +105,21 @@ export function schemeObjectTester (value: unknown): boolean {
 
 export function schemeArrayTester (array: unknown[]): boolean {
 	return array.every(schemeObjectTester);
+}
+
+// first key of the object which is not declared in the schemes. keys with undefined value are ignored
+export function findUnknownKey (value: AnyObject, schemes: Scheme[]): string | undefined {
+	const knownKeys: Set<string | undefined> = new Set(schemes.map((scheme: Scheme): string | undefined => scheme.key));
+
+	return Object.keys(value).find((key: string): boolean => {
+		return value[key] !== undefined && !knownKeys.has(key);
+	});
+}
+
+export function unknownPropertyMessage (key: string): string {
+	return createErrorMsg(ERROR_MESSAGE.UNKNOWN_PROPERTY, {
+		placeholders: [key]
+	});
 }
 
 
@@ -535,6 +551,11 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 		}
 	}
 
+	if (definedTester(scheme.allowUnknownProperty) && !booleanTester(scheme.allowUnknownProperty)) {
+		return schemeError(ctx, ERROR_MESSAGE.ALLOW_UNKNOWN_PROPERTY_SHOULD_BE_BOOLEAN);
+	}
+
+	// allowUnknownProperty works with properties only
 	if (!definedTester(scheme.properties)) {
 		return null;
 	}
@@ -565,9 +586,20 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 	if (result) {
 		// inject original data
 		result.data = ctx.data;
+
+		return result;
 	}
 
-	return result;
+	// declared properties first, and then unknown properties
+	if (scheme.allowUnknownProperty === false) {
+		const unknownKey: string | undefined = findUnknownKey(value, properties);
+
+		if (definedTester(unknownKey)) {
+			return dataError(ctx, ERROR_TYPE.UNKNOWN_PROPERTY, unknownPropertyMessage(unknownKey));
+		}
+	}
+
+	return null;
 }
 
 
@@ -770,7 +802,7 @@ function itemsBySchemesRule (ctx: ValidatorContext, tempKeys: string[]): Validat
 	if (!!itemsAsSchemes && itemsAsSchemes.length > 1) {
 		errorType = ERROR_TYPE.ITEMS_SCHEMES;
 		errorMsg = createErrorMsg(ERROR_MESSAGE.ITEMS_SCHEMES, {
-			placeholders: [JSON.stringify(itemsAsSchemes)]
+			placeholders: [safeStringify(itemsAsSchemes)]
 		});
 	}
 	else {
@@ -781,7 +813,7 @@ function itemsBySchemesRule (ctx: ValidatorContext, tempKeys: string[]): Validat
 			// REQUIRED in array is TYPE_MISMATCH except with nullable === true
 			errorType = ERROR_TYPE.TYPE_MISMATCH;
 			errorMsg = createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
-				placeholders: [JSON.stringify(scheme.items)]
+				placeholders: [safeStringify(scheme.items)]
 			});
 		}
 	}
@@ -838,7 +870,7 @@ function itemsRule (ctx: ValidatorContext): ValidatorResult {
 	}
 
 	return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.INVALID_ITEMS_SCHEME, {
-		placeholders: [JSON.stringify(scheme.items)]
+		placeholders: [safeStringify(scheme.items)]
 	}));
 }
 
@@ -895,4 +927,36 @@ export function validateBuffer (ctx: ValidatorContext): ValidatorResult {
 			test: (limit: number): boolean => maxByteLengthTester(value, limit)
 		}
 	]);
+}
+
+
+// custom validation of all types, called after the other rules pass
+export function customRule (ctx: ValidatorContext): ValidatorResult {
+	const validate: unknown = ctx.scheme.validate;
+
+	if (!definedTester(validate)) {
+		return null;
+	}
+
+	if (typeof validate !== 'function') {
+		return schemeError(ctx, ERROR_MESSAGE.VALIDATE_SHOULD_BE_FUNCTION);
+	}
+
+	// errors thrown by validate() are not caught, they are bugs of the user code
+	const result: unknown = validate.call(ctx.scheme, ctx.value, ctx.options.rootData);
+
+	if (result === null) {
+		return null;
+	}
+
+	// true, false and undefined are not allowed to avoid confusion
+	if (!stringTester(result)) {
+		return schemeError(ctx, createErrorMsg(ERROR_MESSAGE.VALIDATE_SHOULD_RETURN_NULL_OR_STRING, {
+			placeholders: [invalidValueToString(result)]
+		}));
+	}
+
+	return dataError(ctx, ERROR_TYPE.CUSTOM, result.length > 0
+		? result
+		: ERROR_MESSAGE.CUSTOM);
 }
