@@ -3,10 +3,16 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 
-import { EjvError, Scheme } from '../src/interfaces';
+import { EjvError, Scheme, SchemeWithParent } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError } from './common-test-util';
+
+// parent is an internal reference to the upper scheme, not a part of the public Scheme type.
+// schemes with parent are tested as they are passed at runtime
+function withParent (scheme: object): Scheme {
+	return scheme as Scheme;
+}
 
 
 describe('CommonScheme', () => {
@@ -253,9 +259,9 @@ describe('CommonScheme', () => {
 	describe('parent', () => {
 		describe('type', () => {
 			it('inherited when type is omitted', () => {
-				expect(ejv({ a: 1 }, [{ key: 'a', parent: { type: 'number' } }])).to.be.null;
+				expect(ejv({ a: 1 }, [withParent({ key: 'a', parent: { type: 'number' } })])).to.be.null;
 
-				const error: EjvError | null = ejv({ a: 'x' }, [{ key: 'a', parent: { type: 'number' } }]);
+				const error: EjvError | null = ejv({ a: 'x' }, [withParent({ key: 'a', parent: { type: 'number' } })]);
 
 				expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
 				expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
@@ -265,7 +271,7 @@ describe('CommonScheme', () => {
 			});
 
 			it('multiple types', () => {
-				const error: EjvError | null = ejv({ a: true }, [{ key: 'a', parent: { type: ['number', 'string'] } }]);
+				const error: EjvError | null = ejv({ a: true }, [withParent({ key: 'a', parent: { type: ['number', 'string'] } })]);
 
 				expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH_ONE_OF);
 				expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH_ONE_OF, {
@@ -274,16 +280,16 @@ describe('CommonScheme', () => {
 			});
 
 			it('inherited from grandparent', () => {
-				expect(ejv({ a: 1 }, [{ key: 'a', parent: { parent: { type: 'number' } } }])).to.be.null;
+				expect(ejv({ a: 1 }, [withParent({ key: 'a', parent: { parent: { type: 'number' } } })])).to.be.null;
 
-				const error: EjvError | null = ejv({ a: 'x' }, [{ key: 'a', parent: { parent: { type: 'number' } } }]);
+				const error: EjvError | null = ejv({ a: 'x' }, [withParent({ key: 'a', parent: { parent: { type: 'number' } } })]);
 
 				expect(error?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH);
 				expect(error?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH, {
 					placeholders: ['number']
 				}));
 
-				const multipleTypesError: EjvError | null = ejv({ a: true }, [{ key: 'a', parent: { parent: { type: ['number', 'string'] } } }]);
+				const multipleTypesError: EjvError | null = ejv({ a: true }, [withParent({ key: 'a', parent: { parent: { type: ['number', 'string'] } } })]);
 
 				expect(multipleTypesError?.type).to.be.eql(ERROR_TYPE.TYPE_MISMATCH_ONE_OF);
 				expect(multipleTypesError?.message).to.be.eql(createErrorMsg(ERROR_MESSAGE.TYPE_MISMATCH_ONE_OF, {
@@ -292,7 +298,7 @@ describe('CommonScheme', () => {
 			});
 
 			it('circular parent', () => {
-				const selfParent: Scheme = { key: 'a' };
+				const selfParent: SchemeWithParent = { key: 'a' } as SchemeWithParent;
 				selfParent.parent = selfParent;
 
 				checkSchemeError({
@@ -301,13 +307,13 @@ describe('CommonScheme', () => {
 					message: ERROR_MESSAGE.SCHEMES_HAS_CIRCULAR_PARENT
 				});
 
-				const parentA: Scheme = {};
-				const parentB: Scheme = { parent: parentA };
+				const parentA: SchemeWithParent = {} as SchemeWithParent;
+				const parentB: SchemeWithParent = { parent: parentA } as SchemeWithParent;
 				parentA.parent = parentB;
 
 				checkSchemeError({
 					data: { a: 1 },
-					errorScheme: { key: 'a', parent: parentA },
+					errorScheme: withParent({ key: 'a', parent: parentA }),
 					message: ERROR_MESSAGE.SCHEMES_HAS_CIRCULAR_PARENT
 				});
 			});
@@ -315,19 +321,19 @@ describe('CommonScheme', () => {
 			it('null parent is no parent', () => {
 				checkSchemeError({
 					data: { a: 1 },
-					errorScheme: { key: 'a', parent: null as unknown as Scheme },
+					errorScheme: withParent({ key: 'a', parent: null }),
 					message: ERROR_MESSAGE.SCHEMES_SHOULD_HAVE_TYPE
 				});
 			});
 
 			it('own type first', () => {
-				expect(ejv({ a: 'x' }, [{ key: 'a', type: 'string', parent: { type: 'number' } }])).to.be.null;
+				expect(ejv({ a: 'x' }, [withParent({ key: 'a', type: 'string', parent: { type: 'number' } })])).to.be.null;
 			});
 		});
 
 		describe('number min & max', () => {
 			it('inherited', () => {
-				const schemes: Scheme[] = [{ key: 'a', type: 'number', parent: { min: 1, max: 2 } }];
+				const schemes: Scheme[] = [withParent({ key: 'a', type: 'number', parent: { min: 1, max: 2 } })];
 
 				expect(ejv({ a: 1 }, schemes)).to.be.null;
 				expect(ejv({ a: 2 }, schemes)).to.be.null;
@@ -348,8 +354,8 @@ describe('CommonScheme', () => {
 			});
 
 			it('own value first', () => {
-				expect(ejv({ a: 1 }, [{ key: 'a', type: 'number', min: 0, parent: { min: 5 } }])).to.be.null;
-				expect(ejv({ a: 9 }, [{ key: 'a', type: 'number', max: 10, parent: { max: 5 } }])).to.be.null;
+				expect(ejv({ a: 1 }, [withParent({ key: 'a', type: 'number', min: 0, parent: { min: 5 } })])).to.be.null;
+				expect(ejv({ a: 9 }, [withParent({ key: 'a', type: 'number', max: 10, parent: { max: 5 } })])).to.be.null;
 			});
 		});
 
@@ -357,19 +363,19 @@ describe('CommonScheme', () => {
 			it('inherited', () => {
 				const minError: EjvError | null = ejv({
 					a: new Date(2019, 0, 1)
-				}, [{ key: 'a', type: 'date', parent: { min: '2020-01-01' } }]);
+				}, [withParent({ key: 'a', type: 'date', parent: { min: '2020-01-01' } })]);
 
 				expect(minError?.type).to.be.eql(ERROR_TYPE.AFTER_OR_SAME_DATE);
 
 				const maxError: EjvError | null = ejv({
 					a: new Date(2021, 0, 1)
-				}, [{ key: 'a', type: 'date', parent: { max: '2020-12-31' } }]);
+				}, [withParent({ key: 'a', type: 'date', parent: { max: '2020-12-31' } })]);
 
 				expect(maxError?.type).to.be.eql(ERROR_TYPE.BEFORE_OR_SAME_DATE);
 
 				expect(ejv({
 					a: new Date(2020, 5, 1)
-				}, [{ key: 'a', type: 'date', parent: { min: '2020-01-01', max: '2020-12-31' } }])).to.be.null;
+				}, [withParent({ key: 'a', type: 'date', parent: { min: '2020-01-01', max: '2020-12-31' } })])).to.be.null;
 			});
 		});
 	});

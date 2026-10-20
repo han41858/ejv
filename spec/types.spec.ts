@@ -27,9 +27,6 @@ describe('Scheme types', () => {
 			// several types : rules of the types are allowed
 			{ key: 'multi', type: ['number', 'string'], min: 0, minLength: 1 },
 
-			// type inherited from the parent
-			{ key: 'inherited', parent: { type: 'number', min: 0 }, max: 10 },
-
 			// value of validate() has the type of the scheme
 			{ key: 'custom', type: 'number', validate: (value: number): string | null => value.toFixed() === '1' ? null : 'not 1' }
 		];
@@ -47,7 +44,6 @@ describe('Scheme types', () => {
 			arr2: [1, 'a'],
 			buf: new Uint8Array(3),
 			multi: 'a',
-			inherited: 5,
 			custom: 1
 		}, schemes)).to.be.null;
 	});
@@ -90,6 +86,33 @@ describe('Scheme types', () => {
 		];
 
 		expect(schemes).to.have.lengthOf(7);
+	});
+
+	it('schemes without type are compile errors', () => {
+		const schemes: Scheme[] = [
+			// @ts-expect-error no type
+			{ key: 'a' },
+			// @ts-expect-error no type, with rules
+			{ key: 'a', min: 0 },
+			{
+				key: 'arr',
+				type: 'array',
+				// @ts-expect-error item scheme without type
+				items: [{ min: 0 }]
+			},
+			{
+				key: 'obj',
+				type: 'object',
+				// @ts-expect-error property scheme without type
+				properties: [{ key: 'x' }]
+			},
+			// @ts-expect-error parent is an internal reference, not a scheme option
+			{ key: 'a', type: 'number', parent: { min: 0 } },
+			// @ts-expect-error a type name is not a scheme
+			'number'
+		];
+
+		expect(schemes).to.have.lengthOf(6);
 	});
 
 	it('nested schemes are checked', () => {

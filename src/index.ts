@@ -11,7 +11,6 @@ export {
 	BufferScheme,
 	BufferLike,
 	MultiTypeScheme,
-	InheritedTypeScheme,
 	AllDataType,
 	DataTypeName,
 	NumberFormatName,

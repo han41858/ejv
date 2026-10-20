@@ -6,10 +6,12 @@
 	- with a single `type`, only the rules of the type are allowed (ex. `minLength` for `type: 'number'` is a compile error)
 	- `type`, `format` accept the names of `DATA_TYPE`, `NUMBER_FORMAT`, `STRING_FORMAT` only (string literal or enum value)
 	- the value of `validate` has the type of the scheme (ex. `number` for `type: 'number'`)
-	- several types (ex. `['number', 'string']`) and the type inherited from `parent` allow the rules of all types
+	- several types (ex. `['number', 'string']`) allow the rules of all types
+	- `type` is required. Schemes without `type`, strings and arrays are not `Scheme` anymore (they were allowed by the type, and failed at runtime)
+	- `parent` is removed from the public `Scheme` type. It is an internal reference to the upper scheme. Runtime behavior is not changed
 	- migration : declare scheme variables with `Scheme[]` type (or `satisfies Scheme[]`). Without it, `type: 'number'` is widened to `string`. Use `DataTypeName`, `NumberFormatName`, `StringFormatName` for the variables of type names and formats
 - improvement
-	- `MultiTypeScheme`, `InheritedTypeScheme`, `DataTypeName`, `NumberFormatName`, `StringFormatName` exported
+	- `MultiTypeScheme`, `DataTypeName`, `NumberFormatName`, `StringFormatName` exported
 - internal
 	- type tests (`spec/types.spec.ts`) and `yarn typecheck` in CI
 

@@ -131,7 +131,7 @@ describe('ejv()', () => {
 
 			// can't use checkSchemeError()
 			it('invalid scheme object', () => {
-				const errorScheme: Scheme[] = ['string'];
+				const errorScheme: Scheme[] = ['string'] as never;
 
 				const error: EjvError | null = ejv(data, errorScheme);
 
@@ -196,11 +196,12 @@ describe('ejv()', () => {
 
 			falsyTypes.forEach(([name, type]: [string, unknown]): void => {
 				it(`invalid type : ${ name }`, () => {
+					// parent is an internal reference, not a part of the public Scheme type
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: type as never,
 						parent: { type: 'number' }
-					};
+					} as Scheme;
 
 					const invalidType: unknown = Array.isArray(type)
 						? type.find((one: unknown): boolean => !one)

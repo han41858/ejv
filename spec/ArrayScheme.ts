@@ -675,7 +675,7 @@ describe('ArrayScheme', () => {
 					errorScheme: {
 						key: 'a',
 						type: 'array',
-						items: ['number', '']
+						items: ['number', ''] as never
 					},
 
 					message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
@@ -720,7 +720,7 @@ describe('ArrayScheme', () => {
 						errorScheme: {
 							key: 'a',
 							type: 'array',
-							items: invalidDataType
+							items: invalidDataType as never
 						},
 
 						message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
@@ -793,7 +793,7 @@ describe('ArrayScheme', () => {
 						errorScheme: {
 							key: 'a',
 							type: 'array',
-							items: ['number', invalidDataType]
+							items: ['number', invalidDataType] as never
 						},
 
 						message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
@@ -804,7 +804,7 @@ describe('ArrayScheme', () => {
 			});
 
 			it('fail', () => {
-				const enumArr: string[] = ['boolean', 'string'];
+				const enumArr: DataTypeName[] = ['boolean', 'string'];
 
 				const value = [1, 2, 2];
 				const testObj = {

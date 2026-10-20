@@ -197,7 +197,7 @@ describe('ObjectScheme', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
 					type: 'object',
-					properties: ['b']
+					properties: ['b'] as never
 				};
 
 				checkSchemeError({

@@ -49,7 +49,7 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 
 			data: data,
 
-			errorScheme: schemes,
+			errorScheme: schemes as unknown as Scheme, // the list itself for the errors of the list
 			isSchemeError: true
 		});
 	}
@@ -61,7 +61,7 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 
 			data: data,
 
-			errorScheme: schemes,
+			errorScheme: schemes as unknown as Scheme, // the list itself for the errors of the list
 			isSchemeError: true
 		});
 	}
@@ -73,7 +73,7 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 
 			data: data,
 
-			errorScheme: schemes,
+			errorScheme: schemes as unknown as Scheme, // the list itself for the errors of the list
 			isSchemeError: true
 		});
 	}
@@ -85,7 +85,7 @@ const _ejv = (data: AnyObject, schemes: Scheme[], options: InternalOptions): nul
 
 			data: data,
 
-			errorScheme: schemes,
+			errorScheme: schemes as unknown as Scheme, // the list itself for the errors of the list
 			isSchemeError: true
 		});
 	}

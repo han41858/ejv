@@ -12,8 +12,6 @@ export type StringFormatName = Named<STRING_FORMAT>;
 
 // common rules for all schemes. V is the type of the value passed to validate()
 interface BaseScheme<V = unknown> {
-	parent?: Scheme;
-
 	key?: string; // can be omitted in array items
 
 	optional?: boolean; // false
@@ -113,7 +111,7 @@ export interface BufferScheme extends BaseScheme<BufferLike>, BufferRules {
 	type: Named<DATA_TYPE.BUFFER>;
 }
 
-// rules of all types, for the schemes whose type is decided by the value or the parent
+// rules of all types, for the schemes whose type is decided by the value
 interface AnyTypeRules extends ObjectRules, BufferRules {
 	enum?: (number | string)[];
 	notEnum?: (number | string)[];
@@ -139,11 +137,6 @@ export interface MultiTypeScheme extends BaseScheme, AnyTypeRules {
 	type: DataTypeName[];
 }
 
-// no type : the type is inherited from the parent
-export interface InheritedTypeScheme extends BaseScheme, AnyTypeRules {
-	type?: undefined;
-}
-
 export type Scheme =
 	BooleanScheme
 	| NumberScheme
@@ -153,8 +146,13 @@ export type Scheme =
 	| RegExpScheme
 	| ArrayScheme
 	| BufferScheme
-	| MultiTypeScheme
-	| InheritedTypeScheme;
+	| MultiTypeScheme;
+
+// internal : reference to the upper scheme to follow its type and rules.
+// not a part of the public scheme, but read for the schemes passed with it
+export type SchemeWithParent = Scheme & {
+	parent?: SchemeWithParent | null;
+};
 
 
 export interface Options {

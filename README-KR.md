@@ -112,7 +112,8 @@ const invalid: Scheme[] = [{
 }];
 ```
 
-- 여러 타입을 지정하거나(ex. `type: ['number', 'string']`) `parent`에서 타입을 물려받는 스킴은 모든 타입의 규칙을 사용할 수 있습니다.
+- `properties`, `items`에 있는 스킴을 포함해 모든 스킴에 `type`을 지정해야 합니다.
+- 여러 타입을 지정한 스킴(ex. `type: ['number', 'string']`)은 모든 타입의 규칙을 사용할 수 있습니다.
 - `validate`에 전달되는 값은 스킴의 타입을 따릅니다(ex. `'number'`이면 `number`).
 
 > 스킴을 변수로 선언할 때는 `Scheme[]` 타입을 지정하세요(또는 `satisfies Scheme[]`).

@@ -113,7 +113,8 @@ const invalid: Scheme[] = [{
 }];
 ```
 
-- With several types (ex. `type: ['number', 'string']`) or the type inherited from `parent`, the rules of all types are allowed.
+- `type` is required for all schemes, including the schemes in `properties` and `items`.
+- With several types (ex. `type: ['number', 'string']`), the rules of all types are allowed.
 - The value passed to `validate` has the type of the scheme (ex. `number` for `'number'`).
 
 > Declare schemes in a variable with `Scheme[]` type (or `satisfies Scheme[]`).

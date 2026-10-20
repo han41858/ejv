@@ -12,6 +12,7 @@ import {
 	NumberScheme,
 	ObjectScheme,
 	Scheme,
+	SchemeWithParent,
 	StringScheme
 } from './interfaces';
 import { DATA_TYPE, ERROR_MESSAGE, ERROR_TYPE, NUMBER_FORMAT, STRING_FORMAT } from './constants';
@@ -83,9 +84,9 @@ export interface EffectiveTypeResult {
 // type of the scheme, or the nearest ancestor's type through parent.
 // null or non-object parent means no parent
 export function getEffectiveType (scheme: Scheme): EffectiveTypeResult {
-	const visited: Set<Scheme> = new Set();
+	const visited: Set<SchemeWithParent> = new Set();
 
-	let current: Scheme | undefined = scheme;
+	let current: SchemeWithParent | null | undefined = scheme;
 
 	while (typeof current === 'object' && current !== null) {
 		if (visited.has(current)) {
@@ -381,7 +382,7 @@ function formatRule<T extends string> (
 
 function numberBoundRule (ctx: ValidatorContext, bound: 'min' | 'max'): ValidatorResult {
 	const scheme: NumberScheme = ctx.scheme as NumberScheme;
-	const parentScheme: NumberScheme | undefined = scheme.parent as NumberScheme | undefined;
+	const parentScheme: NumberScheme | undefined = (scheme as SchemeWithParent).parent as NumberScheme | undefined;
 	const value: number = ctx.value as number;
 
 	const isMin: boolean = bound === 'min';
@@ -637,7 +638,7 @@ export function validateObject (ctx: ValidatorContext): ValidatorResult {
 
 function dateBoundRule (ctx: ValidatorContext, bound: 'min' | 'max'): ValidatorResult {
 	const scheme: DateScheme = ctx.scheme as DateScheme;
-	const parentScheme: DateScheme | undefined = scheme.parent as DateScheme | undefined;
+	const parentScheme: DateScheme | undefined = (scheme as SchemeWithParent).parent as DateScheme | undefined;
 	const value: Date = ctx.value as Date;
 
 	const isMin: boolean = bound === 'min';
@@ -780,8 +781,9 @@ function itemsBySchemesRule (ctx: ValidatorContext, tempKeys: string[]): Validat
 	const scheme: ArrayScheme = ctx.scheme as ArrayScheme;
 	const value: unknown[] = ctx.value as unknown[];
 
+	// called only when items are schemes (itemsKind() === 'schemes')
 	const itemsAsSchemes: Scheme[] = arrayTester(scheme.items)
-		? scheme.items
+		? scheme.items as Scheme[]
 		: [scheme.items] as Scheme[];
 
 	let partialError: EjvError | null | undefined = null;
