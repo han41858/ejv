@@ -1,5 +1,18 @@
 # Change Log
 
+# Unreleased (3.0.0)
+
+- breaking change : `Scheme` types are checked by `type` (TypeScript only, no runtime change)
+	- with a single `type`, only the rules of the type are allowed (ex. `minLength` for `type: 'number'` is a compile error)
+	- `type`, `format` accept the names of `DATA_TYPE`, `NUMBER_FORMAT`, `STRING_FORMAT` only (string literal or enum value)
+	- the value of `validate` has the type of the scheme (ex. `number` for `type: 'number'`)
+	- several types (ex. `['number', 'string']`) and the type inherited from `parent` allow the rules of all types
+	- migration : declare scheme variables with `Scheme[]` type (or `satisfies Scheme[]`). Without it, `type: 'number'` is widened to `string`. Use `DataTypeName`, `NumberFormatName`, `StringFormatName` for the variables of type names and formats
+- improvement
+	- `MultiTypeScheme`, `InheritedTypeScheme`, `DataTypeName`, `NumberFormatName`, `StringFormatName` exported
+- internal
+	- type tests (`spec/types.spec.ts`) and `yarn typecheck` in CI
+
 # 2.2.1
 
 - improvement

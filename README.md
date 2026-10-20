@@ -85,6 +85,48 @@ if (!error) {
 }
 ```
 
+### TypeScript
+
+Schemes are typed by `type`.
+With a single `type`, only the rules of the type are allowed, and your editor suggests them.
+Wrong rules, type names and formats are compile errors.
+
+```typescript
+import { ejv, Scheme } from 'ejv';
+
+const schemes: Scheme[] = [{
+	key: 'age',
+	type: 'number',
+	min: 0, // number rules only
+	format: 'integer'
+}, {
+	key: 'name',
+	type: 'string',
+	minLength: 1,
+	validate: (value: string) => value.trim() ? null : 'name is empty' // value is a string
+}];
+
+const invalid: Scheme[] = [{
+	key: 'age',
+	type: 'number',
+	minLength: 1 // compile error : minLength is not a number rule
+}];
+```
+
+- With several types (ex. `type: ['number', 'string']`) or the type inherited from `parent`, the rules of all types are allowed.
+- The value passed to `validate` has the type of the scheme (ex. `number` for `'number'`).
+
+> Declare schemes in a variable with `Scheme[]` type (or `satisfies Scheme[]`).
+> Without it, TypeScript widens `type: 'number'` to `string`, and the schemes can not be passed to `ejv()`.
+>
+> ```typescript
+> const schemes = [{ key: 'a', type: 'number' }]; // type : string
+> ejv(data, schemes); // compile error
+>
+> const schemes: Scheme[] = [{ key: 'a', type: 'number' }];
+> ejv(data, schemes); // ok
+> ```
+
 ## `Scheme`
 
 `ejv()` needs *validation rules*.

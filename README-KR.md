@@ -84,6 +84,48 @@ if (!error) {
 }
 ```
 
+### TypeScript
+
+스킴은 `type`에 따라 타입이 결정됩니다.
+`type`이 하나이면 그 타입의 규칙만 사용할 수 있으며, 편집기도 해당 규칙만 자동완성합니다.
+다른 타입의 규칙, 잘못된 타입 이름이나 포맷은 컴파일 에러가 발생합니다.
+
+```typescript
+import { ejv, Scheme } from 'ejv';
+
+const schemes: Scheme[] = [{
+	key: 'age',
+	type: 'number',
+	min: 0, // 숫자 규칙만 사용할 수 있습니다.
+	format: 'integer'
+}, {
+	key: 'name',
+	type: 'string',
+	minLength: 1,
+	validate: (value: string) => value.trim() ? null : 'name is empty' // value는 문자열입니다.
+}];
+
+const invalid: Scheme[] = [{
+	key: 'age',
+	type: 'number',
+	minLength: 1 // 컴파일 에러 : minLength는 숫자 규칙이 아닙니다.
+}];
+```
+
+- 여러 타입을 지정하거나(ex. `type: ['number', 'string']`) `parent`에서 타입을 물려받는 스킴은 모든 타입의 규칙을 사용할 수 있습니다.
+- `validate`에 전달되는 값은 스킴의 타입을 따릅니다(ex. `'number'`이면 `number`).
+
+> 스킴을 변수로 선언할 때는 `Scheme[]` 타입을 지정하세요(또는 `satisfies Scheme[]`).
+> 타입을 지정하지 않으면 TypeScript가 `type: 'number'`를 `string`으로 추론해서 `ejv()`에 전달할 수 없습니다.
+>
+> ```typescript
+> const schemes = [{ key: 'a', type: 'number' }]; // type : string
+> ejv(data, schemes); // 컴파일 에러
+>
+> const schemes: Scheme[] = [{ key: 'a', type: 'number' }];
+> ejv(data, schemes); // 정상
+> ```
+
 ## `Scheme`
 
 `ejv()` 함수로 JSON 객체를 검사하려면 이 함수의 두 번째 인자로 *검사 규칙*을 전달해야 합니다.
