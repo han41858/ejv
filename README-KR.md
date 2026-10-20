@@ -100,7 +100,7 @@ JSON 객체에 있는 `a` 프로퍼티를 검사하려면 `key : 'a'`라고 지�
 
 > 이 프로퍼티는 `array` 타입에 `items` 옵션을 사용할 때 생략할 수 있습니다.
 
-#### `type` : [`DataType`](#DataType) | `DataType[]`
+#### `type` : [`DataType`](#datatype) | `DataType[]`
 
 프로퍼티의 형식을 지정합니다.
 타입이 하나만 지정되면 해당 타입인지 검사합니다.
@@ -120,6 +120,7 @@ ejv({
 	// 빈 객체
 }, [{
 	key: 'a',
+	type: 'number',
 	optional: true // 프로퍼티가 선언되지 않아도 에러가 발생하지 않습니다.
 }]);
 ```
@@ -134,6 +135,7 @@ ejv({
 	a: null
 }, [{
 	key: 'a',
+	type: 'number',
 	nullable: true
 }]);
 ```
@@ -186,7 +188,7 @@ ejv({
 }]);
 ```
 
-- `notEnumse : number[] | string[]`
+- `notEnum : number[] | string[]`
 
 배열로 전달되는 값을 허용하지 않습니다. 이 옵션의 결과는 `enum` 옵션의 결과와 반대입니다.
 이 옵션은 `type : number`과 `type : string` 검사규칙에 사용할 수 있습니다.
@@ -303,7 +305,7 @@ ejv({
 	type: 'string',
 	length: 5
 }]);
-````
+```
 
 - `minLength : number`
 
@@ -317,9 +319,9 @@ ejv({
 	type: 'string',
 	minLength: 5
 }]);
-````
+```
 
-- `maxLength : string`
+- `maxLength : number`
 
 문자열의 최대 길이를 검사합니다.
 
@@ -331,7 +333,7 @@ ejv({
 	type: 'string',
 	maxLength: 5
 }]);
-````
+```
 
 - `pattern : string | string[] | RegExp | RegExp[]`
 
@@ -444,15 +446,15 @@ ejv({
 
 ```typescript
 ejv({
-	date1: new Date(2019, 11, 30)
+	date1: new Date('2019-12-30T00:00:00Z')
 }, [{
 	key: 'date1',
 	type: 'date',
-	min: new Date(2019, 11, 30) // 성공
+	min: new Date('2019-12-30T00:00:00Z') // 성공
 }, {
 	key: 'date1',
 	type: 'date',
-	min: new Date(2019, 11, 30),
+	min: new Date('2019-12-30T00:00:00Z'),
 	exclusiveMin: true // 실패
 }, {
 	key: 'date1',
@@ -480,15 +482,15 @@ ejv({
 
 ```typescript
 ejv({
-	date1: new Date(2019, 11, 30)
+	date1: new Date('2019-12-30T00:00:00Z')
 }, [{
 	key: 'date1',
 	type: 'date',
-	max: new Date(2019, 11, 30) // 성공
+	max: new Date('2019-12-30T00:00:00Z') // 성공
 }, {
 	key: 'date1',
 	type: 'date',
-	max: new Date(2019, 11, 30),
+	max: new Date('2019-12-30T00:00:00Z'),
 	exclusiveMax: true // 실패
 }, {
 	key: 'date1',
@@ -516,7 +518,7 @@ ejv({
 	type: 'array',
 	length: 2
 }]);
-````
+```
 
 - `minLength : number`
 
@@ -530,9 +532,9 @@ ejv({
 	type: 'array',
 	minLength: 2
 }]);
-````
+```
 
-- `maxLength : string`
+- `maxLength : number`
 
 배열의 최대 길이를 검사합니다.
 
@@ -544,7 +546,7 @@ ejv({
 	type: 'array',
 	maxLength: 3
 }]);
-````
+```
 
 - `unique : boolean`
 
@@ -552,11 +554,12 @@ ejv({
 `true`로 지정하면 배열의 값이 중복되는 것을 허용하지 않습니다.
 이 옵션을 생략하거나 `false`로 지정하면 배열의 값이 중복되는 것을 허용합니다.
 
-- `items : Scheme[]`
+- `items : DataType | DataType[] | Scheme | Scheme[]`
 
 배열의 항목을 검사할 규칙을 지정합니다.
+타입 이름(`'number'`), 타입 배열(`['number', 'string']`), 스킴 하나 또는 스킴 배열로 지정합니다.
 이 때 지정하는 Scheme은 ejv() 함수에 사용하는 Scheme과 같은 형식이지만 `key`는 생략합니다.
-배열로 지정한 규칙은 ejv()가 재귀적으로 검사하며, 배열에 지정된 순서대로 처리됩니다.
+스킴 배열로 지정하면 항목이 스킴 중 하나를 통과하면 됩니다. 스킴은 ejv()가 재귀적으로 검사하며, 배열에 지정된 순서대로 처리됩니다.
 
 ```typescript
 ejv({
@@ -569,11 +572,11 @@ ejv({
 		min: 1,
 		max: 3
 	}]
-}])
+}]);
 ```
 
 
-#### `'buffer'` options
+#### `'buffer'` 타입 옵션
 
 - `byteLength : number`
 
@@ -587,7 +590,7 @@ ejv({
 	type: 'buffer',
 	byteLength: 2
 }]);
-````
+```
 
 - `minByteLength : number`
 
@@ -601,9 +604,9 @@ ejv({
 	type: 'buffer',
 	minByteLength: 2
 }]);
-````
+```
 
-- `maxByteLength : string`
+- `maxByteLength : number`
 
 버퍼의 최대 바이트 길이를 검사합니다.
 
@@ -615,7 +618,7 @@ ejv({
 	type: 'buffer',
 	maxByteLength: 3
 }]);
-````
+```
 
 ## `DataType`
 
@@ -685,11 +688,13 @@ const error: null | EjvError = ejv({
 	type: 'string'
 }]);
 
-console.log(error.type); // 'TYPE_MISMATCH'
-console.log(error.message); // 'the value should be a string'
-console.log(error.path); // 'a'
-console.log(error.data); // { a : 10 }
-console.log(error.errorData); // 10
+if (error) {
+	console.log(error.type); // 'TYPE_MISMATCH'
+	console.log(error.message); // 'the value should be a string'
+	console.log(error.path); // 'a'
+	console.log(error.data); // { a : 10 }
+	console.log(error.errorData); // 10
+}
 ```
 
 ## 옵션
