@@ -1,0 +1,38 @@
+name: Temporary dependency update
+
+on:
+  push:
+    branches:
+      - chore/update-dev-dependencies-20261020
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: yarn
+      - name: Update development dependencies
+        run: yarn upgrade --latest
+      - name: Validate updated dependencies
+        run: |
+          yarn lint
+          yarn test
+          yarn build
+          npx --yes @arethetypeswrong/cli --pack .
+      - name: Commit verified package and lockfile
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add package.json yarn.lock
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update verified development dependencies"
+            git push
+          fi
