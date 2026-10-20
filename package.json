@@ -32,6 +32,7 @@
 		"build": "yarn build:types&&yarn build:cjs&&yarn build:esm",
 		"postbuild": "tsc -p tsconfig.scripts.json&&node build/scripts/add-js-extensions&&node build/scripts/create-package-json",
 		"test": "mocha",
+		"typecheck": "tsc -p tsconfig.spec.json",
 		"lint": "eslint"
 	},
 	"repository": {
