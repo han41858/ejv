@@ -98,14 +98,14 @@ ejv use this rule in order of array, you can check orderly, and result is always
 #### `key` : `string`
 
 Specify the property to check.
-For example, if you want to check 'a' property in JSON object, set `key :  a`
+For example, if you want to check 'a' property in JSON object, set `key: 'a'`
 
 > This property is omitted to check `array` with `items` option.
 
-#### `type` : [`DataType`](#DataType) | `DataType[]`
+#### `type` : [`DataType`](#datatype) | `DataType[]`
 
 Specify the type of property to check.
-If only one type is specified, Checksfor that type.
+If only one type is specified, checks for that type.
 And if specified as an array, checks if it corresponds to one of the items in the array.
 
 ### Optional keys
@@ -122,7 +122,8 @@ ejv({
 	// empty object
 }, [{
 	key: 'a',
-	optional: true // Error does not occur without proffering declared.
+	type: 'number',
+	optional: true // Error does not occur even if the property is not declared.
 }]);
 ```
 
@@ -136,6 +137,7 @@ ejv({
 	a: null
 }, [{
 	key: 'a',
+	type: 'number',
 	nullable: true
 }]);
 ```
@@ -212,7 +214,7 @@ ejv({
 
 - `min : number`
 
-Checks ths minimum value.
+Checks the minimum value.
 Error occurs if the value is smaller than this value.
 
 - `exclusiveMin : boolean`
@@ -246,7 +248,7 @@ Error occurs if the number is bigger than this value.
 
 If you specify `true`, ejv will not allow the same value as the maximum limit.
 If you omit this option or specify it as `false`, ejv will allow the same value as the maximum limit.
-This option is used only when the `min` option is used.
+This option is used only when the `max` option is used.
 
 ```typescript
 ejv({
@@ -306,7 +308,7 @@ ejv({
 	type: 'string',
 	length: 5
 }]);
-````
+```
 
 - `minLength : number`
 
@@ -320,9 +322,9 @@ ejv({
 	type: 'string',
 	minLength: 5
 }]);
-````
+```
 
-- `maxLength : string`
+- `maxLength : number`
 
 Checks the maximum length of string.
 
@@ -334,7 +336,7 @@ ejv({
 	type: 'string',
 	maxLength: 5
 }]);
-````
+```
 
 - `pattern : string | string[] | RegExp | RegExp[]`
 
@@ -448,15 +450,15 @@ This option is used only when the `min` option is used.
 
 ```typescript
 ejv({
-	date1: new Date(2019, 11, 30)
+	date1: new Date('2019-12-30T00:00:00Z')
 }, [{
 	key: 'date1',
 	type: 'date',
-	min: new Date(2019, 11, 30) // success
+	min: new Date('2019-12-30T00:00:00Z') // success
 }, {
 	key: 'date1',
 	type: 'date',
-	min: new Date(2019, 11, 30),
+	min: new Date('2019-12-30T00:00:00Z'),
 	exclusiveMin: true // failed
 }, {
 	key: 'date1',
@@ -484,15 +486,15 @@ This option is used only when the `max` option is used.
 
 ```typescript
 ejv({
-	date1: new Date(2019, 11, 30)
+	date1: new Date('2019-12-30T00:00:00Z')
 }, [{
 	key: 'date1',
 	type: 'date',
-	max: new Date(2019, 11, 30) // success
+	max: new Date('2019-12-30T00:00:00Z') // success
 }, {
 	key: 'date1',
 	type: 'date',
-	max: new Date(2019, 11, 30),
+	max: new Date('2019-12-30T00:00:00Z'),
 	exclusiveMax: true // failed
 }, {
 	key: 'date1',
@@ -520,7 +522,7 @@ ejv({
 	type: 'array',
 	length: 2
 }]);
-````
+```
 
 - `minLength : number`
 
@@ -534,9 +536,9 @@ ejv({
 	type: 'array',
 	minLength: 2
 }]);
-````
+```
 
-- `maxLength : string`
+- `maxLength : number`
 
 Checks the maximum length of the array.
 
@@ -548,7 +550,7 @@ ejv({
 	type: 'array',
 	maxLength: 3
 }]);
-````
+```
 
 - `unique : boolean`
 
@@ -556,11 +558,12 @@ Checks if all items in the array are different.
 If you specify `true`, ejv will not allow the array to duplicate values.
 If you omit this option or specify it as `false`, ejv will allow to duplicate the values of the array.
 
-- `items : Scheme[]`
+- `items : DataType | DataType[] | Scheme | Scheme[]`
 
 Specify the rules to inspect items in the array.
-The Scheme specified at this time is the same format as the Scheme used in the `ejv()``, but omits the `key`.
-Schemes specified as arrays are recursively processed by `ejv()`, and processed in the order specified in the array.
+It can be a type name (`'number'`), an array of type names (`['number', 'string']`), a scheme, or an array of schemes.
+The Scheme specified at this time is the same format as the Scheme used in the `ejv()`, but omits the `key`.
+With an array of schemes, an item passes if it passes one of the schemes. Schemes are recursively processed by `ejv()`, and processed in the order specified in the array.
 
 ```typescript
 ejv({
@@ -573,7 +576,7 @@ ejv({
 		min: 1,
 		max: 3
 	}]
-}])
+}]);
 ```
 
 #### `'buffer'` options
@@ -590,7 +593,7 @@ ejv({
 	type: 'buffer',
 	byteLength: 2
 }]);
-````
+```
 
 - `minByteLength : number`
 
@@ -604,9 +607,9 @@ ejv({
 	type: 'buffer',
 	minByteLength: 2
 }]);
-````
+```
 
-- `maxByteLength : string`
+- `maxByteLength : number`
 
 Checks the maximum byte length of the buffer.
 
@@ -618,7 +621,7 @@ ejv({
 	type: 'buffer',
 	maxByteLength: 3
 }]);
-````
+```
 
 
 
@@ -690,11 +693,13 @@ const error: null | EjvError = ejv({
 	type: 'string'
 }]);
 
-console.log(error.type); // 'TYPE_MISMATCH'
-console.log(error.message); // 'the value should be a string'
-console.log(error.path); // 'a'
-console.log(error.data); // { a : 10 }
-console.log(error.errorData); // 10
+if (error) {
+	console.log(error.type); // 'TYPE_MISMATCH'
+	console.log(error.message); // 'the value should be a string'
+	console.log(error.path); // 'a'
+	console.log(error.data); // { a : 10 }
+	console.log(error.errorData); // 10
+}
 ```
 
 ## Options
