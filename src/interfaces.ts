@@ -1,13 +1,20 @@
 import { DATA_TYPE, ERROR_TYPE, NUMBER_FORMAT, STRING_FORMAT } from './constants';
 
-export type AllDataType = string | string[] | DATA_TYPE | DATA_TYPE[];
+// type names : string literal or DATA_TYPE value (ex. 'number', DATA_TYPE.NUMBER)
+type Named<T extends string> = T | `${ T }`;
+
+export type DataTypeName = Named<DATA_TYPE>;
+export type AllDataType = DataTypeName | DataTypeName[];
+
+export type NumberFormatName = Named<NUMBER_FORMAT>;
+export type StringFormatName = Named<STRING_FORMAT>;
 
 
-interface CommonScheme {
+// common rules for all schemes. V is the type of the value passed to validate()
+interface BaseScheme<V = unknown> {
 	parent?: Scheme;
 
 	key?: string; // can be omitted in array items
-	type?: AllDataType; // optional for not
 
 	optional?: boolean; // false
 	nullable?: boolean; // false
@@ -15,11 +22,8 @@ interface CommonScheme {
 	// custom validation, called after the other rules of the scheme pass.
 	// value : the value to validate, data : the data passed to ejv()
 	// returns null if the value is valid, or an error message
-	validate?(value: unknown, data: unknown): string | null;
+	validate?(value: V, data: unknown): string | null;
 }
-
-// no additional rule
-export type BooleanScheme = CommonScheme;
 
 export interface MinMax<T> {
 	min?: T;
@@ -29,21 +33,18 @@ export interface MinMax<T> {
 	exclusiveMax?: boolean; // default false
 }
 
-export interface MinMaxScheme<T> extends CommonScheme, MinMax<T> {
-}
-
-export interface NumberScheme extends MinMaxScheme<number> {
+interface NumberRules extends MinMax<number> {
 	enum?: number[];
 	notEnum?: number[];
 
-	format?: string | string[] | NUMBER_FORMAT | NUMBER_FORMAT[];
+	format?: NumberFormatName | NumberFormatName[];
 }
 
-export interface StringScheme extends CommonScheme {
+interface StringRules {
 	enum?: string[];
 	notEnum?: string[];
 
-	format?: string | string[] | STRING_FORMAT | STRING_FORMAT[];
+	format?: StringFormatName | StringFormatName[];
 	pattern?: string | string[] | RegExp | RegExp[];
 
 	length?: number;
@@ -51,19 +52,16 @@ export interface StringScheme extends CommonScheme {
 	maxLength?: number;
 }
 
-export interface ObjectScheme extends CommonScheme {
+interface ObjectRules {
 	properties?: Scheme[];
 	allowNoProperty?: boolean; // true
 	allowUnknownProperty?: boolean; // true
 }
 
 // min, max string for date string
-export type DateScheme = MinMaxScheme<string | Date>
+type DateRules = MinMax<string | Date>;
 
-// no additional rule
-export type RegExpScheme = CommonScheme;
-
-export interface ArrayScheme extends CommonScheme {
+interface ArrayRules {
 	unique?: boolean; // false
 	items?: AllDataType | Scheme | Scheme[];
 
@@ -72,15 +70,78 @@ export interface ArrayScheme extends CommonScheme {
 	maxLength?: number;
 }
 
-
 export type BufferLike = ArrayBuffer
 	| SharedArrayBuffer
 	| Exclude<ArrayBufferView, DataView>;
 
-export interface BufferScheme extends CommonScheme {
+interface BufferRules {
 	byteLength?: number;
 	minByteLength?: number;
 	maxByteLength?: number;
+}
+
+// schemes of a single type : only the rules of the type are allowed
+export interface BooleanScheme extends BaseScheme<boolean> {
+	type: Named<DATA_TYPE.BOOLEAN>;
+}
+
+export interface NumberScheme extends BaseScheme<number>, NumberRules {
+	type: Named<DATA_TYPE.NUMBER>;
+}
+
+export interface StringScheme extends BaseScheme<string>, StringRules {
+	type: Named<DATA_TYPE.STRING>;
+}
+
+export interface ObjectScheme extends BaseScheme<object>, ObjectRules {
+	type: Named<DATA_TYPE.OBJECT>;
+}
+
+export interface DateScheme extends BaseScheme<Date>, DateRules {
+	type: Named<DATA_TYPE.DATE>;
+}
+
+export interface RegExpScheme extends BaseScheme<RegExp> {
+	type: Named<DATA_TYPE.REGEXP>;
+}
+
+export interface ArrayScheme extends BaseScheme<unknown[]>, ArrayRules {
+	type: Named<DATA_TYPE.ARRAY>;
+}
+
+export interface BufferScheme extends BaseScheme<BufferLike>, BufferRules {
+	type: Named<DATA_TYPE.BUFFER>;
+}
+
+// rules of all types, for the schemes whose type is decided by the value or the parent
+interface AnyTypeRules extends ObjectRules, BufferRules {
+	enum?: (number | string)[];
+	notEnum?: (number | string)[];
+
+	format?: NumberFormatName | StringFormatName | (NumberFormatName | StringFormatName)[];
+	pattern?: string | string[] | RegExp | RegExp[];
+
+	min?: number | string | Date;
+	exclusiveMin?: boolean;
+	max?: number | string | Date;
+	exclusiveMax?: boolean;
+
+	length?: number;
+	minLength?: number;
+	maxLength?: number;
+
+	unique?: boolean;
+	items?: AllDataType | Scheme | Scheme[];
+}
+
+// several types (ex. ['number', 'string']) : the rules of the type resolved by the value are used
+export interface MultiTypeScheme extends BaseScheme, AnyTypeRules {
+	type: DataTypeName[];
+}
+
+// no type : the type is inherited from the parent
+export interface InheritedTypeScheme extends BaseScheme, AnyTypeRules {
+	type?: undefined;
 }
 
 export type Scheme =
@@ -91,7 +152,9 @@ export type Scheme =
 	| DateScheme
 	| RegExpScheme
 	| ArrayScheme
-	| BufferScheme;
+	| BufferScheme
+	| MultiTypeScheme
+	| InheritedTypeScheme;
 
 
 export interface Options {

@@ -10,7 +10,12 @@ export {
 	DateScheme,
 	BufferScheme,
 	BufferLike,
+	MultiTypeScheme,
+	InheritedTypeScheme,
 	AllDataType,
+	DataTypeName,
+	NumberFormatName,
+	StringFormatName,
 	EjvError,
 	Scheme,
 	Options

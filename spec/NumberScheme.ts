@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 
-import { EjvError, NumberScheme, Scheme } from '../src/interfaces';
+import { DataTypeName, EjvError, NumberFormatName, NumberScheme, Scheme } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError, TYPE_TESTER_ARR, TypeTester } from './common-test-util';
@@ -43,7 +43,7 @@ describe('NumberScheme', () => {
 
 			it('multiple types', () => {
 				const value = 123;
-				const typeArr: string[] = ['boolean', 'string'];
+				const typeArr: DataTypeName[] = ['boolean', 'string'];
 
 				const data = {
 					a: value
@@ -169,7 +169,7 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						enum: ['10']
+						enum: ['10'] as never
 					};
 
 					checkSchemeError({
@@ -277,7 +277,7 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						notEnum: ['10']
+						notEnum: ['10'] as never
 					};
 
 					checkSchemeError({
@@ -368,7 +368,7 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						min: '3'
+						min: '3' as never
 					};
 
 					checkSchemeError({
@@ -583,7 +583,7 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						max: '3'
+						max: '3' as never
 					};
 
 					checkSchemeError({
@@ -800,7 +800,7 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						format: 'invalidNumberFormat'
+						format: 'invalidNumberFormat' as never
 					};
 
 					checkSchemeError({
@@ -816,7 +816,7 @@ describe('NumberScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'number',
-						format: ['index', 'invalidNumberFormat']
+						format: ['index', 'invalidNumberFormat'] as never
 					};
 
 					checkSchemeError({
@@ -866,7 +866,7 @@ describe('NumberScheme', () => {
 
 			describe('multiple formats', () => {
 				it('fail', () => {
-					const formatArr: string[] = ['integer'];
+					const formatArr: NumberFormatName[] = ['integer'];
 
 					const error: EjvError | null = ejv({
 						a: 123.5
@@ -1050,7 +1050,7 @@ describe('NumberScheme', () => {
 
 			describe('multiple formats', () => {
 				it('fail', () => {
-					const formatArr: string[] = ['index'];
+					const formatArr: NumberFormatName[] = ['index'];
 
 					const error1: EjvError | null = ejv({
 						a: 1.5
@@ -1178,7 +1178,7 @@ describe('NumberScheme', () => {
 			it(name, () => {
 				checkSchemeError({
 					data: { a: 1 },
-					errorScheme: { key: 'a', type: 'number', format: format as string[] },
+					errorScheme: { key: 'a', type: 'number', format: format as never },
 					message: createErrorMsg(ERROR_MESSAGE.INVALID_NUMBER_FORMAT, {
 						placeholders: [placeholder]
 					})

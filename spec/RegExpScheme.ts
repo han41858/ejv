@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 
-import { EjvError } from '../src/interfaces';
+import { DataTypeName, EjvError } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { TYPE_TESTER_ARR, TypeTester } from './common-test-util';
@@ -43,7 +43,7 @@ describe('RegExpScheme', () => {
 
 			it('multiple types', () => {
 				const value = 'ejv';
-				const typeArr: string[] = ['boolean', 'regexp'];
+				const typeArr: DataTypeName[] = ['boolean', 'regexp'];
 
 				const testData = {
 					a: value

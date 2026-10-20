@@ -327,7 +327,7 @@ describe('CommonScheme', () => {
 
 		describe('number min & max', () => {
 			it('inherited', () => {
-				const schemes = [{ key: 'a', type: 'number', parent: { min: 1, max: 2 } }];
+				const schemes: Scheme[] = [{ key: 'a', type: 'number', parent: { min: 1, max: 2 } }];
 
 				expect(ejv({ a: 1 }, schemes)).to.be.null;
 				expect(ejv({ a: 2 }, schemes)).to.be.null;

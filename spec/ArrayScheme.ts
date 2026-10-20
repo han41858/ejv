@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 
-import { ArrayScheme, EjvError, ObjectScheme, Scheme } from '../src/interfaces';
+import { ArrayScheme, DataTypeName, EjvError, ObjectScheme, Scheme } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError, TYPE_TESTER_ARR, TypeTester } from './common-test-util';
@@ -43,7 +43,7 @@ describe('ArrayScheme', () => {
 
 			it('multiple types', () => {
 				const value = 'ejv';
-				const typeArr: string[] = ['boolean', 'array'];
+				const typeArr: DataTypeName[] = ['boolean', 'array'];
 
 				const testObj = {
 					a: value
@@ -866,7 +866,7 @@ describe('ArrayScheme', () => {
 							key: 'a',
 							type: 'array',
 							items: {
-								type: invalidDataType
+								type: invalidDataType as never
 							}
 						},
 
@@ -1012,7 +1012,7 @@ describe('ArrayScheme', () => {
 							type: 'array',
 							items: [{
 								type: 'invalidDataType'
-							} as Scheme]
+							} as never]
 						},
 
 						message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
@@ -1308,7 +1308,7 @@ describe('ArrayScheme', () => {
 
 		it('item scheme of class instance keeps validate method', () => {
 			class PositiveScheme {
-				type: string = 'number';
+				type = 'number' as const;
 
 				validate (value: unknown): string | null {
 					return (value as number) > 0 ? null : 'should be positive';

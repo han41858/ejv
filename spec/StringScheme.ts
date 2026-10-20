@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ejv } from '../src/ejv';
 
-import { EjvError, Scheme } from '../src/interfaces';
+import { DataTypeName, EjvError, Scheme, StringFormatName } from '../src/interfaces';
 import { ERROR_MESSAGE, ERROR_TYPE } from '../src/constants';
 import { createErrorMsg } from '../src/util';
 import { checkSchemeError, TYPE_TESTER_ARR, TypeTester } from './common-test-util';
@@ -43,7 +43,7 @@ describe('StringScheme', () => {
 
 			it('multiple types', () => {
 				const value = 'ejv';
-				const typeArr: string[] = ['boolean', 'number'];
+				const typeArr: DataTypeName[] = ['boolean', 'number'];
 
 				const data = {
 					a: value
@@ -159,7 +159,7 @@ describe('StringScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
-						enum: [10]
+						enum: [10] as never
 					};
 
 					checkSchemeError({
@@ -257,7 +257,7 @@ describe('StringScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
-						notEnum: [10]
+						notEnum: [10] as never
 					};
 
 					checkSchemeError({
@@ -634,7 +634,7 @@ describe('StringScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
-						format: 'invalidStringFormat'
+						format: 'invalidStringFormat' as never
 					};
 
 					checkSchemeError({
@@ -650,7 +650,7 @@ describe('StringScheme', () => {
 					const errorScheme: Scheme = {
 						key: 'a',
 						type: 'string',
-						format: ['invalidStringFormat']
+						format: ['invalidStringFormat'] as never
 					};
 
 					checkSchemeError({
@@ -708,7 +708,7 @@ describe('StringScheme', () => {
 			});
 
 			it('multiple format', () => {
-				const formatArr: string[] = ['email', 'date'];
+				const formatArr: StringFormatName[] = ['email', 'date'];
 
 				const data = {
 					a: 'ejv'
@@ -780,7 +780,7 @@ describe('StringScheme', () => {
 			});
 
 			it('multiple format', () => {
-				const formatArr: string[] = ['json', 'date'];
+				const formatArr: StringFormatName[] = ['json', 'date'];
 
 				const data = {
 					a: 'ejv'
@@ -861,7 +861,7 @@ describe('StringScheme', () => {
 			});
 
 			it('multiple format', () => {
-				const formatArr: string[] = ['date'];
+				const formatArr: StringFormatName[] = ['date'];
 
 				const data = {
 					a: 'ejv'
@@ -933,7 +933,7 @@ describe('StringScheme', () => {
 			});
 
 			it('multiple format', () => {
-				const formatArr: string[] = ['time'];
+				const formatArr: StringFormatName[] = ['time'];
 
 				const data = {
 					a: 'ejv'
@@ -1028,7 +1028,7 @@ describe('StringScheme', () => {
 			});
 
 			it('multiple format', () => {
-				const formatArr: string[] = ['date-time'];
+				const formatArr: StringFormatName[] = ['date-time'];
 
 				const data = {
 					a: 'ejv'
@@ -1081,7 +1081,7 @@ describe('StringScheme', () => {
 		});
 
 		const urlIpFormatCases: {
-			format: string;
+			format: StringFormatName;
 			valid: string[];
 			invalid: string[];
 		}[] = [
@@ -1144,7 +1144,7 @@ describe('StringScheme', () => {
 				});
 
 				it('multiple format', () => {
-					const formatArr: string[] = [format, 'email'];
+					const formatArr: StringFormatName[] = [format, 'email'];
 
 					valid.forEach((value: string): void => {
 						expect(ejv({ a: value }, [{
@@ -1581,7 +1581,7 @@ describe('StringScheme', () => {
 			it(name, () => {
 				checkSchemeError({
 					data: { a: 'ejv@ejv.com' },
-					errorScheme: { key: 'a', type: 'string', format: format as string[] },
+					errorScheme: { key: 'a', type: 'string', format: format as never },
 					message: createErrorMsg(ERROR_MESSAGE.INVALID_STRING_FORMAT, {
 						placeholders: [placeholder]
 					})

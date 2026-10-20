@@ -165,7 +165,7 @@ describe('ejv()', () => {
 			it('invalid type', () => {
 				const errorScheme: Scheme = {
 					key: 'a',
-					type: 'invalidType'
+					type: 'invalidType' as never
 				};
 
 				checkSchemeError({
@@ -180,7 +180,7 @@ describe('ejv()', () => {
 			it('invalid type : bigint', () => {
 				checkSchemeError({
 					data,
-					errorScheme: { key: 'a', type: 1n as unknown as string },
+					errorScheme: { key: 'a', type: 1n as never },
 					message: createErrorMsg(ERROR_MESSAGE.SCHEMES_HAS_INVALID_TYPE, {
 						placeholders: ['1n']
 					})
@@ -198,7 +198,7 @@ describe('ejv()', () => {
 				it(`invalid type : ${ name }`, () => {
 					const errorScheme: Scheme = {
 						key: 'a',
-						type: type as string,
+						type: type as never,
 						parent: { type: 'number' }
 					};
 
@@ -441,7 +441,7 @@ describe('ejv()', () => {
 		it('instance of a class is a scheme', () => {
 			class NumberSchemeClass {
 				key: string = 'a';
-				type: string = 'number';
+				type = 'number' as const;
 			}
 
 			expect(ejv({ a: 1 }, [new NumberSchemeClass()])).to.be.null;
