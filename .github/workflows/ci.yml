@@ -11,10 +11,12 @@ permissions:
 
 jobs:
   dependency-update:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/chore/update-dev-dependencies-20261020'
+    if: github.event_name == 'pull_request' && github.event.pull_request.number == 28
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: chore/update-dev-dependencies-20261020
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
