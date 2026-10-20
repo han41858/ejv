@@ -2,14 +2,38 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, chore/update-dev-dependencies-20261020]
   pull_request:
     branches: [main, dev]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  dependency-update:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/chore/update-dev-dependencies-20261020'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: yarn
+      - run: yarn upgrade --latest
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn build
+      - run: npx --yes @arethetypeswrong/cli --pack .
+      - name: Commit verified dependencies
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json yarn.lock
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: update verified development dependencies'
+            git push
+          fi
+
   test:
     runs-on: ubuntu-latest
 
