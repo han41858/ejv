@@ -21,7 +21,9 @@ jobs:
         with:
           node-version: '22'
           cache: yarn
-      - run: yarn upgrade --latest
+      - run: |
+          yarn upgrade --latest
+          yarn add --dev 'typescript@^6.0.3'
       - run: yarn lint
       - run: yarn test
       - run: yarn build
